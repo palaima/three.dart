@@ -11,8 +11,6 @@ import 'dart:convert' show JSON;
 import 'src/core/three_math.dart' as ThreeMath;
 export 'src/core/three_math.dart';
 
-import 'package:vector_math/vector_math.dart';
-
 // TODO - Use M1 Re-export ( see: http://code.google.com/p/dart/issues/detail?id=760)
 import 'extras/image_utils.dart' as ImageUtils;
 import 'extras/font_utils.dart' as FontUtils;
@@ -40,6 +38,20 @@ part 'src/core/ray.dart';
 part 'src/core/rectangle.dart';
 part 'src/core/buffer_geometry.dart';
 part 'src/core/event_emitter.dart';
+
+part 'src/math/aabb2.dart';
+part 'src/math/aabb3.dart';
+part 'src/math/matrix2.dart';
+part 'src/math/matrix3.dart';
+part 'src/math/matrix4.dart';
+part 'src/math/opengl.dart';
+part 'src/math/quaternion.dart';
+part 'src/math/sphere.dart';
+part 'src/math/triangle.dart';
+part 'src/math/vector.dart';
+part 'src/math/vector2.dart';
+part 'src/math/vector3.dart';
+part 'src/math/vector4.dart';
 
 part 'src/loaders/loader.dart';
 part 'src/loaders/json_loader.dart';
