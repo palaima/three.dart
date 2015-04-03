@@ -1,8 +1,7 @@
 library CurveExtras;
 
 import 'dart:math' as Math;
-import 'package:three/three.dart' show Curve3D;
-import 'package:vector_math/vector_math.dart';
+import 'package:three/three.dart' show Curve3D, Vector3;
 
 class GrannyKnot extends Curve3D {
   Vector3 getPoint(double t) {

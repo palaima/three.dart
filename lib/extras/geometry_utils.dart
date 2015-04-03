@@ -1,7 +1,6 @@
 library GeometryUtils;
 
 import "package:three/three.dart";
-import 'package:vector_math/vector_math.dart';
 
 // TODO(nelsonsilva) - Add remaining functions
 Geometry clone(Geometry geometry) {

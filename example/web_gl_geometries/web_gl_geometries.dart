@@ -5,7 +5,6 @@
 import 'dart:html';
 import 'dart:math' as Math;
 import 'package:three/three.dart';
-import 'package:vector_math/vector_math.dart';
 import 'package:three/extras/image_utils.dart' as ImageUtils;
 
 DivElement container;

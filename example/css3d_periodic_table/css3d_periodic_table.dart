@@ -3,8 +3,7 @@ library periodic_table;
 import 'dart:html';
 import 'dart:math' as Math;
 
-import 'package:vector_math/vector_math.dart';
-import 'package:three/three.dart' as THREE;
+import 'package:three/three.dart';
 import 'package:three/extras/renderers/css3d_renderer.dart' as THREE;
 import 'package:three/extras/controls/trackball_controls.dart';
 import 'package:three/extras/tween.dart' as TWEEN;
@@ -27,10 +26,10 @@ init() {
     "grid": []
   };
 
-  camera = new THREE.PerspectiveCamera(75.0, window.innerWidth / window.innerHeight, 1.0, 5000.0);
+  camera = new PerspectiveCamera(75.0, window.innerWidth / window.innerHeight, 1.0, 5000.0);
   camera.position.z = 1800.0;
 
-  scene = new THREE.Scene();
+  scene = new Scene();
 
   for (int i = 0; i < table.length; i++) {
 
@@ -73,7 +72,7 @@ init() {
     var item = table[i];
     var object = objects[i];
 
-    targets["table"].add(new THREE.Object3D()
+    targets["table"].add(new Object3D()
         ..position.x = (item[3] * 160.0) - 1540.0
         ..position.y = -(item[4] * 200.0) + 1100.0);
 
@@ -91,7 +90,7 @@ init() {
     var phi = Math.acos(-1 + (2 * i) / l);
     var theta = Math.sqrt(l * Math.PI) * phi;
 
-    object = new THREE.Object3D()
+    object = new Object3D()
         ..position.x = 1000.0 * Math.cos(theta) * Math.sin(phi)
         ..position.y = 1000.0 * Math.sin(theta) * Math.sin(phi)
         ..position.z = 1000.0 * Math.cos(phi);
@@ -115,7 +114,7 @@ init() {
 
     var phi = i * 0.175 + Math.PI;
 
-    object = new THREE.Object3D()
+    object = new Object3D()
         ..position.x = 1100.0 * Math.sin(phi)
         ..position.y = -(i * 8.0) + 450.0
         ..position.z = 1100.0 * Math.cos(phi);
@@ -136,7 +135,7 @@ init() {
 
     var object = objects[i];
 
-    object = new THREE.Object3D()
+    object = new Object3D()
         ..position.x = ((i % 5) * 400.0) - 800.0
         ..position.y = (-((i ~/ 5) % 5) * 400.0) + 800.0
         ..position.z = ((i ~/ 25)) * 1000.0 - 2000.0;

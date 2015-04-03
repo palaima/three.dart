@@ -3,7 +3,7 @@
  **************************************************************/
 library ShapeUtils;
 
-import "package:vector_math/vector_math.dart";
+import "package:three/three.dart" show Vector2;
 import 'package:three/extras/font_utils.dart' as FontUtils;
 
 /*

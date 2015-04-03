@@ -1,7 +1,6 @@
 library three_shaders;
 
 import 'dart:math';
-import 'package:vector_math/vector_math.dart';
 import 'package:three/three.dart';
 
 part 'additive.dart';

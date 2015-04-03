@@ -1,6 +1,5 @@
 import 'dart:html';
 import 'dart:math' as Math;
-import 'package:vector_math/vector_math.dart';
 import 'package:three/three.dart';
 
 Element container;
