@@ -1210,6 +1210,11 @@ class Vector3 implements Vector {
     return this;
   }
   
+  Vector3 applyAxisAngle(Vector3 axis, double angle) { 
+    applyQuaternion(new Quaternion.axisAngle(axis, angle));
+    return this;
+  }
+  
   /// Multiplies [this] by [arg].
   Vector3 applyMatrix3(Matrix3 arg) {
     var v0 = storage[0];
@@ -1245,4 +1250,53 @@ class Vector3 implements Vector {
     storage[2] = iz * q.storage[3] + iw * -q.storage[2] + ix * -q.storage[1] - iy * -q.storage[0];
     return this;
   }
+  
+  Vector3 clamp(Vector3 min, Vector3 max) {
+    if (storage[0] < min.storage[0]) { 
+      storage[0] = min.storage[0]; 
+    } else if (storage[0] > max.storage[0]) { 
+      storage[0] = max.storage[0]; 
+    }
+    if (storage[1] < min.storage[1]) { 
+      storage[1] = min.storage[1]; 
+    } else if (storage[1] > max.storage[1]) { 
+      storage[1] = max.storage[1];
+    }
+    if (storage[2] < min.storage[2]) { 
+      storage[2] = min.storage[2]; 
+    } else if (storage[2] > max.storage[2]) { 
+      storage[2] = max.storage[2]; 
+    }
+    return this;
+  }
+  
+  double angleTo(Vector3 other) { 
+    var theta = dot(other) / (length * other.length);
+    return Math.acos(theta.clamp(-1.0, 1.0));
+  }
+  
+  Vector3 floor() {
+    storage[0] = storage[0].floor().toDouble();
+    storage[1] = storage[1].floor().toDouble();
+    storage[2] = storage[2].floor().toDouble();
+    return this;
+  }
+  
+  Vector3 ceil() {
+    storage[0] = storage[0].ceil().toDouble();
+    storage[1] = storage[1].ceil().toDouble();
+    storage[2] = storage[2].ceil().toDouble();
+    return this;
+  }
+  
+  Vector3 roundToZero() {
+    storage[0] = storage[0] < 0.0 ? storage[0].ceil().toDouble() : storage[0].floor().toDouble();
+    storage[1] = storage[1] < 0.0 ? storage[1].ceil().toDouble() : storage[1].floor().toDouble();
+    storage[2] = storage[2] < 0.0 ? storage[2].ceil().toDouble() : storage[2].floor().toDouble();
+    return this;
+  }
+  
+  /// Computes Manhattan length of this vector.
+  /// http://en.wikipedia.org/wiki/Taxicab_geometry
+  double get lengthManhattan =>  storage[0].abs() + storage[1].abs() + storage[2].abs();
 }

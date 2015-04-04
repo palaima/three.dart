@@ -2134,4 +2134,12 @@ class Matrix4 {
   
     return this;
   }
+  
+  double getMaxScaleOnAxis() {
+    var scaleXSq = storage[0] * storage[0] + storage[1] * storage[1] + storage[2] * storage[2];
+    var scaleYSq = storage[4] * storage[4] + storage[5] * storage[5] + storage[6] * storage[6];
+    var scaleZSq = storage[8] * storage[8] + storage[9] * storage[9] + storage[10] * storage[10];
+
+    return Math.sqrt(Math.max(scaleXSq, Math.max(scaleYSq, scaleZSq)));
+  }
 }

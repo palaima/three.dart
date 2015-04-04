@@ -173,4 +173,31 @@ class Frustum {
     Plane.intersection(_planes[1], _planes[3], _planes[5], corner6);
     Plane.intersection(_planes[1], _planes[2], _planes[5], corner7);
   }
+  
+  /*
+   * Additions from three.js
+   */
+  
+  Frustum setComponents(Plane p0, Plane p1, Plane p2, Plane p3, Plane p4, Plane p5) {
+    planes[0].copyFrom(p0);
+    planes[1].copyFrom(p1);
+    planes[2].copyFrom(p2);
+    planes[3].copyFrom(p3);
+    planes[4].copyFrom(p4);
+    planes[5].copyFrom(p5);
+    return this;
+  }
+  
+  bool contains(Object3D object) {
+    var geometry = object.geometry;
+
+    if (geometry.boundingSphere == null) geometry.computeBoundingSphere();
+
+    var sphere = new Sphere.copy(geometry.boundingSphere)
+      ..applyMatrix4(object.matrixWorld);
+
+    return intersectsWithSphere(sphere);
+  }
+  
+  Frustum clone() => new Frustum.copy(this);
 }

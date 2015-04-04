@@ -62,4 +62,14 @@ class Sphere {
 
     return other.center.distanceToSquared(center) <= (radiusSum * radiusSum);
   }
+  
+  /*
+   * Additions from three.js
+   */
+  
+  Sphere applyMatrix4(Matrix4 matrix) {
+    center.applyMatrix4(matrix);
+    radius = radius * matrix.getMaxScaleOnAxis();
+    return this;
+  }
 }

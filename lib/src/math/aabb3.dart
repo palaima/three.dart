@@ -34,8 +34,8 @@ class Aabb3 {
   }
 
   Aabb3()
-      : _min = new Vector3.zero(),
-        _max = new Vector3.zero() {}
+      : _min = new Vector3(double.INFINITY, double.INFINITY, double.INFINITY),
+        _max = new Vector3(-double.INFINITY, -double.INFINITY, -double.INFINITY) {}
 
   Aabb3.copy(Aabb3 other)
       : _min = new Vector3.copy(other._min),
@@ -223,4 +223,67 @@ class Aabb3 {
         max.y >= other.y &&
         max.z >= other.z;
   }
+  
+  /*
+   * Additions from three.js
+   */
+  
+  Aabb3.fromPoints(List<Vector3> points)
+      : _min = new Vector3.zero(),
+        _max = new Vector3.zero() {
+    makeEmpty();
+    points.forEach((point) => hullPoint(point));
+  }
+  
+  factory Aabb3.fromCenterAndSize(Vector3 center, Vector3 size) {
+    var halfSize = size * 0.5;
+    return new Aabb3.minMax(center - halfSize, center + halfSize);
+  }
+  
+  Aabb3.fromObject(Object3D object)
+      : _min = new Vector3.zero(),
+        _max = new Vector3.zero() {
+    object.updateMatrixWorld(force: true);
+
+    makeEmpty();
+
+    object.traverse((node) {
+      var geometry = node.geometry;
+
+      if (geometry != null) {
+        if (geometry is Geometry) {
+          geometry.vertices.forEach((vertex) => 
+              hullPoint(new Vector3.copy(vertex)..applyMatrix4(node.matrixWorld)));
+        } else if (geometry is BufferGeometry && geometry.aPosition != null) {
+          var positions = geometry.aPosition.array;
+
+          for (var i = 0; i < positions.length; i += 3) {
+            hullPoint(new Vector3(positions[i], positions[i + 1], positions[i + 2])
+              ..applyMatrix4(node.matrixWorld));
+          }
+        }
+      }
+    });
+  }
+  
+  bool get isEmpty => _max.x < _min.x || _max.y < _min.y || _max.z < _min.z;
+  
+  Vector3 get size => _max - _min;
+  
+  Aabb3 makeEmpty() {
+    _min.splat(double.INFINITY);
+    _max.splat(-double.INFINITY);
+    return this;
+  }
+  
+  // This can potentially have a divide by zero if the box
+  // has a size dimension of 0.
+  Vector3 getParameter(Vector3 point) => 
+      new Vector3((point.x - _min.x) / (_max.x - _min.x),
+                  (point.y - _min.y) / (_max.y - _min.y),
+                  (point.z - _min.z) / (_max.z - _min.z));
+  
+  Vector3 clampPoint(Vector3 point) => point..clamp(_min, _max);
+  
+  Aabb3 clone() => new Aabb3.minMax(_min, _max);
 }
