@@ -154,9 +154,9 @@ class Object3D {
   void applyMatrix(Matrix4 matrix) {
     this.matrix = matrix * this.matrix;
 
-    this.scale = getScaleFromMatrix(this.matrix);
+    this.scale.setFromMatrixScale(this.matrix);
 
-    Matrix4 mat = extractRotation(new Matrix4.identity(), this.matrix);
+    Matrix4 mat = new Matrix4.identity().extractRotation(this.matrix);
     this.rotation.setEulerFromRotationMatrix(mat, this.eulerOrder);
 
     this.position = this.matrix.getTranslation();
@@ -181,7 +181,7 @@ class Object3D {
   void lookAt(Vector3 vector) {
     // TODO: Add hierarchy support.
 
-    makeLookAt(matrix, vector, position, up);
+    matrix.lookAt(vector, position, up);
 
     if (rotationAutoUpdate) {
       if (useQuaternion) {
@@ -290,9 +290,9 @@ class Object3D {
   void updateMatrix() {
 
     if (useQuaternion) {
-      setRotationFromQuaternion(matrix, quaternion);
+      matrix.setRotationFromQuaternion(quaternion);
     } else {
-      setRotationFromEuler(matrix, rotation, eulerOrder);
+      matrix.setRotationFromEuler(rotation, eulerOrder);
     }
 
     matrix.setTranslation(position);

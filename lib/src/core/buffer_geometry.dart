@@ -88,17 +88,16 @@ class BufferGeometry implements Geometry {
 
     if (positionArray != null) {
 
-      multiplyVector3Array(matrix, positionArray);
+      matrix.applyToVector3Array(positionArray);
       this["verticesNeedUpdate"] = true;
 
     }
 
     if (normalArray != null) {
 
-      var matrixRotation = new Matrix4.identity();
-      extractRotation(matrixRotation, matrix);
+      var matrixRotation = new Matrix4.identity().extractRotation(matrix);
 
-      multiplyVector3Array(matrixRotation, normalArray);
+      matrixRotation.applyToVector3Array(normalArray);
       this["normalsNeedUpdate"] = true;
 
     }

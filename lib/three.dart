@@ -23,7 +23,6 @@ part 'src/cameras/camera.dart';
 part 'src/cameras/perspective_camera.dart';
 part 'src/cameras/orthographic_camera.dart';
 
-part 'src/core/matrix_utils.dart';
 part 'src/core/object3d.dart';
 part 'src/core/color.dart';
 part 'src/core/face.dart';

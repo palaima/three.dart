@@ -36,7 +36,7 @@ class Camera extends Object3D {
   void lookAt(Vector3 vector) {
     // TODO: Add hierarchy support.
 
-    makeLookAt(matrix, position, vector, up);
+    matrix.lookAt(position, vector, up);
 
     if (rotationAutoUpdate) {
       rotation.setEulerFromRotationMatrix(matrix, eulerOrder);

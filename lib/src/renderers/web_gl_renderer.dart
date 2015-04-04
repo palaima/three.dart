@@ -5278,8 +5278,7 @@ class WebGLRenderer implements Renderer {
 
     object._modelViewMatrix = camera.matrixWorldInverse * object.matrixWorld;
 
-    object._normalMatrix = calcInverse(object._modelViewMatrix);
-    object._normalMatrix.transpose();
+    object._normalMatrix.copyNormalMatrix(object._modelViewMatrix);
 
   }
 

@@ -258,7 +258,7 @@ class Projector {
         faces = geometry.faces;
         faceVertexUvs = geometry.faceVertexUvs;
 
-        extractRotation(object.matrixRotationWorld, modelMatrix);
+        object.matrixRotationWorld.extractRotation(modelMatrix);
         rotationMatrix = object.matrixRotationWorld;
 
         isFaceMaterial = (object.material is MeshFaceMaterial);
