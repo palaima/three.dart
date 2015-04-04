@@ -52,6 +52,7 @@ part 'src/math/vector.dart';
 part 'src/math/vector2.dart';
 part 'src/math/vector3.dart';
 part 'src/math/vector4.dart';
+part 'src/math/euler.dart';
 
 part 'src/loaders/loader.dart';
 part 'src/loaders/json_loader.dart';
