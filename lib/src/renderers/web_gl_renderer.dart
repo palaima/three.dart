@@ -3556,7 +3556,7 @@ class WebGLRenderer implements Renderer {
     Object3D object;
     var renderList;
 
-    List lights = scene.lights;
+    List lights = scene.__lights;
     Fog fog = scene.fog;
 
     // reset caching for this frame

@@ -215,7 +215,7 @@ class Object3D {
     }
 
     if (scene is Scene) {
-      (scene as Scene).addObject(object);
+      scene.__addObject(object);
     }
 
   }
@@ -238,7 +238,7 @@ class Object3D {
       }
 
       if (obj is Scene) {
-        (obj as Scene).removeObject(object);
+        obj.__removeObject(object);
       }
     }
   }

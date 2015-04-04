@@ -1,20 +1,24 @@
-part of three;
-
-/**
+/*
  * @author mr.doob / http://mrdoob.com/
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
+ * 
+ * based on r66
  */
+
+part of three;
 
 class Scene extends Object3D {
   Fog fog;
   Material overrideMaterial;
-  //bool matrixAutoUpdate;
-  List<Object3D> objects;
-  List<Light> lights;
-  List __objectsAdded;
-  List __objectsRemoved;
+  
+  bool autoUpdate = true;
+  
+  List<Light> __lights = [];
+  
+  List<Object3D> __objectsAdded = [];
+  List<Object3D> __objectsRemoved = [];
 
   // WebGL
   List<WebGLObject> __webglObjects;
@@ -23,68 +27,57 @@ class Scene extends Object3D {
   List __webglFlares;
 
   Scene() {
-    fog = null;
-    overrideMaterial = null;
-
     matrixAutoUpdate = false;
-
-    objects = [];
-    lights = [];
-
-    __objectsAdded = [];
-    __objectsRemoved = [];
   }
 
-  void addObject(Object3D object) {
+  void __addObject(Object3D object) {
     if (object is Light) {
-      if (lights.indexOf(object) == -1) {
-        lights.add(object);
+      if (!__lights.contains(object)) {
+        __lights.add(object);
+      }
+      
+      if (object is DirectionalLight || object is SpotLight) {
+        var target = (object as dynamic).target;
+        if (target != null && target.parent == null) {
+          add(target);
+        }
       }
     } else if (!(object is Camera || object is Bone)) {
-      if (objects.indexOf(object) == -1) {
-        objects.add(object);
-        __objectsAdded.add(object);
-
-        // check if previously removed
-        int i = __objectsRemoved.indexOf(object);
-
-        if (i != -1) {
-          __objectsRemoved.removeAt(i);
-        }
+      __objectsAdded.add(object);
+      
+      // check if previously removed
+      if (__objectsRemoved.contains(object)) {
+        __objectsRemoved.remove(object);
       }
     }
-
-    for (int c = 0; c < object.children.length; c++) {
-      addObject(object.children[c]);
-    }
+    
+    //_onObjectAddedController.add(object);
+    //object._onAddedToSceneController.add(this);
+    
+    object.children.forEach((children) => __addObject(children));
   }
-
-  void removeObject(Object3D object) {
-    //TODO: "instanceof" replaced by "is"?
+  
+  void __removeObject(Object3D object) {
     if (object is Light) {
-      int i = lights.indexOf(object);
-
-      if (i != -1) {
-        lights.removeAt(i);
+      if (__lights.contains(object)) {
+        __lights.remove(object);
       }
-    } else if (!(object is Camera)) {
-      int i = objects.indexOf(object);
 
-      if (i != -1) {
-        objects.removeAt(i);
-        __objectsRemoved.add(object);
+      if (object is DirectionalLight) {
+        object.shadowCascadeArray.forEach((o) => __removeObject(o));
+      }
+    } else if (object is! Camera) {
+      __objectsRemoved.add(object);
 
-        // check if previously added
-        var ai = __objectsAdded.indexOf(object);
-
-        if (ai != -1) {
-          __objectsAdded.removeAt(ai);
-        }
+      // check if previously added
+      if (__objectsAdded.contains(object)) {
+        __objectsAdded.remove(object);
       }
     }
-
-    for (int c = 0; c < object.children.length; c++) {
-      removeObject(object.children[c]);
-    }
-  }
+ 
+    //onObjectRemovedController.add(object);
+    //object._onRemovedFromSceneController.add(this);
+        
+    object.children.forEach((o) => __removeObject(o));
+  } 
 }

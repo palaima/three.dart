@@ -116,10 +116,10 @@ class ShadowMapPlugin {
     // preprocess lights
     //  - skip lights that are not casting shadows
     //  - create virtual lights for cascaded shadow maps
-    il = scene.lights.length;
+    il = scene.__lights.length;
     for (i = 0; i < il; i++) {
 
-      light = scene.lights[i];
+      light = scene.__lights[i];
 
       if (!light.castShadow) continue;
 
@@ -342,11 +342,11 @@ class ShadowMapPlugin {
 
           if (buffer is BufferGeometry) {
 
-            _renderer.renderBufferDirect(shadowCamera, scene.lights, fog, material, buffer, object);
+            _renderer.renderBufferDirect(shadowCamera, scene.__lights, fog, material, buffer, object);
 
           } else {
 
-            _renderer.renderBuffer(shadowCamera, scene.lights, fog, material, buffer, object);
+            _renderer.renderBuffer(shadowCamera, scene.__lights, fog, material, buffer, object);
 
           }
 
@@ -368,7 +368,7 @@ class ShadowMapPlugin {
 
           object._modelViewMatrix.multiply(shadowCamera.matrixWorldInverse);
 
-          _renderer.renderImmediateObject(shadowCamera, scene.lights, fog, _depthMaterial, object);
+          _renderer.renderImmediateObject(shadowCamera, scene.__lights, fog, _depthMaterial, object);
 
         }
 
