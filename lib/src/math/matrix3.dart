@@ -980,4 +980,18 @@ class Matrix3 {
     double z = storage[8];
     return new Vector3(x, y, z);
   }
+  
+  /*
+   * Addition from three.js r66
+   */
+  
+  Matrix3.normalMatrix(Matrix4 matrix) {
+    copyNormalMatrix(matrix);
+  }
+  
+  Matrix3 copyNormalMatrix(Matrix4 matrix) { 
+    copyInverse(matrix.getRotation());
+    transpose();
+    return this;
+  }
 }

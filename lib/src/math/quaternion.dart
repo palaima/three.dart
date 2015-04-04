@@ -29,15 +29,19 @@ class Quaternion {
   double get w => storage[3];
   set x(double x) {
     storage[0] = x;
+    _updateEuler();
   }
   set y(double y) {
     storage[1] = y;
+    _updateEuler();
   }
   set z(double z) {
     storage[2] = z;
+    _updateEuler();
   }
   set w(double w) {
     storage[3] = w;
+    _updateEuler();
   }
 
   /// Constructs a quaternion using the raw values [x], [y], [z], and [w]
@@ -157,6 +161,7 @@ class Quaternion {
     storage[1] = source.storage[1];
     storage[2] = source.storage[2];
     storage[3] = source.storage[3];
+    _updateEuler();
   }
 
   /// Copy [this] into [target].
@@ -178,7 +183,10 @@ class Quaternion {
     storage[1] = axis.storage[1] * halfSin;
     storage[2] = axis.storage[2] * halfSin;
     storage[3] = Math.cos(radians * 0.5);
+    _updateEuler();
   }
+  
+  /* Removed in favor for Quaternion.setFromEuler
 
   /// Set quaternion with rotation of [yaw], [pitch] and [roll].
   void setEuler(double yaw, double pitch, double roll) {
@@ -196,6 +204,8 @@ class Quaternion {
     storage[2] = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw;
     storage[3] = cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw;
   }
+ 
+  */
 
   /// Normalize [this].
   Quaternion normalize() {
@@ -216,6 +226,7 @@ class Quaternion {
     storage[2] = -storage[2];
     storage[1] = -storage[1];
     storage[0] = -storage[0];
+    _updateEuler();
     return this;
   }
 
@@ -226,6 +237,7 @@ class Quaternion {
     storage[2] = -storage[2] * l;
     storage[1] = -storage[1] * l;
     storage[0] = -storage[0] * l;
+    _updateEuler();
     return this;
   }
 
@@ -406,5 +418,80 @@ class Quaternion {
     double correct_norm = correct.length;
     double norm_diff = (this_norm - correct_norm).abs();
     return norm_diff;
+  }
+  
+  /*
+   * Additions from three.js r66.
+   */
+  
+  Euler _euler;
+  
+  void _updateEuler() {
+    if (_euler != null) {
+      _euler.setFromQuaternion(this, update: false);
+    }
+  }
+  
+  Quaternion.fromEuler(Euler euler, {bool update: true})
+      : storage = new Float32List(4) {
+    setFromEuler(euler, update: update);
+  }
+  
+  Quaternion setValues(double x, double y, double z, double w) {
+    storage[0] = x;
+    storage[1] = y;
+    storage[2] = z;
+    storage[3] = w;
+    _updateEuler();
+    return this;
+  }
+  
+  Quaternion setFromEuler(Euler euler, {bool update: true}) {
+    // http://www.mathworks.com/matlabcentral/fileexchange/
+    //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
+    //  content/SpinCalc.m
+
+    var c1 = Math.cos(euler._x / 2);
+    var c2 = Math.cos(euler._y / 2);
+    var c3 = Math.cos(euler._z / 2);
+    var s1 = Math.sin(euler._x / 2);
+    var s2 = Math.sin(euler._y / 2);
+    var s3 = Math.sin(euler._z / 2);
+
+    if (euler.order == 'XYZ') {
+      storage[0] = s1 * c2 * c3 + c1 * s2 * s3;
+      storage[1] = c1 * s2 * c3 - s1 * c2 * s3;
+      storage[2] = c1 * c2 * s3 + s1 * s2 * c3;
+      storage[3] = c1 * c2 * c3 - s1 * s2 * s3;
+    } else if (euler.order == 'YXZ') {
+      storage[0] = s1 * c2 * c3 + c1 * s2 * s3;
+      storage[1] = c1 * s2 * c3 - s1 * c2 * s3;
+      storage[2] = c1 * c2 * s3 - s1 * s2 * c3;
+      storage[3] = c1 * c2 * c3 + s1 * s2 * s3;
+    } else if (euler.order == 'ZXY') {
+      storage[0] = s1 * c2 * c3 - c1 * s2 * s3;
+      storage[1] = c1 * s2 * c3 + s1 * c2 * s3;
+      storage[2] = c1 * c2 * s3 + s1 * s2 * c3;
+      storage[3] = c1 * c2 * c3 - s1 * s2 * s3;
+    } else if (euler.order == 'ZYX') {
+      storage[0] = s1 * c2 * c3 - c1 * s2 * s3;
+      storage[1] = c1 * s2 * c3 + s1 * c2 * s3;
+      storage[2] = c1 * c2 * s3 - s1 * s2 * c3;
+      storage[3] = c1 * c2 * c3 + s1 * s2 * s3;
+    } else if (euler.order == 'YZX') {
+      storage[0] = s1 * c2 * c3 + c1 * s2 * s3;
+      storage[1] = c1 * s2 * c3 + s1 * c2 * s3;
+      storage[2] = c1 * c2 * s3 - s1 * s2 * c3;
+      storage[3] = c1 * c2 * c3 - s1 * s2 * s3;
+    } else if (euler.order == 'XZY') {
+      storage[0] = s1 * c2 * c3 - c1 * s2 * s3;
+      storage[1] = c1 * s2 * c3 - s1 * c2 * s3;
+      storage[2] = c1 * c2 * s3 + s1 * s2 * c3;
+      storage[3] = c1 * c2 * c3 + s1 * s2 * s3;
+    }
+
+    if (update) _updateEuler();
+
+    return this;
   }
 }

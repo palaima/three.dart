@@ -1200,4 +1200,49 @@ class Vector3 implements Vector {
       new Vector4(storage[2], storage[2], storage[2], storage[1]);
   Vector4 get pppp =>
       new Vector4(storage[2], storage[2], storage[2], storage[2]);
+  
+  /*
+   * Addition from three.js r70.
+   */
+  
+  Vector3 applyEuler(Euler euler) {
+    applyQuaternion(new Quaternion.fromEuler(euler));
+    return this;
+  }
+  
+  /// Multiplies [this] by [arg].
+  Vector3 applyMatrix3(Matrix3 arg) {
+    var v0 = storage[0];
+    var v1 = storage[1];
+    var v2 = storage[2];
+    storage[0] = arg.storage[0] * v0 + arg.storage[3] * v1 + arg.storage[6] * v2;
+    storage[1] = arg.storage[1] * v0 + arg.storage[4] * v1 + arg.storage[7] * v2;
+    storage[2] = arg.storage[2] * v0 + arg.storage[5] * v1 + arg.storage[8] * v2;
+    return this;
+  }
+  
+  /// Multiplies [this] by [arg].
+  Vector3 applyMatrix4(Matrix4 arg) {
+    var v0 = storage[0];
+    var v1 = storage[1];
+    var v2 = storage[2];
+    storage[0] = arg.storage[0] * v0 + arg.storage[4] * v1 + arg.storage[8]  * v2 + arg.storage[12];
+    storage[1] = arg.storage[1] * v0 + arg.storage[5] * v1 + arg.storage[9]  * v2 + arg.storage[13];
+    storage[2] = arg.storage[2] * v0 + arg.storage[6] * v1 + arg.storage[10] * v2 + arg.storage[14];
+    return this;
+  }
+  
+  Vector3 applyQuaternion(Quaternion q) {
+    // calculate quat * vector
+    var ix =  q.storage[3] * storage[0] + q.storage[1] * storage[2] - q.storage[2] * storage[1];
+    var iy =  q.storage[3] * storage[1] + q.storage[2] * storage[0] - q.storage[0] * storage[2];
+    var iz =  q.storage[3] * storage[2] + q.storage[0] * storage[1] - q.storage[1] * storage[0];
+    var iw = -q.storage[0] * storage[0] - q.storage[1] * storage[1] - q.storage[2] * storage[2];
+
+    // calculate result * inverse quat
+    storage[0] = ix * q.storage[3] + iw * -q.storage[0] + iy * -q.storage[2] - iz * -q.storage[1];
+    storage[1] = iy * q.storage[3] + iw * -q.storage[1] + iz * -q.storage[0] - ix * -q.storage[2];
+    storage[2] = iz * q.storage[3] + iw * -q.storage[2] + ix * -q.storage[1] - iy * -q.storage[0];
+    return this;
+  }
 }

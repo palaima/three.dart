@@ -1914,4 +1914,224 @@ class Matrix4 {
     double z = storage[10];
     return new Vector3(x, y, z);
   }
+  
+  
+  /*
+   * Addition from three.js r70.
+   */
+  
+  Matrix4 makeRotationFromEuler(Euler euler) {
+    var x = euler.x, y = euler.y, z = euler.z;
+    var a = Math.cos(x), b = Math.sin(x);
+    var c = Math.cos(y), d = Math.sin(y);
+    var e = Math.cos(z), f = Math.sin(z);
+
+    if (euler.order == 'XYZ') {
+      var ae = a * e, af = a * f, be = b * e, bf = b * f;
+
+      storage[0] = c * e;
+      storage[4] = -c * f;
+      storage[8] = d;
+
+      storage[1] = af + be * d;
+      storage[5] = ae - bf * d;
+      storage[9] = -b * c;
+
+      storage[2] = bf - ae * d;
+      storage[6] = be + af * d;
+      storage[10] = a * c;
+    } else if (euler.order == 'YXZ') {
+      var ce = c * e, cf = c * f, de = d * e, df = d * f;
+
+      storage[0] = ce + df * b;
+      storage[4] = de * b - cf;
+      storage[8] = a * d;
+
+      storage[1] = a * f;
+      storage[5] = a * e;
+      storage[9] = -b;
+
+      storage[2] = cf * b - de;
+      storage[6] = df + ce * b;
+      storage[10] = a * c;
+    } else if (euler.order == 'ZXY') {
+      var ce = c * e, cf = c * f, de = d * e, df = d * f;
+
+      storage[0] = ce - df * b;
+      storage[4] = -a * f;
+      storage[8] = de + cf * b;
+
+      storage[1] = cf + de * b;
+      storage[5] = a * e;
+      storage[9] = df - ce * b;
+
+      storage[2] = -a * d;
+      storage[6] = b;
+      storage[10] = a * c;
+    } else if (euler.order == 'ZYX') {
+      var ae = a * e, af = a * f, be = b * e, bf = b * f;
+
+      storage[0] = c * e;
+      storage[4] = be * d - af;
+      storage[8] = ae * d + bf;
+
+      storage[1] = c * f;
+      storage[5] = bf * d + ae;
+      storage[9] = af * d - be;
+
+      storage[2] = -d;
+      storage[6] = b * c;
+      storage[10] = a * c;
+    } else if (euler.order == 'YZX') {
+      var ac = a * c, ad = a * d, bc = b * c, bd = b * d;
+
+      storage[0] = c * e;
+      storage[4] = bd - ac * f;
+      storage[8] = bc * f + ad;
+
+      storage[1] = f;
+      storage[5] = a * e;
+      storage[9] = -b * e;
+
+      storage[2] = -d * e;
+      storage[6] = ad * f + bc;
+      storage[10] = ac - bd * f;
+    } else if (euler.order == 'XZY') {
+      var ac = a * c, ad = a * d, bc = b * c, bd = b * d;
+
+      storage[0] = c * e;
+      storage[4] = -f;
+      storage[8] = d * e;
+
+      storage[1] = ac * f + bd;
+      storage[5] = a * e;
+      storage[9] = ad * f - bc;
+
+      storage[2] = bc * f - ad;
+      storage[6] = b * e;
+      storage[10] = bd * f + ac;
+    }
+
+    // last column
+    storage[3] = 0.0;
+    storage[7] = 0.0;
+    storage[11] = 0.0;
+
+    // bottom row
+    storage[12] = 0.0;
+    storage[13] = 0.0;
+    storage[14] = 0.0;
+    storage[15] = 1.0;
+
+    return this;
+  }
+  
+  Matrix4 makeRotationFromQuaternion(Quaternion q) {
+    var x = q.storage[0], y = q.storage[1], z = q.storage[2], w = q.storage[3];
+    var x2 = x + x, y2 = y + y, z2 = z + z;
+    var xx = x * x2, xy = x * y2, xz = x * z2;
+    var yy = y * y2, yz = y * z2, zz = z * z2;
+    var wx = w * x2, wy = w * y2, wz = w * z2;
+
+    storage[0] = 1.0 - (yy + zz);
+    storage[4] = xy - wz;
+    storage[8] = xz + wy;
+
+    storage[1] = xy + wz;
+    storage[5] = 1.0 - (xx + zz);
+    storage[9] = yz - wx;
+
+    storage[2] = xz - wy;
+    storage[6] = yz + wx;
+    storage[10] = 1.0 - (xx + yy);
+
+    // last column
+    storage[3] = 0.0;
+    storage[7] = 0.0;
+    storage[11] = 0.0;
+
+    // bottom row
+    storage[12] = 0.0;
+    storage[13] = 0.0;
+    storage[14] = 0.0;
+    storage[15] = 1.0;
+
+    return this;
+  }
+  
+  Matrix4 lookAt(Vector3 eye, Vector3 target, Vector3 up) {
+    var z = (eye - target).normalize();
+
+    if (z.length == 0.0) z.storage[2] = 1.0;
+
+    var x = up.cross(z).normalize();
+
+    if (x.length == 0.0) {
+      z.storage[0] += 0.0001;
+      x = up.cross(z).normalize();
+    }
+
+    var y = z.cross(x);
+
+    storage[0] = x.storage[0]; storage[4] = y.storage[0]; storage[8] = z.storage[0];
+    storage[1] = x.storage[1]; storage[5] = y.storage[1]; storage[9] = z.storage[1];
+    storage[2] = x.storage[2]; storage[6] = y.storage[2]; storage[10] = z.storage[2];
+    
+    return this;
+  }
+  
+  List applyToVector3Array(List array, [int offset = 0, int length]) {
+    if (length == null) length = array.length;
+
+    for (var i = 0, j = offset; i < length; i += 3, j += 3) {
+      var v1 = new Vector3(array[j], array[j + 1], array[j + 2])
+        ..applyMatrix4(this);
+
+      array[j]     = v1.x;
+      array[j + 1] = v1.y;
+      array[j + 2] = v1.z;
+    }
+
+    return array;
+  }
+  
+  Matrix4 compose(Vector3 position, Quaternion quaternion, Vector3 scale) {
+    makeRotationFromQuaternion(quaternion);
+    this.scale(scale);
+    setTranslation(position);
+    return this;
+  }
+  
+  Matrix4 decompose(Vector3 position, Quaternion quaternion, Vector3 scale) {
+    var sx = new Vector3(storage[0], storage[1], storage[2]).length;
+    var sy = new Vector3(storage[4], storage[5], storage[6]).length;
+    var sz = new Vector3(storage[8], storage[9], storage[10]).length;
+    
+    // if determine is negative, we need to invert one scale
+    if (determinant() < 0) sx = -sx;
+  
+    position.x = storage[12];
+    position.y = storage[13];
+    position.z = storage[14];
+  
+    // scale the rotation part
+  
+    var matrix = new Matrix4.copy(this);
+  
+    var invSX = 1.0 / sx;
+    var invSY = 1.0 / sy;
+    var invSZ = 1.0 / sz;
+  
+    matrix[0] *= invSX; matrix[4] *= invSY; matrix[8] *= invSZ;
+    matrix[1] *= invSX; matrix[5] *= invSY; matrix[9] *= invSZ;
+    matrix[2] *= invSX; matrix[6] *= invSY; matrix[10] *= invSZ;
+  
+    quaternion = new Quaternion.fromRotation(matrix.getRotation());
+  
+    scale.x = sx;
+    scale.y = sy;
+    scale.z = sz;
+  
+    return this;
+  }
 }
