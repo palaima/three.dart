@@ -27,7 +27,7 @@ class PolyhedronGeometry extends Geometry {
 
     computeCentroids();
 
-    boundingSphere = new BoundingSphere(radius: radius);
+    boundingSphere = new Sphere.centerRadius(new Vector3.zero(), radius);
   }
 
   // Project vector onto sphere's surface

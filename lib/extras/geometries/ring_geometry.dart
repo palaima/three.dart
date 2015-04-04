@@ -67,6 +67,6 @@ class RingGeometry extends Geometry {
     
     computeFaceNormals();
 
-    boundingSphere = new BoundingSphere(radius: radius);
+    boundingSphere = new Sphere.centerRadius(new Vector3.zero(), radius);
   }
 }

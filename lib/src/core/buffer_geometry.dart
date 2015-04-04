@@ -110,9 +110,7 @@ class BufferGeometry implements Geometry {
 
     if (boundingBox == null) {
 
-      boundingBox = new BoundingBox(
-          min: new Vector3(double.INFINITY, double.INFINITY, double.INFINITY),
-          max: new Vector3(-double.INFINITY, -double.INFINITY, -double.INFINITY));
+      boundingBox = new Aabb3();
 
     }
 
@@ -181,7 +179,7 @@ class BufferGeometry implements Geometry {
   /// They need to be explicitly computed, otherwise they are null.
   computeBoundingSphere() {
 
-    if (boundingSphere == null) boundingSphere = new BoundingSphere(radius: 0);
+    if (boundingSphere == null) boundingSphere = new Sphere();
 
     var positions = aPosition.array;
 
