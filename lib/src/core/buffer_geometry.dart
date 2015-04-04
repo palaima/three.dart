@@ -211,7 +211,7 @@ class BufferGeometry implements Geometry {
 
   /// Computes vertex normals by averaging face normals.
   /// Face normals must be existing / computed beforehand.
-  computeVertexNormals() {
+  computeVertexNormals({bool areaWeighted: false}) {
 
     if (aPosition != null && aIndex != null) {
 

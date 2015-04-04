@@ -1,6 +1,6 @@
 part of three;
 
-/**
+/*
  * @author mr.doob / http://mrdoob.com/
  * @author kile / http://kile.stravaganza.org/
  * @author alteredq / http://alteredqualia.com/
@@ -9,117 +9,194 @@ part of three;
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
+ * 
+ * based on r70
  */
 
 /// Base class for geometries.
 /// A geometry holds all data necessary to describe a 3D model.
-// TODO - Create a IGeometry with only the necessary interface methods
-class Geometry extends Object with WebGLGeometry {
+class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry with only the necessary interface methods
+  //String uuid = ThreeMath.generateUUID(); TODO
 
-  String name;
+  /// Name for this geometry. Default is an empty string.
+  String name = '';
+  
+  String type = 'Geometry';
 
-  List<Vector3> vertices;
+  /// List of vertices.
+  /// The array of vertices holds every position of points in the model.
+  /// To signal an update in this array, [verticesNeedUpdate] needs to be set to true.
+  List<Vector3> vertices = [];
+  
+  /// List of vertex colors, matching number and order of vertices.
+  /// Used in [ParticleSystem] and [Line].
+  /// Meshes use per-face-use-of-vertex colors embedded directly in faces.
+  /// To signal an update in this array, [colorsNeedUpdate] needs to be set to true.
+  List<Color> colors = [];
 
-  List colors; // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
-  List normals = []; // one-to-one vertex normals, used in Ribbon
+  /// List of triangles.
+  /// The array of faces describe how each vertex in the model is connected with each other.
+  /// To signal an update in this array, Geometry.elementsNeedUpdate needs to be set to true.
+  List<Face3> faces = [];
 
-  List materials;
-  List<Face> faces;
+  /// List of face UV layers.
+  /// Each UV layer is an array of UVs matching the order and number of vertices in faces.
+  /// To signal an update in this array, Geometry.uvsNeedUpdate needs to be set to true.
+  List<List<List<Vector2>>> faceVertexUvs = [[]];
 
-  List faceUvs;
-  List<List> faceVertexUvs;
+  /// List of [MorphTarget].
+  List<MorphTarget> morphTargets = [];
+  
+  /// List of [MorphColor].
+  List<MorphColor> morphColors = [];
+  
+  /// List of [MorphNormal]
+  List<MorphNormal> morphNormals = [];
 
-  List<MorphTarget> morphTargets;
-  List morphColors, morphNormals;
-  List skinWeights, skinIndices;
-  List lineDistances;
+  /// List of skinning weights, matching number and order of vertices.
+  List<Vector4> skinWeights = [];
+  
+  /// List of skinning indices, matching number and order of vertices.
+  List<Vector4> skinIndices = [];
 
-  List<Vector3> __tmpVertices;
+  /// A list containing distances between vertices for Line geometries. 
+  /// This is required for LinePieces/LineDashedMaterial to render correctly. 
+  /// Line distances can also be generated with computeLineDistances.
+  List<double> lineDistances = [];
 
+  /// Bounding box.
   BoundingBox boundingBox;
+  
+  /// Bounding sphere.
   BoundingSphere boundingSphere;
 
-  bool hasTangents, _dynamic;
+  /// True if geometry has tangents. Set in Geometry.computeTangents.
+  bool hasTangents = false;
+
+  bool _dynamic = true;
+  
+  // Backwards compatibility
+  var materials = [];
+  var faceUvs = [];
+  var normals = [];
 
   // Used in JSONLoader
   var bones, animation;
-
-
-  // WebGL
-  bool verticesNeedUpdate = false,
-      colorsNeedUpdate = false,
-      elementsNeedUpdate = false,
-      uvsNeedUpdate = false,
-      normalsNeedUpdate = false,
-      tangentsNeedUpdate = false,
-      buffersNeedUpdate = false,
-      morphTargetsNeedUpdate = false,
-      lineDistancesNeedUpdate = false;
-
-  Geometry()
-      : name = '',
-
-        vertices = <Vector3>[],
-        colors = [],  // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
-
-      materials = [],
-
-        faces = [],
-
-        faceUvs = [[]],
-        faceVertexUvs = [[]],
-
-        morphTargets = [],
-        morphColors = [],
-        morphNormals = [],
-
-        skinWeights = [],
-        skinIndices = [],
-
-        lineDistances = [],
-
-        boundingBox = null,
-        boundingSphere = null,
-
-        hasTangents = false,
-
-        _dynamic = false // unless set to true the *Arrays will be deleted once sent to a buffer.
-  {
-    id = GeometryCount++;
-  }
-
-  /// Defaults to true.
-  // named isDynamic because dynamic is a reserved word in Dart
-  bool get isDynamic => _dynamic;
+  
   /// Set to true if attribute buffers will need to change in runtime (using "dirty" flags).
-  /// Unless set to true internal typed arrays corresponding to buffers will be
-  /// deleted once sent to GPU.
-  ///
-  /// Defaults to true.
-  // named isDynamic because dynamic is a reserved word in Dart
-  set isDynamic(bool value) => _dynamic = value;
+  /// Unless set to true internal typed arrays corresponding to buffers will be deleted once sent to GPU.
+  set isDynamic(bool flag) { _dynamic = flag; } // Named isDynamic because dynamic is a reserved word in Dart.
+  get isDynamic => _dynamic;
+
+  /// Set to true if the vertices array has been updated.
+  bool verticesNeedUpdate = false;
+  
+  /// Set to true if the colors array has been updated.
+  bool colorsNeedUpdate = false;
+  
+  /// Set to true if the faces array has been updated.
+  bool elementsNeedUpdate = false;
+  
+  /// Set to true if the uvs array has been updated.
+  bool uvsNeedUpdate = false;
+  
+  /// Set to true if the normals array has been updated.
+  bool normalsNeedUpdate = false;
+  
+  /// Set to true if the tangents in the faces has been updated.
+  bool tangentsNeedUpdate = false;
+  
+  bool buffersNeedUpdate = false;
+  
+  bool morphTargetsNeedUpdate = false;
+  
+  /// Set to true if the linedistances array has been updated.
+  bool lineDistancesNeedUpdate = false;
+
+  bool groupsNeedUpdate = false;
+
+  Geometry() { 
+    id = GeometryCount++; 
+  }
 
   /// Bakes matrix transform directly into vertex coordinates.
   void applyMatrix(Matrix4 matrix) {
-    Matrix4 matrixRotation = new Matrix4.identity();
-    extractRotation(matrixRotation, matrix);
+    var normalMatrix = new Matrix3.normalMatrix(matrix);
 
-    vertices.forEach((vertex) => vertex.applyProjection(matrix));
-
+    vertices.forEach((vertex) => vertex.applyMatrix4(matrix));
+    
     faces.forEach((face) {
-
-      face.normal.applyProjection(matrixRotation);
-
-      face.vertexNormals.forEach((normal) => normal.applyProjection(matrixRotation));
-
-      face.centroid.applyProjection(matrix);
+      face.normal..applyMatrix3(normalMatrix)..normalize();
+      face.vertexNormals.forEach((vertexNormal) =>
+          vertexNormal..applyMatrix3(normalMatrix)..normalize());
     });
+    
+    if (boundingBox != null) computeBoundingBox();
+    if (boundingSphere != null) computeBoundingSphere();
+  }
+  
+  Geometry fromBufferGeometry(BufferGeometry geometry) {
+    var vertices = geometry.aPosition.array;
+    var indices = geometry.aIndex != null ? geometry.aIndex.array : null;
+    var normals = geometry.aNormal != null ? geometry.aNormal.array : null;
+    var colors = geometry.aColor != null ? geometry.aColor.array : null;
+    var uvs = geometry.aUV != null ? geometry.aUV.array : null;
+
+    var tempNormals = [];
+    var tempUVs = [];
+
+    for (var i = 0, j = 0; i < vertices.length; i += 3, j += 2) {
+      this.vertices.add(new Vector3(vertices[i], vertices[i + 1], vertices[i + 2]));
+
+      if (normals != null) {
+        tempNormals.add(new Vector3(normals[i], normals[i + 1], normals[i + 2]));
+      }
+
+      if (colors != null) {
+        this.colors.add(new Color.fromArray(colors));
+      }
+
+      if (uvs != null) {
+        tempUVs.add(new Vector2(uvs[j], uvs[j + 1]));
+      }
+    }
+
+    var addFace = (a, b, c) {
+      var vertexNormals = normals != null ? [tempNormals[a].clone(), tempNormals[b].clone(), tempNormals[c].clone()] : [];
+      var vertexColors = colors != null ? [this.colors[a].clone(), this.colors[b].clone(), this.colors[c].clone()] : [];
+
+      this.faces.add(new Face3(a, b, c, vertexNormals, vertexColors));
+
+      if (uvs != null) {
+        this.faceVertexUvs[0].add([tempUVs[a].clone(), tempUVs[b].clone(), tempUVs[c].clone()]);
+      }
+    };
+    
+    if (indices != null) {
+      for (var i = 0; i < indices.length; i += 3) {
+        addFace(indices[i], indices[i + 1], indices[i + 2]);
+      }
+    } else {
+      for (var i = 0; i < vertices.length / 3; i += 3) {
+        addFace(i, i + 1, i + 2);
+      }
+    }
+
+    computeFaceNormals();
+
+    if (geometry.boundingBox != null) {
+      boundingBox = geometry.boundingBox.clone();
+    }
+
+    if (geometry.boundingSphere != null) {
+      boundingSphere = geometry.boundingSphere.clone();
+    }
+
+    return this;
   }
 
   void computeCentroids() {
-
     faces.forEach((Face face) {
-
       face.centroid.setValues(0.0, 0.0, 0.0);
 
       face.indices.forEach((idx) {
@@ -127,80 +204,78 @@ class Geometry extends Object with WebGLGeometry {
       });
 
       face.centroid /= face.size.toDouble();
-
     });
+  }
+  
+  Vector3 center() {
+    computeBoundingBox();
+
+    var offset = boundingBox.center.negate();
+
+    applyMatrix(new Matrix4.translation(offset));
+
+    return offset;
   }
 
   /// Computes face normals.
   void computeFaceNormals() {
     faces.forEach((face) {
-
       var vA = vertices[face.a],
           vB = vertices[face.b],
           vC = vertices[face.c];
 
-      Vector3 cb = vC - vB;
-      Vector3 ab = vA - vB;
+      var cb = vC - vB;
+      var ab = vA - vB;
       cb = cb.cross(ab);
 
       cb.normalize();
 
-      face.normal = cb;
-
+      face.normal.setFrom(cb);
     });
   }
 
   /// Computes vertex normals by averaging face normals.
   ///
   /// Face normals must be existing / computed beforehand.
-  void computeVertexNormals() {
+  void computeVertexNormals({bool areaWeighted: false}) {
+    var vertices = new List.generate(this.vertices.length, (_) => new Vector3.zero());
 
-    List<Vector3> vertices;
-
-
-    // create internal buffers for reuse when calling this method repeatedly
-    // (otherwise memory allocation / deallocation every frame is big resource hog)
-    if (__tmpVertices == null) {
-
-      __tmpVertices = [];
-      this.vertices.forEach((_) => __tmpVertices.add(new Vector3.zero()));
-      vertices = __tmpVertices;
+    if (areaWeighted) {
+      // vertex normals weighted by triangle areas
+      // http://www.iquilezles.org/www/articles/normals/normals.htm
 
       faces.forEach((face) {
-        face.vertexNormals = new List.generate(face.size, (_) => new Vector3.zero(), growable: false);
-      });
+        var vA = this.vertices[face.a];
+        var vB = this.vertices[face.b];
+        var vC = this.vertices[face.c];
 
+        var cb = vC - vB;
+        var ab = vA - vB;
+        cb = cb.cross(ab);
+
+        vertices[face.a].add(cb);
+        vertices[face.b].add(cb);
+        vertices[face.c].add(cb);
+      });
     } else {
-      vertices = __tmpVertices;
-
-      var vl = this.vertices.length;
-      for (var v = 0; v < vl; v++) {
-        vertices[v].setValues(0.0, 0.0, 0.0);
-      }
-
-    }
-
-    faces.forEach((Face face) {
-
-      face.indices.forEach((idx) {
-        vertices[idx].add(face.normal);
+      faces.forEach((face) {
+        vertices[face.a].add(face.normal);
+        vertices[face.b].add(face.normal);
+        vertices[face.c].add(face.normal);
       });
-
-    });
+    }
 
     vertices.forEach((v) => v.normalize());
 
-    faces.forEach((Face face) {
-
-      var i = 0;
-      face.indices.forEach((idx) {
-        face.vertexNormals[i++].setFrom(vertices[idx]);
-      });
-
+    faces.forEach((face) {
+      face.vertexNormals.addAll([vertices[face.a].clone(), vertices[face.b].clone(), vertices[face.c].clone()]);
     });
   }
 
-  // TODO - computeMorphNormals
+  // TODO implement computeMorphNormals
+  void computeMorphNormals() {
+    throw new UnimplementedError();
+  }
 
   /// Computes vertex tangents.
   ///
@@ -209,51 +284,33 @@ class Geometry extends Object with WebGLGeometry {
   void computeTangents() {
     // based on http://www.terathon.com/code/tangent.html
     // tangents go to vertices
+    var tan1 = new List.generate(this.vertices.length, (_) => new Vector3.zero()), 
+        tan2 = new List.generate(this.vertices.length, (_) => new Vector3.zero());
 
-    var f, fl, face;
-    num i, il, vertexIndex, test, w;
-    Vector3 vA, vB, vC;
-    Vector2 uvA, uvB, uvC;
+    handleTriangle(context, a, b, c, ua, ub, uc, uv) {
+      var vA = context.vertices[a];
+      var vB = context.vertices[b];
+      var vC = context.vertices[c];
 
-    List uv;
+      var uvA = uv[ua];
+      var uvB = uv[ub];
+      var uvC = uv[uc];
 
-    num x1, x2, y1, y2, z1, z2, s1, s2, t1, t2, r;
+      var x1 = vB.x - vA.x;
+      var x2 = vC.x - vA.x;
+      var y1 = vB.y - vA.y;
+      var y2 = vC.y - vA.y;
+      var z1 = vB.z - vA.z;
+      var z2 = vC.z - vA.z;
 
-    Vector3 sdir = new Vector3.zero(),
-        tdir = new Vector3.zero(),
-        tmp = new Vector3.zero(),
-        tmp2 = new Vector3.zero(),
-        n = new Vector3.zero(),
-        t;
+      var s1 = uvB.x - uvA.x;
+      var s2 = uvC.x - uvA.x;
+      var t1 = uvB.y - uvA.y;
+      var t2 = uvC.y - uvA.y;
 
-    List<Vector3> tan1 = vertices.map((_) => new Vector3.zero()).toList(),
-        tan2 = vertices.map((_) => new Vector3.zero()).toList();
-
-    var handleTriangle = (context, a, b, c, ua, ub, uc) {
-
-      vA = context.vertices[a];
-      vB = context.vertices[b];
-      vC = context.vertices[c];
-
-      uvA = uv[ua];
-      uvB = uv[ub];
-      uvC = uv[uc];
-
-      x1 = vB.x - vA.x;
-      x2 = vC.x - vA.x;
-      y1 = vB.y - vA.y;
-      y2 = vC.y - vA.y;
-      z1 = vB.z - vA.z;
-      z2 = vC.z - vA.z;
-
-      s1 = uvB.x - uvA.x;
-      s2 = uvC.x - uvA.x;
-      t1 = uvB.y - uvA.y;
-      t2 = uvC.y - uvA.y;
-
-      r = 1.0 / (s1 * t2 - s2 * t1);
-      sdir.setValues((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-      tdir.setValues((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+      var r = 1.0 / (s1 * t2 - s2 * t1);
+      var sdir = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+      var tdir = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
 
       tan1[a].add(sdir);
       tan1[b].add(sdir);
@@ -262,61 +319,53 @@ class Geometry extends Object with WebGLGeometry {
       tan2[a].add(tdir);
       tan2[b].add(tdir);
       tan2[c].add(tdir);
+    }
 
-    };
+    for (var f = 0; f < faces.length; f++) {
+      var face = faces[f];
+      var uv = faceVertexUvs[0][f]; // use UV layer 0 for tangents
 
-    fl = this.faces.length;
-
-    for (f = 0; f < fl; f++) {
-
-      face = this.faces[f];
-      Vector2 uv = faceVertexUvs[0][f]; // use UV layer 0 for tangents
-
-      // TODO - Come up with a way to handle an arbitrary number of vertexes
-      var triangles = [];
-      if (face.size == 3) {
-        triangles.add([0, 1, 2]);
-      } else if (face.size == 4) {
-        triangles.add([0, 1, 3]);
-        triangles.add([1, 2, 3]);
-      }
-
-      triangles.forEach((t) {
-        handleTriangle(this, face.indices[t[0]], face.indices[t[1]], face.indices[t[2]], t[0], t[1], t[2]);
-      });
+      handleTriangle(this, face.a, face.b, face.c, 0, 1, 2, uv);
     }
 
     faces.forEach((face) {
+      for (var i = 0; i < Math.min(face.vertexNormals.length, 3); i ++) {
+        var n = new Vector3.copy(face.vertexNormals[i]);
 
-      il = face.vertexNormals.length;
+        var vertexIndex = face.indices[i];
 
-      for (i = 0; i < il; i++) {
-
-        n.setFrom(face.vertexNormals[i]);
-
-        vertexIndex = face.indices[i];
-
-        t = tan1[vertexIndex];
+        var t = tan1[vertexIndex];
 
         // Gram-Schmidt orthogonalize
 
-        tmp.setFrom(t);
+        var tmp = new Vector3.copy(t);
         tmp.sub(n.scale(n.dot(t))).normalize();
 
         // Calculate handedness
 
-        tmp2 = face.vertexNormals[i].cross(t);
-        test = tmp2.dot(tan2[vertexIndex]);
-        w = (test < 0.0) ? -1.0 : 1.0;
+        var tmp2 = face.vertexNormals[i].cross(t);
+        var test = tmp2.dot(tan2[vertexIndex]);
+        var w = (test < 0.0) ? - 1.0 : 1.0;
 
         face.vertexTangents[i] = new Vector4(tmp.x, tmp.y, tmp.z, w);
-
       }
-
     });
 
     hasTangents = true;
+  }
+  
+  /// Compute distances between vertices for Line geometries.
+  void computeLineDistances() {
+    var d = 0.0;
 
+    for (var i = 0; i < vertices.length; i++) {
+
+      if (i > 0) {
+        d += vertices[i].distanceTo(vertices[i - 1]);
+      }
+
+      lineDistances[i] = d;
+    }
   }
 
   /// Computes bounding box of the geometry, updating Geometry.boundingBox.
@@ -340,108 +389,161 @@ class Geometry extends Object with WebGLGeometry {
 
     boundingSphere = new BoundingSphere(radius: Math.sqrt(maxRadiusSq));
   }
+  
+  /// Merge two geometries or geometry and geometry from object (using object's transform).
+  void merge(Geometry geometry, {Matrix4 matrix, int materialIndexOffset: 0}) {
+    var normalMatrix,
+        vertexOffset = this.vertices.length,
+        vertices1 = this.vertices,
+        vertices2 = geometry.vertices,
+        faces1 = this.faces,
+        faces2 = geometry.faces,
+        uvs1 = this.faceVertexUvs[0],
+        uvs2 = geometry.faceVertexUvs[0];
+
+    if (matrix != null) {
+      normalMatrix = new Matrix3.normalMatrix(matrix);
+    }
+
+    // vertices
+
+    for (var i = 0; i < vertices2.length; i++) {
+      var vertex = vertices2[i];
+
+      var vertexCopy = vertex.clone();
+
+      if (matrix != null) vertexCopy.applyProjection(matrix);
+
+      vertices1.add(vertexCopy);
+    }
+
+    // faces
+
+    for (var i = 0; i < faces2.length; i ++) {
+      var face = faces2[i],
+          faceVertexNormals = face.vertexNormals,
+          faceVertexColors = face.vertexColors;
+
+      var faceCopy = new Face3(face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset)
+        ..normal.setFrom(face.normal);
+
+      if (normalMatrix != null) {
+        faceCopy.normal..applyMatrix3(normalMatrix)..normalize();
+      }
+
+      for (var j = 0; j < faceVertexNormals.length; j++) {
+        var normal = faceVertexNormals[j].clone();
+
+        if (normalMatrix != null) {
+          normal..applyMatrix3(normalMatrix)..normalize();
+        }
+
+        faceCopy.vertexNormals.add(normal);
+      }
+
+      faceCopy.color.copy(face.color);
+
+      for (var j = 0; j < faceVertexColors.length; j++) {
+        var color = faceVertexColors[j];
+        faceCopy.vertexColors.add(color.clone());
+      }
+
+      faceCopy.materialIndex = face.materialIndex + materialIndexOffset;
+
+      faces1.add(faceCopy);
+    }
+
+    // uvs
+
+    for (var i = 0; i < uvs2.length; i ++) {
+      var uv = uvs2[i], uvCopy = [];
+
+      if (uv == null) continue;
+
+      for (var j = 0, jl = uv.length; j < jl; j ++) {
+        uvCopy.add(uv[j].clone());
+      }
+
+      uvs1.add(uvCopy);
+    }
+  }
+  
+  void mergeMesh(Mesh mesh) {
+    if (mesh.matrixAutoUpdate) mesh.updateMatrix();
+    merge(mesh.geometry, matrix: mesh.matrix);
+  }
 
   /// Checks for duplicate vertices with hashmap.
-  /// Duplicated vertices are removed
-  /// and faces' vertices are updated.
+  /// Duplicated vertices are removed and faces' vertices are updated.
   int mergeVertices() {
-    Map verticesMap = {}; // Hashmap for looking up vertice by position coordinates (and making sure they are unique)
-    List<Vector3> unique = [];
-    List<int> changes = [];
+    var verticesMap = {}; // Hashmap for looking up vertice by position coordinates (and making sure they are unique)
+    var unique = [], changes = new List(vertices.length);
 
-    String key;
-    int precisionPoints = 4; // number of decimal points, eg. 4 for epsilon of 0.0001
-    num precision = Math.pow(10, precisionPoints);
-    int i, il;
-    var abcd = 'abcd',
-        o,
-        k,
-        j,
-        jl,
-        u;
+    var precisionPoints = 4; // number of decimal points, eg. 4 for epsilon of 0.0001
+    var precision = Math.pow(10, precisionPoints);
 
-    Vector3 v;
-    il = this.vertices.length;
-
-    for (i = 0; i < il; i++) {
-      v = this.vertices[i];
-
-      key = [
-          (v.x * precision).round().toStringAsFixed(0),
-          (v.y * precision).round().toStringAsFixed(0),
-          (v.z * precision).round().toStringAsFixed(0)].join('_');
+    for (var i = 0; i < vertices.length; i++) {
+      var v = this.vertices[i];
+      var key = '${(v.x * precision).round()}_${(v.y * precision).round()}_${(v.z * precision).round()}';
 
       if (verticesMap[key] == null) {
         verticesMap[key] = i;
-        unique.add(v);
-        //TODO: pretty sure this is an acceptable change in syntax here:
-        //changes[i] = unique.length - 1;
-        changes.add(unique.length - 1);
+        unique.add(vertices[i]);
+        changes[i] = unique.length - 1;
       } else {
-        //print('Duplicate vertex found. $i could be using  ${verticesMap[key]}');
-        //print('changes len ${changes.length} add at i = $i');
-        //changes[i] = changes[verticesMap[key]];
-        changes.add(changes[verticesMap[key]]);
+        changes[i] = changes[verticesMap[key]];
       }
+    };
 
+    // if faces are completely degenerate after merging vertices, we
+    // have to remove them from the geometry.
+    var faceIndicesToRemove = [];
+
+    for (var i = 0; i < faces.length; i++) {
+      var face = faces[i];
+
+      face.a = changes[face.a];
+      face.b = changes[face.b];
+      face.c = changes[face.c];
+
+      var indices = [face.a, face.b, face.c];
+
+      // if any duplicate vertices are found in a Face3
+      // we have to remove the face as nothing can be saved
+      for (var n = 0; n < 3; n ++) {
+        if (indices[n] == indices[(n + 1) % 3]) {
+          faceIndicesToRemove.add(i);
+          break;
+        }
+      }
     }
 
+    for (var i = faceIndicesToRemove.length - 1; i >= 0; i--) {
+      var idx = faceIndicesToRemove[i];
 
-    // Start to patch face indices
-
-    faces.forEach((Face face) {
-      for (var i = 0; i < face.size; i++) {
-        face.indices[i] = changes[face.indices[i]];
-
-        /* TODO
-
-        // check dups in (a, b, c, d) and convert to -> face3
-
-        var o = [face.a, face.b, face.c, face.d];
-
-        for (var k = 3; k > 0; k --) {
-
-          if (o.indexOf(face[abcd[k]]) != k) {
-
-            // console.log('faces', face.a, face.b, face.c, face.d, 'dup at', k);
-
-            o.removeAt(k);
-
-            this.faces[i] = new THREE.Face3(o[0], o[1], o[2], face.normal, face.color, face.materialIndex);
-
-            for (j = 0, jl = this.faceVertexUvs.length; j < jl; j ++) {
-
-              u = this.faceVertexUvs[j][i];
-              if (u) u.removeAt(k);
-
-            }
-
-            this.faces[i].vertexColors = face.vertexColors;
-
-            break;
-          }
-
-        }*/
-
-      }
-    });
+      faces.removeAt(idx);
+      faceVertexUvs.forEach((uv) => uv.removeAt(idx));
+    }
 
     // Use unique set of vertices
+
     var diff = vertices.length - unique.length;
     vertices = unique;
     return diff;
   }
+  
+  // TODO implement computeMorphNormals
+  toJSON() {
+    throw new UnimplementedError();
+  }
 
+  /// Creates a new clone of the Geometry.
   Geometry clone() {
     var geometry = new Geometry();
-
-    var vertices = this.vertices;
 
     for (var i = 0; i < vertices.length; i ++) {
       geometry.vertices.add(vertices[i].clone());
     }
-
-    var faces = this.faces;
 
     for (var i = 0; i < faces.length; i++) {
       geometry.faces.add(faces[i].clone());
@@ -485,7 +587,6 @@ class Geometry extends Object with WebGLGeometry {
 }
 
 class BoundingBox {
-
   Aabb3 _aabb3;
 
   get min => _aabb3.min;
@@ -597,4 +698,22 @@ class BoundingSphere {
   num radius;
   Vector3 center;
   BoundingSphere({this.radius, this.center});
+}
+
+class MorphTarget {
+  String name;
+  List<Vector3> vertices;
+  MorphTarget({this.name, this.vertices});
+}
+
+class MorphColor {
+  String name;
+  List<Color> colors;
+  MorphColor({this.name, this.colors});
+}
+
+class MorphNormal {
+  List faceNormals;
+  List vertexNormals;
+  MorphNormal({this.faceNormals, this.vertexNormals});
 }

@@ -374,7 +374,7 @@ class JSONLoader extends Loader {
           dstColors.add(color);
         }
 
-        geometry.morphColors[i] = new MorphColors(name: json["morphColors"][i]["name"], colors: dstColors);
+        geometry.morphColors[i] = new MorphColor(name: json["morphColors"][i]["name"], colors: dstColors);
       }
     }
   }
