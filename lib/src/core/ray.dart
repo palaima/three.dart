@@ -94,7 +94,7 @@ class Ray {
       Mesh mesh = object;
       // Checking boundingSphere
       num distance = _distanceFromIntersection(origin, direction, object.matrixWorld.getTranslation());
-      Vector3 scale = Frustum.__v1.setValues(
+      Vector3 scale = new Vector3(
           object.matrixWorld.getColumn(0).length,
           object.matrixWorld.getColumn(1).length,
           object.matrixWorld.getColumn(2).length);
