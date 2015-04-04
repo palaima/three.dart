@@ -1300,6 +1300,16 @@ class Vector3 implements Vector {
   /// http://en.wikipedia.org/wiki/Taxicab_geometry
   double get lengthManhattan =>  storage[0].abs() + storage[1].abs() + storage[2].abs();
   
+  Vector3 setFromMatrixScale(Matrix4 m) {
+    var sx = new Vector3(m.storage[0], m.storage[1], m.storage[2]).length;
+    var sy = new Vector3(m.storage[4], m.storage[5], m.storage[6]).length;
+    var sz = new Vector3(m.storage[8], m.storage[9], m.storage[10]).length;
+    storage[0] = sx;
+    storage[1] = sy;
+    storage[2] = sz;
+    return this;
+  }
+  
   // TODO remove this after updating Object3D.
   Vector3 setEulerFromRotationMatrix(Matrix4 m, [String order = 'XYZ']) {
     // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)

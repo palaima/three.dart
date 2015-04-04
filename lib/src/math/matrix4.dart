@@ -2142,4 +2142,196 @@ class Matrix4 {
 
     return Math.sqrt(Math.max(scaleXSq, Math.max(scaleYSq, scaleZSq)));
   }
+  
+  Matrix4 extractRotation(Matrix4 m) {
+    var scaleX = 1.0 / new Vector3(m[0], m[1], m[2]).length;
+    var scaleY = 1.0 / new Vector3(m[4], m[5], m[6]).length;
+    var scaleZ = 1.0 / new Vector3(m[8], m[9], m[10]).length;
+
+    storage[0] = m[0] * scaleX;
+    storage[1] = m[1] * scaleX;
+    storage[2] = m[2] * scaleX;
+
+    storage[4] = m[4] * scaleY;
+    storage[5] = m[5] * scaleY;
+    storage[6] = m[6] * scaleY;
+
+    storage[8] = m[8] * scaleZ;
+    storage[9] = m[9] * scaleZ;
+    storage[10] = m[10] * scaleZ;
+
+    return this;
+  }
+  
+  // TODO Remove this when Object3D is updated.
+  Matrix4 setRotationFromEuler(Vector3 v, [String order = 'XYZ']) {
+    num x = v.x,
+        y = v.y,
+        z = v.z,
+        a = Math.cos(x),
+        b = Math.sin(x),
+        c = Math.cos(y),
+        d = Math.sin(y),
+        e = Math.cos(z),
+        f = Math.sin(z);
+
+    switch (order) {
+      case 'YXZ':
+
+        num ce = c * e,
+            cf = c * f,
+            de = d * e,
+            df = d * f;
+
+        storage[0] = ce + df * b;
+        storage[4] = de * b - cf;
+        storage[8] = a * d;
+
+        storage[1] = a * f;
+        storage[5] = a * e;
+        storage[9] = -b;
+
+        storage[2] = cf * b - de;
+        storage[6] = df + ce * b;
+        storage[10] = a * c;
+        break;
+
+      case 'ZXY':
+
+        num ce = c * e,
+            cf = c * f,
+            de = d * e,
+            df = d * f;
+
+        storage[0] = ce - df * b;
+        storage[4] = -a * f;
+        storage[8] = de + cf * b;
+
+        storage[1] = cf + de * b;
+        storage[5] = a * e;
+        storage[9] = df - ce * b;
+
+        storage[2] = -a * d;
+        storage[6] = b;
+        storage[10] = a * c;
+        break;
+
+      case 'ZYX':
+
+        num ae = a * e,
+            af = a * f,
+            be = b * e,
+            bf = b * f;
+
+        storage[0] = c * e;
+        storage[4] = be * d - af;
+        storage[8] = ae * d + bf;
+
+        storage[1] = c * f;
+        storage[5] = bf * d + ae;
+        storage[9] = af * d - be;
+
+        storage[2] = -d;
+        storage[6] = b * c;
+        storage[10] = a * c;
+        break;
+
+      case 'YZX':
+
+        num ac = a * c,
+            ad = a * d,
+            bc = b * c,
+            bd = b * d;
+
+        storage[0] = c * e;
+        storage[4] = bd - ac * f;
+        storage[8] = bc * f + ad;
+
+        storage[1] = f;
+        storage[5] = a * e;
+        storage[9] = -b * e;
+
+        storage[2] = -d * e;
+        storage[6] = ad * f + bc;
+        storage[10] = ac - bd * f;
+        break;
+
+      case 'XZY':
+
+        num ac = a * c,
+            ad = a * d,
+            bc = b * c,
+            bd = b * d;
+
+        storage[0] = c * e;
+        storage[4] = -f;
+        storage[8] = d * e;
+
+        storage[1] = ac * f + bd;
+        storage[5] = a * e;
+        storage[9] = ad * f - bc;
+
+        storage[2] = bc * f - ad;
+        storage[6] = b * e;
+        storage[10] = bd * f + ac;
+        break;
+
+      default: // 'XYZ'
+
+        num ae = a * e,
+            af = a * f,
+            be = b * e,
+            bf = b * f;
+
+        storage[0] = c * e;
+        storage[4] = -c * f;
+        storage[8] = d;
+
+        storage[1] = af + be * d;
+        storage[5] = ae - bf * d;
+        storage[9] = -b * c;
+
+        storage[2] = bf - ae * d;
+        storage[6] = be + af * d;
+        storage[10] = a * c;
+        break;
+
+    }
+
+    return this;
+  }
+
+  // TODO Remove this when Object3D is updated.
+  Matrix4 setRotationFromQuaternion(Quaternion q) {
+    num x = q.x,
+        y = q.y,
+        z = q.z,
+        w = q.w,
+        x2 = x + x,
+        y2 = y + y,
+        z2 = z + z,
+        xx = x * x2,
+        xy = x * y2,
+        xz = x * z2,
+        yy = y * y2,
+        yz = y * z2,
+        zz = z * z2,
+        wx = w * x2,
+        wy = w * y2,
+        wz = w * z2;
+
+    storage[0] = 1.0 - (yy + zz);
+    storage[4] = xy - wz;
+    storage[8] = xz + wy;
+
+    storage[1] = xy + wz;
+    storage[5] = 1.0 - (xx + zz);
+    storage[9] = yz - wx;
+
+    storage[2] = xz - wy;
+    storage[6] = yz + wx;
+    storage[10] = 1.0 - (xx + yy);
+
+    return this;
+  }
 }
