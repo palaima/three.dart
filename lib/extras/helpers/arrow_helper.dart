@@ -34,7 +34,7 @@ class ArrowHelper extends Object3D {
 
     this.matrix = new Matrix4.identity().rotate(axis.normalize(), radians);
 
-    this.rotation = calcEulerFromRotationMatrix(this.matrix, this.eulerOrder);
+    this.rotation.setEulerFromRotationMatrix(this.matrix, this.eulerOrder);
   }
 
   Vector3 setLength(double length) => scale.setValues(length, length, length);

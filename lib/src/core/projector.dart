@@ -585,8 +585,8 @@ class Projector {
         return false;
       } else {
         // Update the s1 and s2 vertices to match the clipped line segment.
-        s1 = lerp4(s1, s2, alpha1);
-        s2 = lerp4(s2, s1, 1.0 - alpha2);
+        Vector4.mix(s1, s2, alpha1, s1);
+        Vector4.mix(s2, s1, 1.0 - alpha2, s2);
 
         return true;
       }

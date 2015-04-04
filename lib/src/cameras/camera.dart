@@ -39,7 +39,7 @@ class Camera extends Object3D {
     makeLookAt(matrix, position, vector, up);
 
     if (rotationAutoUpdate) {
-      rotation = calcEulerFromRotationMatrix(matrix, eulerOrder);
+      rotation.setEulerFromRotationMatrix(matrix, eulerOrder);
     }
   }
 }

@@ -157,7 +157,7 @@ class Object3D {
     this.scale = getScaleFromMatrix(this.matrix);
 
     Matrix4 mat = extractRotation(new Matrix4.identity(), this.matrix);
-    this.rotation = calcEulerFromRotationMatrix(mat, this.eulerOrder);
+    this.rotation.setEulerFromRotationMatrix(mat, this.eulerOrder);
 
     this.position = this.matrix.getTranslation();
   }
@@ -187,7 +187,7 @@ class Object3D {
       if (useQuaternion) {
         quaternion = new Quaternion.fromRotation(matrix.getRotation());
       } else {
-        rotation = calcEulerFromRotationMatrix(matrix, eulerOrder);
+        rotation.setEulerFromRotationMatrix(matrix, eulerOrder);
       }
     }
   }
