@@ -514,4 +514,40 @@ class Vector2 implements Vector {
       new Vector4(storage[1], storage[1], storage[1], storage[0]);
   Vector4 get tttt =>
       new Vector4(storage[1], storage[1], storage[1], storage[1]);
+  
+  /*
+   * Additions from three.js
+   */
+  
+  Vector2 clamp(Vector2 min, Vector2 max) {
+    if (storage[0] < min.storage[0]) { 
+      storage[0] = min.storage[0]; 
+    } else if (storage[0] > max.storage[0]) { 
+      storage[0] = max.storage[0]; 
+    }
+    if (storage[1] < min.storage[1]) { 
+      storage[1] = min.storage[1]; 
+    } else if (storage[1] > max.storage[1]) { 
+      storage[1] = max.storage[1];
+    }
+    return this;
+  }
+  
+  Vector2 floor() {
+    storage[0] = storage[0].floor().toDouble();
+    storage[1] = storage[1].floor().toDouble();
+    return this;
+  }
+  
+  Vector2 ceil() {
+    storage[0] = storage[0].ceil().toDouble();
+    storage[1] = storage[1].ceil().toDouble();
+    return this;
+  }
+  
+  Vector2 roundToZero() {
+    storage[0] = storage[0] < 0.0 ? storage[0].ceil().toDouble() : storage[0].floor().toDouble();
+    storage[1] = storage[1] < 0.0 ? storage[1].ceil().toDouble() : storage[1].floor().toDouble();
+    return this;
+  }
 }

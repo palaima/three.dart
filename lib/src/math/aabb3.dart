@@ -231,8 +231,7 @@ class Aabb3 {
   Aabb3.fromPoints(List<Vector3> points)
       : _min = new Vector3.zero(),
         _max = new Vector3.zero() {
-    makeEmpty();
-    points.forEach((point) => hullPoint(point));
+    setFromPoints(points);
   }
   
   factory Aabb3.fromCenterAndSize(Vector3 center, Vector3 size) {
@@ -270,6 +269,12 @@ class Aabb3 {
   
   Vector3 get size => _max - _min;
   
+  Aabb3 setFromPoints(List<Vector3> points) {
+    makeEmpty();
+    points.forEach((point) => hullPoint(point));
+    return this;
+  }
+  
   Aabb3 makeEmpty() {
     _min.splat(double.INFINITY);
     _max.splat(-double.INFINITY);
@@ -283,7 +288,29 @@ class Aabb3 {
                   (point.y - _min.y) / (_max.y - _min.y),
                   (point.z - _min.z) / (_max.z - _min.z));
   
-  Vector3 clampPoint(Vector3 point) => point..clamp(_min, _max);
+  Vector3 clampPoint(Vector3 point) => new Vector3.copy(point)..clamp(_min, _max);
+  
+  Aabb3 union(Aabb3 box) {
+    Vector3.min(_min, box._min, _min);
+    Vector3.max(_max, box._max, _max);
+    return this;
+  }
+  
+  Aabb3 applyMatrix4(Matrix4 matrix) {
+    // NOTE: I am using a binary pattern to specify all 2^3 combinations below
+    makeEmpty();
+    setFromPoints([
+      new Vector3(_min.x, _min.y, _min.z)..applyMatrix4(matrix), // 000
+      new Vector3(_min.x, _min.y, _max.z)..applyMatrix4(matrix), // 001
+      new Vector3(_min.x, _max.y, _min.z)..applyMatrix4(matrix), // 010
+      new Vector3(_min.x, _max.y, _max.z)..applyMatrix4(matrix), // 011
+      new Vector3(_max.x, _min.y, _min.z)..applyMatrix4(matrix), // 100
+      new Vector3(_max.x, _min.y, _max.z)..applyMatrix4(matrix), // 101
+      new Vector3(_max.x, _max.y, _min.z)..applyMatrix4(matrix), // 110
+      new Vector3(_max.x, _max.y, _max.z)..applyMatrix4(matrix)  // 111
+    ]);
+    return this;
+  }
   
   Aabb3 clone() => new Aabb3.minMax(_min, _max);
 }

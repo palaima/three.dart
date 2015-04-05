@@ -34,8 +34,8 @@ class Aabb2 {
   }
 
   Aabb2()
-      : _min = new Vector2.zero(),
-        _max = new Vector2.zero() {}
+      : _min = new Vector2(double.INFINITY, double.INFINITY),
+        _max = new Vector2(-double.INFINITY, -double.INFINITY) {}
 
   Aabb2.copy(Aabb2 other)
       : _min = new Vector2.copy(other._min),
@@ -156,4 +156,52 @@ class Aabb2 {
         max.x >= other.x &&
         max.y >= other.y;
   }
+  
+  /*
+   * Additions from three.js
+   */
+  
+  Aabb2.fromPoints(List<Vector2> points)
+      : _min = new Vector2.zero(),
+        _max = new Vector2.zero() {
+    setFromPoints(points);
+  }
+  
+  bool get isEmpty => _max.x < _min.x || _max.y < _min.y;
+  
+  Vector2 get size => _max - _min;
+
+  Aabb2 setFromPoints(List<Vector2> points) {
+    makeEmpty();
+    points.forEach((point) => hullPoint(point));
+    return this;
+  }
+  
+  Aabb2 makeEmpty() {
+    _min.splat(double.INFINITY);
+    _max.splat(-double.INFINITY);
+    return this;
+  }
+  
+  // This can potentially have a divide by zero if the box
+  // has a size dimension of 0.
+  Vector2 getParameter(Vector3 point) => 
+      new Vector2((point.x - _min.x) / (_max.x - _min.x),
+                  (point.y - _min.y) / (_max.y - _min.y));
+  
+  Vector2 clampPoint(Vector2 point) => new Vector2.copy(point)..clamp(_min, _max);
+  
+  Aabb2 expandByScalar(double scalar) {
+    _min.addScaled(_min, -scalar);
+    _max.addScaled(_min, scalar);
+    return this;
+  }
+  
+  Aabb2 union(Aabb2 box) {
+    Vector2.min(_min, box._min, _min);
+    Vector2.max(_max, box._max, _max);
+    return this;
+  }
+  
+  Aabb2 clone() => new Aabb2.minMax(_min, _max);
 }

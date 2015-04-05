@@ -1310,6 +1310,16 @@ class Vector3 implements Vector {
     return this;
   }
   
+  Vector3 project(Camera camera) {
+    applyProjection(camera.projectionMatrix * camera.matrixWorld.clone().invert());
+    return this;
+  }
+
+  Vector3 unproject(Camera camera) {
+    applyProjection(camera.matrixWorld *  camera.projectionMatrix.clone().invert());
+    return this;
+  }
+  
   // TODO remove this after updating Object3D.
   Vector3 setEulerFromRotationMatrix(Matrix4 m, [String order = 'XYZ']) {
     // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)

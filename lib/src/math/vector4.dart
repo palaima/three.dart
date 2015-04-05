@@ -3099,4 +3099,22 @@ class Vector4 implements Vector {
       new Vector4(storage[3], storage[3], storage[3], storage[2]);
   Vector4 get qqqq =>
       new Vector4(storage[3], storage[3], storage[3], storage[3]);
+  
+  /*
+   * Additions from three.js
+   */
+  
+  double get lengthManhattan => storage[0].abs() +storage[1].abs() + storage[2].abs() + storage[3].abs();
+  
+  Vector4 applyMatrix4(Matrix4 m) {
+    var v1 = storage[0];
+    var v2 = storage[1];
+    var v3 = storage[2];
+    var v4 = storage[3];
+    storage[0] = m.storage[0] * v1 + m.storage[4] * v2 + m.storage[8] * v3 + m.storage[12] * v4;
+    storage[1] = m.storage[1] * v1 + m.storage[5] * v2 + m.storage[9] * v3 + m.storage[13] * v4;
+    storage[2] = m.storage[2] * v1 + m.storage[6] * v2 + m.storage[10] * v3 + m.storage[14] * v4;
+    storage[3] = m.storage[3] * v1 + m.storage[7] * v2 + m.storage[11] * v3 + m.storage[15] * v4;
+    return this;
+  }
 }
