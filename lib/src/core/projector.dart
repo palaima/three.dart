@@ -58,23 +58,7 @@ class Projector {
 
         _clippedVertex1PositionScreen = new Vector4(0.0, 0.0, 0.0, 1.0),
         _clippedVertex2PositionScreen = new Vector4(0.0, 0.0, 0.0, 1.0);
-
-  Vector3 projectVector(Vector3 vector, Camera camera) {
-    camera.matrixWorldInverse.copyInverse(camera.matrixWorld);
-
-    _viewProjectionMatrix = camera.projectionMatrix * camera.matrixWorldInverse;
-
-    return vector.applyProjection(_viewProjectionMatrix);
-  }
-
-  Vector3 unprojectVector(Vector3 vector, Camera camera) {
-    camera.projectionMatrixInverse.copyInverse(camera.projectionMatrix);
-
-    _viewProjectionMatrix = camera.matrixWorld * camera.projectionMatrixInverse;
-
-    return vector.applyProjection(_viewProjectionMatrix);
-  }
-
+  
   /**
    * Translates a 2D point from NDC to a THREE.Ray
    * that can be used for picking.
@@ -88,8 +72,8 @@ class Projector {
     vector.z = -1.0;
     end = new Vector3(vector.x, vector.y, 1.0);
 
-    unprojectVector(vector, camera);
-    unprojectVector(end, camera);
+    vector.unproject(camera);
+    end.unproject(camera);
 
     // find direction from vector to end
     end.sub(vector).normalize();

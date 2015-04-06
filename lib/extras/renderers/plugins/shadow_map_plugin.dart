@@ -493,7 +493,7 @@ class ShadowMapPlugin {
       var p = pointsWorld[i];
 
       p.copy(pointsFrustum[i]);
-      __projector.unprojectVector(p, camera);
+      p.unproject(camera);
 
       shadowCamera.matrixWorldInverse.multiplyVector3(p);
 

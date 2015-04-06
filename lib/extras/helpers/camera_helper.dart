@@ -108,7 +108,7 @@ class CameraHelper extends Line {
   void setPoint(String point, double x, double y, double z) {
 
     __v.setValues(x, y, z);
-    __projector.unprojectVector(__v, __c);
+    __v.unproject(__c);
 
     var points = pointMap[point];
 

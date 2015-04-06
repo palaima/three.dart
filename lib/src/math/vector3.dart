@@ -1311,12 +1311,14 @@ class Vector3 implements Vector {
   }
   
   Vector3 project(Camera camera) {
-    applyProjection(camera.projectionMatrix * camera.matrixWorld.clone().invert());
+    var matrixWorldInverse = new Matrix4.identity()..copyInverse(camera.matrixWorld);
+    applyProjection(camera.projectionMatrix * matrixWorldInverse);
     return this;
   }
 
   Vector3 unproject(Camera camera) {
-    applyProjection(camera.matrixWorld *  camera.projectionMatrix.clone().invert());
+    var projectionMatrixInverse = new Matrix4.identity()..copyInverse(camera.projectionMatrix);
+    applyProjection(camera.matrixWorld * projectionMatrixInverse);
     return this;
   }
   
