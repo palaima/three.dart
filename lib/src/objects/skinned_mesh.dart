@@ -154,7 +154,7 @@ class SkinnedMesh extends Mesh {
       if (child is Bone) {
         child.update(identityMatrix, false);
       } else {
-        child.updateMatrixWorld(true);
+        child.updateMatrixWorld(force: true);
       }
 
     });
