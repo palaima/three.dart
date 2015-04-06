@@ -36,6 +36,14 @@ class Euler {
     }
   }
   
+  Euler.fromQuaternion(Quaternion q, {String order, bool update: true}) {
+    setFromQuaternion(q, order: order, update: update);
+  }
+  
+  Euler.fromRotationMatrix(Matrix4 matrix, {String order}) {
+    setFromRotationMatrix(matrix, order: order);
+  }
+  
   double get x => _x;
   set x(double x) { 
     _x = x;
