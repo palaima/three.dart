@@ -31,10 +31,10 @@ class Gyroscope extends Object3D {
 
         matrixWorld = parent.matrixWorld * matrix;
 
-        decompose(matrixWorld, translationWorld, rotationWorld, scaleWorld);
-        decompose(matrix, translationObject, rotationObject, scaleObject);
+        matrixWorld.decompose(translationWorld, rotationWorld, scaleWorld);
+        matrix.decompose(translationObject, rotationObject, scaleObject);
 
-        compose(matrixWorld, translationWorld, rotationObject, scaleWorld);
+        matrixWorld.compose(translationWorld, rotationObject, scaleWorld);
 
 
       } else {
