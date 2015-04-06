@@ -1,42 +1,71 @@
+/*
+ * @author WestLangley / http://github.com/WestLangley
+ * @author zz85 / http://github.com/zz85
+ * @author bhouston / http://exocortex.com
+ *  
+ *  based on r64
+ */
+
 part of three;
 
+/// Creates an arrow for visualizing directions
 class ArrowHelper extends Object3D {
-
+  Vector3 position;
+  
   Line line;
   Mesh cone;
+  
+  ArrowHelper(Vector3 direction, Vector3 origin, [double length = 1.0, int hex = 0xffff00, 
+              double headLength,  double headWidth]) {
+    if (headLength == null) headLength = 0.2 * length;
+    if (headWidth == null) headWidth = 0.2 * headLength;
+    
+    position = origin;
+    
+    var lineGeometry = new Geometry()
+      ..vertices.addAll([new Vector3.zero(), new Vector3(0.0, 1.0, 0.0)]);
 
-  ArrowHelper(Vector3 dir, [Vector3 origin = null, double length = 20.0, int hex = 0xffff00]) : super() {
+    line = new Line(lineGeometry, new LineBasicMaterial(color: hex))
+        ..matrixAutoUpdate = false;
+    add(line);
 
-    var lineGeometry = new Geometry();
-    lineGeometry.vertices.add(new Vector3.zero());
-    lineGeometry.vertices.add(new Vector3(0.0, 1.0, 0.0));
+    var coneGeometry = new CylinderGeometry(0.0, 0.5, 1.0, 5, 1)
+        ..applyMatrix(new Matrix4.translation(new Vector3(0.0, -0.5, 0.0)));
 
-    this.line = new Line(lineGeometry, new LineBasicMaterial(color: hex));
-    this.add(this.line);
+    cone = new Mesh(coneGeometry, new MeshBasicMaterial(color: hex))
+      ..matrixAutoUpdate = false;
+    add(cone);
 
-    var coneGeometry = new CylinderGeometry(0.0, 0.05, 0.25, 5, 1);
-
-    this.cone = new Mesh(coneGeometry, new MeshBasicMaterial(color: hex));
-    this.cone.position.setValues(0.0, 1.0, 0.0);
-    this.add(this.cone);
-
-    if (origin != null) this.position = origin;
-
-    this.setDirection(dir);
-    this.setLength(length);
+    setDirection(direction);
+    setLength(length, headLength, headWidth );
   }
-
-  setDirection(Vector3 dir) {
-
-    var axis = new Vector3(0.0, 1.0, 0.0).cross(dir);
-
-    var radians = Math.acos(new Vector3(0.0, 1.0, 0.0).dot(dir.clone().normalize()));
-
-    this.matrix = new Matrix4.identity().rotate(axis.normalize(), radians);
-
-    this.rotation.setEulerFromRotationMatrix(this.matrix, this.eulerOrder);
+  
+  void setDirection(Vector3 direction) {
+    if (direction.y > 0.99999) {
+      quaternion = new Quaternion(0.0, 0.0, 0.0, 1.0);
+    } else if (direction.y < -0.99999) {
+      quaternion = new Quaternion(1.0, 0.0, 0.0, 0.0);
+    } else {
+      var axis = new Vector3(direction.z, 0.0, -direction.x).normalize();
+      var radians = Math.acos(direction.y);
+      quaternion.setAxisAngle(axis, radians);
+    }
   }
+    
+  void setLength(double length, [double headLength, double headWidth]) {
+    if (headLength == null) headLength = 0.2 * length;
+    if (headWidth == null) headWidth = 0.2 * headLength;
 
-  Vector3 setLength(double length) => scale.setValues(length, length, length);
-
+    line.scale.setValues(1.0, length, 1.0);
+    line.updateMatrix();
+    
+    cone.scale.setValues(headWidth, headLength, headWidth);
+    cone.position.y = length;
+    cone.updateMatrix();  
+  }
+  
+  void setColor(int hex) {
+    line.material.color.setHex(hex);
+    cone.material.color.setHex(hex);
+  }
 }

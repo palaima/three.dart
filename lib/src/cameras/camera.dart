@@ -1,45 +1,36 @@
-part of three;
-
-/**
+/*
  * @author mr.doob / http://mrdoob.com/
  * @author mikael emtinger / http://gomo.se
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
+ * 
+ * based on r66
  */
 
-/// Abstract base class for cameras.
-///
-/// This class should always be inherited when you build a new camera.
-class Camera extends Object3D {
-  /// This is the inverse of matrixWorld. MatrixWorld contains the Matrix which has the world transform of the Camera.
-  Matrix4 matrixWorldInverse;
-  /// This is the matrix which contains the projection.
-  Matrix4 projectionMatrix;
-  Matrix4 projectionMatrixInverse;
+part of three;
 
+class Camera extends Object3D {
+  Matrix4 matrixWorldInverse = new Matrix4.identity();
+  Matrix4 projectionMatrix = new Matrix4.identity();
+  
   double near;
   double far;
-
-  // WebGL
-  Float32List _viewMatrixArray = new Float32List(16);
-  Float32List _projectionMatrixArray = new Float32List(16);
-
-  Camera(this.near, this.far)
-      : matrixWorldInverse = new Matrix4.identity(),
-        projectionMatrix = new Matrix4.identity(),
-        projectionMatrixInverse = new Matrix4.identity(),
-        super();
-
-  /// This makes the camera look at the vector position in the global space as
-  /// long as the parent of this camera is the scene or at position (0,0,0).
+  
+  Camera(this.near, this.far) : super();
+  
   void lookAt(Vector3 vector) {
-    // TODO: Add hierarchy support.
-
-    matrix.lookAt(position, vector, up);
-
-    if (rotationAutoUpdate) {
-      rotation.setEulerFromRotationMatrix(matrix, eulerOrder);
-    }
+    quaternion = new Quaternion.fromRotation(new Matrix4.identity().lookAt(position, vector, up).getRotation());
+  }
+  
+  Camera clone([Camera camera, bool recursive = true]) {
+    if (camera == null) camera = new Camera(near, far);
+    
+    super.clone(camera, recursive);
+    
+    camera.matrixWorldInverse.setFrom(matrixWorldInverse);
+    camera.projectionMatrix.setFrom(projectionMatrix);
+    
+    return camera;
   }
 }
