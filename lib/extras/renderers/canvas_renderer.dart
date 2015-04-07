@@ -104,11 +104,11 @@ class CanvasRenderer implements Renderer {
     _v5 = new RenderableVertex();
     _v6 = new RenderableVertex();
 
-    _color = new Color();
-    _color1 = new Color();
-    _color2 = new Color();
-    _color3 = new Color();
-    _color4 = new Color();
+    _color = new Color.white();
+    _color1 = new Color.white();
+    _color2 = new Color.white();
+    _color3 = new Color.white();
+    _color4 = new Color.white();
 
     _patterns = [];
     _imagedatas = [];
@@ -118,9 +118,9 @@ class CanvasRenderer implements Renderer {
     _bboxRect = new Rectangle();
 
     _enableLighting = false;
-    _ambientLight = new Color();
-    _directionalLights = new Color();
-    _pointLights = new Color();
+    _ambientLight = new Color.white();
+    _directionalLights = new Color.white();
+    _pointLights = new Color.white();
 
     _vector3 = new Vector3.zero(); // Needed for PointLight
 
@@ -186,7 +186,7 @@ class CanvasRenderer implements Renderer {
   }
 
   void setClearColor(Color color, num opacity) {
-    _clearColor.copy(color);
+    _clearColor.setFrom(color);
     _clearOpacity = opacity;
 
     _clearRect.setValues(-_canvasWidthHalf, -_canvasHeightHalf, _canvasWidthHalf, _canvasHeightHalf);
@@ -361,9 +361,9 @@ class CanvasRenderer implements Renderer {
     Light light;
     Color lightColor;
 
-    _ambientLight.setRGB(0, 0, 0);
-    _directionalLights.setRGB(0, 0, 0);
-    _pointLights.setRGB(0, 0, 0);
+    _ambientLight.setRGB(0.0, 0.0, 0.0);
+    _directionalLights.setRGB(0.0, 0.0, 0.0);
+    _pointLights.setRGB(0.0, 0.0, 0.0);
 
     ll = lights.length;
     for (l = 0; l < ll; l++) {
@@ -507,8 +507,8 @@ class CanvasRenderer implements Renderer {
         return;
       }
 
-      setStrokeStyle(pcMaterial.color.getContextStyle());
-      setFillStyle(pcMaterial.color.getContextStyle());
+      setStrokeStyle(pcMaterial.color.getStyle());
+      setFillStyle(pcMaterial.color.getStyle());
 
       _context.save();
       _context.translate(v1.x, v1.y);
@@ -536,7 +536,7 @@ class CanvasRenderer implements Renderer {
       setLineWidth(lbMaterial.linewidth);
       setLineCap(lbMaterial.linecap);
       setLineJoin(lbMaterial.linejoin);
-      setStrokeStyle(lbMaterial.color.getContextStyle());
+      setStrokeStyle(lbMaterial.color.getStyle());
 
       _context.stroke();
       _bboxRect.inflate(lbMaterial.linewidth * 2);
@@ -664,17 +664,17 @@ class CanvasRenderer implements Renderer {
           calculateLight(_lights, element.v2.positionWorld, element.vertexNormalsWorld[1], _color2);
           calculateLight(_lights, element.v3.positionWorld, element.vertexNormalsWorld[2], _color3);
 
-          _color1.r = Math.max(0, Math.min(mlMaterial.color.r * _color1.r, 1));
-          _color1.g = Math.max(0, Math.min(mlMaterial.color.g * _color1.g, 1));
-          _color1.b = Math.max(0, Math.min(mlMaterial.color.b * _color1.b, 1));
+          _color1.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color1.r, 1.0));
+          _color1.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color1.g, 1.0));
+          _color1.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color1.b, 1.0));
 
-          _color2.r = Math.max(0, Math.min(mlMaterial.color.r * _color2.r, 1));
-          _color2.g = Math.max(0, Math.min(mlMaterial.color.g * _color2.g, 1));
-          _color2.b = Math.max(0, Math.min(mlMaterial.color.b * _color2.b, 1));
+          _color2.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color2.r, 1.0));
+          _color2.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color2.g, 1.0));
+          _color2.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color2.b, 1.0));
 
-          _color3.r = Math.max(0, Math.min(mlMaterial.color.r * _color3.r, 1));
-          _color3.g = Math.max(0, Math.min(mlMaterial.color.g * _color3.g, 1));
-          _color3.b = Math.max(0, Math.min(mlMaterial.color.b * _color3.b, 1));
+          _color3.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color3.r, 1.0));
+          _color3.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color3.g, 1.0));
+          _color3.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color3.b, 1.0));
 
           _color4.r = (_color2.r + _color3.r) * 0.5;
           _color4.g = (_color2.g + _color3.g) * 0.5;
@@ -690,9 +690,9 @@ class CanvasRenderer implements Renderer {
 
           calculateLight(_lights, element.centroidWorld, element.normalWorld, _color);
 
-          _color.r = Math.max(0, Math.min(mlMaterial.color.r * _color.r, 1));
-          _color.g = Math.max(0, Math.min(mlMaterial.color.g * _color.g, 1));
-          _color.b = Math.max(0, Math.min(mlMaterial.color.b * _color.b, 1));
+          _color.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color.r, 1.0));
+          _color.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color.g, 1.0));
+          _color.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color.b, 1.0));
 
           if (mlMaterial.wireframe) {
             strokePath(
@@ -810,21 +810,21 @@ class CanvasRenderer implements Renderer {
           calculateLight(_lights, element.v4.positionWorld, element.vertexNormalsWorld[3], _color3);
           calculateLight(_lights, element.v3.positionWorld, element.vertexNormalsWorld[2], _color4);
 
-          _color1.r = Math.max(0, Math.min(mlMaterial.color.r * _color1.r, 1));
-          _color1.g = Math.max(0, Math.min(mlMaterial.color.g * _color1.g, 1));
-          _color1.b = Math.max(0, Math.min(mlMaterial.color.b * _color1.b, 1));
+          _color1.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color1.r, 1.0));
+          _color1.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color1.g, 1.0));
+          _color1.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color1.b, 1.0));
 
-          _color2.r = Math.max(0, Math.min(mlMaterial.color.r * _color2.r, 1));
-          _color2.g = Math.max(0, Math.min(mlMaterial.color.g * _color2.g, 1));
-          _color2.b = Math.max(0, Math.min(mlMaterial.color.b * _color2.b, 1));
+          _color2.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color2.r, 1.0));
+          _color2.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color2.g, 1.0));
+          _color2.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color2.b, 1.0));
 
-          _color3.r = Math.max(0, Math.min(mlMaterial.color.r * _color3.r, 1));
-          _color3.g = Math.max(0, Math.min(mlMaterial.color.g * _color3.g, 1));
-          _color3.b = Math.max(0, Math.min(mlMaterial.color.b * _color3.b, 1));
+          _color3.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color3.r, 1.0));
+          _color3.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color3.g, 1.0));
+          _color3.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color3.b, 1.0));
 
-          _color4.r = Math.max(0, Math.min(mlMaterial.color.r * _color4.r, 1));
-          _color4.g = Math.max(0, Math.min(mlMaterial.color.g * _color4.g, 1));
-          _color4.b = Math.max(0, Math.min(mlMaterial.color.b * _color4.b, 1));
+          _color4.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color4.r, 1.0));
+          _color4.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color4.g, 1.0));
+          _color4.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color4.b, 1.0));
 
           _image = getGradientTexture(_color1, _color2, _color3, _color4);
 
@@ -843,9 +843,9 @@ class CanvasRenderer implements Renderer {
 
           calculateLight(_lights, element.centroidWorld, element.normalWorld, _color);
 
-          _color.r = Math.max(0, Math.min(mlMaterial.color.r * _color.r, 1));
-          _color.g = Math.max(0, Math.min(mlMaterial.color.g * _color.g, 1));
-          _color.b = Math.max(0, Math.min(mlMaterial.color.b * _color.b, 1));
+          _color.r = Math.max(0.0, Math.min(mlMaterial.color.r * _color.r, 1.0));
+          _color.g = Math.max(0.0, Math.min(mlMaterial.color.g * _color.g, 1.0));
+          _color.b = Math.max(0.0, Math.min(mlMaterial.color.b * _color.b, 1.0));
 
           drawQuad(_v1x, _v1y, _v2x, _v2y, _v3x, _v3y, _v4x, _v4y);
 
@@ -934,7 +934,7 @@ class CanvasRenderer implements Renderer {
     setLineWidth(linewidth);
     setLineCap(linecap);
     setLineJoin(linejoin);
-    setStrokeStyle(color.getContextStyle());
+    setStrokeStyle(color.getStyle());
 
     _context.stroke();
 
@@ -942,7 +942,7 @@ class CanvasRenderer implements Renderer {
   }
 
   void fillPath(Color color) {
-    setFillStyle(color.getContextStyle());
+    setFillStyle(color.getStyle());
     _context.fill();
   }
 

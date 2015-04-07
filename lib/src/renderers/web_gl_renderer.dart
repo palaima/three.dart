@@ -457,7 +457,7 @@ class WebGLRenderer implements Renderer {
   /// Sets the clear color and opacity.
   setClearColor(Color color, num alpha) {
 
-    _clearColor.copy(color);
+    _clearColor.setFrom(color);
     _clearAlpha = alpha;
 
     _gl.clearColor(_clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha);

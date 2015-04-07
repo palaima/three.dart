@@ -153,7 +153,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
       }
 
       if (colors != null) {
-        this.colors.add(new Color.fromArray(colors));
+        this.colors.add(new Color.fromList(colors));
       }
 
       if (uvs != null) {

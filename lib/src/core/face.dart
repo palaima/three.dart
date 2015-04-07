@@ -15,7 +15,7 @@ abstract class Face {
     normal = normalOrVertexNormals is Vector3 ? normalOrVertexNormals : new Vector3.zero();
     vertexNormals = normalOrVertexNormals is List ? normalOrVertexNormals : [];
 
-    color = colorOrVertexColors is Color ? colorOrVertexColors : new Color();
+    color = colorOrVertexColors is Color ? colorOrVertexColors : new Color.white();
     vertexColors = colorOrVertexColors is List ? colorOrVertexColors : [];
 
     vertexTangents = [];
@@ -28,7 +28,7 @@ abstract class Face {
   /// Copies all the values from `other` into this Face.
   Face setFrom(Face other) {
     normal.setFrom(other.normal);
-    color.copy(other.color);
+    color.setFrom(other.color);
     centroid.setFrom(other.centroid);
 
     materialIndex = other.materialIndex;

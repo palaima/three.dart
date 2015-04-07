@@ -218,17 +218,17 @@ class MaterialCreator {
         // Ns is material specular exponent
         case 'kd':
           // Diffuse color (color under white light) using RGB values
-          params['diffuse'] = new Color.fromArray(value);
+          params['diffuse'] = new Color.fromList(value);
           break;
 
         case 'ka':
           // Ambient color (color under shadow) using RGB values
-          params['ambient'] = new Color.fromArray(value);
+          params['ambient'] = new Color.fromList(value);
           break;
 
         case 'ks':
           // Specular color (color when light is reflected from shiny surface) using RGB values
-          params['specular'] = new Color.fromArray(value);
+          params['specular'] = new Color.fromList(value);
           break;
 
         case 'map_kd':

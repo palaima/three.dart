@@ -13,7 +13,7 @@ class RenderPass extends Pass {
   Material overrideMaterial;
   Color clearColor;
   double clearAlpha;
-  Color oldClearColor = new Color();
+  Color oldClearColor = new Color.white();
   double oldClearAlpha = 1.0;
   bool enabled = true;
   bool clear = true;
@@ -26,7 +26,7 @@ class RenderPass extends Pass {
 
     scene.overrideMaterial = overrideMaterial;
     if (clearColor != null) {
-      oldClearColor.copy(renderer.getClearColor());
+      oldClearColor.setFrom(renderer.getClearColor());
       oldClearAlpha = renderer.getClearAlpha();
       renderer.setClearColor(clearColor, clearAlpha);
     }

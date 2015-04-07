@@ -36,7 +36,7 @@ void init() {
     "color": colors
   };
 
-  var color = new Color();
+  var color = new Color.white();
 
   var n = 1000,
       n2 = n / 2; // particles spread in the cube

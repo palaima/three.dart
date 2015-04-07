@@ -20,7 +20,7 @@ WebGLRenderer renderer;
 Mesh mesh;
 Map<String, Uniform> uniforms;
 
-Color color = new Color();
+Color color = new Color.white();
 
 Vector3 pA = new Vector3.zero(),
     pB = new Vector3.zero(),

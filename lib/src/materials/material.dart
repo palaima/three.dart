@@ -95,7 +95,7 @@ class Material {
       this.polygonOffsetUnits: 0, this.alphaTest: 0, num color, this.overdraw: false, this.visible: true, this.fog: false,
       this.vertexColors: NoColors})
       : id = MaterialCount++,
-        this.color = new Color(color);
+        this.color = color != null ? new Color(color) : new Color.white();
 
 /*
   THREE.MaterialCount = 0;
