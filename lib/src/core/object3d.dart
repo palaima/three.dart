@@ -6,7 +6,7 @@
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
  *
- * based on r66
+ * based on r68
  */
 
 part of three;
@@ -17,6 +17,8 @@ abstract class GeometryObject {
 
 /// Base class for scene graph objects.
 class Object3D {
+  static Vector3 defaultUp = new Vector3(0.0, 1.0, 0.0);
+
   /// Unique number of this object instance.
   int id = Object3DCount++;
 
@@ -33,13 +35,16 @@ class Object3D {
   List<Object3D> children = [];
 
   /// Up direction.
-  Vector3 up = new Vector3(0.0, 1.0, 0.0);
+  Vector3 up = Object3D.defaultUp.clone();
 
   /// Object's local position.
   Vector3 position = new Vector3.zero();
 
-  Euler _rotation = new Euler();
-  Quaternion _quaternion = new Quaternion.identity();
+  /// Object's local rotation as Euler.
+  Euler rotation = new Euler();
+
+  /// Object's local rotation as Quaternion.
+  Quaternion quaternion = new Quaternion.identity();
 
   /// Object's local scale.
   Vector3 scale = new Vector3(1.0, 1.0, 1.0);
@@ -62,7 +67,7 @@ class Object3D {
   bool matrixAutoUpdate = true;
 
   /// When this is set, it calculates the matrixWorld in that frame and resets this property to false.
-  bool  matrixWorldNeedsUpdate = true;
+  bool matrixWorldNeedsUpdate = false;
 
   /// Object gets rendered if true.
   bool visible = true;
@@ -76,6 +81,12 @@ class Object3D {
   /// When set, it checks every frame if the object is in the frustum of the camera.
   /// Otherwise the object gets drawn every frame even if it isn't visible.
   bool frustumCulled = true;
+
+  int renderOrder = 0;
+
+  /// An object that can be used to store custom data about the Object3d.
+  /// It should not hold references to functions as these will not be cloned.
+  Map userData = {};
 
   // TODO : Introduce a mixin for objects with Geometry
   Geometry geometry;
@@ -114,41 +125,25 @@ class Object3D {
   StreamController _onRemovedFromSceneController = new StreamController.broadcast();
   Stream get onRemovedFromScene => _onRemovedFromSceneController.stream;
 
-
-  /// An object that can be used to store custom data about the Object3d.
-  /// It should not hold references to functions as these will not be cloned.
-  Map userData = {};
-
   ShaderMaterial customDepthMaterial;
 
   /// The constructor takes no arguments.
   Object3D() {
-    // Keep rotation and quaternion in sync.
-    _rotation._quaternion = _quaternion;
-    _quaternion._euler = _rotation;
+    rotation.onChange.listen(_onRotationChange);
+    quaternion.onChange.listen(_onQuaternionChange);
   }
 
-  /// Object's local rotation as Euler.
-  Euler get rotation => _rotation;
-  set rotation(Euler rot) {
-    _rotation = rot;
-    _rotation._quaternion = _quaternion;
-    _quaternion._euler = _rotation;
-    _rotation._updateQuaternion();
+  void _onRotationChange(_) {
+    quaternion.setFromEuler(rotation, update: false);
   }
 
-  /// Object's local rotation as Quaternion.
-  Quaternion get quaternion => _quaternion;
-  set quaternion(Quaternion q) {
-    _quaternion = q;
-    _quaternion._euler = _rotation;
-    _rotation._quaternion = _quaternion;
-    _quaternion._updateEuler();
+  void _onQuaternionChange(_) {
+    rotation.setFromQuaternion(quaternion, update: false);
   }
 
   /// Updates position, rotation and scale with [matrix].
   void applyMatrix(Matrix4 matrix) {
-    this.matrix *= matrix;
+    this.matrix.multiply(matrix);
     this.matrix.decompose(position, quaternion, scale);
   }
 
@@ -165,7 +160,7 @@ class Object3D {
 
   /// Sets objects rotation with rotation of [matrix].
   void setRotationFromMatrix(Matrix3 matrix) {
-    quaternion = new Quaternion.fromRotation(matrix);
+    quaternion.setFromRotation(matrix);
   }
 
   // assumes q is normalized
@@ -190,7 +185,7 @@ class Object3D {
 
   /// Translate an object by [distance] along a normalized [axis] in object space.
   Object3D translateOnAxis(Vector3 axis, double distance) {
-    position += new Vector3.copy(axis)..applyQuaternion(quaternion)..scale(distance);
+    position.add(new Vector3.copy(axis)..applyQuaternion(quaternion)..scale(distance));
     return this;
   }
 
@@ -213,14 +208,19 @@ class Object3D {
   /// This routine does not support objects with rotated and/or translated parent(s
   void lookAt(Vector3 vector) {
     var lookAt = makeViewMatrix(vector, position, up)..invert();
-    quaternion = new Quaternion.fromRotation(lookAt.getRotation());
+    quaternion.setFromRotation(lookAt.getRotation());
   }
 
   /// Adds [object] as child of this object.
-  void add(Object3D object) {
+  Object3D add(object) {
+    if (object is List) {
+      object.forEach((o) => add(o));
+      return this;
+    }
+
     if (object == this) {
       print('Object3D.add: An object can\'t be added as a child of itself.');
-      return;
+      return this;
     }
 
     if (object is Object3D) {
@@ -244,10 +244,16 @@ class Object3D {
         scene.__addObject(object);
       }
     }
+
+    return this;
   }
 
   /// Removes [object] as child of this object.
-  void remove(Object3D object) {
+  void remove(object) {
+    if (object is List) {
+      object.forEach((o) => remove(o));
+    }
+
     if (children.contains(object)) {
       object.parent = null;
       object._onObjectRemovedController.add(null);
@@ -267,10 +273,20 @@ class Object3D {
     }
   }
 
+  raycast() {
+    throw new UnimplementedError();
+  }
+
   /// Executes [callback] on this object and all descendants.
   void traverse(void callback(Object3D obj)) {
     callback(this);
     children.forEach((child) => child.traverse(callback));
+  }
+
+  void traverseVisible(void callback(Object3D obj)) {
+    if (!visible) return;
+    callback(this);
+    children.forEach((child) => child.traverseVisible(callback));
   }
 
   /// Searches through the object's children and returns the first with a matching [id],
@@ -301,14 +317,6 @@ class Object3D {
     });
 
     return null;
-  }
-
-  /// Searches whole subgraph recursively to add all objects in the array.
-  List<Object3D> getDescendants([List<Object> array]) {
-    if (array == null) array = [];
-    array.addAll(children);
-    children.forEach((child) => child.getDescendants(array));
-    return array;
   }
 
   void updateMatrix() {
