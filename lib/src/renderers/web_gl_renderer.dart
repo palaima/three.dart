@@ -2411,7 +2411,7 @@ class WebGLRenderer implements Renderer {
 
             }
 
-           
+
           } else if (customAttribute.boundTo == "faces") {
 
             fl = chunk_faces3.length;
@@ -2549,7 +2549,7 @@ class WebGLRenderer implements Renderer {
 
             }
 
-            
+
           } else if (customAttribute.boundTo == "faceVertices") {
 
             fl = chunk_faces3.length;
@@ -4008,7 +4008,7 @@ class WebGLRenderer implements Renderer {
             ..numMorphNormals = numMorphNormals;
       }
 
-      vertices = face.size;
+      vertices = 3;
 
       if (geometry.geometryGroups[groupHash].verticesCount + vertices > 65535) {
 

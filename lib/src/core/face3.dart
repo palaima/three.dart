@@ -1,13 +1,26 @@
 part of three;
 
 /// Triangle face.
-class Face3 extends Face {
+class Face3 {
+  Int32List indices;
 
-  Face3([int a = 0, int b = 0, int c = 0, normalOrVertexNormals, colorOrVertexColors, int materialIndex])
-      : super([a, b, c], normalOrVertexNormals, colorOrVertexColors, materialIndex);
+  Vector3 normal;
+
+  List<Vector3> vertexNormals;
+
+  Color color;
+
+  List<Color> vertexColors;
+
+  List vertexTangents = [];
+
+  int materialIndex;
+
+  Vector3 centroid = new Vector3.zero(); // TODO remove this
 
   /// Vertex A index.
   int get a => indices[0];
+
   /// Set vertex A index.
   set a(int i) {
     indices[0] = i;
@@ -15,6 +28,7 @@ class Face3 extends Face {
 
   /// Vertex B index.
   int get b => indices[1];
+
   /// Set vertex B index.
   set b(int i) {
     indices[1] = i;
@@ -22,12 +36,39 @@ class Face3 extends Face {
 
   /// Vertex C index.
   int get c => indices[2];
+
   /// Set vertex C index.
   set c(int i) {
     indices[2] = i;
   }
 
-  /// Make a copy of this Face3.
-  clone() => new Face3(a, b, c).setFrom(this);
+  Face3(int a, int b, int c, {normal, color, this.materialIndex})
+      : indices = new Int32List.fromList([a, b, c]) {
+    this.normal = normal is Vector3 ? normal : new Vector3.zero();
+    vertexNormals = normal is List ? normal : [];
 
+    this.color = color is Color ? color : new Color.white();
+    vertexColors = color is List ? color : [];
+  }
+
+  Face3 clone() {
+    var face = new Face3(indices[0], indices[1], indices[2])
+      ..normal.setFrom(normal)
+      ..color.setFrom(color)
+      ..materialIndex = materialIndex;
+
+    for (var i = 0; i < vertexNormals.length; i++) {
+      face.vertexNormals[i] = vertexNormals[i].clone();
+    }
+
+    for (var i = 0; i < vertexColors.length; i++) {
+      face.vertexColors[i] = vertexColors[i].clone();
+    }
+
+    for (var i = 0; i < vertexTangents.length; i++) {
+      face.vertexTangents[i] = vertexTangents[i].clone();
+    }
+
+    return face;
+  }
 }

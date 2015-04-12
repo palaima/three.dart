@@ -25,7 +25,6 @@ part 'src/cameras/orthographic_camera.dart';
 
 part 'src/core/object3d.dart';
 part 'src/core/color.dart';
-part 'src/core/face.dart';
 part 'src/core/face3.dart';
 part 'src/core/geometry.dart';
 part 'src/core/projector.dart';

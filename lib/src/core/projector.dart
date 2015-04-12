@@ -58,7 +58,7 @@ class Projector {
 
         _clippedVertex1PositionScreen = new Vector4(0.0, 0.0, 0.0, 1.0),
         _clippedVertex2PositionScreen = new Vector4(0.0, 0.0, 0.0, 1.0);
-  
+
   /**
    * Translates a 2D point from NDC to a THREE.Ray
    * that can be used for picking.
@@ -194,8 +194,8 @@ class Projector {
     List<Vector3> vertices;
     Vector3 vertex;
     Vector3 vertexPositionScreen, normal;
-    List<Face> faces;
-    Face face;
+    List<Face3> faces;
+    Face3 face;
     RenderableFace _face;
     List faceVertexNormals;
     List<List> faceVertexUvs;
@@ -281,20 +281,9 @@ class Projector {
           var allVtxVisible = vtx.every((v) => v.visible);
 
           if (allVtxVisible) {
-            if (face.size == 3) {
               visible =
                   (((vtx[2].positionScreen.x - vtx[0].positionScreen.x) * (vtx[1].positionScreen.y - vtx[0].positionScreen.y) -
-                      (vtx[2].positionScreen.y - vtx[0].positionScreen.y) * (vtx[1].positionScreen.x - vtx[0].positionScreen.x)) <
-                      0);
-            } else if (face.size == 4) {
-              visible =
-                  (vtx[3].positionScreen.x - vtx[0].positionScreen.x) * (vtx[1].positionScreen.y - vtx[0].positionScreen.y) -
-                      (vtx[3].positionScreen.y - vtx[0].positionScreen.y) * (vtx[1].positionScreen.x - vtx[0].positionScreen.x) <
-                      0 ||
-                      (vtx[1].positionScreen.x - vtx[2].positionScreen.x) * (vtx[3].positionScreen.y - vtx[2].positionScreen.y) -
-                          (vtx[1].positionScreen.y - vtx[2].positionScreen.y) * (vtx[3].positionScreen.x - vtx[2].positionScreen.x) <
-                          0;
-            }
+                    (vtx[2].positionScreen.y - vtx[0].positionScreen.y) * (vtx[1].positionScreen.x - vtx[0].positionScreen.x)) < 0);
 
             if (side == DoubleSide || visible == (side == FrontSide)) {
 

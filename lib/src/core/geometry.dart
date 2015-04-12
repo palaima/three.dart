@@ -127,8 +127,11 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
     faces.forEach((face) {
       face.normal..applyMatrix3(normalMatrix)..normalize();
-      face.vertexNormals.forEach((vertexNormal) =>
-          vertexNormal..applyMatrix3(normalMatrix)..normalize());
+      
+      if (!face.vertexNormals.any((e) => e == null)) {
+        face.vertexNormals.forEach((vertexNormal) =>
+            vertexNormal..applyMatrix3(normalMatrix)..normalize());
+      }
     });
 
     if (boundingBox != null) computeBoundingBox();
@@ -165,7 +168,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
       var vertexNormals = normals != null ? [tempNormals[a].clone(), tempNormals[b].clone(), tempNormals[c].clone()] : [];
       var vertexColors = colors != null ? [this.colors[a].clone(), this.colors[b].clone(), this.colors[c].clone()] : [];
 
-      this.faces.add(new Face3(a, b, c, vertexNormals, vertexColors));
+      this.faces.add(new Face3(a, b, c, normal: vertexNormals, color: vertexColors));
 
       if (uvs != null) {
         this.faceVertexUvs[0].add([tempUVs[a].clone(), tempUVs[b].clone(), tempUVs[c].clone()]);
@@ -196,21 +199,21 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
   }
 
   void computeCentroids() {
-    faces.forEach((Face face) {
+    faces.forEach((face) {
       face.centroid.setValues(0.0, 0.0, 0.0);
 
       face.indices.forEach((idx) {
         face.centroid.add(vertices[idx]);
       });
 
-      face.centroid /= face.size.toDouble();
+      face.centroid /= 3.0;
     });
   }
 
   Vector3 center() {
     computeBoundingBox();
 
-    var offset = boundingBox.center.negate();
+    var offset = boundingBox.center..negate();
 
     applyMatrix(new Matrix4.translation(offset));
 
@@ -268,7 +271,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
     vertices.forEach((v) => v.normalize());
 
     faces.forEach((face) {
-      face.vertexNormals.addAll([vertices[face.a].clone(), vertices[face.b].clone(), vertices[face.c].clone()]);
+      face.vertexNormals = [vertices[face.a].clone(), vertices[face.b].clone(), vertices[face.c].clone()];
     });
   }
 
@@ -441,7 +444,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
         faceCopy.vertexNormals.add(normal);
       }
 
-      faceCopy.color.copy(face.color);
+      faceCopy.color.setFrom(face.color);
 
       for (var j = 0; j < faceVertexColors.length; j++) {
         var color = faceVertexColors[j];

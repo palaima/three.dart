@@ -135,17 +135,11 @@ class JSONLoader extends Loader {
       var hasFaceVertexNormal = _isBitSet(type, 5);
       var hasFaceColor = _isBitSet(type, 6);
       var hasFaceVertexColor = _isBitSet(type, 7);
-      
-      if (isQuad) {
-        var faceA = new Face3();
-        faceA.a = faces[offset];
-        faceA.b = faces[offset + 1];
-        faceA.c = faces[offset + 3];
 
-        var faceB = new Face3();
-        faceB.a = faces[offset + 1];
-        faceB.b = faces[offset + 2];
-        faceB.c = faces[offset + 3];
+      if (isQuad) {
+        var faceA = new Face3(faces[offset], faces[offset + 1], faces[offset + 3]);
+
+        var faceB = new Face3(faces[offset + 1], faces[offset + 2], faces[offset + 3]);
 
         offset += 4;
 
@@ -234,10 +228,7 @@ class JSONLoader extends Loader {
         geometry.faces.add(faceB);
 
       } else {
-        var face = new Face3();
-        face.a = faces[offset ++];
-        face.b = faces[offset ++];
-        face.c = faces[offset ++];
+        var face = new Face3(faces[offset ++], faces[offset ++], faces[offset ++]);
 
         if (hasMaterial) {
           var materialIndex = faces[offset ++];

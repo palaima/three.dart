@@ -33,8 +33,8 @@ class ExtrudeGeometry extends Geometry {
   String type = 'ExtrudeGeometry';
   List<Shape> shapes;
 
-  ExtrudeGeometry(shapes, {int curveSegments: 12, int steps: 1, int amount: 100, bool bevelEnabled: true, 
-    double bevelThickness: 6.0, double bevelSize, int bevelSegments: 3, 
+  ExtrudeGeometry(shapes, {int curveSegments: 12, int steps: 1, int amount: 100, bool bevelEnabled: true,
+    double bevelThickness: 6.0, double bevelSize, int bevelSegments: 3,
     Curve extrudePath, TubeGeometryFrenetFrames frames, int material, int extrudeMaterial, ExtrudeGeometryWorldUVGenerator uvGenerator}) : super() {
 
     if (bevelSize == null) bevelSize = bevelThickness - 2.0;
@@ -43,9 +43,9 @@ class ExtrudeGeometry extends Geometry {
       this.shapes = [];
       return;
     }
-    
+
     this.shapes = shapes is! List ? [shapes] : shapes;
-    
+
     addShapeList(this.shapes, curveSegments, steps, amount, bevelEnabled, bevelThickness, bevelSize, bevelSegments,
         extrudePath, frames, material, extrudeMaterial, uvGenerator);
 
@@ -72,14 +72,14 @@ class ExtrudeGeometry extends Geometry {
 
   Vector2 _getBevelVec(Vector2 inPt, Vector2 inPrev, Vector2 inNext) {
     var EPSILON = 0.0000000001;
-    
+
     // computes for inPt the corresponding point inPt' on a new contour
     //   shiftet by 1 unit (length of normalized vector) to the left
     // if we walk along contour clockwise, this new contour is outside the old one
     //
     // inPt' is the intersection of the two lines parallel to the two
     //  adjacent edges of inPt at a distance of 1 unit on the left side.
-    
+
     var v_trans_x, v_trans_y, shrink_by = 1;    // resulting translation vector for inPt
 
     // good reading for geometry algorithms (here: line-line intersection)
@@ -87,38 +87,38 @@ class ExtrudeGeometry extends Geometry {
 
     var v_prev_x = inPt.x - inPrev.x, v_prev_y = inPt.y - inPrev.y;
     var v_next_x = inNext.x - inPt.x, v_next_y = inNext.y - inPt.y;
-    
+
     var v_prev_lensq = (v_prev_x * v_prev_x + v_prev_y * v_prev_y);
-    
+
     // check for colinear edges
     var colinear0 = (v_prev_x * v_next_y - v_prev_y * v_next_x);
-    
+
     if (colinear0.abs() > EPSILON) {    // not colinear
-      
+
       // length of vectors for normalizing
-  
+
       var v_prev_len = Math.sqrt(v_prev_lensq);
       var v_next_len = Math.sqrt(v_next_x * v_next_x + v_next_y * v_next_y);
-      
+
       // shift adjacent points by unit vectors to the left
-  
+
       var ptPrevShift_x = (inPrev.x - v_prev_y / v_prev_len);
       var ptPrevShift_y = (inPrev.y + v_prev_x / v_prev_len);
-      
+
       var ptNextShift_x = (inNext.x - v_next_y / v_next_len);
       var ptNextShift_y = (inNext.y + v_next_x / v_next_len);
-  
+
       // scaling factor for v_prev to intersection point
-  
+
       var sf = ((ptNextShift_x - ptPrevShift_x) * v_next_y -
             (ptNextShift_y - ptPrevShift_y) * v_next_x  ) /
             (v_prev_x * v_next_y - v_prev_y * v_next_x);
-  
+
       // vector from inPt to intersection point
-  
+
       v_trans_x = (ptPrevShift_x + v_prev_x * sf - inPt.x);
       v_trans_y = (ptPrevShift_y + v_prev_y * sf - inPt.y);
-  
+
       // Don't normalize!, otherwise sharp corners become ugly
       //  but prevent crazy spikes
       var v_trans_lensq = (v_trans_x * v_trans_x + v_trans_y * v_trans_y);
@@ -192,7 +192,7 @@ class ExtrudeGeometry extends Geometry {
     }
 
     // Variables initalization
-    
+
     var shapesOffset = this.vertices.length;
 
     var shapePoints = shape.extractPoints(curveSegments);
@@ -219,7 +219,7 @@ class ExtrudeGeometry extends Geometry {
     }
 
     var faces = ShapeUtils.triangulateShape(vertices, holes);
-    
+
     // Would it be better to move points after triangulation?
     // shapePoints = shape.extractAllPointsWithBend(curveSegments, bendPath);
     //  vertices = shapePoints.shape;
@@ -390,7 +390,7 @@ class ExtrudeGeometry extends Geometry {
       c += shapesOffset;
 
       // normal, color, material
-      this.faces.add(new Face3(a, b, c, null, null, material));
+      this.faces.add(new Face3(a, b, c, materialIndex: material));
 
       var uvs = uvgen.generateTopUV(this, a, b, c);
 
@@ -403,8 +403,8 @@ class ExtrudeGeometry extends Geometry {
       c += shapesOffset;
       d += shapesOffset;
 
-      this.faces.add(new Face3(a, b, d, null, null, extrudeMaterial));
-      this.faces.add(new Face3(b, c, d, null, null, extrudeMaterial));
+      this.faces.add(new Face3(a, b, d, materialIndex: extrudeMaterial));
+      this.faces.add(new Face3(b, c, d, materialIndex: extrudeMaterial));
 
       var uvs = uvgen.generateSideWallUV(this, a, b, c, d);
 

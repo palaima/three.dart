@@ -5,18 +5,18 @@
 part of three;
 
 
-/// A convex hull generator using the incremental method. 
+/// A convex hull generator using the incremental method.
 /// The complexity is O(n^2) where n is the number of vertices.
 /// O(nlogn) algorithms do exist, but they are much more complicated.
 class ConvexGeometry extends Geometry {
   List<Vector3> _vertices;
   List<List<int>> _faces = [[0, 1, 2], [0, 2, 1]];
-  
+
   ConvexGeometry(this._vertices) : super() {
     for (var i = 3; i < _vertices.length; i++) {
       _addPoint(i);
     }
-    
+
     // Push vertices into `this.vertices`, skipping those inside the hull
     var id = 0;
     var newId = new List(_vertices.length); // map from old vertex id to new id
@@ -33,23 +33,23 @@ class ConvexGeometry extends Geometry {
         face[j] = newId[face[j]];
       }
     }
-    
+
     // Convert faces into instances of Face3
-    faces = new List.generate(_faces.length, (i) => 
+    faces = new List.generate(_faces.length, (i) =>
         new Face3(_faces[i][0],
                   _faces[i][1],
                   _faces[i][2]));
 
     // Compute UVs
     faceVertexUvs[0] = new List.generate(faces.length, (i) =>
-        [_vertexUv(vertices[(faces[i] as Face3).a]),
-         _vertexUv(vertices[(faces[i] as Face3).b]),
-         _vertexUv(vertices[(faces[i] as Face3).c])]);
-  
+        [_vertexUv(vertices[faces[i].a]),
+         _vertexUv(vertices[faces[i].b]),
+         _vertexUv(vertices[faces[i].c])]);
+
     computeFaceNormals();
     computeVertexNormals();
   }
-  
+
   void _addPoint(int vertexId) {
     var vertex = _vertices[vertexId].clone();
 
@@ -99,7 +99,7 @@ class ConvexGeometry extends Geometry {
                   vertexId]);
     }
   }
-  
+
   // Whether the face is visible from the vertex.
   bool _visible(List<int> face, Vector3 vertex) {
     var va = _vertices[face[0]];
@@ -111,7 +111,7 @@ class ConvexGeometry extends Geometry {
     // distance from face to origin
     var dist = n.dot(va);
 
-    return n.dot(vertex) >= dist; 
+    return n.dot(vertex) >= dist;
   }
 
   // Face normal
@@ -123,7 +123,7 @@ class ConvexGeometry extends Geometry {
    * Note that when constructing the convex hull, two same edges can only
    * be of the negative direction.
    */
-  bool _equalEdge(List<Face3> ea, List<Face3> eb) => ea[0] == eb[1] && ea[1] == eb[0]; 
+  bool _equalEdge(List<Face3> ea, List<Face3> eb) => ea[0] == eb[1] && ea[1] == eb[0];
 
   // Create a random offset between -1e-6 and 1e-6.
   double _randomOffset() => ThreeMath.randFloat(-1e-6, 1e-6);

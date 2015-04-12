@@ -1,6 +1,6 @@
 /*
  * @author mrdoob / http://mrdoob.com/
- * 
+ *
  * based on r66
  */
 
@@ -8,7 +8,7 @@ part of three;
 
 /**
  *  A class for generating sphere geometries.
- *  
+ *
  *     var geometry = new SphereGeometry(5.0, 32, 32);
  *     var material = new MeshBasicMaterial(color: 0xffff00);
  *     var sphere = new Mesh(geometry, material);
@@ -23,9 +23,9 @@ class SphereGeometry extends Geometry {
                   double phiLength = Math.PI * 2.0,
                   double thetaStart = 0.0,
                   double thetaLength = Math.PI]) {
-    widthSegments = widthSegments != null ? Math.max(3, widthSegments) : 8; 
+    widthSegments = widthSegments != null ? Math.max(3, widthSegments) : 8;
     heightSegments = heightSegments != null ? Math.max(2, heightSegments) : 6;
-                
+
     List<List<int>> _vertices = [];
     List<List<Vector2>> uvs = [];
 
@@ -71,17 +71,17 @@ class SphereGeometry extends Geometry {
 
         if (vertices[v1].y.abs() == radius) {
           uv1.x = (uv1.x + uv2.x) / 2;
-          faces.add(new Face3(v1, v3, v4, [n1, n3, n4]));
+          faces.add(new Face3(v1, v3, v4, normal: [n1, n3, n4]));
           faceVertexUvs[0].add([uv1, uv3, uv4]);
         } else if (vertices[v3].y.abs() == radius) {
           uv3.x = (uv3.x + uv4.x) / 2;
-          faces.add(new Face3(v1, v2, v3, [n1, n2, n3]));
+          faces.add(new Face3(v1, v2, v3, normal: [n1, n2, n3]));
           faceVertexUvs[0].add([uv1, uv2, uv3]);
         } else {
-          faces.add(new Face3(v1, v2, v4, [n1, n2, n4]));
+          faces.add(new Face3(v1, v2, v4, normal: [n1, n2, n4]));
           faceVertexUvs[0].add([uv1, uv2, uv4]);
 
-          faces.add(new Face3(v2, v3, v4, [n2.clone(), n3, n4.clone()]));
+          faces.add(new Face3(v2, v3, v4, normal: [n2.clone(), n3, n4.clone()]));
           faceVertexUvs[0].add([uv2.clone(), uv3, uv4.clone()]);
         }
       }

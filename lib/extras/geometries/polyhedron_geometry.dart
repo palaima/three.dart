@@ -48,7 +48,7 @@ class PolyhedronGeometry extends Geometry {
   // Approximate a curved face with recursively sub-divided triangles.
   _make(Vector3 v1, Vector3 v2, Vector3 v3, num detail) {
     if (detail < 1) {
-      var face = new Face3(v1._index, v2._index, v3._index, [v1.clone(), v2.clone(), v3.clone()]);
+      var face = new Face3(v1._index, v2._index, v3._index, normal: [v1.clone(), v2.clone(), v3.clone()]);
       face.centroid.add(v1).add(v2).add(v3).scale(1.0 / 3.0);
       face.normal = face.centroid.clone().normalize();
       this.faces.add(face);

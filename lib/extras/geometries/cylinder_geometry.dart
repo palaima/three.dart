@@ -1,6 +1,6 @@
 /*
  * @author mrdoob / http://mrdoob.com/
- * 
+ *
  * based on r70
  */
 
@@ -8,7 +8,7 @@ part of three;
 
 /**
  *  A class for generating cylinder geometries
- *  
+ *
  *     var geometry = new CylinderGeometry(5.0, 5.0, 20, 32);
  *     var material = new MeshBasicMaterial(color: 0xffff00);
  *     var cylinder = new Mesh(geometry, material);
@@ -28,7 +28,7 @@ class CylinderGeometry extends Geometry {
                     double thetaLength = 2 * Math.PI]) : super() {
 
     double heightHalf = height / 2;
-    
+
     List<List<int>> vertices = [];
     List<List<Vector2>> uvs = [];
 
@@ -41,14 +41,14 @@ class CylinderGeometry extends Geometry {
 
       for (var x = 0; x <= radialSegments; x++) {
         double u = x / radialSegments;
-        
+
         var vertex = new Vector3.zero()
           ..x = radius * Math.sin(u * thetaLength + thetaStart)
           ..y = -v * height + heightHalf
           ..z = radius * Math.cos(u * thetaLength + thetaStart);
-              
+
         this.vertices.add(vertex);
-        
+
         verticesRow.add(this.vertices.length - 1);
         uvsRow.add(new Vector2(u, 1 - v));
       }
@@ -79,7 +79,7 @@ class CylinderGeometry extends Geometry {
         var v2 = vertices[y + 1][x];
         var v3 = vertices[y + 1][x + 1];
         var v4 = vertices[y][x + 1];
-        
+
         var n1 = na.clone();
         var n2 = na.clone();
         var n3 = nb.clone();
@@ -90,10 +90,10 @@ class CylinderGeometry extends Geometry {
         var uv3 = uvs[y + 1][x + 1].clone();
         var uv4 = uvs[y][x + 1].clone();
 
-        faces.add(new Face3(v1, v2, v4, [n1, n2, n4]));
+        faces.add(new Face3(v1, v2, v4, normal: [n1, n2, n4]));
         faceVertexUvs[0].add([uv1, uv2, uv4]);
 
-        faces.add(new Face3(v2, v3, v4, [n2.clone(), n3, n4.clone()]));
+        faces.add(new Face3(v2, v3, v4, normal: [n2.clone(), n3, n4.clone()]));
         faceVertexUvs[0].add([uv2.clone(), uv3, uv4.clone()]);
       }
     }
@@ -101,12 +101,12 @@ class CylinderGeometry extends Geometry {
     // top cap
     if (!openEnded && radiusTop > 0) {
       this.vertices.add(new Vector3(0.0, heightHalf, 0.0));
-      
+
       for (var x = 0; x < radialSegments; x++) {
         var v1 = vertices[0][x];
         var v2 = vertices[0][x + 1];
         var v3 = this.vertices.length - 1;
-        
+
         var n1 = new Vector3(0.0, 1.0, 0.0);
         var n2 = new Vector3(0.0, 1.0, 0.0);
         var n3 = new Vector3(0.0, 1.0, 0.0);
@@ -115,7 +115,7 @@ class CylinderGeometry extends Geometry {
         var uv2 = uvs[0][x + 1].clone();
         var uv3 = new Vector2(uv2.x, 0.0);
 
-        this.faces.add(new Face3(v1, v2, v3, [n1, n2, n3]));
+        this.faces.add(new Face3(v1, v2, v3, normal: [n1, n2, n3]));
         this.faceVertexUvs[0].add([uv1, uv2, uv3]);
       }
     }
@@ -128,7 +128,7 @@ class CylinderGeometry extends Geometry {
         var v1 = vertices[heightSegments][x + 1];
         var v2 = vertices[heightSegments][x];
         var v3 = this.vertices.length - 1;
-        
+
         var n1 = new Vector3(0.0, -1.0, 0.0);
         var n2 = new Vector3(0.0, -1.0, 0.0);
         var n3 = new Vector3(0.0, -1.0, 0.0);
@@ -137,7 +137,7 @@ class CylinderGeometry extends Geometry {
         var uv2 = uvs[heightSegments][x].clone();
         var uv3 = new Vector2(uv2.x, 1.0);
 
-        faces.add(new Face3(v1, v2, v3, [n1, n2, n3]));
+        faces.add(new Face3(v1, v2, v3, normal: [n1, n2, n3]));
         faceVertexUvs[0].add([uv1, uv2, uv3]);
       }
     }

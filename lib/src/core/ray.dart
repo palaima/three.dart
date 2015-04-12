@@ -107,7 +107,7 @@ class Ray {
 
       int f;
 
-      Face face;
+      Face3 face;
       num dot, scalar;
       Geometry geometry = mesh.geometry;
       List vertices = geometry.vertices;
@@ -165,17 +165,7 @@ class Ray {
 
           var pointInFace;
 
-          // TODO - Make this work a face of arbitrary size
-          if (face.size == 3) {
-
-            pointInFace = _pointInFace3(intersectPoint, abcd[0], abcd[1], abcd[2]);
-
-          } else if (face.size == 4) {
-
-            pointInFace =
-                _pointInFace3(intersectPoint, abcd[0], abcd[1], abcd[3]) || _pointInFace3(intersectPoint, abcd[1], abcd[2], abcd[3]);
-
-          }
+          pointInFace = _pointInFace3(intersectPoint, abcd[0], abcd[1], abcd[2]);
 
           if (pointInFace) {
             intersect = new Intersect(
@@ -209,7 +199,7 @@ class Ray {
 class Intersect {
   num distance;
   Vector3 point;
-  Face face;
+  Face3 face;
   Object3D object;
 
   Intersect({this.distance, this.point, this.face, this.object});

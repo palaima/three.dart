@@ -150,7 +150,7 @@ class CubeGeometry extends Geometry {
 
         var face = new Face3(a + offset, b + offset, d + offset);
         face.normal.setFrom(normal);
-        face.vertexNormals.addAll([normal.clone(), normal.clone(), normal.clone()]);
+        face.vertexNormals = [normal.clone(), normal.clone(), normal.clone()];
         face.materialIndex = material;
 
         faces.add(face);
@@ -158,7 +158,7 @@ class CubeGeometry extends Geometry {
 
         face = new Face3(b + offset, c + offset, d + offset);
         face.normal.setFrom(normal);
-        face.vertexNormals.addAll([normal.clone(), normal.clone(), normal.clone()]);
+        face.vertexNormals = [normal.clone(), normal.clone(), normal.clone()];
         face.materialIndex = material;
 
         faces.add(face);

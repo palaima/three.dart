@@ -50,7 +50,7 @@ class OBJLoader extends Loader {
             int.parse(a) - (face_offset + 1),
             int.parse(b) - (face_offset + 1),
             int.parse(c) - (face_offset + 1),
-            normalOrVertexNormals));
+            normal: normalOrVertexNormals));
   }
 
   _addUvs(Geometry geometry, List uvs, String a, String b, String c) =>

@@ -4,20 +4,20 @@
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
- * 
+ *
  * based on r66
  */
 
 part of three;
 
-/** 
+/**
  * A class for generating plane geometries.
- *   
+ *
  *     var geometry = new PlaneGeometry(5.0, 20.0);
  *     var material = new MeshBasicMaterial(color: 0xffff00, side: DOUBLE_SIDE);
  *     var plane = new Mesh(geometry, material);
  *     scene.add(plane);
- */ 
+ */
 class PlaneGeometry extends Geometry {
   /// Creates a new plane geometry.
   PlaneGeometry(double width, double height, [int widthSegments = 1, int heightSegments = 1]) : super() {
@@ -56,10 +56,10 @@ class PlaneGeometry extends Geometry {
         var uvc = new Vector2((ix + 1) / gridX, 1 - (iz + 1) / gridZ);
         var uvd = new Vector2((ix + 1) / gridX, 1 - iz / gridZ);
 
-        faces.add(new Face3(a, b, d, [normal.clone(), normal.clone(), normal.clone()]));
+        faces.add(new Face3(a, b, d, normal: [normal.clone(), normal.clone(), normal.clone()]));
         faceVertexUvs[0].add([uva, uvb, uvd]);
 
-        faces.add(new Face3(b, c, d, [normal.clone(), normal.clone(), normal.clone()]));            
+        faces.add(new Face3(b, c, d, normal: [normal.clone(), normal.clone(), normal.clone()]));
         faceVertexUvs[0].add([uvb.clone(), uvc, uvd.clone()]);
       }
     }

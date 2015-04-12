@@ -97,7 +97,7 @@ class STLLoader extends Loader {
       }
 
       var length = geometry.vertices.length;
-      geometry.faces.add(new Face3(length - 3, length - 2, length - 1, normal));
+      geometry.faces.add(new Face3(length - 3, length - 2, length - 1, normal: normal));
 
     }
 
@@ -142,7 +142,7 @@ class STLLoader extends Loader {
       });
 
       var length = geometry.vertices.length;
-      geometry.faces.add(new Face3(length - 3, length - 2, length - 1, normal));
+      geometry.faces.add(new Face3(length - 3, length - 2, length - 1, normal: normal));
 
     });
 

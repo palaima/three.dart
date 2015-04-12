@@ -18,7 +18,7 @@ part of three;
 
 class ShapeGeometry extends Geometry {
   String type = 'ShapeGeometry';
-  
+
   List<Shape> shapes;
 
   ShapeGeometry(shapes, {int curveSegments: 12, int material, ExtrudeGeometryWorldUVGenerator uvGenerator})
@@ -28,7 +28,7 @@ class ShapeGeometry extends Geometry {
       this.shapes = [];
       return;
     }
-    
+
     this.shapes = shapes is! List ? [shapes] : shapes;
 
     addShapeList(this.shapes, curveSegments, material, uvGenerator);
@@ -98,12 +98,12 @@ class ShapeGeometry extends Geometry {
 
     for (var i = 0; i < flen; i ++) {
       var face = faces[i];
-      
+
       var a = face[0] + shapesOffset;
       var b = face[1] + shapesOffset;
       var c = face[2] + shapesOffset;
 
-      this.faces.add(new Face3(a, b, c, null, null, material));
+      this.faces.add(new Face3(a, b, c, materialIndex: material));
       this.faceVertexUvs[0].add(uvgen.generateTopUV(this, a, b, c));
     }
   }
