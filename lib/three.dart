@@ -132,7 +132,6 @@ part 'src/objects/line.dart';
 part 'src/objects/particle.dart';
 part 'src/objects/particle_system.dart';
 part 'src/objects/sprite.dart';
-part 'src/objects/ribbon.dart';
 part 'src/objects/skinned_mesh.dart';
 part 'src/objects/lod.dart';
 part 'src/objects/morph_anim_mesh.dart';
