@@ -172,7 +172,7 @@ _addTriangle(int k, double x, double y, double z, Vector3 vc, Vector3 vb, Vector
   t.setValues(x, y, z);
   t.scale(0.5);
 
-  m.lookAt(e, tt, u);
+  setViewMatrix(m, e, tt, u);
 
   m2.setIdentity().setTranslation(t);
 

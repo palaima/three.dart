@@ -7,13 +7,13 @@ part of three;
 
 class Sprite extends Object3D {
   SpriteMaterial material;
-  
-  Sprite(SpriteMaterial material) 
+
+  Sprite(SpriteMaterial material)
       : material = material == null ? new SpriteMaterial() : material,
         super();
-      
+
   void updateMatrix() {
-    matrix.compose(position, quaternion, scale);
+    matrix.setFromTranslationRotationScale(position, quaternion, scale);
     matrixWorldNeedsUpdate = true;
   }
 }

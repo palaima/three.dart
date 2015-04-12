@@ -9,7 +9,7 @@ part of three;
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
- * 
+ *
  * based on r70
  */
 
@@ -20,14 +20,14 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
   /// Name for this geometry. Default is an empty string.
   String name = '';
-  
+
   String type = 'Geometry';
 
   /// List of vertices.
   /// The array of vertices holds every position of points in the model.
   /// To signal an update in this array, [verticesNeedUpdate] needs to be set to true.
   List<Vector3> vertices = [];
-  
+
   /// List of vertex colors, matching number and order of vertices.
   /// Used in [ParticleSystem] and [Line].
   /// Meshes use per-face-use-of-vertex colors embedded directly in faces.
@@ -46,27 +46,27 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
   /// List of [MorphTarget].
   List<MorphTarget> morphTargets = [];
-  
+
   /// List of [MorphColor].
   List<MorphColor> morphColors = [];
-  
+
   /// List of [MorphNormal]
   List<MorphNormal> morphNormals = [];
 
   /// List of skinning weights, matching number and order of vertices.
   List<Vector4> skinWeights = [];
-  
+
   /// List of skinning indices, matching number and order of vertices.
   List<Vector4> skinIndices = [];
 
-  /// A list containing distances between vertices for Line geometries. 
-  /// This is required for LinePieces/LineDashedMaterial to render correctly. 
+  /// A list containing distances between vertices for Line geometries.
+  /// This is required for LinePieces/LineDashedMaterial to render correctly.
   /// Line distances can also be generated with computeLineDistances.
   List<double> lineDistances = [];
 
   /// Bounding box.
   Aabb3 boundingBox;
-  
+
   /// Bounding sphere.
   Sphere boundingSphere;
 
@@ -74,7 +74,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
   bool hasTangents = false;
 
   bool _dynamic = true;
-  
+
   // Backwards compatibility
   var materials = [];
   var faceUvs = [];
@@ -82,7 +82,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
   // Used in JSONLoader
   var bones, animation;
-  
+
   /// Set to true if attribute buffers will need to change in runtime (using "dirty" flags).
   /// Unless set to true internal typed arrays corresponding to buffers will be deleted once sent to GPU.
   set isDynamic(bool flag) { _dynamic = flag; } // Named isDynamic because dynamic is a reserved word in Dart.
@@ -90,51 +90,51 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
   /// Set to true if the vertices array has been updated.
   bool verticesNeedUpdate = false;
-  
+
   /// Set to true if the colors array has been updated.
   bool colorsNeedUpdate = false;
-  
+
   /// Set to true if the faces array has been updated.
   bool elementsNeedUpdate = false;
-  
+
   /// Set to true if the uvs array has been updated.
   bool uvsNeedUpdate = false;
-  
+
   /// Set to true if the normals array has been updated.
   bool normalsNeedUpdate = false;
-  
+
   /// Set to true if the tangents in the faces has been updated.
   bool tangentsNeedUpdate = false;
-  
+
   bool buffersNeedUpdate = false;
-  
+
   bool morphTargetsNeedUpdate = false;
-  
+
   /// Set to true if the linedistances array has been updated.
   bool lineDistancesNeedUpdate = false;
 
   bool groupsNeedUpdate = false;
 
-  Geometry() { 
-    id = GeometryCount++; 
+  Geometry() {
+    id = GeometryCount++;
   }
 
   /// Bakes matrix transform directly into vertex coordinates.
   void applyMatrix(Matrix4 matrix) {
-    var normalMatrix = new Matrix3.normalMatrix(matrix);
+    var normalMatrix = matrix.getNormalMatrix();
 
     vertices.forEach((vertex) => vertex.applyMatrix4(matrix));
-    
+
     faces.forEach((face) {
       face.normal..applyMatrix3(normalMatrix)..normalize();
       face.vertexNormals.forEach((vertexNormal) =>
           vertexNormal..applyMatrix3(normalMatrix)..normalize());
     });
-    
+
     if (boundingBox != null) computeBoundingBox();
     if (boundingSphere != null) computeBoundingSphere();
   }
-  
+
   Geometry fromBufferGeometry(BufferGeometry geometry) {
     var vertices = geometry.aPosition.array;
     var indices = geometry.aIndex != null ? geometry.aIndex.array : null;
@@ -171,7 +171,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
         this.faceVertexUvs[0].add([tempUVs[a].clone(), tempUVs[b].clone(), tempUVs[c].clone()]);
       }
     };
-    
+
     if (indices != null) {
       for (var i = 0; i < indices.length; i += 3) {
         addFace(indices[i], indices[i + 1], indices[i + 2]);
@@ -206,7 +206,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
       face.centroid /= face.size.toDouble();
     });
   }
-  
+
   Vector3 center() {
     computeBoundingBox();
 
@@ -284,7 +284,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
   void computeTangents() {
     // based on http://www.terathon.com/code/tangent.html
     // tangents go to vertices
-    var tan1 = new List.generate(this.vertices.length, (_) => new Vector3.zero()), 
+    var tan1 = new List.generate(this.vertices.length, (_) => new Vector3.zero()),
         tan2 = new List.generate(this.vertices.length, (_) => new Vector3.zero());
 
     handleTriangle(context, a, b, c, ua, ub, uc, uv) {
@@ -353,7 +353,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
     hasTangents = true;
   }
-  
+
   /// Compute distances between vertices for Line geometries.
   void computeLineDistances() {
     var d = 0.0;
@@ -389,7 +389,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
     boundingSphere = new Sphere.centerRadius(new Vector3.zero(), Math.sqrt(maxRadiusSq));
   }
-  
+
   /// Merge two geometries or geometry and geometry from object (using object's transform).
   void merge(Geometry geometry, {Matrix4 matrix, int materialIndexOffset: 0}) {
     var normalMatrix,
@@ -402,7 +402,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
         uvs2 = geometry.faceVertexUvs[0];
 
     if (matrix != null) {
-      normalMatrix = new Matrix3.normalMatrix(matrix);
+      normalMatrix = matrix.getNormalMatrix();
     }
 
     // vertices
@@ -467,7 +467,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
       uvs1.add(uvCopy);
     }
   }
-  
+
   void mergeMesh(Mesh mesh) {
     if (mesh.matrixAutoUpdate) mesh.updateMatrix();
     merge(mesh.geometry, matrix: mesh.matrix);
@@ -531,7 +531,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
     vertices = unique;
     return diff;
   }
-  
+
   // TODO implement computeMorphNormals
   toJSON() {
     throw new UnimplementedError();
