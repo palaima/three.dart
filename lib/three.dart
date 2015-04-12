@@ -285,3 +285,7 @@ const int RGB_S3TC_DXT1_Format = 2001;
 const int RGBA_S3TC_DXT1_Format = 2002;
 const int RGBA_S3TC_DXT3_Format = 2003;
 const int RGBA_S3TC_DXT5_Format = 2004;
+
+warn(String msg) => window.console.warn(msg);
+log(String msg) => window.console.log(msg);
+error(String msg) => window.console.error(msg);
