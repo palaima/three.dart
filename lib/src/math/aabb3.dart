@@ -1,26 +1,11 @@
-/*
-  Copyright (C) 2013 John McCutchan <john@johnmccutchan.com>
-
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
-
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
-
-  1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
-
-*/
+// Copyright (c) 2015, Google Inc. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 part of three;
 
+/// Defines a 3-dimensional axis-aligned bounding box between a [min] and a
+/// [max] position.
 class Aabb3 {
   final Vector3 _min;
   final Vector3 _max;
@@ -28,114 +13,221 @@ class Aabb3 {
   Vector3 get min => _min;
   Vector3 get max => _max;
 
-  Vector3 get center {
-    Vector3 c = new Vector3.copy(_min);
-    return c.add(_max).scale(.5);
-  }
+  /// The center of the AABB.
+  Vector3 get center => _min.clone()
+    ..add(_max)
+    ..scale(0.5);
 
+  /// Create a new AABB with [min] and [max] set to the origin.
   Aabb3()
       : _min = new Vector3(double.INFINITY, double.INFINITY, double.INFINITY),
         _max = new Vector3(-double.INFINITY, -double.INFINITY, -double.INFINITY);
 
+  /// Create a new AABB as a copy of [other].
   Aabb3.copy(Aabb3 other)
       : _min = new Vector3.copy(other._min),
         _max = new Vector3.copy(other._max);
 
-  @deprecated
-  Aabb3.minmax(Vector3 min_, Vector3 max_)
-      : _min = new Vector3.copy(min_),
-        _max = new Vector3.copy(max_);
+  /// Create a new AABB with a [min] and [max].
+  Aabb3.minMax(Vector3 min, Vector3 max)
+      : _min = new Vector3.copy(min),
+        _max = new Vector3.copy(max);
 
-  Aabb3.minMax(Vector3 min_, Vector3 max_)
-      : _min = new Vector3.copy(min_),
-        _max = new Vector3.copy(max_);
+  /// Create a new AABB that encloses a [sphere].
+  factory Aabb3.fromSphere(Sphere sphere) => new Aabb3()..setSphere(sphere);
 
-  void copyMinMax(Vector3 min_, Vector3 max_) {
-    max_.setFrom(_max);
-    min_.setFrom(_min);
-  }
+  /// Create a new AABB that encloses a [triangle].
+  factory Aabb3.fromTriangle(Triangle triangle) =>
+      new Aabb3()..setTriangle(triangle);
 
-  /// Constructs Aabb3 with a min/max [storage] that views given [buffer] starting at [offset].
-  /// [offset] has to be multiple of [Float32List.BYTES_PER_ELEMENT].
+  /// Create a new AABB that encloses a [quad].
+  //factory Aabb3.fromQuad(Quad quad) => new Aabb3()..setQuad(quad);
+
+  /// Create a new AABB that encloses a limited [ray] (or line segment) that has
+  /// a minLimit and maxLimit.
+//  factory Aabb3.fromRay(Ray ray, double limitMin, double limitMax) =>
+//      new Aabb3()..setRay(ray, limitMin, limitMax);
+
+  /// Create a new AABB with a [center] and [halfExtents].
+  factory Aabb3.centerAndHalfExtents(Vector3 center, Vector3 halfExtents) =>
+      new Aabb3()..setCenterAndHalfExtents(center, halfExtents);
+
+  /// Constructs [Aabb3] with a min/max [storage] that views given [buffer]
+  /// starting at [offset]. [offset] has to be multiple of
+  /// [Float32List.BYTES_PER_ELEMENT].
   Aabb3.fromBuffer(ByteBuffer buffer, int offset)
       : _min = new Vector3.fromBuffer(buffer, offset),
         _max = new Vector3.fromBuffer(
             buffer, offset + Float32List.BYTES_PER_ELEMENT * 3);
 
+  /// Set the AABB by a [center] and [halfExtents].
+  void setCenterAndHalfExtents(Vector3 center, Vector3 halfExtents) {
+    _min..setFrom(center)..sub(halfExtents);
+    _max..setFrom(center)..add(halfExtents);
+  }
+
+  /// Set the AABB to enclose a [sphere].
+  void setSphere(Sphere sphere) {
+    _min..splat(-sphere._radius)..add(sphere._center);
+    _max..splat(sphere._radius)..add(sphere._center);
+  }
+
+  /// Set the AABB to enclose a [triangle].
+  void setTriangle(Triangle triangle) {
+    _min.setValues(Math.min(triangle._point0.x,
+        Math.min(triangle._point1.x, triangle._point2.x)), Math.min(
+        triangle._point0.y,
+        Math.min(triangle._point1.y, triangle._point2.y)), Math.min(
+        triangle._point0.z, Math.min(triangle._point1.z, triangle._point2.z)));
+    _max.setValues(Math.max(triangle._point0.x,
+        Math.max(triangle._point1.x, triangle._point2.x)), Math.max(
+        triangle._point0.y,
+        Math.max(triangle._point1.y, triangle._point2.y)), Math.max(
+        triangle._point0.z, Math.max(triangle._point1.z, triangle._point2.z)));
+  }
+
+  /// Set the AABB to enclose a [quad].
+//  void setQuad(Quad quad) {
+//    _min.setValues(Math.min(quad._point0.x,
+//            Math.min(quad._point1.x, Math.min(quad._point2.x, quad._point3.x))),
+//        Math.min(quad._point0.y,
+//            Math.min(quad._point1.y, Math.min(quad._point2.y, quad._point3.y))),
+//        Math.min(quad._point0.z, Math.min(
+//            quad._point1.z, Math.min(quad._point2.z, quad._point3.z))));
+//    _max.setValues(Math.max(quad._point0.x,
+//            Math.max(quad._point1.x, Math.max(quad._point2.x, quad._point3.x))),
+//        Math.max(quad._point0.y,
+//            Math.max(quad._point1.y, Math.max(quad._point2.y, quad._point3.y))),
+//        Math.max(quad._point0.z, Math.max(
+//            quad._point1.z, Math.max(quad._point2.z, quad._point3.z))));
+//  }
+
+  /// Set the AABB to enclose a limited [ray] (or line segment) that is limited
+  /// by [limitMin] and [limitMax].
+//  void setRay(Ray ray, double limitMin, double limitMax) {
+//    ray.copyAt(_min, limitMin);
+//    ray.copyAt(_max, limitMax);
+//
+//    if (_max.x < _min.x) {
+//      final temp = _max.x;
+//      _max.x = _min.x;
+//      _min.x = temp;
+//    }
+//
+//    if (_max.y < _min.y) {
+//      final temp = _max.y;
+//      _max.y = _min.y;
+//      _min.y = temp;
+//    }
+//
+//    if (_max.z < _min.z) {
+//      final temp = _max.z;
+//      _max.z = _min.z;
+//      _min.z = temp;
+//    }
+//  }
+
+  /// Copy the [center] and the [halfExtends] of [this].
   void copyCenterAndHalfExtents(Vector3 center, Vector3 halfExtents) {
-    center.setFrom(_min);
-    center.add(_max);
-    center.scale(0.5);
-    halfExtents.setFrom(_max);
-    halfExtents.sub(_min);
-    halfExtents.scale(0.5);
+    center
+      ..setFrom(_min)
+      ..add(_max)
+      ..scale(0.5);
+    halfExtents
+      ..setFrom(_max)
+      ..sub(_min)
+      ..scale(0.5);
   }
 
-  void copyFrom(Aabb3 o) {
-    _min.setFrom(o._min);
-    _max.setFrom(o._max);
+  /// Copy the [center] of [this].
+  void copyCenter(Vector3 center) {
+    center
+      ..setFrom(_min)
+      ..add(_max)
+      ..scale(0.5);
   }
 
-  void copyInto(Aabb3 o) {
-    o._min.setFrom(_min);
-    o._max.setFrom(_max);
+  /// Copy the [min] and [max] from [other] into [this].
+  void copyFrom(Aabb3 other) {
+    _min.setFrom(other._min);
+    _max.setFrom(other._max);
   }
 
-  Aabb3 transform(Matrix4 T) {
-    Vector3 center = new Vector3.zero();
-    Vector3 halfExtents = new Vector3.zero();
+  /// Transform [this] by the transform [t].
+  Aabb3 transform(Matrix4 t) {
+    final center = new Vector3.zero();
+    final halfExtents = new Vector3.zero();
     copyCenterAndHalfExtents(center, halfExtents);
-    T.transform3(center);
-    T.absoluteRotate(halfExtents);
-    _min.setFrom(center);
-    _max.setFrom(center);
-
-    _min.sub(halfExtents);
-    _max.add(halfExtents);
+    t
+      ..transform3(center)
+      ..absoluteRotate(halfExtents);
+    _min
+      ..setFrom(center)
+      ..sub(halfExtents);
+    _max
+      ..setFrom(center)
+      ..add(halfExtents);
     return this;
   }
 
-  Aabb3 rotate(Matrix4 T) {
-    Vector3 center = new Vector3.zero();
-    Vector3 halfExtents = new Vector3.zero();
+  /// Rotate [this] by the rotation matrix [t].
+  Aabb3 rotate(Matrix4 t) {
+    final center = new Vector3.zero();
+    final halfExtents = new Vector3.zero();
     copyCenterAndHalfExtents(center, halfExtents);
-    T.absoluteRotate(halfExtents);
-    _min.setFrom(center);
-    _max.setFrom(center);
-
-    _min.sub(halfExtents);
-    _max.add(halfExtents);
+    t.absoluteRotate(halfExtents);
+    _min
+      ..setFrom(center)
+      ..sub(halfExtents);
+    _max
+      ..setFrom(center)
+      ..add(halfExtents);
     return this;
   }
 
-  Aabb3 transformed(Matrix4 T, Aabb3 out) {
-    out.copyFrom(this);
-    return out.transform(T);
-  }
+  /// Create a copy of [this] that is transformed by the transform [t] and store
+  /// it in [out].
+  Aabb3 transformed(Matrix4 t, Aabb3 out) => out
+    ..copyFrom(this)
+    ..transform(t);
 
-  Aabb3 rotated(Matrix4 T, Aabb3 out) {
-    out.copyFrom(this);
-    return out.rotate(T);
-  }
+  /// Create a copy of [this] that is rotated by the rotation matrix [t] and
+  /// store it in [out].
+  Aabb3 rotated(Matrix4 t, Aabb3 out) => out
+    ..copyFrom(this)
+    ..rotate(t);
 
   void getPN(Vector3 planeNormal, Vector3 outP, Vector3 outN) {
-    outP.x = planeNormal.x < 0.0 ? _min.x : _max.x;
-    outP.y = planeNormal.y < 0.0 ? _min.y : _max.y;
-    outP.z = planeNormal.z < 0.0 ? _min.z : _max.z;
+    if (planeNormal.x < 0.0) {
+      outP.x = _min.x;
+      outN.x = _max.x;
+    } else {
+      outP.x = _max.x;
+      outN.x = _min.x;
+    }
 
-    outN.x = planeNormal.x < 0.0 ? _max.x : _min.x;
-    outN.y = planeNormal.y < 0.0 ? _max.y : _min.y;
-    outN.z = planeNormal.z < 0.0 ? _max.z : _min.z;
+    if (planeNormal.y < 0.0) {
+      outP.y = _min.y;
+      outN.y = _max.y;
+    } else {
+      outP.y = _max.y;
+      outN.y = _min.y;
+    }
+
+    if (planeNormal.z < 0.0) {
+      outP.z = _min.z;
+      outN.z = _max.z;
+    } else {
+      outP.z = _max.z;
+      outN.z = _min.z;
+    }
   }
 
-  /// Set the min and max of [this] so that [this] is a hull of [this] and [other].
+  /// Set the min and max of [this] so that [this] is a hull of [this] and
+  /// [other].
   void hull(Aabb3 other) {
-    min.x = Math.min(_min.x, other.min.x);
-    min.y = Math.min(_min.y, other.min.y);
-    min.z = Math.min(_min.z, other.min.z);
-    max.x = Math.max(_max.x, other.max.x);
-    max.y = Math.max(_max.y, other.max.y);
-    max.z = Math.max(_max.z, other.max.y);
+    Vector3.min(_min, other._min, _min);
+    Vector3.max(_max, other._max, _max);
   }
 
   /// Set the min and max of [this] so that [this] contains [point].
@@ -146,99 +238,386 @@ class Aabb3 {
 
   /// Return if [this] contains [other].
   bool containsAabb3(Aabb3 other) {
-    return min.x < other.min.x &&
-        min.y < other.min.y &&
-        min.z < other.min.z &&
-        max.x > other.max.x &&
-        max.y > other.max.y &&
-        max.z > other.max.z;
+    final otherMax = other._max;
+    final otherMin = other._min;
+
+    return (_min.x < otherMin.x) &&
+        (_min.y < otherMin.y) &&
+        (_min.z < otherMin.z) &&
+        (_max.x > otherMax.x) &&
+        (_max.y > otherMax.y) &&
+        (_max.z > otherMax.z);
   }
 
   /// Return if [this] contains [other].
   bool containsSphere(Sphere other) {
-    final sphereExtends = new Vector3.zero().splat(other.radius);
-    final sphereBox = new Aabb3.minMax(other.center.clone().sub(sphereExtends),
-        other.center.clone().add(sphereExtends));
+    final boxExtends = new Vector3.all(other._radius);
+    final sphereBox = new Aabb3.centerAndHalfExtents(other._center, boxExtends);
 
     return containsAabb3(sphereBox);
   }
 
   /// Return if [this] contains [other].
   bool containsVector3(Vector3 other) {
-    return min.x < other.x &&
-        min.y < other.y &&
-        min.z < other.z &&
-        max.x > other.x &&
-        max.y > other.y &&
-        max.z > other.z;
+    return (_min.x < other.x) &&
+        (_min.y < other.y) &&
+        (_min.z < other.z) &&
+        (_max.x > other.x) &&
+        (_max.y > other.y) &&
+        (_max.z > other.z);
   }
 
   /// Return if [this] contains [other].
-  bool containsTriangle(Triangle other) {
-    return containsVector3(other.point0) &&
-        containsVector3(other.point1) &&
-        containsVector3(other.point2);
-  }
+  bool containsTriangle(Triangle other) => containsVector3(other._point0) &&
+      containsVector3(other._point1) &&
+      containsVector3(other._point2);
 
   /// Return if [this] intersects with [other].
   bool intersectsWithAabb3(Aabb3 other) {
-    return min.x <= other.max.x &&
-        min.y <= other.max.y &&
-        min.z <= other.max.z &&
-        max.x >= other.min.x &&
-        max.y >= other.min.y &&
-        max.z >= other.min.z;
+    final otherMax = other._max;
+    final otherMin = other._min;
+
+    return (_min.x <= otherMax.x) &&
+        (_min.y <= otherMax.y) &&
+        (_min.z <= otherMax.z) &&
+        (_max.x >= otherMin.x) &&
+        (_max.y >= otherMin.y) &&
+        (_max.z >= otherMin.z);
   }
 
   /// Return if [this] intersects with [other].
   bool intersectsWithSphere(Sphere other) {
-    double d = 0.0;
-    double e = 0.0;
+    final center = other._center;
+    final radius = other._radius;
+    var d = 0.0;
+    var e = 0.0;
 
-    for (int i = 0; i < 3; ++i) {
-      if ((e = other.center[i] - min[i]) < 0.0) {
-        if (e < -other.radius) {
+    for (var i = 0; i < 3; ++i) {
+      if ((e = center[i] - _min[i]) < 0.0) {
+        if (e < -radius) {
           return false;
         }
 
         d = d + e * e;
-      } else if ((e = other.center[i] - max[i]) > 0.0) {
-        if (e > other.radius) {
-          return false;
-        }
+      } else {
+        if ((e = center[i] - _max[i]) > 0.0) {
+          if (e > radius) {
+            return false;
+          }
 
-        d = d + e * e;
+          d = d + e * e;
+        }
       }
     }
 
-    return d <= other.radius * other.radius;
+    return d <= radius * radius;
   }
 
   /// Return if [this] intersects with [other].
   bool intersectsWithVector3(Vector3 other) {
-    return min.x <= other.x &&
-        min.y <= other.y &&
-        min.z <= other.z &&
-        max.x >= other.x &&
-        max.y >= other.y &&
-        max.z >= other.z;
+    return (_min.x <= other.x) &&
+        (_min.y <= other.y) &&
+        (_min.z <= other.z) &&
+        (_max.x >= other.x) &&
+        (_max.y >= other.y) &&
+        (_max.z >= other.z);
   }
-  
+
+  // Avoid allocating these instance on every call to intersectsWithTriangle
+//  static final _aabbCenter = new Vector3.zero();
+//  static final _aabbHalfExtents = new Vector3.zero();
+//  static final _v0 = new Vector3.zero();
+//  static final _v1 = new Vector3.zero();
+//  static final _v2 = new Vector3.zero();
+//  static final _f0 = new Vector3.zero();
+//  static final _f1 = new Vector3.zero();
+//  static final _f2 = new Vector3.zero();
+//  static final _trianglePlane = new Plane();
+//
+//  static final _u0 = new Vector3(1.0, 0.0, 0.0);
+//  static final _u1 = new Vector3(0.0, 1.0, 0.0);
+//  static final _u2 = new Vector3(0.0, 0.0, 1.0);
+
+  /// Return if [this] intersects with [other].
+  /// [epsilon] allows the caller to specify a custum eplsilon value that should
+  /// be used for the test. If [result] is specified and an intersection is
+  /// found, result is modified to contain more details about the type of
+  /// intersection.
+//  bool intersectsWithTriangle(Triangle other,
+//      {double epsilon: 1e-3, IntersectionResult result}) {
+//    double p0, p1, p2, r, len;
+//    double a;
+//
+//    // This line isn't required if we are using center and half extents to
+//    // define a aabb
+//    copyCenterAndHalfExtents(_aabbCenter, _aabbHalfExtents);
+//
+//    // Translate triangle as conceptually moving AABB to origin
+//    _v0
+//      ..setFrom(other.point0)
+//      ..sub(_aabbCenter);
+//    _v1
+//      ..setFrom(other.point1)
+//      ..sub(_aabbCenter);
+//    _v2
+//      ..setFrom(other.point2)
+//      ..sub(_aabbCenter);
+//
+//    // Translate triangle as conceptually moving AABB to origin
+//    _f0
+//      ..setFrom(_v1)
+//      ..sub(_v0);
+//    _f1
+//      ..setFrom(_v2)
+//      ..sub(_v1);
+//    _f2
+//      ..setFrom(_v0)
+//      ..sub(_v2);
+//
+//    // Test axes a00..a22 (category 3)
+//    // Test axis a00
+//    len = _f0.y * _f0.y + _f0.z * _f0.z;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.z * _f0.y - _v0.y * _f0.z;
+//      p2 = _v2.z * _f0.y - _v2.y * _f0.z;
+//      r = _aabbHalfExtents[1] * _f0.z.abs() + _aabbHalfExtents[2] * _f0.y.abs();
+//      if (Math.max(-Math.max(p0, p2), Math.min(p0, p2)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p2) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u0.crossInto(_f0, result.axis);
+//      }
+//    }
+//
+//    // Test axis a01
+//    len = _f1.y * _f1.y + _f1.z * _f1.z;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.z * _f1.y - _v0.y * _f1.z;
+//      p1 = _v1.z * _f1.y - _v1.y * _f1.z;
+//      r = _aabbHalfExtents[1] * _f1.z.abs() + _aabbHalfExtents[2] * _f1.y.abs();
+//      if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p1) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u0.crossInto(_f1, result.axis);
+//      }
+//    }
+//
+//    // Test axis a02
+//    len = _f2.y * _f2.y + _f2.z * _f2.z;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.z * _f2.y - _v0.y * _f2.z;
+//      p1 = _v1.z * _f2.y - _v1.y * _f2.z;
+//      r = _aabbHalfExtents[1] * _f2.z.abs() + _aabbHalfExtents[2] * _f2.y.abs();
+//      if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p1) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u0.crossInto(_f2, result.axis);
+//      }
+//    }
+//
+//    // Test axis a10
+//    len = _f0.x * _f0.x + _f0.z * _f0.z;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.x * _f0.z - _v0.z * _f0.x;
+//      p2 = _v2.x * _f0.z - _v2.z * _f0.x;
+//      r = _aabbHalfExtents[0] * _f0.z.abs() + _aabbHalfExtents[2] * _f0.x.abs();
+//      if (Math.max(-Math.max(p0, p2), Math.min(p0, p2)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p2) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u1.crossInto(_f0, result.axis);
+//      }
+//    }
+//
+//    // Test axis a11
+//    len = _f1.x * _f1.x + _f1.z * _f1.z;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.x * _f1.z - _v0.z * _f1.x;
+//      p1 = _v1.x * _f1.z - _v1.z * _f1.x;
+//      r = _aabbHalfExtents[0] * _f1.z.abs() + _aabbHalfExtents[2] * _f1.x.abs();
+//      if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p1) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u1.crossInto(_f1, result.axis);
+//      }
+//    }
+//
+//    // Test axis a12
+//    len = _f2.x * _f2.x + _f2.z * _f2.z;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.x * _f2.z - _v0.z * _f2.x;
+//      p1 = _v1.x * _f2.z - _v1.z * _f2.x;
+//      r = _aabbHalfExtents[0] * _f2.z.abs() + _aabbHalfExtents[2] * _f2.x.abs();
+//      if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p1) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u1.crossInto(_f2, result.axis);
+//      }
+//    }
+//
+//    // Test axis a20
+//    len = _f0.x * _f0.x + _f0.y * _f0.y;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.y * _f0.x - _v0.x * _f0.y;
+//      p2 = _v2.y * _f0.x - _v2.x * _f0.y;
+//      r = _aabbHalfExtents[0] * _f0.y.abs() + _aabbHalfExtents[1] * _f0.x.abs();
+//      if (Math.max(-Math.max(p0, p2), Math.min(p0, p2)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p2) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u2.crossInto(_f0, result.axis);
+//      }
+//    }
+//
+//    // Test axis a21
+//    len = _f1.x * _f1.x + _f1.y * _f1.y;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.y * _f1.x - _v0.x * _f1.y;
+//      p1 = _v1.y * _f1.x - _v1.x * _f1.y;
+//      r = _aabbHalfExtents[0] * _f1.y.abs() + _aabbHalfExtents[1] * _f1.x.abs();
+//      if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p1) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u2.crossInto(_f1, result.axis);
+//      }
+//    }
+//
+//    // Test axis a22
+//    len = _f2.x * _f2.x + _f2.y * _f2.y;
+//    if (len > epsilon) {
+//      // Ignore tests on degenerate axes.
+//      p0 = _v0.y * _f2.x - _v0.x * _f2.y;
+//      p1 = _v1.y * _f2.x - _v1.x * _f2.y;
+//      r = _aabbHalfExtents[0] * _f2.y.abs() + _aabbHalfExtents[1] * _f2.x.abs();
+//      if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r + epsilon) {
+//        return false; // Axis is a separating axis
+//      }
+//
+//      a = Math.min(p0, p1) - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        _u2.crossInto(_f2, result.axis);
+//      }
+//    }
+//
+//    // Test the three axes corresponding to the face normals of AABB b (category 1). // Exit if...
+//    // ... [-e0, e0] and [min(v0.x,v1.x,v2.x), max(v0.x,v1.x,v2.x)] do not overlap
+//    if (Math.max(_v0.x, Math.max(_v1.x, _v2.x)) < -_aabbHalfExtents[0] ||
+//        Math.min(_v0.x, Math.min(_v1.x, _v2.x)) > _aabbHalfExtents[0]) {
+//      return false;
+//    }
+//    a = Math.min(_v0.x, Math.min(_v1.x, _v2.x)) - _aabbHalfExtents[0];
+//    if (result != null && (result._depth == null || result._depth < a)) {
+//      result._depth = a;
+//      result.axis.setFrom(_u0);
+//    }
+//    // ... [-e1, e1] and [min(v0.y,v1.y,v2.y), max(v0.y,v1.y,v2.y)] do not overlap
+//    if (Math.max(_v0.y, Math.max(_v1.y, _v2.y)) < -_aabbHalfExtents[1] ||
+//        Math.min(_v0.y, Math.min(_v1.y, _v2.y)) > _aabbHalfExtents[1]) {
+//      return false;
+//    }
+//    a = Math.min(_v0.y, Math.min(_v1.y, _v2.y)) - _aabbHalfExtents[1];
+//    if (result != null && (result._depth == null || result._depth < a)) {
+//      result._depth = a;
+//      result.axis.setFrom(_u1);
+//    }
+//    // ... [-e2, e2] and [min(v0.z,v1.z,v2.z), max(v0.z,v1.z,v2.z)] do not overlap
+//    if (Math.max(_v0.z, Math.max(_v1.z, _v2.z)) < -_aabbHalfExtents[2] ||
+//        Math.min(_v0.z, Math.min(_v1.z, _v2.z)) > _aabbHalfExtents[2]) {
+//      return false;
+//    }
+//    a = Math.min(_v0.z, Math.min(_v1.z, _v2.z)) - _aabbHalfExtents[2];
+//    if (result != null && (result._depth == null || result._depth < a)) {
+//      result._depth = a;
+//      result.axis.setFrom(_u2);
+//    }
+//
+//    // It seems like that wee need to move the edges before creating the
+//    // plane
+//    _v0.add(_aabbCenter);
+//
+//    // Test separating axis corresponding to triangle face normal (category 2)
+//    _f0.crossInto(_f1, _trianglePlane.normal);
+//    _trianglePlane.constant = _trianglePlane.normal.dot(_v0);
+//    return intersectsWithPlane(_trianglePlane, result: result);
+//  }
+
+//  /// Return if [this] intersects with [other]
+//  bool intersectsWithPlane(Plane other, {IntersectionResult result}) {
+//    // This line is not necessary with a (center, extents) AABB representation
+//    copyCenterAndHalfExtents(_aabbCenter, _aabbHalfExtents);
+//
+//    // Compute the projection interval radius of b onto L(t) = b.c + t * p.n
+//    double r = _aabbHalfExtents[0] * other.normal[0].abs() +
+//        _aabbHalfExtents[1] * other.normal[1].abs() +
+//        _aabbHalfExtents[2] * other.normal[2].abs();
+//    // Compute distance of box center from plane
+//    double s = other.normal.dot(_aabbCenter) - other.constant;
+//    // Intersection occurs when distance s falls within [-r,+r] interval
+//    if (s.abs() <= r) {
+//      final a = s - r;
+//      if (result != null && (result._depth == null || result._depth < a)) {
+//        result._depth = a;
+//        result.axis.setFrom(other.normal);
+//      }
+//      return true;
+//    }
+//
+//    return false;
+//  }
+
   /*
    * Additions from three.js
    */
-  
+
   Aabb3.fromPoints(List<Vector3> points)
       : _min = new Vector3.zero(),
         _max = new Vector3.zero() {
     setFromPoints(points);
   }
-  
+
   factory Aabb3.fromCenterAndSize(Vector3 center, Vector3 size) {
     var halfSize = size * 0.5;
     return new Aabb3.minMax(center - halfSize, center + halfSize);
   }
-  
+
   Aabb3.fromObject(Object3D object)
       : _min = new Vector3.zero(),
         _max = new Vector3.zero() {
@@ -251,7 +630,7 @@ class Aabb3 {
 
       if (geometry != null) {
         if (geometry is Geometry) {
-          geometry.vertices.forEach((vertex) => 
+          geometry.vertices.forEach((vertex) =>
               hullPoint(new Vector3.copy(vertex)..applyMatrix4(node.matrixWorld)));
         } else if (geometry is BufferGeometry && geometry.aPosition != null) {
           var positions = geometry.aPosition.array;
@@ -264,38 +643,38 @@ class Aabb3 {
       }
     });
   }
-  
+
   bool get isEmpty => _max.x < _min.x || _max.y < _min.y || _max.z < _min.z;
-  
+
   Vector3 get size => _max - _min;
-  
+
   Aabb3 setFromPoints(List<Vector3> points) {
     makeEmpty();
     points.forEach((point) => hullPoint(point));
     return this;
   }
-  
+
   Aabb3 makeEmpty() {
     _min.splat(double.INFINITY);
     _max.splat(-double.INFINITY);
     return this;
   }
-  
+
   // This can potentially have a divide by zero if the box
   // has a size dimension of 0.
-  Vector3 getParameter(Vector3 point) => 
+  Vector3 getParameter(Vector3 point) =>
       new Vector3((point.x - _min.x) / (_max.x - _min.x),
                   (point.y - _min.y) / (_max.y - _min.y),
                   (point.z - _min.z) / (_max.z - _min.z));
-  
+
   Vector3 clampPoint(Vector3 point) => new Vector3.copy(point)..clamp(_min, _max);
-  
+
   Aabb3 union(Aabb3 box) {
     Vector3.min(_min, box._min, _min);
     Vector3.max(_max, box._max, _max);
     return this;
   }
-  
+
   Aabb3 applyMatrix4(Matrix4 matrix) {
     // NOTE: I am using a binary pattern to specify all 2^3 combinations below
     makeEmpty();
@@ -311,6 +690,6 @@ class Aabb3 {
     ]);
     return this;
   }
-  
+
   Aabb3 clone() => new Aabb3.minMax(_min, _max);
 }

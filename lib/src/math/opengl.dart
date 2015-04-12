@@ -1,79 +1,77 @@
-/*
-  Copyright (C) 2013 John McCutchan <john@johnmccutchan.com>
-
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
-
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
-
-  1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
-*/
+// Copyright (c) 2015, Google Inc. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 part of three;
 
-/**
- * Constructs a rotation matrix in [rotationMatrix].
- *
- * Sets [rotationMatrix] to a rotation matrix built from
- * [forwardDirection] and [upDirection]. The right direction is
- * constructed to be orthogonal to [forwardDirection] and
- * [upDirection].
- *
- * [forwardDirection] specifies the direction of the forward vector.
- * [upDirection] specifies the direction of the up vector.
- *
- * Use case is to build the per-model rotation matrix from vectors
- * [forwardDirection] and [upDirection]. See sample code below for
- * a context.
- * 
- * class Model {
- * 
- *   Vector3 _center = new Vector3.zero();        // per-model translation
- *   Vector3 _scale = new Vector3(1.0, 1.0, 1.0); // per-model scaling
- *   Matrix4 _rotation = new Matrix4.identity();  // per-model rotation
- *   Matrix4 _MV = new Matrix4.identity();        // per-model model-view
- * 
- *   void updateModelViewUniform(RenderingContext gl, UniformLocation u_MV,
- *       Vector3 camPosition, camFocusPosition, camUpDirection) {
- * 
- *     // V = View (inverse of camera)
- *     // T = Translation
- *     // R = Rotation
- *     // S = Scaling
- *     setViewMatrix(_MV, camPosition, camFocusPosition, camUpDirection); // MV = V
- *     _MV.translate(_center); // MV = V*T
- *     _MV.multiply(_rotation); // MV = V*T*R <-- _rotation is updated with setRotationMatrix(_rotation, forward, up);
- *     _MV.scale(_scale); // MV = V*T*R*S
- * 
- *     gl.uniformMatrix4fv(u_MV, false, _MV.storage);
- *   }
- * 
- * }
- */
+/// Constructs a rotation matrix in [rotationMatrix].
+///
+/// Sets [rotationMatrix] to a rotation matrix built from
+/// [forwardDirection] and [upDirection]. The right direction is
+/// constructed to be orthogonal to [forwardDirection] and
+/// [upDirection].
+///
+/// [forwardDirection] specifies the direction of the forward vector.
+/// [upDirection] specifies the direction of the up vector.
+///
+/// Use case is to build the per-model rotation matrix from vectors
+/// [forwardDirection] and [upDirection]. See sample code below for
+/// a context.
+///
+///     class Model {
+///       Vector3 _center = new Vector3.zero();        // per-model translation
+///       Vector3 _scale = new Vector3(1.0, 1.0, 1.0); // per-model scaling
+///       Matrix4 _rotation = new Matrix4.identity();  // per-model rotation
+///       Matrix4 _MV = new Matrix4.identity();        // per-model model-view
+///
+///       void updateModelViewUniform(RenderingContext gl, UniformLocation u_MV,
+///         Vector3 camPosition, camFocusPosition, camUpDirection) {
+///
+///         // V = View (inverse of camera)
+///         // T = Translation
+///         // R = Rotation
+///         // S = Scaling
+///         setViewMatrix(_MV, camPosition, camFocusPosition, camUpDirection); // MV = V
+///         _MV.translate(_center); // MV = V*T
+///         _MV.multiply(_rotation); // MV = V*T*R
+///         // _rotation is updated with setRotationMatrix(_rotation, forward, up);
+///         _MV.scale(_scale); // MV = V*T*R*S
+///
+///         gl.uniformMatrix4fv(u_MV, false, _MV.storage);
+///       }
+///     }
 void setRotationMatrix(
-    Matrix4 rotationMatrix, Vector3 forwardDirection, upDirection) {
-  Vector3 right = forwardDirection.cross(upDirection).normalize();
-  rotationMatrix.setValues(forwardDirection[0], upDirection[0], right[0], 0.0,
-      forwardDirection[1], upDirection[1], right[1], 0.0, forwardDirection[2],
-      upDirection[2], right[2], 0.0, 0.0, 0.0, 0.0, 1.0);
+    Matrix4 rotationMatrix, Vector3 forwardDirection, Vector3 upDirection) {
+  setModelMatrix(rotationMatrix, forwardDirection, upDirection, 0.0, 0.0, 0.0);
 }
 
-/**
- * Constructs an OpenGL view matrix in [viewMatrix].
- *
- * [cameraPosition] specifies the position of the camera.
- * [cameraFocusPosition] specifies the position the camera is focused on.
- * [upDirection] specifies the direction of the up vector (usually, +Y).
- */
+/// Constructs an OpenGL model matrix in [modelMatrix].
+/// Model transformation is the inverse of the view transformation.
+/// Model transformation is also known as "camera" transformation.
+/// Model matrix is commonly used to compute a object location/orientation into
+/// the full model-view stack.
+///
+/// [forwardDirection] specifies the direction of the forward vector.
+/// [upDirection] specifies the direction of the up vector.
+/// [tx],[ty],[tz] specifies the position of the object.
+void setModelMatrix(Matrix4 modelMatrix, Vector3 forwardDirection,
+    Vector3 upDirection, double tx, double ty, double tz) {
+  Vector3 right = forwardDirection.cross(upDirection).normalize();
+  Vector3 c1 = right;
+  Vector3 c2 = upDirection;
+  Vector3 c3 = -forwardDirection;
+  modelMatrix.setValues(c1[0], c1[1], c1[2], 0.0, c2[0], c2[1], c2[2], 0.0,
+      c3[0], c3[1], c3[2], 0.0, tx, ty, tz, 1.0);
+}
+
+/// Constructs an OpenGL view matrix in [viewMatrix].
+/// View transformation is the inverse of the model transformation.
+/// View matrix is commonly used to compute the camera location/orientation into
+/// the full model-view stack.
+///
+/// [cameraPosition] specifies the position of the camera.
+/// [cameraFocusPosition] specifies the position the camera is focused on.
+/// [upDirection] specifies the direction of the up vector (usually, +Y).
 void setViewMatrix(Matrix4 viewMatrix, Vector3 cameraPosition,
     Vector3 cameraFocusPosition, Vector3 upDirection) {
   Vector3 z = cameraPosition - cameraFocusPosition;
@@ -82,31 +80,20 @@ void setViewMatrix(Matrix4 viewMatrix, Vector3 cameraPosition,
   x.normalize();
   Vector3 y = z.cross(x);
   y.normalize();
-  viewMatrix.setZero();
-  viewMatrix.setEntry(3, 3, 1.0);
-  viewMatrix.setEntry(0, 0, x.x);
-  viewMatrix.setEntry(1, 0, x.y);
-  viewMatrix.setEntry(2, 0, x.z);
-  viewMatrix.setEntry(0, 1, y.x);
-  viewMatrix.setEntry(1, 1, y.y);
-  viewMatrix.setEntry(2, 1, y.z);
-  viewMatrix.setEntry(0, 2, z.x);
-  viewMatrix.setEntry(1, 2, z.y);
-  viewMatrix.setEntry(2, 2, z.z);
-  viewMatrix.transpose();
-  Vector3 rotatedEye = viewMatrix * -cameraPosition;
-  viewMatrix.setEntry(0, 3, rotatedEye.x);
-  viewMatrix.setEntry(1, 3, rotatedEye.y);
-  viewMatrix.setEntry(2, 3, rotatedEye.z);
+
+  double rotatedEyeX = -x.dot(cameraPosition);
+  double rotatedEyeY = -y.dot(cameraPosition);
+  double rotatedEyeZ = -z.dot(cameraPosition);
+
+  viewMatrix.setValues(x[0], y[0], z[0], 0.0, x[1], y[1], z[1], 0.0, x[2], y[2],
+      z[2], 0.0, rotatedEyeX, rotatedEyeY, rotatedEyeZ, 1.0);
 }
 
-/**
- * Constructs a new OpenGL view matrix.
- *
- * [cameraPosition] specifies the position of the camera.
- * [cameraFocusPosition] specifies the position the camera is focused on.
- * [upDirection] specifies the direction of the up vector (usually, +Y).
- */
+/// Constructs a new OpenGL view matrix.
+///
+/// [cameraPosition] specifies the position of the camera.
+/// [cameraFocusPosition] specifies the position the camera is focused on.
+/// [upDirection] specifies the direction of the up vector (usually, +Y).
 Matrix4 makeViewMatrix(
     Vector3 cameraPosition, Vector3 cameraFocusPosition, Vector3 upDirection) {
   Matrix4 r = new Matrix4.zero();
@@ -114,63 +101,51 @@ Matrix4 makeViewMatrix(
   return r;
 }
 
-/**
- * Constructs an OpenGL perspective projection matrix in [perspectiveMatrix].
- *
- * [fovYRadians] specifies the field of view angle, in radians, in the y
- * direction.
- * [aspectRatio] specifies the aspect ratio that determines the field of view
- * in the x direction. The aspect ratio of x (width) to y (height).
- * [zNear] specifies the distance from the viewer to the near plane
- * (always positive).
- * [zFar] specifies the distance from the viewer to the far plane
- * (always positive).
- */
-void setPerspectiveMatrix(Matrix4 perspectiveMatrix, num fovYRadians,
-    num aspectRatio, num zNear, num zFar) {
-  double height = Math.tan(fovYRadians.toDouble() * 0.5) * zNear.toDouble();
-  double width = height * aspectRatio.toDouble();
+/// Constructs an OpenGL perspective projection matrix in [perspectiveMatrix].
+///
+/// [fovYRadians] specifies the field of view angle, in radians, in the y
+/// direction.
+/// [aspectRatio] specifies the aspect ratio that determines the field of view
+/// in the x direction. The aspect ratio of x (width) to y (height).
+/// [zNear] specifies the distance from the viewer to the near plane
+/// (always positive).
+/// [zFar] specifies the distance from the viewer to the far plane
+/// (always positive).
+void setPerspectiveMatrix(Matrix4 perspectiveMatrix, double fovYRadians,
+    double aspectRatio, double zNear, double zFar) {
+  double height = Math.tan(fovYRadians * 0.5) * zNear;
+  double width = height * aspectRatio;
   setFrustumMatrix(
       perspectiveMatrix, -width, width, -height, height, zNear, zFar);
 }
 
-/**
- * Constructs a new OpenGL perspective projection matrix.
- *
- * [fovYRadians] specifies the field of view angle, in radians, in the y
- * direction.
- * [aspectRatio] specifies the aspect ratio that determines the field of view
- * in the x direction. The aspect ratio of x (width) to y (height).
- * [zNear] specifies the distance from the viewer to the near plane
- * (always positive).
- * [zFar] specifies the distance from the viewer to the far plane
- * (always positive).
- */
+/// Constructs a new OpenGL perspective projection matrix.
+///
+/// [fovYRadians] specifies the field of view angle, in radians, in the y
+/// direction.
+/// [aspectRatio] specifies the aspect ratio that determines the field of view
+/// in the x direction. The aspect ratio of x (width) to y (height).
+/// [zNear] specifies the distance from the viewer to the near plane
+/// (always positive).
+/// [zFar] specifies the distance from the viewer to the far plane
+/// (always positive).
 Matrix4 makePerspectiveMatrix(
-    num fovYRadians, num aspectRatio, num zNear, num zFar) {
-  double height = Math.tan(fovYRadians.toDouble() * 0.5) * zNear.toDouble();
-  double width = height * aspectRatio.toDouble();
-  return makeFrustumMatrix(-width, width, -height, height, zNear, zFar);
+    double fovYRadians, double aspectRatio, double zNear, double zFar) {
+  Matrix4 r = new Matrix4.zero();
+  setPerspectiveMatrix(r, fovYRadians, aspectRatio, zNear, zFar);
+  return r;
 }
 
-/**
- * Constructs an OpenGL perspective projection matrix in [perspectiveMatrix].
- *
- * [left], [right] specify the coordinates for the left and right vertical
- * clipping planes.
- * [bottom], [top] specify the coordinates for the bottom and top horizontal
- * clipping planes.
- * [near], [far] specify the coordinates to the near and far depth clipping
- * planes.
- */
-void setFrustumMatrix(Matrix4 perspectiveMatrix, num left, num right,
-    num bottom, num top, num near, num far) {
-  left = left.toDouble();
-  right = right.toDouble();
-  bottom = bottom.toDouble();
-  top = top.toDouble();
-  near = near.toDouble();
-  far = far.toDouble();
+/// Constructs an OpenGL perspective projection matrix in [perspectiveMatrix].
+///
+/// [left], [right] specify the coordinates for the left and right vertical
+/// clipping planes.
+/// [bottom], [top] specify the coordinates for the bottom and top horizontal
+/// clipping planes.
+/// [near], [far] specify the coordinates to the near and far depth clipping
+/// planes.
+void setFrustumMatrix(Matrix4 perspectiveMatrix, double left, double right,
+    double bottom, double top, double near, double far) {
   double two_near = 2.0 * near;
   double right_minus_left = right - left;
   double top_minus_bottom = top - bottom;
@@ -185,41 +160,31 @@ void setFrustumMatrix(Matrix4 perspectiveMatrix, num left, num right,
   view.setEntry(2, 3, -(two_near * far) / far_minus_near);
 }
 
-/**
- * Constructs a new OpenGL perspective projection matrix.
- *
- * [left], [right] specify the coordinates for the left and right vertical
- * clipping planes.
- * [bottom], [top] specify the coordinates for the bottom and top horizontal
- * clipping planes.
- * [near], [far] specify the coordinates to the near and far depth clipping
- * planes.
- */
-Matrix4 makeFrustumMatrix(
-    num left, num right, num bottom, num top, num near, num far) {
+/// Constructs a new OpenGL perspective projection matrix.
+///
+/// [left], [right] specify the coordinates for the left and right vertical
+/// clipping planes.
+/// [bottom], [top] specify the coordinates for the bottom and top horizontal
+/// clipping planes.
+/// [near], [far] specify the coordinates to the near and far depth clipping
+/// planes.
+Matrix4 makeFrustumMatrix(double left, double right, double bottom, double top,
+    double near, double far) {
   Matrix4 view = new Matrix4.zero();
   setFrustumMatrix(view, left, right, bottom, top, near, far);
   return view;
 }
 
-/**
- * Constructs an OpenGL orthographic projection matrix in [orthographicMatrix].
- *
- * [left], [right] specify the coordinates for the left and right vertical
- * clipping planes.
- * [bottom], [top] specify the coordinates for the bottom and top horizontal
- * clipping planes.
- * [near], [far] specify the coordinates to the near and far depth clipping
- * planes.
- */
-void setOrthographicMatrix(Matrix4 orthographicMatrix, num left, num right,
-    num bottom, num top, num near, num far) {
-  left = left.toDouble();
-  right = right.toDouble();
-  bottom = bottom.toDouble();
-  top = top.toDouble();
-  near = near.toDouble();
-  far = far.toDouble();
+/// Constructs an OpenGL orthographic projection matrix in [orthographicMatrix].
+///
+/// [left], [right] specify the coordinates for the left and right vertical
+/// clipping planes.
+/// [bottom], [top] specify the coordinates for the bottom and top horizontal
+/// clipping planes.
+/// [near], [far] specify the coordinates to the near and far depth clipping
+/// planes.
+void setOrthographicMatrix(Matrix4 orthographicMatrix, double left,
+    double right, double bottom, double top, double near, double far) {
   double rml = right - left;
   double rpl = right + left;
   double tmb = top - bottom;
@@ -236,27 +201,23 @@ void setOrthographicMatrix(Matrix4 orthographicMatrix, num left, num right,
   r.setEntry(3, 3, 1.0);
 }
 
-/**
- * Constructs a new OpenGL orthographic projection matrix.
- *
- * [left], [right] specify the coordinates for the left and right vertical
- * clipping planes.
- * [bottom], [top] specify the coordinates for the bottom and top horizontal
- * clipping planes.
- * [near], [far] specify the coordinates to the near and far depth clipping
- * planes.
- */
-Matrix4 makeOrthographicMatrix(
-    num left, num right, num bottom, num top, num near, num far) {
+/// Constructs a new OpenGL orthographic projection matrix.
+///
+/// [left], [right] specify the coordinates for the left and right vertical
+/// clipping planes.
+/// [bottom], [top] specify the coordinates for the bottom and top horizontal
+/// clipping planes.
+/// [near], [far] specify the coordinates to the near and far depth clipping
+/// planes.
+Matrix4 makeOrthographicMatrix(double left, double right, double bottom,
+    double top, double near, double far) {
   Matrix4 r = new Matrix4.zero();
   setOrthographicMatrix(r, left, right, bottom, top, near, far);
   return r;
 }
 
-/**
- * Returns a transformation matrix that transforms points onto
- * the plane specified with [planeNormal] and [planePoint]
- */
+/// Returns a transformation matrix that transforms points onto
+/// the plane specified with [planeNormal] and [planePoint].
 Matrix4 makePlaneProjection(Vector3 planeNormal, Vector3 planePoint) {
   Vector4 v = new Vector4(planeNormal.storage[0], planeNormal.storage[1],
       planeNormal.storage[2], 0.0);
@@ -270,10 +231,8 @@ Matrix4 makePlaneProjection(Vector3 planeNormal, Vector3 planePoint) {
   return r;
 }
 
-/**
- * Returns a transformation matrix that transforms points by reflecting
- * them through the plane specified with [planeNormal] and [planePoint]
- */
+/// Returns a transformation matrix that transforms points by reflecting
+/// them through the plane specified with [planeNormal] and [planePoint].
 Matrix4 makePlaneReflection(Vector3 planeNormal, Vector3 planePoint) {
   Vector4 v = new Vector4(planeNormal.storage[0], planeNormal.storage[1],
       planeNormal.storage[2], 0.0);
@@ -281,7 +240,7 @@ Matrix4 makePlaneReflection(Vector3 planeNormal, Vector3 planePoint) {
   outer.scale(2.0);
   Matrix4 r = new Matrix4.zero();
   r = r - outer;
-  double scale = 2.0 * dot3(planePoint, planeNormal);
+  double scale = 2.0 * planePoint.dot(planeNormal);
   Vector3 scaledNormal = (planeNormal.scaled(scale));
   Vector4 T = new Vector4(scaledNormal.storage[0], scaledNormal.storage[1],
       scaledNormal.storage[2], 1.0);
@@ -289,20 +248,17 @@ Matrix4 makePlaneReflection(Vector3 planeNormal, Vector3 planePoint) {
   return r;
 }
 
-/**
- * On success, Sets [pickWorld] to be the world space position of
- * the screen space [pickX], [pickY], and [pickZ].
- *
- * The viewport is specified by ([viewportX], [viewportWidth]) and
- * ([viewportY], [viewportHeight]).
- *
- * [cameraMatrix] includes both the projection and view transforms.
- *
- * [pickZ] is typically either 0.0 (near plane) or 1.0 (far plane).
- *
- * Returns false on error, for example, the mouse is not in the viewport
- *
- */
+/// On success, Sets [pickWorld] to be the world space position of
+/// the screen space [pickX], [pickY], and [pickZ].
+///
+/// The viewport is specified by ([viewportX], [viewportWidth]) and
+/// ([viewportY], [viewportHeight]).
+///
+/// [cameraMatrix] includes both the projection and view transforms.
+///
+/// [pickZ] is typically either 0.0 (near plane) or 1.0 (far plane).
+///
+/// Returns false on error, for example, the mouse is not in the viewport
 bool unproject(Matrix4 cameraMatrix, num viewportX, num viewportWidth,
     num viewportY, num viewportHeight, num pickX, num pickY, num pickZ,
     Vector3 pickWorld) {
@@ -346,19 +302,16 @@ bool unproject(Matrix4 cameraMatrix, num viewportX, num viewportWidth,
   return true;
 }
 
-/**
- * On success, [rayNear] and [rayFar] are the points where
- * the screen space [pickX], [pickY] intersect with the near and far
- * planes respectively.
- *
- * The viewport is specified by ([viewportX], [viewportWidth]) and
- * ([viewportY], [viewportHeight]).
- *
- * [cameraMatrix] includes both the projection and view transforms.
- *
- * Returns false on error, for example, the mouse is not in the viewport
- *
- */
+/// On success, [rayNear] and [rayFar] are the points where
+/// the screen space [pickX], [pickY] intersect with the near and far
+/// planes respectively.
+///
+/// The viewport is specified by ([viewportX], [viewportWidth]) and
+/// ([viewportY], [viewportHeight]).
+///
+/// [cameraMatrix] includes both the projection and view transforms.
+///
+/// Returns false on error, for example, the mouse is not in the viewport.
 bool pickRay(Matrix4 cameraMatrix, num viewportX, num viewportWidth,
     num viewportY, num viewportHeight, num pickX, num pickY, Vector3 rayNear,
     Vector3 rayFar) {
