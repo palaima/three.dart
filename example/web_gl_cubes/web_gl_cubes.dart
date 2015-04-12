@@ -91,10 +91,11 @@ void init() {
   var rnd = new Math.Random();
 
   for (var i = 0; i < TRIANGLES; i += 12) {
+    var l = [0.5, 1.5, 2.5];
 
-    var x = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * randInt(0.5, 2);
-    var y = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * randInt(0.5, 2);
-    var z = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * randInt(0.5, 2);
+    var x = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[randInt(0, 3)];
+    var y = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[randInt(0, 3)];
+    var z = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[randInt(0, 3)];
 
     tt.setValues(rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble());
 

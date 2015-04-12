@@ -16,7 +16,7 @@ part of three;
 /// Base class for geometries.
 /// A geometry holds all data necessary to describe a 3D model.
 class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry with only the necessary interface methods
-  //String uuid = ThreeMath.generateUUID(); TODO
+  String uuid = ThreeMath.generateUUID();
 
   /// Name for this geometry. Default is an empty string.
   String name = '';

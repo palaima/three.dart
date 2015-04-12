@@ -1,42 +1,105 @@
-/**
+/*
  * @author alteredq / http://alteredqualia.com/
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
+ *
+ * based on r70
  */
 
+/**
+ * Math utility functions
+ */
 library ThreeMath;
 
 import "dart:math" as Math;
 
-const __d2r = Math.PI / 180;
-const __r2d = 180 / Math.PI;
+const double _degreeToRadiansFactor = Math.PI / 180;
+const double _radianToDegreesFactor = 180 / Math.PI;
 
-// Clamp value to range <a, b>
+Math.Random _rnd = new Math.Random();
+
+String generateUUID() {
+  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+  var uuid = new List(36);
+  var rnd = 0, r;
+
+  return () {
+    for (var i = 0; i < 36; i ++) {
+      if (i == 8 || i == 13 || i == 18 || i == 23) {
+        uuid[i] = '-';
+      } else if (i == 14) {
+        uuid[i] = '4';
+      } else {
+        if (rnd <= 0x02) rnd = 0x2000000 + (random16() * 0x1000000).toInt() | 0;
+        r = rnd & 0xf;
+        rnd = rnd >> 4;
+        uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+      }
+    }
+
+    return uuid.join('');
+  }();
+}
+
+/// Clamps the x to be between a and b.
 num clamp(num x, num a, num b) => (x < a) ? a : ((x > b) ? b : x);
 
-// Clamp value to range <a, inf)
+/// Clamps the x to be larger than a.
 num clampBottom(num x, num a) => x < a ? a : x;
 
-// Linear mapping from range <a1, a2> to range <b1, b2>
+/// Linear mapping of x from range [a1, a2] to range [b1, b2].
 num mapLinear(num x, num a1, num a2, num b1, num b2) => b1 + (x - a1) * (b2 - b1) / (a2 - a1);
 
-// Random float from <0, 1> with 16 bits of randomness
-// (standard Math.random() creates repetitive patterns when applied over larger space)
-num random16() => (65280 * _randomDouble + 255 * _randomDouble) / 65535;
+/// Returns a value between 0-1 that represents the percentage that x has moved between min and max,
+/// but smoothed or slowed down the closer X is to the min and max.
+double smoothstep(double x, double min, double max) {
+  if (x <= min) return 0.0;
+  if (x >= max) return 1.0;
 
-// Random integer from <low, high> interval
-num randInt(num low, num high) => low + (_randomDouble * (high - low + 1)).floor().toInt();
+  x = (x - min) / (max - min);
 
-// Random float from <low, high> interval
-num randFloat(num low, num high) => low + _randomDouble * (high - low);
+  return x * x * (3 - 2 * x);
+}
 
-// Random float from <-range/2, range/2> interval
-num randFloatSpread(num range) => range * (0.5 - _randomDouble);
+/// Returns a value between 0-1. It works the same as smoothstep, but more smooth.
+double smootherstep(double x, double min, double max) {
+  if (x <= min) return 0.0;
+  if (x >= max) return 1.0;
 
-num get _randomDouble => new Math.Random().nextDouble();
+  x = (x - min) / (max - min);
 
-num degToRad(degrees) => degrees * __d2r;
+  return x * x * x * (x * (x * 6 - 15) + 10);
+}
 
-num radToDeg(radians) => radians * __r2d;
+/// Random float from 0 to 1 with 16 bits of randomness.
+/// Standard Math.Random() creates repetitive patterns when applied over larger space.
+num random16() => (65280 * _rnd.nextDouble() + 255 * _rnd.nextDouble()) / 65535;
 
+/// Random integer from low to high interval.
+int randInt(int low, int high) => randFloat(low.toDouble(), high.toDouble()).floor();
+
+/// Random float from low to high interval.
+double randFloat(double low, double high) => low + _rnd.nextDouble() * (high - low);
+
+/// Random float from - range / 2 to range / 2 interval.
+double randFloatSpread(double range) => range * (0.5 - _rnd.nextDouble());
+
+/// Converts degrees to radians
+double degToRad(double degrees) => degrees * _degreeToRadiansFactor;
+
+/// Converts radians to degrees
+double radToDeg(double radians) => radians * _radianToDegreesFactor;
+
+bool isPowerOfTwo(int value) => (value & (value - 1)) == 0 && value != 0;
+
+int nextPowerOfTwo(int value) {
+  value--;
+  value |= value >> 1;
+  value |= value >> 2;
+  value |= value >> 4;
+  value |= value >> 8;
+  value |= value >> 16;
+  value++;
+  return value;
+}
