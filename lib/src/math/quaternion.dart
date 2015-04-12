@@ -20,25 +20,25 @@ class Quaternion {
   double get x => _storage[0];
   set x(double x) {
     _storage[0] = x;
-    _updateEuler();
+    _onChangeController.add(null);
   }
   /// Access the [y] component of the quaternion.
   double get y => _storage[1];
   set y(double y) {
     _storage[1] = y;
-    _updateEuler();
+    _onChangeController.add(null);
   }
   /// Access the [z] component of the quaternion.
   double get z => _storage[2];
   set z(double z) {
     _storage[2] = z;
-    _updateEuler();
+    _onChangeController.add(null);
   }
   /// Access the [w] component of the quaternion.
   double get w => _storage[3];
   set w(double w) {
     _storage[3] = w;
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   Quaternion._() : _storage = new Float32List(4);
@@ -95,7 +95,7 @@ class Quaternion {
     _storage[1] = sourceStorage[1];
     _storage[2] = sourceStorage[2];
     _storage[3] = sourceStorage[3];
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   /// Set the quaternion to the raw values [x], [y], [z], and [w].
@@ -104,7 +104,7 @@ class Quaternion {
     _storage[1] = y;
     _storage[2] = z;
     _storage[3] = w;
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   /// Set the quaternion with rotation of [radians] around [axis].
@@ -119,7 +119,7 @@ class Quaternion {
     _storage[1] = axisStorage[1] * halfSin;
     _storage[2] = axisStorage[2] * halfSin;
     _storage[3] = Math.cos(radians * 0.5);
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   /// Set the quaternion with rotation from a rotation matrix [rotationMatrix].
@@ -155,7 +155,7 @@ class Quaternion {
               rotationMatrixStorage[rotationMatrix.index(i, k)]) *
           s;
     }
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   /// Set the quaternion to a random rotation. The random number generator [rn]
@@ -236,7 +236,7 @@ class Quaternion {
     _storage[2] = -_storage[2];
     _storage[1] = -_storage[1];
     _storage[0] = -_storage[0];
-    _updateEuler();
+    _onChangeController.add(null);
     return this;
   }
 
@@ -247,7 +247,7 @@ class Quaternion {
     _storage[2] = -_storage[2] * l;
     _storage[1] = -_storage[1] * l;
     _storage[0] = -_storage[0] * l;
-    _updateEuler();
+    _onChangeController.add(null);
     return this;
   }
 
@@ -311,7 +311,7 @@ class Quaternion {
     vStorage[2] = result_z;
     vStorage[1] = result_y;
     vStorage[0] = result_x;
-    _updateEuler();
+    _onChangeController.add(null);
     return v;
   }
 
@@ -322,7 +322,7 @@ class Quaternion {
     _storage[1] = _storage[1] + argStorage[1];
     _storage[2] = _storage[2] + argStorage[2];
     _storage[3] = _storage[3] + argStorage[3];
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   /// Subtracts [arg] from [this].
@@ -332,7 +332,7 @@ class Quaternion {
     _storage[1] = _storage[1] - argStorage[1];
     _storage[2] = _storage[2] - argStorage[2];
     _storage[3] = _storage[3] - argStorage[3];
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   /// Scales [this] by [scale].
@@ -341,7 +341,7 @@ class Quaternion {
     _storage[2] = _storage[2] * scale;
     _storage[1] = _storage[1] * scale;
     _storage[0] = _storage[0] * scale;
-    _updateEuler();
+    _onChangeController.add(null);
   }
 
   /// Scaled copy of [this].
@@ -447,16 +447,11 @@ class Quaternion {
   }
 
   /*
-   * Additions from three.js r66.
+   * Additions from three.js r68.
    */
 
-  Euler _euler;
-
-  void _updateEuler() {
-    if (_euler != null) {
-      _euler.setFromQuaternion(this, update: false);
-    }
-  }
+  StreamController _onChangeController = new StreamController.broadcast();
+  Stream get onChange => _onChangeController.stream;
 
   factory Quaternion.fromEuler(Euler euler, {bool update: true}) =>
       new Quaternion._()..setFromEuler(euler, update: update);
@@ -505,7 +500,7 @@ class Quaternion {
       storage[3] = c1 * c2 * c3 + s1 * s2 * s3;
     }
 
-    if (update) _updateEuler();
+    if (update) _onChangeController.add(null);
 
     return this;
   }
