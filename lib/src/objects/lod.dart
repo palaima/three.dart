@@ -1,66 +1,84 @@
+/*
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
+ *
+ * based on r71
+ */
+
 part of three;
 
 class LOD extends Object3D {
-  List LODs;
+  List<LODObject> objects = [];
 
-  LOD()
-      : LODs = [],
-        super();
+  void addLevel(Object3D object, [double distance = 0.0]) {
+    distance = distance.abs();
 
-  addLevel(Object3D object3D, [num visibleAtDistance = 0]) {
-
-    visibleAtDistance = visibleAtDistance.abs();
-
-    var l;
-    for (l = 0; l < LODs.length; l++) {
-      if (visibleAtDistance < this.LODs[l].visibleAtDistance) {
-        break;
-      }
+    var l = 0;
+    for (; l < objects.length; l++) {
+      if (distance < objects[l].distance) break;
     }
 
-    LODs.insert(l, {
-      "visibleAtDistance": visibleAtDistance,
-      "object3D": object3D
-    });
-    add(object3D);
+    objects.insert(l, new LODObject(distance, object));
+    add(object);
   }
 
-  update(Camera camera) {
+  Object3D getObjectForDistance(double distance) {
+    var i = 1;
+    for (; i < objects.length; i++) {
+      if (distance < objects[i].distance) break;
+    }
 
-    if (LODs.length > 1) {
+    return objects[i - 1].object;
+  }
 
-      camera.matrixWorldInverse.copyInverse(camera.matrixWorld);
+  raycast(raycaster, intersects) {
+    throw new UnimplementedError();
+  }
 
-      var inverse = camera.matrixWorldInverse;
-      var distance =
-          -(inverse[2] * matrixWorld[12] + inverse[6] * matrixWorld[13] + inverse[10] * matrixWorld[14] + inverse[14]);
+  void update(Camera camera) {
+    if (objects.length > 1) {
+      var v1 = camera.matrixWorld.getTranslation();
+      var v2 = matrixWorld.getTranslation();
 
-      LODs[0].object3D.visible = true;
+      var distance = v1.distanceTo(v2);
+      objects[0].object.visible = true;
 
-      var l;
-
-      for (l = 1; l < LODs.length; l++) {
-
-        if (distance >= LODs[l].visibleAtDistance) {
-
-          LODs[l - 1].object3D.visible = false;
-          LODs[l].object3D.visible = true;
-
+      var l = 1;
+      for (; l < objects.length; l++) {
+        if (distance >= objects[l].distance) {
+          objects[l - 1].object.visible = false;
+          objects[l    ].object.visible = true;
         } else {
-
           break;
-
         }
-
       }
 
-      for ( ; l < this.LODs.length; l++) {
-
-        LODs[l].object3D.visible = false;
-
+      for(; l < objects.length; l++) {
+        objects[l].object.visible = false;
       }
-
     }
   }
 
+  /// Returns clone of [this].
+  LOD clone([LOD object, bool recursive = true]) {
+    if (object == null) object = new LOD();
+
+    super.clone(object, recursive);
+
+    for (var i = 0; i < objects.length; i++) {
+      var x = objects[i].object.clone();
+      x.visible = i == 0;
+      object.addLevel(x, objects[i].distance);
+    }
+
+    return object;
+  }
+}
+
+class LODObject {
+  double distance;
+  Object3D object;
+
+  LODObject(this.distance, this.object);
 }
