@@ -3130,7 +3130,7 @@ class WebGLRenderer implements Renderer {
 
     } else if (object is Line) {
 
-      primitives = (object.type == LineStrip) ? gl.LINE_STRIP : gl.LINES;
+      primitives = (object.mode == LineStrip) ? gl.LINE_STRIP : gl.LINES;
 
       setLineWidth((material is LineBasicMaterial) ? material.linewidth : 0);
 

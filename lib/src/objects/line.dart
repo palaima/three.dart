@@ -1,39 +1,55 @@
-part of three;
-
-/**
+/*
  * @author mr.doob / http://mrdoob.com/
  *
  * Ported to Dart from JS by:
  * @author adam smith / http://financecoding.wordpress.com/
+ *
+ * based on r71
  */
 
+part of three;
+
 /// A line or a series of lines.
+///
+/// Example
+///
+///     var material = new LineBasicMaterial(color: 0x0000ff);
+///     var geometry = new THREE.Geometry();
+///
+///     geometry.vertices.add(
+///       new Vector3(-10.0, 0.0, 0.0), new Vector3(0.0, 10.0, 0.0), new Vector3(10.0, 0.0, 0.0));
+///
+///     var line = new Line(geometry, material);
+///     scene.add(line);
+///
 class Line extends Object3D {
-  /// Material for the line.
-  Material material;
-  /// Possible values: LineStrip or LinePieces.
-  ///
-  /// LineStrip will draw a series of segments connecting each point (first
-  /// connected to the second, the second connected to the third, and so on
-  /// and so forth); and LinePieces will draw a series of pairs of segments
-  /// (first connected to the second, the third connected to the fourth, and so on and so forth).
-  ///
-  /// In OpenGL terms, LineStrip is the classic GL_LINE_STRIP and LinePieces is the equivalent to GL_LINES.
-  int type;
+  String type = 'Line';
 
-  Line(Geometry geometry, [this.material, this.type = LineStrip]) : super() {
+  /// GL immediate mode ([LinePiece] or [LineStrip]).
+  /// * LinePiece (GL_LINES): Draws lines on screen. Every two vertices specified compose a line.
+  /// * LineStrip (GL_LINE_STRIP): Draws connected lines on screen. Every vertex specified
+  /// after first two are connected.
+  int mode;
 
-    if (material == null) {
-      material = new LineBasicMaterial(color: new Math.Random().nextInt(0xffffff));
-    }
+  /// Creates a new [Line].
+  Line([Geometry geometry, Material material, this.mode = LineStrip]) : super() {
+    this.geometry = geometry != null ? geometry : new Geometry();
+    this.material = material != null ? material : new LineBasicMaterial(color: new Math.Random().nextInt(0xffffff));
+  }
 
-    if (geometry != null) {
-      // calc bound radius
-      if (geometry.boundingSphere == null) {
-        geometry.computeBoundingSphere();
-      }
-      this.geometry = geometry;
-    }
+  /// Returns intersections between a casted ray and this Line.
+  /// Raycaster.intersectObject will call this method.
+  raycast(raycaster, intersects) {
+    throw new UnimplementedError();
+  }
+
+  /// Returns a clone of [this].
+  Line clone([Object3D object, bool recursive = true]) {
+    if (object == null) object = new Line(geometry, material, mode);
+
+    super.clone(object, recursive);
+
+    return object;
   }
 }
 

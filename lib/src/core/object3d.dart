@@ -273,7 +273,7 @@ class Object3D {
     }
   }
 
-  raycast() {
+  raycast(raycaster, intersects) {
     throw new UnimplementedError();
   }
 
