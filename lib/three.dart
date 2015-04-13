@@ -8,8 +8,8 @@ import 'dart:web_gl' as gl;
 import 'dart:math' as Math;
 import 'dart:convert' show JSON;
 
-import 'src/core/three_math.dart' as ThreeMath;
-export 'src/core/three_math.dart';
+import 'extras/three_math.dart' as ThreeMath;
+export 'extras/three_math.dart';
 
 // TODO - Use M1 Re-export ( see: http://code.google.com/p/dart/issues/detail?id=760)
 import 'extras/image_utils.dart' as ImageUtils;
