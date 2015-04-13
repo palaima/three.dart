@@ -1,63 +1,31 @@
-// r58
-// TODO - dispatch events
+/*
+ * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
+ *
+ * based on r71
+ */
+
 part of three;
 
-class GeometryAttribute<T> {
-  static final String POSITION = "position";
-  static final String NORMAL = "normal";
-  static final String INDEX = "index";
-  static final String UV = "uv";
-  static final String TANGENT = "tangent";
-  static final String COLOR = "color";
-  int numItems, itemSize;
-  T array;
-
-  // Used in WebGL Renderer
-  Buffer buffer;
-
-  GeometryAttribute._internal(this.numItems, this.itemSize, this.array);
-
-  factory GeometryAttribute.float32(int numItems, [int itemSize = 1]) =>
-      new GeometryAttribute._internal(numItems, itemSize, new Float32List(numItems));
-
-  factory GeometryAttribute.int16(int numItems, [int itemSize = 1]) =>
-      new GeometryAttribute._internal(numItems, itemSize, new Int16List(numItems));
-
-}
-
-class Chunk {
-  int start, count, index;
-  Chunk({this.start, this.count, this.index});
-}
-
-/// This class is an efficient alternative to Geometry, because it stores all
-/// data, including vertex positions, face indices, normals, colors, UVs, and
-/// custom attributes within buffers; this reduces the cost of passing all this
-/// data to the GPU.
-///
-/// This also makes BufferGeometry harder to work with than Geometry; rather
-/// than accessing position data as Vector3 objects, color data as Color
-/// objects, and so on, you have to access the raw data from the appropriate
-/// attribute buffer. BufferGeometry is best-suited for static objects where you
-/// don't need to manipulate the geometry much after instantiating it.
-///
-/// TODO: there are several unported methods from three.js.
 class BufferGeometry implements Geometry {
-
   int id = GeometryCount++;
 
-  // attributes
-  Map<String, GeometryAttribute> attributes = {};
+  String uuid = ThreeMath.generateUUID();
 
-  // offsets for chunks when using indexed elements
-  List<Chunk> offsets = [];
+  String name = '';
+  String type = 'BufferGeometry';
+
+  Map<String, BufferAttribute> attributes = {};
+
+  List<DrawCall> drawcalls = [];
+  List<DrawCall> offsets;
 
   // attributes typed arrays are kept only if dynamic flag is set
   bool _dynamic = false;
 
   // boundings
-  var boundingBox = null;
-  var boundingSphere = null;
+  Aabb3 boundingBox;
+  Sphere boundingSphere;
 
   bool hasTangents;
 
@@ -75,265 +43,347 @@ class BufferGeometry implements Geometry {
       buffersNeedUpdate = true,
       morphTargetsNeedUpdate = true,
       lineDistancesNeedUpdate = true;
+
   bool __webglInit = false;
   var __webglVertexBuffer;
 
-  applyMatrix(Matrix4 matrix) {
+  // dynamic is a reserved word in Dart
+  bool get isDynamic => _dynamic;
+  set isDynamic(bool value) => _dynamic = value;
 
-    var positionArray;
-    var normalArray;
+  // default attributes
+  BufferAttribute get aPosition => attributes['position'];
+                  set aPosition(a) => attributes['position'] = a;
 
-    if (aPosition != null) positionArray = aPosition.array;
-    if (aNormal != null) normalArray = aNormal.array;
+  BufferAttribute get aNormal => attributes['normal'];
+                  set aNormal(a) => attributes['normal'] = a;
 
-    if (positionArray != null) {
+  BufferAttribute get aIndex => attributes['index'];
+                  set aIndex(a) => attributes['index'] = a;
 
-      matrix.applyToVector3Array(positionArray);
-      this["verticesNeedUpdate"] = true;
+  BufferAttribute get aUV => attributes['uv'];
+                  set aUV(a) => attributes['uv'] = a;
 
-    }
+  BufferAttribute get aTangent => attributes['tangent'];
+                  set aTangent(a) => attributes['tangent'] = a;
 
-    if (normalArray != null) {
+  BufferAttribute get aColor => attributes['color'];
+                  set aColor(a) => attributes['color'] = a;
 
-      var matrixRotation = new Matrix4.identity().extractRotation(matrix);
-
-      matrixRotation.applyToVector3Array(normalArray);
-      this["normalsNeedUpdate"] = true;
-
-    }
-
+  BufferGeometry() {
+    offsets = drawcalls;
   }
 
-  /// Computes bounding box of the geometry, updating Geometry.boundingBox.
-  computeBoundingBox() {
+  BufferGeometry.fromGeometry(Geometry geometry, {int vertexColors: NoColors}) {
+    setFromGeometry(geometry, vertexColors: vertexColors);
+  }
 
-    if (boundingBox == null) {
-
-      boundingBox = new Aabb3();
-
+  void applyMatrix(Matrix4 matrix) {
+    if (aPosition != null) {
+      matrix.applyToVector3Array(aPosition.array);
+      aPosition.needsUpdate = true;
     }
 
+    if (aNormal != null) {
+      var normalMatrix = matrix.getNormalMatrix();
+      normalMatrix.applyToVector3Array(aNormal.array);
+      aNormal.needsUpdate = true;
+    }
+
+    if (boundingBox != null) {
+      computeBoundingBox();
+    }
+
+    if (boundingSphere != null) {
+      computeBoundingSphere();
+    }
+  }
+
+  Vector3 center() {
+    computeBoundingBox();
+    var offset = boundingBox.center..negate();
+    applyMatrix(new Matrix4.translation(offset));
+    return offset;
+  }
+
+  BufferGeometry setFromGeometry(Geometry geometry, {int vertexColors: NoColors}) {
+    var vertices = geometry.vertices;
+    var faces = geometry.faces;
+    var faceVertexUvs = geometry.faceVertexUvs;
+    var hasFaceVertexUv = faceVertexUvs[0].length > 0;
+    var hasFaceVertexNormals = faces[0].vertexNormals.length == 3;
+    var colors, uvs;
+
+    aPosition = new BufferAttribute.float32(faces.length * 3 * 3, 3);
     var positions = aPosition.array;
 
-    if (positions) {
+    aNormal = new BufferAttribute.float32(faces.length * 3 * 3, 3);
+    var normals = aNormal.array;
 
-      var bb = boundingBox;
-      var x, y, z;
+    if (vertexColors != NoColors) {
+      aColor = new BufferAttribute.float32(faces.length * 3 * 3, 3);
+      colors = aColor.array;
+    }
 
-      for (var i = 0,
-          il = positions.length; i < il; i += 3) {
+    if (hasFaceVertexUv) {
+      aUV = new BufferAttribute.float32(faces.length * 3 * 2, 2);
+      uvs = aUV.array;
+    }
 
-        x = positions[i];
-        y = positions[i + 1];
-        z = positions[i + 2];
+    for (var i = 0, i2 = 0, i3 = 0; i < faces.length; i ++, i2 += 6, i3 += 9) {
+      var face = faces[i];
 
-        // bounding box
+      var a = vertices[face.a];
+      var b = vertices[face.b];
+      var c = vertices[face.c];
 
-        if (x < bb.min.x) {
+      positions[i3] = a.x;
+      positions[i3 + 1] = a.y;
+      positions[i3 + 2] = a.z;
 
-          bb.min.x = x;
+      positions[i3 + 3] = b.x;
+      positions[i3 + 4] = b.y;
+      positions[i3 + 5] = b.z;
 
-        } else if (x > bb.max.x) {
+      positions[i3 + 6] = c.x;
+      positions[i3 + 7] = c.y;
+      positions[i3 + 8] = c.z;
 
-          bb.max.x = x;
+      if (hasFaceVertexNormals) {
+        var na = face.vertexNormals[0];
+        var nb = face.vertexNormals[1];
+        var nc = face.vertexNormals[2];
 
-        }
+        normals[i3] = na.x;
+        normals[i3 + 1] = na.y;
+        normals[i3 + 2] = na.z;
 
-        if (y < bb.min.y) {
+        normals[i3 + 3] = nb.x;
+        normals[i3 + 4] = nb.y;
+        normals[i3 + 5] = nb.z;
 
-          bb.min.y = y;
+        normals[i3 + 6] = nc.x;
+        normals[i3 + 7] = nc.y;
+        normals[i3 + 8] = nc.z;
 
-        } else if (y > bb.max.y) {
+      } else {
+        var n = face.normal;
 
-          bb.max.y = y;
+        normals[i3] = n.x;
+        normals[i3 + 1] = n.y;
+        normals[i3 + 2] = n.z;
 
-        }
+        normals[i3 + 3] = n.x;
+        normals[i3 + 4] = n.y;
+        normals[i3 + 5] = n.z;
 
-        if (z < bb.min.z) {
-
-          bb.min.z = z;
-
-        } else if (z > bb.max.z) {
-
-          bb.max.z = z;
-
-        }
-
+        normals[i3 + 6] = n.x;
+        normals[i3 + 7] = n.y;
+        normals[i3 + 8] = n.z;
       }
 
+      if (vertexColors == FaceColors) {
+        var fc = face.color;
+
+        colors[i3] = fc.r;
+        colors[i3 + 1] = fc.g;
+        colors[i3 + 2] = fc.b;
+
+        colors[i3 + 3] = fc.r;
+        colors[i3 + 4] = fc.g;
+        colors[i3 + 5] = fc.b;
+
+        colors[i3 + 6] = fc.r;
+        colors[i3 + 7] = fc.g;
+        colors[i3 + 8] = fc.b;
+      } else if (vertexColors == VertexColors) {
+        var vca = face.vertexColors[0];
+        var vcb = face.vertexColors[1];
+        var vcc = face.vertexColors[2];
+
+        colors[i3] = vca.r;
+        colors[i3 + 1] = vca.g;
+        colors[i3 + 2] = vca.b;
+
+        colors[i3 + 3] = vcb.r;
+        colors[i3 + 4] = vcb.g;
+        colors[i3 + 5] = vcb.b;
+
+        colors[i3 + 6] = vcc.r;
+        colors[i3 + 7] = vcc.g;
+        colors[i3 + 8] = vcc.b;
+      }
+
+      if (hasFaceVertexUv) {
+        var uva = faceVertexUvs[0][i][0];
+        var uvb = faceVertexUvs[0][i][1];
+        var uvc = faceVertexUvs[0][i][2];
+
+        uvs[i2] = uva.x;
+        uvs[i2 + 1] = uva.y;
+
+        uvs[i2 + 2] = uvb.x;
+        uvs[i2 + 3] = uvb.y;
+
+        uvs[i2 + 4] = uvc.x;
+        uvs[i2 + 5] = uvc.y;
+      }
     }
 
-    if (positions == null || positions.length == 0) {
-
-      boundingBox.min.setValues(0, 0, 0);
-      boundingBox.max.setValues(0, 0, 0);
-
-    }
-
+    computeBoundingSphere();
+    return this;
   }
 
-  /// Computes bounding sphere of the geometry, updating Geometry.boundingSphere.
-  ///
-  /// Neither bounding boxes or bounding spheres are computed by default.
-  /// They need to be explicitly computed, otherwise they are null.
-  computeBoundingSphere() {
-
-    if (boundingSphere == null) boundingSphere = new Sphere();
+  void computeBoundingBox() {
+    if (boundingBox == null) {
+      boundingBox = new Aabb3();
+    }
 
     var positions = aPosition.array;
 
     if (positions != null) {
+      var bb = boundingBox..makeEmpty();
 
-      var radiusSq,
-          maxRadiusSq = 0;
-      var x, y, z;
+      for (var i = 0; i < positions.length; i += 3) {
+        var vector = new Vector3.array(positions, i);
+        bb.hullPoint(vector);
+      }
+    }
 
-      for (var i = 0,
-          il = positions.length; i < il; i += 3) {
+    if (positions == null || positions.length == 0) {
+      boundingBox.min.setZero();
+      boundingBox.max.setZero();
+    }
 
-        x = positions[i];
-        y = positions[i + 1];
-        z = positions[i + 2];
+    if (boundingBox.min.x.isNaN || boundingBox.min.y.isNaN || boundingBox.min.z.isNaN) {
+      error('BufferGeometry.computeBoundingBox: Computed min/max have NaN values. The "position" attribute is likely to have NaN values.');
+    }
+  }
 
-        radiusSq = x * x + y * y + z * z;
-        if (radiusSq > maxRadiusSq) maxRadiusSq = radiusSq;
+  void computeBoundingSphere() {
+    if (boundingSphere == null) {
+      boundingSphere = new Sphere();
+    }
 
+    var positions = aPosition.array;
+
+    if (positions != null) {
+      var box = new Aabb3();
+
+      var center = boundingSphere.center;
+
+      for (var i = 0, il = positions.length; i < il; i += 3) {
+        var vector = new Vector3.array(positions, i);
+        box.hullPoint(vector);
+      }
+
+      center.setFrom(box.center);
+
+      // hoping to find a boundingSphere with a radius smaller than the
+      // boundingSphere of the boundingBox:  sqrt(3) smaller in the best case
+
+      var maxRadiusSq = 0;
+
+      for (var i = 0; i < positions.length; i += 3) {
+        var vector = new Vector3.array(positions, i);
+        maxRadiusSq = Math.max(maxRadiusSq, center.distanceToSquared(vector));
       }
 
       boundingSphere.radius = Math.sqrt(maxRadiusSq);
 
+      if (boundingSphere.radius.isNaN) {
+        error('BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values.');
+      }
     }
-
   }
 
-  /// Computes vertex normals by averaging face normals.
-  /// Face normals must be existing / computed beforehand.
-  computeVertexNormals({bool areaWeighted: false}) {
+  computeFaceNormals() {
+    // backwards compatibility
+  }
 
-    if (aPosition != null && aIndex != null) {
-
-      var i, il;
-      var j, jl;
+  void computeVertexNormals({bool areaWeighted: false}) {
+    if (aPosition != null) {
+      var positions = aPosition.array;
 
       if (aNormal == null) {
-
-        attributes[GeometryAttribute.NORMAL] = new GeometryAttribute.float32(aPosition.numItems, 3);
-
+        aNormal = new BufferAttribute.float32(positions.length, 3);
       } else {
-
         // reset existing normals to zero
-        il = aNormal.array.length;
-
-        for (i = 0; i < il; i++) {
-
-          attributes["normal"].array[i] = 0.0;
-
-        }
-
+        aNormal.array.map((_) => 0.0);
       }
 
-      var indices = aIndex.array;
-      var positions = aPosition.array;
       var normals = aNormal.array;
 
-      var vA,
-          vB,
-          vC,
-          x,
-          y,
-          z,
+      // indexed elements
+      if (aIndex != null) {
+        var indices = aIndex.array;
 
-          pA = new Vector3.zero(),
-          pB = new Vector3.zero(),
-          pC = new Vector3.zero(),
+        var offsets = this.offsets.length > 0 ? this.offsets : new DrawCall(start: 0, count: indices.length, index: 0);
 
-          cb = new Vector3.zero(),
-          ab = new Vector3.zero();
+        for (var j = 0; j < offsets.length; ++j) {
+          var start = offsets[j].start;
+          var count = offsets[j].count;
+          var index = offsets[j].index;
 
-      jl = offsets.length;
-      for (j = 0; j < jl; ++j) {
+          for (var i = start; i < start + count; i += 3) {
+            var vA = (index + indices[i  ]) * 3;
+            var vB = (index + indices[i + 1]) * 3;
+            var vC = (index + indices[i + 2]) * 3;
 
-        var start = offsets[j].start;
-        var count = offsets[j].count;
-        var index = offsets[j].index;
+            var pA = new Vector3.array(positions, vA);
+            var pB = new Vector3.array(positions, vB);
+            var pC = new Vector3.array(positions, vC);
 
-        il = start + count;
-        for (i = start; i < il; i += 3) {
+            var cb = (pC - pB).cross(pA - pB);
 
-          vA = index + indices[i];
-          vB = index + indices[i + 1];
-          vC = index + indices[i + 2];
+            normals[vA  ] += cb.x;
+            normals[vA + 1] += cb.y;
+            normals[vA + 2] += cb.z;
 
-          x = positions[vA * 3];
-          y = positions[vA * 3 + 1];
-          z = positions[vA * 3 + 2];
-          pA.setValues(x, y, z);
+            normals[vB  ] += cb.x;
+            normals[vB + 1] += cb.y;
+            normals[vB + 2] += cb.z;
 
-          x = positions[vB * 3];
-          y = positions[vB * 3 + 1];
-          z = positions[vB * 3 + 2];
-          pB.setValues(x, y, z);
-
-          x = positions[vC * 3];
-          y = positions[vC * 3 + 1];
-          z = positions[vC * 3 + 2];
-          pC.setValues(x, y, z);
-
-          cb = pC - pB;
-          ab = pA - pB;
-          cb = cb.cross(ab);
-
-          normals[vA * 3] += cb.x;
-          normals[vA * 3 + 1] += cb.y;
-          normals[vA * 3 + 2] += cb.z;
-
-          normals[vB * 3] += cb.x;
-          normals[vB * 3 + 1] += cb.y;
-          normals[vB * 3 + 2] += cb.z;
-
-          normals[vC * 3] += cb.x;
-          normals[vC * 3 + 1] += cb.y;
-          normals[vC * 3 + 2] += cb.z;
-
+            normals[vC  ] += cb.x;
+            normals[vC + 1] += cb.y;
+            normals[vC + 2] += cb.z;
+          }
         }
+      } else {
+        // non-indexed elements (unconnected triangle soup)
+        for (var i = 0; i < positions.length; i += 9) {
+          var pA = new Vector3.array(positions, i);
+          var pB = new Vector3.array(positions, i + 3);
+          var pC = new Vector3.array(positions, i + 6);
 
+          var cb = (pC - pB).cross(pA - pB);
+
+          normals[i  ] = cb.x;
+          normals[i + 1] = cb.y;
+          normals[i + 2] = cb.z;
+
+          normals[i + 3] = cb.x;
+          normals[i + 4] = cb.y;
+          normals[i + 5] = cb.z;
+
+          normals[i + 6] = cb.x;
+          normals[i + 7] = cb.y;
+          normals[i + 8] = cb.z;
+        }
       }
 
-      // normalize normals
-      il = normals.length;
-      for (i = 0; i < il; i += 3) {
-
-        x = normals[i];
-        y = normals[i + 1];
-        z = normals[i + 2];
-
-        var n = 1.0 / Math.sqrt(x * x + y * y + z * z);
-
-        normals[i] *= n;
-        normals[i + 1] *= n;
-        normals[i + 2] *= n;
-
-      }
-
-      normalsNeedUpdate = true;
-
+      normalizeNormals();
+      aNormal.needsUpdate = true;
     }
-
   }
 
-  /// Computes vertex tangents.
-  /// Based on http://www.terathon.com/code/tangent.html
-  /// Geometry must have vertex UVs (layer 0 will be used).
-  computeTangents() {
-
+  void computeTangents() {
     // based on http://www.terathon.com/code/tangent.html
     // (per vertex tangents)
 
     if (aIndex == null || aPosition == null || aNormal == null || aUV == null) {
-
-      print("Missing required attributes (index, position, normal or uv) in BufferGeometry.computeTangents()");
+      warn('BufferGeometry: Missing required attributes (index, position, normal or uv) in BufferGeometry.computeTangents()');
       return;
-
     }
 
     var indices = aIndex.array;
@@ -341,74 +391,56 @@ class BufferGeometry implements Geometry {
     var normals = aNormal.array;
     var uvs = aUV.array;
 
-    var nVertices = aPosition.numItems ~/ 3;
+    var nVertices = positions.length ~/ 3;
 
     if (aTangent == null) {
-
-      attributes["tangent"] = new GeometryAttribute.float32(nVertices, 4);
-
+      aTangent = new BufferAttribute.float32(4 * nVertices, 4);
     }
 
     var tangents = aTangent.array;
 
-    List<Vector3> tan1 = [],
-        tan2 = [];
+    var tan1 = [], tan2 = [];
 
-    for (var k = 0; k < nVertices; k++) {
-
+    for (var k = 0; k < nVertices; k ++) {
       tan1[k] = new Vector3.zero();
       tan2[k] = new Vector3.zero();
-
     }
 
-    var xA, yA, zA, xB, yB, zB, xC, yC, zC, uA, vA, uB, vB, uC, vC, x1, x2, y1, y2, z1, z2, s1, s2, t1, t2, r;
+    handleTriangle(int a, int b, int c) {
+      var vA = new Vector3.array(positions, a * 3);
+      var vB = new Vector3.array(positions, b * 3);
+      var vC = new Vector3.array(positions, c * 3);
 
-    var sdir = new Vector3.zero(),
-        tdir = new Vector3.zero();
+      var uvA = new Vector3.array(uvs, a * 2);
+      var uvB = new Vector3.array(uvs, b * 2);
+      var uvC = new Vector3.array(uvs, c * 2);
 
-    var handleTriangle = (a, b, c) {
+      var x1 = vB.x - vA.x;
+      var x2 = vC.x - vA.x;
 
-      xA = positions[a * 3];
-      yA = positions[a * 3 + 1];
-      zA = positions[a * 3 + 2];
+      var y1 = vB.y - vA.y;
+      var y2 = vC.y - vA.y;
 
-      xB = positions[b * 3];
-      yB = positions[b * 3 + 1];
-      zB = positions[b * 3 + 2];
+      var z1 = vB.z - vA.z;
+      var z2 = vC.z - vA.z;
 
-      xC = positions[c * 3];
-      yC = positions[c * 3 + 1];
-      zC = positions[c * 3 + 2];
+      var s1 = uvB.x - uvA.x;
+      var s2 = uvC.x - uvA.x;
 
-      uA = uvs[a * 2];
-      vA = uvs[a * 2 + 1];
+      var t1 = uvB.y - uvA.y;
+      var t2 = uvC.y - uvA.y;
 
-      uB = uvs[b * 2];
-      vB = uvs[b * 2 + 1];
+      var r = 1.0 / (s1 * t2 - s2 * t1);
 
-      uC = uvs[c * 2];
-      vC = uvs[c * 2 + 1];
+      var sdir = new Vector3(
+          (t2 * x1 - t1 * x2) * r,
+          (t2 * y1 - t1 * y2) * r,
+          (t2 * z1 - t1 * z2) * r);
 
-      x1 = xB - xA;
-      x2 = xC - xA;
-
-      y1 = yB - yA;
-      y2 = yC - yA;
-
-      z1 = zB - zA;
-      z2 = zC - zA;
-
-      s1 = uB - uA;
-      s2 = uC - uA;
-
-      t1 = vB - vA;
-      t2 = vC - vA;
-
-      r = 1.0 / (s1 * t2 - s2 * t1);
-
-      sdir.setValues((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-
-      tdir.setValues((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+      var tdir = new Vector3(
+          (s1 * x2 - s2 * x1) * r,
+          (s1 * y2 - s2 * y1) * r,
+          (s1 * z2 - s2 * z1) * r);
 
       tan1[a].add(sdir);
       tan1[b].add(sdir);
@@ -417,132 +449,261 @@ class BufferGeometry implements Geometry {
       tan2[a].add(tdir);
       tan2[b].add(tdir);
       tan2[c].add(tdir);
-
-    };
-
-    var i, il;
-    var j, jl;
-    var iA, iB, iC;
-
-    jl = offsets.length;
-    for (j = 0; j < jl; ++j) {
-
-      var start = offsets[j].start;
-      var count = offsets[j].count;
-      var index = offsets[j].index;
-
-      il = start + count;
-      for (i = start; i < il; i += 3) {
-
-        iA = index + indices[i];
-        iB = index + indices[i + 1];
-        iC = index + indices[i + 2];
-
-        handleTriangle(iA, iB, iC);
-
-      }
-
     }
 
-    var tmp = new Vector3.zero(),
-        tmp2 = new Vector3.zero();
-    var n = new Vector3.zero(),
-        n2 = new Vector3.zero();
-    var w, t, test;
-    var nx, ny, nz;
+    if (drawcalls.length == 0) {
+      drawcalls.add(new DrawCall(start: 0, count: indices.length, index: 0));
+    }
 
-    var handleVertex = (v) {
+    for (var j = 0; j < drawcalls.length; ++j) {
+      var start = drawcalls[j].start;
+      var count = drawcalls[j].count;
+      var index = drawcalls[j].index;
 
-      n.x = normals[v * 3];
-      n.y = normals[v * 3 + 1];
-      n.z = normals[v * 3 + 2];
+      for (var i = start; i < start + count; i += 3) {
+        var iA = index + indices[i];
+        var iB = index + indices[i + 1];
+        var iC = index + indices[i + 2];
 
-      n2.setFrom(n);
+        handleTriangle(iA, iB, iC);
+      }
+    }
 
-      t = tan1[v];
+    handleVertex(int v) {
+      var n = new Vector3.array(normals, v * 3);
+
+      var t = tan1[v];
 
       // Gram-Schmidt orthogonalize
-
-      tmp.setFrom(t);
+      var tmp = new Vector3.copy(t);
       tmp.sub(n.scale(n.dot(t))).normalize();
 
       // Calculate handedness
+      var tmp2 = n.cross(t);
+      var test = tmp2.dot(tan2[v]);
+      var w = (test < 0.0) ? - 1.0 : 1.0;
 
-      tmp2 = n2.cross(t);
-      test = tmp2.dot(tan2[v]);
-      w = (test < 0.0) ? -1.0 : 1.0;
-
-      tangents[v * 4] = tmp.x;
+      tangents[v * 4   ] = tmp.x;
       tangents[v * 4 + 1] = tmp.y;
       tangents[v * 4 + 2] = tmp.z;
       tangents[v * 4 + 3] = w;
+    }
 
-    };
+    for (var j = 0; j < drawcalls.length; ++j) {
+      var start = drawcalls[j].start;
+      var count = drawcalls[j].count;
+      var index = drawcalls[j].index;
 
-    jl = offsets.length;
-    for (j = 0; j < jl; ++j) {
-
-      var start = offsets[j].start;
-      var count = offsets[j].count;
-      var index = offsets[j].index;
-
-      il = start + count;
-      for (i = start; i < il; i += 3) {
-
-        iA = index + indices[i];
-        iB = index + indices[i + 1];
-        iC = index + indices[i + 2];
+      for (var i = start; i < start + count; i += 3) {
+        var iA = index + indices[i];
+        var iB = index + indices[i + 1];
+        var iC = index + indices[i + 2];
 
         handleVertex(iA);
         handleVertex(iB);
         handleVertex(iC);
+      }
+    }
+  }
 
+  void computeOffsets([int size = 65535]) {
+    var indices = aIndex.array;
+    var vertices = aPosition.array;
+
+    var facesCount = (indices.length / 3);
+
+    var sortedIndices = new Uint16List(indices.length); //16-bit buffers
+    var indexPtr = 0;
+    var vertexPtr = 0;
+
+    var offsets = [new DrawCall(start:0, count:0, index:0)];
+    var offset = offsets[0];
+
+    var newVerticeMaps = 0;
+    var faceVertices = new Int32List(6);
+    var vertexMap = new Int32List.fromList(new List.filled(vertices.length, -1));
+    var revVertexMap = new Int32List.fromList(new List.filled(vertices.length, -1));
+
+    /*
+      Traverse every face and reorder vertices in the proper offsets of 65k.
+      We can have more than 65k entries in the index buffer per offset, but only reference 65k values.
+    */
+    for (var findex = 0; findex < facesCount; findex ++) {
+      newVerticeMaps = 0;
+
+      for (var vo = 0; vo < 3; vo ++) {
+        var vid = indices[findex * 3 + vo];
+
+        if (vertexMap[vid] == - 1) {
+          //Unmapped vertice
+          faceVertices[vo * 2] = vid;
+          faceVertices[vo * 2 + 1] = - 1;
+          newVerticeMaps++;
+        } else if (vertexMap[vid] < offset.index) {
+          //Reused vertices from previous block (duplicate)
+          faceVertices[vo * 2] = vid;
+          faceVertices[vo * 2 + 1] = - 1;
+        } else {
+          //Reused vertice in the current block
+          faceVertices[vo * 2] = vid;
+          faceVertices[vo * 2 + 1] = vertexMap[vid];
+        }
       }
 
+      var faceMax = vertexPtr + newVerticeMaps;
+
+      if (faceMax > (offset.index + size)) {
+        var new_offset = new DrawCall(start:indexPtr, count:0, index:vertexPtr);
+        offsets.add(new_offset);
+        offset = new_offset;
+
+        //Re-evaluate reused vertices in light of new offset.
+        for (var v = 0; v < 6; v += 2) {
+          var new_vid = faceVertices[v + 1];
+          if (new_vid > - 1 && new_vid < offset.index)
+            faceVertices[v + 1] = - 1;
+        }
+      }
+
+      //Reindex the face.
+      for (var v = 0; v < 6; v += 2) {
+        var vid = faceVertices[v];
+        var new_vid = faceVertices[v + 1];
+
+        if (new_vid == - 1) new_vid = vertexPtr ++;
+
+        vertexMap[vid] = new_vid;
+        revVertexMap[new_vid] = vid;
+        sortedIndices[indexPtr++] = new_vid - offset.index; //XXX overflows at 16bit
+        offset.count++;
+      }
     }
 
-    hasTangents = true;
-    this["tangentsNeedUpdate"] = true;
+    /* Move all attribute values to map to the new computed indices , also expand the vertice stack to match our new vertexPtr. */
+    this.reorderBuffers(sortedIndices, revVertexMap, vertexPtr);
+    this.offsets = offsets; // TODO: Deprecate
+    this.drawcalls = offsets;
 
+    return offsets;
   }
 
-  // dynamic is a reserved word in Dart
-  bool get isDynamic => _dynamic;
-  set isDynamic(bool value) => _dynamic = value;
+  BufferGeometry merge(BufferGeometry geometry, {int offset: 0, matrix, materialIndexOffset: 0}) {
+    var keys = this.attributes.keys;
 
-  // default attributes
-  GeometryAttribute<Float32List> get aPosition => attributes[GeometryAttribute.POSITION];
-  set aPosition(a) {
-    attributes[GeometryAttribute.POSITION] = a;
+    for (var key in keys) {
+      if (geometry.attributes[key] == null) continue;
+
+      var attribute1 = attributes[key];
+      var attributeArray1 = attribute1.array;
+
+      var attribute2 = geometry.attributes[key];
+      var attributeArray2 = attribute2.array;
+
+      var attributeSize = attribute2.itemSize;
+
+      for (var i = 0, j = attributeSize * offset; i < attributeArray2.length; i++, j++) {
+        attributeArray1[j] = attributeArray2[i];
+      }
+    }
+
+    return this;
   }
 
-  GeometryAttribute<Float32List> get aNormal => attributes[GeometryAttribute.NORMAL];
-  set aNormal(a) {
-    attributes[GeometryAttribute.NORMAL] = a;
+  void normalizeNormals() {
+    for (var i = 0; i < aNormal.array.length; i += 3) {
+      var x = aNormal.array[i];
+      var y = aNormal.array[i + 1];
+      var z = aNormal.array[i + 2];
+
+      var n = 1.0 / Math.sqrt(x * x + y * y + z * z);
+
+      aNormal.array[i    ] *= n;
+      aNormal.array[i + 1] *= n;
+      aNormal.array[i + 2] *= n;
+    }
   }
 
-  GeometryAttribute<Int16List> get aIndex => attributes[GeometryAttribute.INDEX];
-  set aIndex(a) {
-    attributes[GeometryAttribute.INDEX] = a;
+  /*
+    reoderBuffers:
+    Reorder attributes based on a new indexBuffer and indexMap.
+    indexBuffer - Uint16Array of the new ordered indices.
+    indexMap - Int32Array where the position is the new vertex ID and the value the old vertex ID for each vertex.
+    vertexCount - Amount of total vertices considered in this reordering (in case you want to grow the vertice stack).
+  */
+  void reorderBuffers(indexBuffer, indexMap, vertexCount) {
+
+    /* Create a copy of all attributes for reordering. */
+    var sortedAttributes = {};
+    for (var attr in attributes.keys) {
+      if (attr == 'index') continue;
+
+      var sourceArray = attributes[attr].array;
+
+      var length = attributes[attr].itemSize * vertexCount;
+
+      if (sourceArray is Float32List) {
+        sortedAttributes[attr] = new Float32List(length);
+      } else if (sourceArray is Int32List) {
+        sortedAttributes[attr] = new Int32List(length);
+      }
+    }
+
+    /* Move attribute positions based on the new index map */
+    for (var new_vid = 0; new_vid < vertexCount; new_vid ++) {
+      var vid = indexMap[new_vid];
+      for (var attr in this.attributes) {
+        if (attr == 'index')
+          continue;
+        var attrArray = attributes[attr].array;
+        var attrSize = attributes[attr].itemSize;
+        var sortedAttr = sortedAttributes[attr];
+        for (var k = 0; k < attrSize; k++) {
+          sortedAttr[new_vid * attrSize + k] = attrArray[vid * attrSize + k];
+        }
+      }
+    }
+
+    /* Carry the new sorted buffers locally */
+    aIndex.array = indexBuffer;
+
+    for (var attr in attributes.keys) {
+      if (attr == 'index') continue;
+
+      attributes[attr].array = sortedAttributes[attr];
+      attributes[attr].numItems = attributes[attr].itemSize * vertexCount;
+    }
   }
 
-  GeometryAttribute<Float32List> get aUV => attributes[GeometryAttribute.UV];
-  set aUV(a) {
-    attributes[GeometryAttribute.UV] = a;
+  BufferGeometry clone() {
+    var geometry = new BufferGeometry();
+
+    for (var attr in attributes.keys) {
+      var sourceAttr = attributes[attr];
+      geometry.attributes[attr] = sourceAttr.clone();
+    }
+
+    offsets.forEach((offset) =>
+      geometry.offsets.add(
+          new DrawCall(start: offset.start, index: offset.index, count: offset.count)));
+
+    return geometry;
   }
 
-  GeometryAttribute<Float32List> get aTangent => attributes[GeometryAttribute.TANGENT];
-  set aTangent(a) {
-    attributes[GeometryAttribute.TANGENT] = a;
+  toJSON() {
+    throw new UnimplementedError();
   }
 
-  GeometryAttribute<Float32List> get aColor => attributes[GeometryAttribute.COLOR];
-  set aColor(a) {
-    attributes[GeometryAttribute.COLOR] = a;
+  dispose() {
+    // this.dispatchEvent( { type: 'dispose' } );
   }
 
   noSuchMethod(Invocation invocation) {
-    throw new Exception('Unimplemented ${invocation.memberName}');
+    throw new UnimplementedError('Unimplemented ${invocation.memberName}');
   }
-
 }
+
+class DrawCall {
+  int start, count, index;
+  DrawCall({this.start, this.count, this.index});
+}
+

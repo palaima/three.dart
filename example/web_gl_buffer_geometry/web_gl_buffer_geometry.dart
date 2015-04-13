@@ -26,8 +26,8 @@ void init() {
   scene = new Scene();
 
   var geometry = new BufferGeometry()
-      ..aIndex = new GeometryAttribute.int16(TRIANGLES * 3 * 3)
-      ..aPosition = new GeometryAttribute.float32(TRIANGLES * 3 * 3, 3);
+      ..aIndex = new BufferAttribute.int16(TRIANGLES * 3 * 3)
+      ..aPosition = new BufferAttribute.float32(TRIANGLES * 3 * 3, 3);
 
   var indices = geometry.aIndex.array;
   var i = 0;
@@ -58,7 +58,7 @@ void init() {
 
   }
 
-  geometry.offsets = [new Chunk(start: 0, count: TRIANGLES * 3, index: 0)];
+  geometry.offsets = [new DrawCall(start: 0, count: TRIANGLES * 3, index: 0)];
 
   geometry.computeBoundingSphere();
   geometry.computeVertexNormals();

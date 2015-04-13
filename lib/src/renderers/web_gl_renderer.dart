@@ -2819,7 +2819,7 @@ class WebGLRenderer implements Renderer {
 
       } else {
 
-        GeometryAttribute<Float32List> position = geometry.aPosition;
+        var position = geometry.aPosition;
 
         if (updateBuffers) {
 
@@ -2834,7 +2834,7 @@ class WebGLRenderer implements Renderer {
 
           // normals
 
-          GeometryAttribute<Float32List> normal = geometry.aNormal;
+          var normal = geometry.aNormal;
 
           if (attributes["normal"] >= 0 && normal != null) {
 
@@ -2848,7 +2848,7 @@ class WebGLRenderer implements Renderer {
 
           // uvs
 
-          GeometryAttribute<Float32List> uv = geometry.aUV;
+          var uv = geometry.aUV;
 
           if (attributes["uv"] >= 0 && uv != null) {
 
@@ -2862,7 +2862,7 @@ class WebGLRenderer implements Renderer {
 
           // colors
 
-          GeometryAttribute<Float32List> color = geometry.aColor;
+          var color = geometry.aColor;
 
           if (attributes["color"] >= 0 && color != null) {
 
@@ -2876,7 +2876,7 @@ class WebGLRenderer implements Renderer {
 
           // tangents
 
-          GeometryAttribute<Float32List> tangent = geometry.aTangent;
+          var tangent = geometry.aTangent;
 
           if (attributes["tangent"] >= 0 && tangent != null) {
 

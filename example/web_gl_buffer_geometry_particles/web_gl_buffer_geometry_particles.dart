@@ -27,8 +27,8 @@ void init() {
 
   var particles = 500000;
 
-  var positions = new GeometryAttribute.float32(particles * 3, 3);
-  var colors = new GeometryAttribute.float32(particles * 3, 3);
+  var positions = new BufferAttribute.float32(particles * 3, 3);
+  var colors = new BufferAttribute.float32(particles * 3, 3);
 
   var geometry = new BufferGeometry();
   geometry.attributes = {
