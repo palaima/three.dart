@@ -9,18 +9,18 @@
  * @author Adam Joseph Cook / https://github.com/adamjcook
  *
  * @overview
- * [OrbitControls] is a set of controls performs orbiting, dollying (zooming) 
+ * [OrbitControls] is a set of controls performs orbiting, dollying (zooming)
  * and panning. It maintains the "up" direction as +Y, unlike [TrackballControls].
  * Touch events on tablet and phone form-factors are also supported.
- * 
+ *
  * * Orbit - left mouse / touch: one finger move
  * * Zoom  - middle mouse, or mousewheel / touch: two finger spread or squish
  * * Pan   - right mouse, or arrow keys / touch: three finger swipe
- * 
+ *
  * [OrbitControls] is a drop-in replacement for most of the examples which use
  * [TrackballControls].
- * 
- * Only [PerspectiveCamera] and [OrthographicCamera] are supported with this 
+ *
+ * Only [PerspectiveCamera] and [OrthographicCamera] are supported with this
  * control.
  **/
 library OrbitControls;
@@ -48,7 +48,7 @@ class KEYS {
   static const BOTTOM = 40;
 }
 
-class OrbitControls extends EventEmitter {
+class OrbitControls {
 
   int _state;
   Object3D object;
@@ -91,9 +91,14 @@ class OrbitControls extends EventEmitter {
   StreamSubscription<MouseEvent> mouseUpStream;
   StreamSubscription<KeyboardEvent> keydownStream;
 
-  EventEmitterEvent changeEvent;
-  EventEmitterEvent startEvent;
-  EventEmitterEvent endEvent;
+  StreamController _onChangeController = new StreamController(sync: true);
+  Stream get onChange => _onChangeController.stream;
+
+  StreamController _onStartController = new StreamController(sync: true);
+  Stream get onStart => _onStartController.stream;
+
+  StreamController _onEndController = new StreamController(sync: true);
+  Stream get onEnd => _onEndController.stream;
 
 
   OrbitControls(this.object, [Element domElement]) {
@@ -178,10 +183,6 @@ class OrbitControls extends EventEmitter {
     // Establish that camera.up is the orbit axis.
     quaternion = setFromUnitVectors(object.up, new Vector3(0.0, 1.0, 0.0));
     quaternionInverse = quaternion.clone().inverse();
-
-    changeEvent = new EventEmitterEvent(type: 'change');
-    startEvent = new EventEmitterEvent(type: 'start');
-    endEvent = new EventEmitterEvent(type: 'end');
 
     this.domElement
         ..onContextMenu.listen((event) => event.preventDefault())
@@ -362,7 +363,7 @@ class OrbitControls extends EventEmitter {
     if (lastPosition.distanceToSquared(object.position) > EPS ||
         8 * (1 - dotProductQuaternion(lastQuaternion, object.quaternion)) > EPS) {
 
-      dispatchEvent(changeEvent);
+      _onChangeController.add(null);
 
       lastPosition.setFrom(object.position);
       lastQuaternion = object.quaternion;
@@ -428,7 +429,7 @@ class OrbitControls extends EventEmitter {
 
     mouseMoveStream = document.onMouseMove.listen(mousemove);
     mouseUpStream = document.onMouseUp.listen(mouseup);
-    dispatchEvent(startEvent);
+    _onStartController.add(null);
 
   }
 
@@ -499,7 +500,7 @@ class OrbitControls extends EventEmitter {
     mouseMoveStream.cancel();
     mouseUpStream.cancel();
 
-    dispatchEvent(endEvent);
+    _onEndController.add(null);
 
     _state = STATE.NONE;
 
@@ -537,8 +538,8 @@ class OrbitControls extends EventEmitter {
     }
 
     update();
-    dispatchEvent(startEvent);
-    dispatchEvent(endEvent);
+    _onStartController.add(null);
+    _onEndController.add(null);
 
   }
 
@@ -614,7 +615,7 @@ class OrbitControls extends EventEmitter {
         _state = STATE.NONE;
     }
 
-    dispatchEvent(startEvent);
+    _onStartController.add(null);
 
   }
 
@@ -705,7 +706,7 @@ class OrbitControls extends EventEmitter {
 
     if (enabled == false) return;
 
-    dispatchEvent(endEvent);
+    _onEndController.add(null);
 
     _state = STATE.NONE;
 

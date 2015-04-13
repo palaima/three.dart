@@ -15,18 +15,18 @@ Texture loadTexture(String url, {mapping, Function onLoad(Texture texture), Func
 
   var loader = new ImageLoader();
 
-  loader.addEventListener('load', (event) {
+  loader.onLoad.listen((image) {
 
-    texture.image = event.content;
+    texture.image = image;
     texture.needsUpdate = true;
 
     if (onLoad != null) onLoad(texture);
 
   });
 
-  loader.addEventListener('error', (event) {
+  loader.onError.listen((msg) {
 
-    if (onError != null) onError(event.message);
+    if (onError != null) onError(msg);
 
   });
 

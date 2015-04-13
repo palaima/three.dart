@@ -32,7 +32,6 @@ part 'src/core/ray.dart';
 part 'src/core/rectangle.dart';
 part 'src/core/buffer_attribute.dart';
 part 'src/core/buffer_geometry.dart';
-part 'src/core/event_emitter.dart';
 
 part 'src/math/aabb2.dart';
 part 'src/math/aabb3.dart';

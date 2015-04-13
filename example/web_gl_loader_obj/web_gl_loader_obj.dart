@@ -41,8 +41,8 @@ init() {
 
   var loaderTexture = new ImageLoader();
 
-  loaderTexture.addEventListener('load', (event) {
-    texture.image = event.content;
+  loaderTexture.onLoad.listen((image) {
+    texture.image = image;
     texture.needsUpdate = true;
   });
 

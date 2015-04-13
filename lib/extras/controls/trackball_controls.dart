@@ -22,7 +22,7 @@ class STATE {
   static const TOUCH_ZOOM_PAN = 4;
 }
 
-class TrackballControls extends EventEmitter {
+class TrackballControls {
 
   int _state, _prevState;
   Object3D object;
@@ -51,7 +51,14 @@ class TrackballControls extends EventEmitter {
   StreamSubscription<MouseEvent> mouseUpStream;
   StreamSubscription<KeyboardEvent> keydownStream, keyupStream;
 
-  EventEmitterEvent changeEvent, startEvent, endEvent;
+  StreamController _onChangeController = new StreamController(sync: true);
+  Stream get onChange => _onChangeController.stream;
+
+  StreamController _onStartController = new StreamController(sync: true);
+  Stream get onStart => _onStartController.stream;
+
+  StreamController _onEndController = new StreamController(sync: true);
+  Stream get onEnd => _onEndController.stream;
 
   TrackballControls(this.object, [Element domElement]) {
 
@@ -103,10 +110,6 @@ class TrackballControls extends EventEmitter {
 
     _panStart = new Vector2.zero();
     _panEnd = new Vector2.zero();
-
-    changeEvent = new EventEmitterEvent(type: 'change');
-    startEvent = new EventEmitterEvent(type: 'start');
-    endEvent = new EventEmitterEvent(type: 'end');
 
     this.domElement
         ..onContextMenu.listen((event) => event.preventDefault())
@@ -325,7 +328,7 @@ class TrackballControls extends EventEmitter {
     // distanceToSquared
     if ((lastPosition - object.position).length2 > 0.0) {
       //
-      dispatchEvent(changeEvent);
+      _onChangeController.add(null);
 
       lastPosition.setFrom(object.position);
 
@@ -409,7 +412,7 @@ class TrackballControls extends EventEmitter {
     mouseMoveStream = document.onMouseMove.listen(mousemove);
     mouseUpStream = document.onMouseUp.listen(mouseup);
 
-    dispatchEvent(startEvent);
+    _onStartController.add(null);
 
   }
 
@@ -450,7 +453,7 @@ class TrackballControls extends EventEmitter {
     mouseMoveStream.cancel();
     mouseUpStream.cancel();
 
-    dispatchEvent(endEvent);
+    _onEndController.add(null);
   }
 
   mousewheel(WheelEvent event) {
@@ -477,8 +480,8 @@ class TrackballControls extends EventEmitter {
 
     _zoomStart.y += (1 / delta) * 0.05;
 
-    dispatchEvent(startEvent);
-    dispatchEvent(endEvent);
+    _onStartController.add(null);
+    _onEndController.add(null);
 
     triggerAutoUpdate();
   }
@@ -514,7 +517,7 @@ class TrackballControls extends EventEmitter {
         break;
     }
 
-    dispatchEvent(startEvent);
+    _onStartController.add(null);
   }
 
   touchmove(TouchEvent event) {
@@ -574,7 +577,7 @@ class TrackballControls extends EventEmitter {
 
     _state = STATE.NONE;
 
-    dispatchEvent(endEvent);
+    _onEndController.add(null);
 
   }
 

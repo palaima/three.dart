@@ -1,8 +1,13 @@
 part of three;
 
-class ImageLoader extends EventEmitter {
-
+class ImageLoader {
   String crossOrigin;
+
+  StreamController _onLoadController = new StreamController();
+  Stream get onLoad => _onLoadController.stream;
+
+  StreamController _onErrorController = new StreamController();
+  Stream get onError => _onErrorController.stream;
 
   ImageLoader()
       : crossOrigin = null,
@@ -13,11 +18,11 @@ class ImageLoader extends EventEmitter {
     if (image == null) image = new ImageElement();
 
     image.onLoad.listen((_) {
-      dispatchEvent(new EventEmitterEvent(type: 'load', content: image));
+      _onLoadController.add(image);
     });
 
     image.onError.listen((_) {
-      dispatchEvent(new EventEmitterEvent(type: 'error', message: "Couldn\'t load URL [$url]"));
+      _onErrorController.addError("Couldn\'t load URL [$url]");
     });
 
     if (crossOrigin != null) image.crossOrigin = crossOrigin;

@@ -32,7 +32,7 @@ void init() {
   camera.position.z = 500.0;
 
   controls = new OrbitControls(camera);
-  controls.addEventListener('change', (_) => render());
+  controls.onChange.listen((_) => render());
 
   scene = new Scene();
   scene.fog = new FogExp2(0xcccccc, 0.002);

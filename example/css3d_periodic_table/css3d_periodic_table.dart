@@ -156,7 +156,7 @@ init() {
 
   controls = new TrackballControls(camera, renderer.domElement)
       ..rotateSpeed = 0.5
-      ..addEventListener('change', (_) => render());
+      ..onChange.listen((_) => render());
 
   document.querySelector('#table').onClick.listen((e) => transform(e.target, targets["table"], 2000));
 

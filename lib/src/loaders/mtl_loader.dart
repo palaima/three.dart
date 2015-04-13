@@ -299,8 +299,8 @@ class MaterialCreator {
 
     var completer = new Completer();
     var texture = new Texture();
-    imageLoader.addEventListener("load", (EventEmitterEvent image) {
-      texture.image = _ensurePowerOfTwo(image.content);
+    imageLoader.onLoad.listen((image) {
+      texture.image = _ensurePowerOfTwo(image);
       texture.needsUpdate = true;
       completer.complete(texture);
     });

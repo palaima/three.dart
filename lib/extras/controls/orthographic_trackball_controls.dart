@@ -23,7 +23,7 @@ class STATE {
   static const TOUCH_PAN = 5;
 }
 
-class OrthographicTrackballControls extends EventEmitter {
+class OrthographicTrackballControls {
 
   int _state, _prevState;
   Object3D object;
@@ -56,7 +56,8 @@ class OrthographicTrackballControls extends EventEmitter {
   StreamSubscription<MouseEvent> mouseUpStream;
   StreamSubscription<KeyboardEvent> keydownStream;
 
-  EventEmitterEvent changeEvent;
+  StreamController _onChangeController = new StreamController(sync: true);
+  Stream get onChange => _onChangeController.stream;
 
   OrthographicTrackballControls(this.object, [Element domElement]) {
 
@@ -125,8 +126,6 @@ class OrthographicTrackballControls extends EventEmitter {
     bottom0 = (this.object as OrthographicCamera).bottom;
     center0 = new Vector2((left0 + right0) / 2.0, (top0 + bottom0) / 2.0);
 
-    changeEvent = new EventEmitterEvent(type: 'change');
-
     this.domElement
         ..onContextMenu.listen((event) => event.preventDefault())
         ..onMouseDown.listen(mousedown)
@@ -155,11 +154,6 @@ class OrthographicTrackballControls extends EventEmitter {
     screen['offsetTop'] = 0;
 
     radius = (screen['width'] + screen['height'] / 4);
-  }
-
-
-  handleEvent(event) {
-    dispatchEvent(event);
   }
 
   getMouseOnScreen(clientX, clientY) =>
@@ -321,7 +315,7 @@ class OrthographicTrackballControls extends EventEmitter {
     // distanceToSquared
     if ((lastPosition - object.position).length2 > 0.0) {
 
-      dispatchEvent(changeEvent);
+      _onChangeController.add(null);
 
       lastPosition.setFrom(object.position);
 
@@ -347,7 +341,7 @@ class OrthographicTrackballControls extends EventEmitter {
 
     object.lookAt(target);
 
-    dispatchEvent(changeEvent);
+    _onChangeController.add(null);
 
   }
 

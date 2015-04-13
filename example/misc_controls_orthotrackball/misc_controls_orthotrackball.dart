@@ -56,7 +56,7 @@ void init() {
 
   controls.keys = [65, 83, 68];
 
-  controls.addEventListener('change', (_) => render());
+  controls.onChange.listen((_) => render());
 
   scene = new Scene();
   scene.fog = new FogExp2(0xcccccc, 0.002);
