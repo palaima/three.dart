@@ -62,4 +62,6 @@ class Sphere {
     radius *= matrix.getMaxScaleOnAxis();
     return this;
   }
+
+  Sphere clone() => new Sphere.copy(this);
 }
