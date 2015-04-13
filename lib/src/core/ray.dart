@@ -99,6 +99,8 @@ class Ray {
           object.matrixWorld.getColumn(1).length,
           object.matrixWorld.getColumn(2).length);
 
+      if (mesh.geometry.boundingSphere == null) mesh.geometry.computeBoundingSphere();
+
       if (distance > mesh.geometry.boundingSphere.radius * Math.max(scale.x, Math.max(scale.y, scale.z))) {
         return intersects;
       }
