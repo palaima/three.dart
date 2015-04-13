@@ -30,6 +30,7 @@ part 'src/core/geometry.dart';
 part 'src/core/projector.dart';
 part 'src/core/ray.dart';
 part 'src/core/rectangle.dart';
+part 'src/core/buffer_attribute.dart';
 part 'src/core/buffer_geometry.dart';
 part 'src/core/event_emitter.dart';
 
