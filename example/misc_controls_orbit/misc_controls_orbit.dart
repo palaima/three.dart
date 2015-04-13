@@ -1,7 +1,7 @@
 import 'dart:html';
 import 'dart:math' as Math;
 import 'package:three/three.dart';
-import 'package:three/extras/controls/orbit_controls.dart';
+import 'package:three/extras/controls.dart';
 
 Element container;
 

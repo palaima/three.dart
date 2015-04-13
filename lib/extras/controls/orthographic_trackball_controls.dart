@@ -6,26 +6,11 @@
  * @author Adam Joseph Cook / https://github.com/adamjcook
  *
  **/
-library OrthographicTrackballControls;
-
-import "dart:html";
-import "dart:async";
-import "dart:math" as Math;
-import "package:three/three.dart";
-
-class STATE {
-  static const NONE = -1;
-  static const ROTATE = 0;
-  static const ZOOM = 1;
-  static const PAN = 2;
-  static const TOUCH_ROTATE = 3;
-  static const TOUCH_ZOOM = 4;
-  static const TOUCH_PAN = 5;
-}
+part of controls;
 
 class OrthographicTrackballControls {
 
-  int _state, _prevState;
+  State _state, _prevState;
   Object3D object;
   dynamic domElement;
   bool enabled;
@@ -96,8 +81,8 @@ class OrthographicTrackballControls {
 
     lastPosition = new Vector3.zero();
 
-    _state = STATE.NONE;
-    _prevState = STATE.NONE;
+    _state = State.NONE;
+    _prevState = State.NONE;
 
     _eye = new Vector3.zero();
 
@@ -223,7 +208,7 @@ class OrthographicTrackballControls {
 
   zoomCamera() {
 
-    if (_state == STATE.TOUCH_ZOOM) {
+    if (_state == State.TOUCH_ZOOM) {
 
       double factor = _touchZoomDistanceStart / _touchZoomDistanceEnd;
       _touchZoomDistanceStart = _touchZoomDistanceEnd;
@@ -325,8 +310,8 @@ class OrthographicTrackballControls {
 
   reset() {
 
-    _state = STATE.NONE;
-    _prevState = STATE.NONE;
+    _state = State.NONE;
+    _prevState = State.NONE;
 
     target = target0;
     object.position = position0;
@@ -355,21 +340,21 @@ class OrthographicTrackballControls {
 
     _prevState = _state;
 
-    if (_state != STATE.NONE) {
+    if (_state != State.NONE) {
 
       return;
 
-    } else if (event.keyCode == keys[STATE.ROTATE] && !noRotate) {
+    } else if (event.keyCode == keys[State.ROTATE.index] && !noRotate) {
 
-      _state = STATE.ROTATE;
+      _state = State.ROTATE;
 
-    } else if (event.keyCode == keys[STATE.ZOOM] && !noZoom) {
+    } else if (event.keyCode == keys[State.ZOOM.index] && !noZoom) {
 
-      _state = STATE.ZOOM;
+      _state = State.ZOOM;
 
-    } else if (event.keyCode == keys[STATE.PAN] && !noPan) {
+    } else if (event.keyCode == keys[State.PAN.index] && !noPan) {
 
-      _state = STATE.PAN;
+      _state = State.PAN;
 
     }
 
@@ -396,22 +381,22 @@ class OrthographicTrackballControls {
     event.preventDefault();
     event.stopPropagation();
 
-    if (_state == STATE.NONE) {
+    if (_state == State.NONE) {
 
-      _state = event.button;
+      _state = State.values[event.button];
     }
 
-    if (_state == STATE.ROTATE && !noRotate) {
+    if (_state == State.ROTATE && !noRotate) {
 
       _rotateStart = getMouseProjectionOnBall(event.client.x, event.client.y);
       _rotateEnd = _rotateStart;
 
-    } else if (_state == STATE.ZOOM && !noZoom) {
+    } else if (_state == State.ZOOM && !noZoom) {
 
       _zoomStart = getMouseOnScreen(event.client.x, event.client.y);
       _zoomEnd = _zoomStart;
 
-    } else if (_state == STATE.PAN && !noPan) {
+    } else if (_state == State.PAN && !noPan) {
 
       _panStart = getMouseOnScreen(event.client.x, event.client.y);
       _panEnd = _panStart;
@@ -429,15 +414,15 @@ class OrthographicTrackballControls {
       return;
     }
 
-    if (_state == STATE.ROTATE && !noRotate) {
+    if (_state == State.ROTATE && !noRotate) {
 
       _rotateEnd = getMouseProjectionOnBall(event.client.x, event.client.y);
 
-    } else if (_state == STATE.ZOOM && !noZoom) {
+    } else if (_state == State.ZOOM && !noZoom) {
 
       _zoomEnd = getMouseOnScreen(event.client.x, event.client.y);
 
-    } else if (_state == STATE.PAN && !noPan) {
+    } else if (_state == State.PAN && !noPan) {
 
       _panEnd = getMouseOnScreen(event.client.x, event.client.y);
 
@@ -454,7 +439,7 @@ class OrthographicTrackballControls {
     event.preventDefault();
     event.stopPropagation();
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
     mouseMoveStream.cancel();
     mouseUpStream.cancel();
@@ -498,19 +483,19 @@ class OrthographicTrackballControls {
     switch (event.touches.length) {
 
       case 1:
-        _state = STATE.TOUCH_ROTATE;
+        _state = State.TOUCH_ROTATE;
         _rotateStart = _rotateEnd = getMouseProjectionOnBall(event.touches[0].page.x, event.touches[0].page.y);
         break;
       case 2:
-        _state = STATE.TOUCH_ZOOM;
+        _state = State.TOUCH_ZOOM;
         _zoomStart = _zoomEnd = getMouseOnScreen(event.touches[0].page.x, event.touches[0].page.y);
         break;
       case 3:
-        _state = STATE.TOUCH_PAN;
+        _state = State.TOUCH_PAN;
         _panStart = _panEnd = getMouseOnScreen(event.touches[0].page.x, event.touches[0].page.y);
         break;
       default:
-        _state = STATE.NONE;
+        _state = State.NONE;
 
     }
 
@@ -536,7 +521,7 @@ class OrthographicTrackballControls {
         _panEnd = getMouseOnScreen(event.touches[0].page.x, event.touches[0].page.y);
         break;
       default:
-        _state = STATE.NONE;
+        _state = State.NONE;
 
     }
 
@@ -561,7 +546,7 @@ class OrthographicTrackballControls {
 
     }
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
   }
 }

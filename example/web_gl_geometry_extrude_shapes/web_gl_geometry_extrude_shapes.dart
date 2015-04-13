@@ -5,7 +5,7 @@
 import 'dart:html' hide Path;
 import 'dart:math' as Math;
 import 'package:three/three.dart';
-import 'package:three/extras/controls/trackball_controls.dart';
+import 'package:three/extras/controls.dart';
 
 Element container;
 

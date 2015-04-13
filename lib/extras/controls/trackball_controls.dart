@@ -6,25 +6,11 @@
  *
  * based on rev 5816003656
  **/
-library TrackballControls;
-
-import "dart:html";
-import "dart:async";
-import "dart:math" as Math;
-import "package:three/three.dart";
-
-class STATE {
-  static const NONE = -1;
-  static const ROTATE = 0;
-  static const ZOOM = 1;
-  static const PAN = 2;
-  static const TOUCH_ROTATE = 3;
-  static const TOUCH_ZOOM_PAN = 4;
-}
+part of controls;
 
 class TrackballControls {
 
-  int _state, _prevState;
+  State _state, _prevState;
   Object3D object;
   dynamic domElement;
   bool enabled;
@@ -94,8 +80,8 @@ class TrackballControls {
 
     lastPosition = new Vector3.zero();
 
-    _state = STATE.NONE;
-    _prevState = STATE.NONE;
+    _state = State.NONE;
+    _prevState = State.NONE;
 
     _eye = new Vector3.zero();
 
@@ -217,7 +203,7 @@ class TrackballControls {
 
   zoomCamera() {
 
-    if (_state == STATE.TOUCH_ZOOM_PAN) {
+    if (_state == State.TOUCH_ZOOM_PAN) {
 
       var factor = _touchZoomDistanceStart / _touchZoomDistanceEnd;
 
@@ -346,21 +332,21 @@ class TrackballControls {
 
     _prevState = _state;
 
-    if (_state != STATE.NONE) {
+    if (_state != State.NONE) {
 
       return;
 
-    } else if (event.keyCode == keys[STATE.ROTATE] && !noRotate) {
+    } else if (event.keyCode == keys[State.ROTATE.index] && !noRotate) {
 
-      _state = STATE.ROTATE;
+      _state = State.ROTATE;
 
-    } else if (event.keyCode == keys[STATE.ZOOM] && !noZoom) {
+    } else if (event.keyCode == keys[State.ZOOM.index] && !noZoom) {
 
-      _state = STATE.ZOOM;
+      _state = State.ZOOM;
 
-    } else if (event.keyCode == keys[STATE.PAN] && !noPan) {
+    } else if (event.keyCode == keys[State.PAN.index] && !noPan) {
 
-      _state = STATE.PAN;
+      _state = State.PAN;
 
     }
 
@@ -387,22 +373,22 @@ class TrackballControls {
     event.preventDefault();
     event.stopPropagation();
 
-    if (_state == STATE.NONE) {
+    if (_state == State.NONE) {
 
-      _state = event.button;
+      _state = State.values[event.button];
     }
 
-    if (_state == STATE.ROTATE && !noRotate) {
+    if (_state == State.ROTATE && !noRotate) {
 
       _rotateStart = getMouseProjectionOnBall(event.client.x, event.client.y);
       _rotateEnd.setFrom(_rotateStart);
 
-    } else if (_state == STATE.ZOOM && !noZoom) {
+    } else if (_state == State.ZOOM && !noZoom) {
 
       _zoomStart = getMouseOnScreen(event.client.x, event.client.y);
       _zoomEnd.setFrom(_zoomStart);
 
-    } else if (_state == STATE.PAN && !noPan) {
+    } else if (_state == State.PAN && !noPan) {
 
       _panStart = getMouseOnScreen(event.client.x, event.client.y);
       _panEnd.setFrom(_panStart);
@@ -422,15 +408,15 @@ class TrackballControls {
       return;
     }
 
-    if (_state == STATE.ROTATE && !noRotate) {
+    if (_state == State.ROTATE && !noRotate) {
 
       _rotateEnd = getMouseProjectionOnBall(event.client.x, event.client.y);
 
-    } else if (_state == STATE.ZOOM && !noZoom) {
+    } else if (_state == State.ZOOM && !noZoom) {
 
       _zoomEnd = getMouseOnScreen(event.client.x, event.client.y);
 
-    } else if (_state == STATE.PAN && !noPan) {
+    } else if (_state == State.PAN && !noPan) {
 
       _panEnd = getMouseOnScreen(event.client.x, event.client.y);
 
@@ -448,7 +434,7 @@ class TrackballControls {
     event.preventDefault();
     event.stopPropagation();
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
     mouseMoveStream.cancel();
     mouseUpStream.cancel();
@@ -497,12 +483,12 @@ class TrackballControls {
     switch (event.touches.length) {
 
       case 1:
-        _state = STATE.TOUCH_ROTATE;
+        _state = State.TOUCH_ROTATE;
         _rotateStart = getMouseProjectionOnBall(event.touches[0].page.x, event.touches[0].page.y);
         _rotateEnd.setFrom(_rotateStart);
         break;
       case 2:
-        _state = STATE.TOUCH_ZOOM_PAN;
+        _state = State.TOUCH_ZOOM_PAN;
         var dx = event.touches[0].page.x - event.touches[1].page.x;
         var dy = event.touches[0].page.y - event.touches[1].page.y;
         _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt(dx * dx + dy * dy);
@@ -513,7 +499,7 @@ class TrackballControls {
         _panEnd.setFrom(_panStart);
         break;
       default:
-        _state = STATE.NONE;
+        _state = State.NONE;
         break;
     }
 
@@ -543,7 +529,7 @@ class TrackballControls {
         _panEnd = getMouseOnScreen(x, y);
         break;
       default:
-        _state = STATE.NONE;
+        _state = State.NONE;
         break;
 
     }
@@ -575,7 +561,7 @@ class TrackballControls {
 
     }
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
     _onEndController.add(null);
 

@@ -1,7 +1,7 @@
 import 'dart:html';
 import 'dart:math' as Math;
 import 'package:three/three.dart';
-import 'package:three/extras/controls/trackball_controls.dart';
+import 'package:three/extras/controls.dart';
 import 'package:three/extras/image_utils.dart';
 
 var stats, scene, renderer;
@@ -101,7 +101,7 @@ init() {
       map: texture);
   mesh = new Mesh(geometry, material);
   mesh.scale.scale(3.0);
-  mesh.flipSided = false;
+  //mesh.flipSided = false;
   mesh.castShadow = false;
   mesh.receiveShadow = true;
   mesh.position.y = -0.5 / 2.0;

@@ -8,12 +8,8 @@
   *
   * based on rev 04b652ae26e228796f67838c0ec4d555e8b16528
   */
-library FirstPersonControls;
 
-import "dart:html";
-import "dart:math" as Math;
-import "package:three/three.dart" show Object3D, Vector3;
-import 'package:three/src/core/three_math.dart' as THREEMath;
+part of controls;
 
 class FirstPersonControls {
   Object3D object;
@@ -229,7 +225,7 @@ class FirstPersonControls {
     } else {
 
       if (this.heightSpeed) {
-        var y = THREEMath.clamp(this.object.position.y, this.heightMin, this.heightMax);
+        var y = ThreeMath.clamp(this.object.position.y, this.heightMin, this.heightMax);
         var heightDelta = y - this.heightMin;
 
         this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
@@ -287,7 +283,7 @@ class FirstPersonControls {
     this.theta = this.lon * Math.PI / 180;
 
     if (this.constrainVertical) {
-      this.phi = THREEMath.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
+      this.phi = ThreeMath.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
     }
 
     var targetPosition = this.target,

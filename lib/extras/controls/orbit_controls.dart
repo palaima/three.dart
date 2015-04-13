@@ -23,34 +23,11 @@
  * Only [PerspectiveCamera] and [OrthographicCamera] are supported with this
  * control.
  **/
-library OrbitControls;
-
-import "dart:html";
-import "dart:async";
-import "dart:math" as Math;
-import "package:three/three.dart";
-
-class STATE {
-  static const NONE = -1;
-  static const ROTATE = 0;
-  static const DOLLY = 1;
-  static const PAN = 2;
-  static const TOUCH_ROTATE = 3;
-  static const TOUCH_DOLLY = 4;
-  static const TOUCH_PAN = 5;
-}
-
-// Key mappings for directional controls.
-class KEYS {
-  static const LEFT = 37;
-  static const UP = 38;
-  static const RIGHT = 39;
-  static const BOTTOM = 40;
-}
+part of controls;
 
 class OrbitControls {
 
-  int _state;
+  State _state;
   Object3D object;
   dynamic domElement;
   bool enabled;
@@ -153,7 +130,7 @@ class OrbitControls {
     lastPosition = new Vector3.zero();
     lastQuaternion = new Quaternion.identity();
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
     _rotateStart = new Vector2.zero();
     _rotateEnd = new Vector2.zero();
@@ -374,7 +351,7 @@ class OrbitControls {
 
   reset() {
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
     target = target0;
     object.position = position0;
@@ -405,7 +382,7 @@ class OrbitControls {
 
       if (noRotate == true) return;
 
-      _state = STATE.ROTATE;
+      _state = State.ROTATE;
 
       _rotateStart = new Vector2(event.clientX.toDouble(), event.clientY.toDouble());
 
@@ -413,7 +390,7 @@ class OrbitControls {
 
       if (noZoom == true) return;
 
-      _state = STATE.DOLLY;
+      _state = State.DOLLY;
 
       _dollyStart = new Vector2(event.clientX.toDouble(), event.clientY.toDouble());
 
@@ -421,7 +398,7 @@ class OrbitControls {
 
       if (noPan == true) return;
 
-      _state = STATE.PAN;
+      _state = State.PAN;
 
       _panStart = new Vector2(event.clientX.toDouble(), event.clientY.toDouble());
 
@@ -441,7 +418,7 @@ class OrbitControls {
 
     var element = (domElement == document) ? document.body : domElement;
 
-    if (_state == STATE.ROTATE) {
+    if (_state == State.ROTATE) {
 
       if (noRotate == true) return;
 
@@ -457,7 +434,7 @@ class OrbitControls {
 
       _rotateStart.setFrom(_rotateEnd);
 
-    } else if (_state == STATE.DOLLY) {
+    } else if (_state == State.DOLLY) {
 
       if (noZoom == true) return;
 
@@ -476,7 +453,7 @@ class OrbitControls {
 
       _dollyStart.setFrom(_dollyEnd);
 
-    } else if (_state == STATE.PAN) {
+    } else if (_state == State.PAN) {
 
       if (noPan == true) return;
 
@@ -502,7 +479,7 @@ class OrbitControls {
 
     _onEndController.add(null);
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
   }
 
@@ -549,22 +526,22 @@ class OrbitControls {
 
     switch (event.keyCode) {
 
-      case KEYS.UP:
+      case KeyCode.UP:
         pan(0.0, keyPanSpeed);
         update();
         break;
 
-      case KEYS.BOTTOM:
+      case KeyCode.DOWN:
         pan(0.0, -keyPanSpeed);
         update();
         break;
 
-      case KEYS.LEFT:
+      case KeyCode.LEFT:
         pan(keyPanSpeed, 0.0);
         update();
         break;
 
-      case KEYS.RIGHT:
+      case KeyCode.RIGHT:
         pan(-keyPanSpeed, 0.0);
         update();
         break;
@@ -582,7 +559,7 @@ class OrbitControls {
         // Single finger touch - rotate
         if (noRotate == true) return;
 
-        _state = STATE.TOUCH_ROTATE;
+        _state = State.TOUCH_ROTATE;
 
         _rotateStart = new Vector2(event.touches[0].pageX.toDouble(), event.touches[0].pageY.toDouble());
         break;
@@ -591,7 +568,7 @@ class OrbitControls {
         // Two-finger touch - dolly
         if (noZoom == true) return;
 
-        _state = STATE.TOUCH_DOLLY;
+        _state = State.TOUCH_DOLLY;
 
         var dx = event.touches[0].pageX.toDouble() - event.touches[1].pageX.toDouble();
 
@@ -606,13 +583,13 @@ class OrbitControls {
         // Three-finger touch - pan
         if (noPan == true) return;
 
-        _state = STATE.TOUCH_PAN;
+        _state = State.TOUCH_PAN;
 
         _panStart = new Vector2(event.touches[0].pageX, event.touches[0].pageY);
         break;
 
       default:
-        _state = STATE.NONE;
+        _state = State.NONE;
     }
 
     _onStartController.add(null);
@@ -633,7 +610,7 @@ class OrbitControls {
       case 1:
         // Single finger touch - rotate
         if (noRotate == true) return;
-        if (_state != STATE.TOUCH_ROTATE) return;
+        if (_state != State.TOUCH_ROTATE) return;
 
         _rotateEnd = new Vector2(event.touches[0].pageX.toDouble(), event.touches[0].pageY.toDouble());
 
@@ -654,7 +631,7 @@ class OrbitControls {
       case 2:
         // Two-finger touch - dolly
         if (noZoom == true) return;
-        if (_state != STATE.TOUCH_DOLLY) return;
+        if (_state != State.TOUCH_DOLLY) return;
 
         var dx = event.touches[0].pageX.toDouble() - event.touches[1].pageX.toDouble();
 
@@ -683,7 +660,7 @@ class OrbitControls {
       case 3:
         // Three-finger touch - pan
         if (noPan == true) return;
-        if (_state = STATE.TOUCH_PAN) return;
+        if (_state == State.TOUCH_PAN) return;
 
         _panEnd = new Vector2(event.touches[0].pageX.toDouble(), event.touches[0].pageY.toDouble());
 
@@ -697,7 +674,7 @@ class OrbitControls {
         break;
 
       default:
-        _state = STATE.NONE;
+        _state = State.NONE;
     }
 
   }
@@ -708,7 +685,7 @@ class OrbitControls {
 
     _onEndController.add(null);
 
-    _state = STATE.NONE;
+    _state = State.NONE;
 
   }
 
