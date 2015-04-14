@@ -24,7 +24,7 @@ class FlyControls {
   Vector3 _moveVector = new Vector3.zero();
   Vector3 _rotationVector = new Vector3.zero();
 
-  double _movementSpeedMultiplier;
+  double _movementSpeedMultiplier = 1.0;
 
   FlyControls(this.object, {Element domElement})
       : this.domElement = domElement != null ? domElement : document {
@@ -75,7 +75,7 @@ class FlyControls {
 
   void _onKeyUp(KeyboardEvent event) {
     switch (event.keyCode) {
-      case KeyCode.SHIFT: _movementSpeedMultiplier = 0.1; break;
+      case KeyCode.SHIFT: _movementSpeedMultiplier = 1.0; break;
 
       case KeyCode.W: _moveState.forward = 0.0; break;
       case KeyCode.S: _moveState.back = 0.0; break;
@@ -151,7 +151,7 @@ class FlyControls {
   }
 
   void update(double delta) {
-    var moveMult = delta * movementSpeed;
+    var moveMult = delta * movementSpeed * _movementSpeedMultiplier;
     var rotMult = delta * rollSpeed;
 
     object.translateX(_moveVector.x * moveMult);
