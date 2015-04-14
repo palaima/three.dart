@@ -4682,7 +4682,7 @@ class WebGLRenderer implements Renderer {
       uniforms["refractionRatio"].value = envMat.refractionRatio;
       uniforms["combine"].value = envMat.combine;
       uniforms["useRefract"].value =
-          ((envMat.envMap != null) && (envMat.envMap.mapping is CubeRefractionMapping)) ? 1 : 0;
+          ((envMat.envMap != null) && (envMat.envMap.mapping == CubeRefractionMapping)) ? 1 : 0;
     }
   }
 

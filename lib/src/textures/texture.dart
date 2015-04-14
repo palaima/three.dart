@@ -63,7 +63,7 @@ class Texture {
       UnsignedByteType, this.anisotropy = 1]) {
     id = TextureIdCount++;
 
-    this.mapping = mapping != null ? mapping : new UVMapping();
+    this.mapping = mapping != null ? mapping : UVMapping;
 
     offset = new Vector2.zero();
     repeat = new Vector2(1.0, 1.0);

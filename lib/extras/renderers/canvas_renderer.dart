@@ -571,7 +571,7 @@ class CanvasRenderer implements Renderer {
       MeshBasicMaterial mbMaterial = material;
       if (mbMaterial.map != null /* && !material.wireframe*/ ) {
         //TODO: UVMapping is not implemented
-        if (mbMaterial.map.mapping is UVMapping) {
+        if (mbMaterial.map.mapping == UVMapping) {
           _uvs = element.uvs[0];
           patternPath(
               _v1x,
@@ -590,7 +590,7 @@ class CanvasRenderer implements Renderer {
 
         }
       } else if (null != mbMaterial.envMap) {
-        if (mbMaterial.envMap.mapping is SphericalReflectionMapping) {
+        if (mbMaterial.envMap.mapping == SphericalReflectionMapping) {
           Matrix4 cameraMatrix = _camera.matrixWorldInverse;
 
           _vector3.setFrom(element.vertexNormalsWorld[uv1]);
@@ -633,7 +633,7 @@ class CanvasRenderer implements Renderer {
       MeshLambertMaterial mlMaterial = material;
       if (mlMaterial.map != null && !mlMaterial.wireframe) {
         //TODO: UVMapping not implemented
-        if (mlMaterial.map.mapping is UVMapping) {
+        if (mlMaterial.map.mapping == UVMapping) {
           _uvs = element.uvs[0];
           patternPath(
               _v1x,
