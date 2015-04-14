@@ -94,7 +94,7 @@ class Material {
       this.depthTest: true, this.depthWrite: true, this.polygonOffset: false, this.polygonOffsetFactor: 0,
       this.polygonOffsetUnits: 0, this.alphaTest: 0, num color, this.overdraw: false, this.visible: true, this.fog: false,
       this.vertexColors: NoColors})
-      : id = MaterialCount++,
+      : id = MaterialIdCount++,
         this.color = color != null ? new Color(color) : new Color.white();
 
 /*

@@ -116,7 +116,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
   bool groupsNeedUpdate = false;
 
   Geometry() {
-    id = GeometryCount++;
+    id = GeometryIdCount++;
   }
 
   /// Bakes matrix transform directly into vertex coordinates.
@@ -127,7 +127,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
     faces.forEach((face) {
       face.normal..applyMatrix3(normalMatrix)..normalize();
-      
+
       if (!face.vertexNormals.any((e) => e == null)) {
         face.vertexNormals.forEach((vertexNormal) =>
             vertexNormal..applyMatrix3(normalMatrix)..normalize());

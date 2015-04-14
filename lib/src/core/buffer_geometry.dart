@@ -8,7 +8,7 @@
 part of three;
 
 class BufferGeometry implements Geometry {
-  int id = GeometryCount++;
+  int id = GeometryIdCount++;
 
   String uuid = ThreeMath.generateUUID();
 

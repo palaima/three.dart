@@ -165,13 +165,16 @@ part 'src/uv_mapping.dart';
 part 'src/materials/mappings.dart';
 
 // from _geometry
-int GeometryCount = 0;
+int GeometryIdCount = 0;
 
 // from Object3D
-int Object3DCount = 0;
+int Object3DIdCount = 0;
 
 // from _material
-int MaterialCount = 0;
+int MaterialIdCount = 0;
+
+// from Texture
+int TextureIdCount = 0;
 
 // GL STATE CONSTANTS
 
@@ -241,8 +244,6 @@ const int SrcAlphaSaturateFactor = 210;
 
 // from MeshBasic_material
 
-// from Texture
-int TextureCount = 0;
 
 const int MultiplyOperation = 0;
 const int MixOperation = 1;

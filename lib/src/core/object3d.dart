@@ -20,7 +20,7 @@ class Object3D {
   static Vector3 defaultUp = new Vector3(0.0, 1.0, 0.0);
 
   /// Unique number of this object instance.
-  int id = Object3DCount++;
+  int id = Object3DIdCount++;
 
   // Unique UUID
   String uuid = ThreeMath.generateUUID();

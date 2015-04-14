@@ -61,7 +61,7 @@ class Texture {
   Texture([this.image, this.mapping = null, this.wrapS = ClampToEdgeWrapping, this.wrapT = ClampToEdgeWrapping,
       this.magFilter = LinearFilter, this.minFilter = LinearMipMapLinearFilter, this.format = RGBAFormat, this.type =
       UnsignedByteType, this.anisotropy = 1]) {
-    id = TextureCount++;
+    id = TextureIdCount++;
 
     this.mapping = mapping != null ? mapping : new UVMapping();
 
