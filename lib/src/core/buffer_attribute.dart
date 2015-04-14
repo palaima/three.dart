@@ -12,19 +12,19 @@ class BufferAttribute {
   int numItems;
 
   bool needsUpdate = false;
-  BufferAttribute._(this.numItems, this.itemSize, this.array);
+  BufferAttribute(this.array, this.itemSize);
 
   // Used in WebGL Renderer
   Buffer buffer;
 
   factory BufferAttribute.float32(int length, [int itemSize = 1]) =>
-      new BufferAttribute._(length, itemSize, new Float32List(length));
+      new BufferAttribute(new Float32List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.int32(int length, [int itemSize = 1]) =>
-      new BufferAttribute._(length, itemSize, new Int32List(length));
+      new BufferAttribute(new Int32List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.int16(int length, [int itemSize = 1]) =>
-      new BufferAttribute._(length, itemSize, new Int16List(length));
+      new BufferAttribute(new Int16List(length), itemSize)..numItems = length;
 
 
   get length => array.length;
