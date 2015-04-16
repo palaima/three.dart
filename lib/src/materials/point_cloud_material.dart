@@ -1,62 +1,40 @@
-part of three;
-
-/**
+/*
  * @author mr.doob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  *
- * Ported to Dart from JS by:
- * @author rob silverton / http://www.unwrong.com/
- *
- * parameters = {
- *  color: <hex>,
- *  opacity: <float>,
- *  map: new THREE.Texture( <Image> ),
- *
- *  size: <float>,
- *
- *  blending: THREE.NormalBlending,
- *  depthTest: <bool>,
- *
- *  vertexColors: false / THREE.NoColors  / THREE.VertexColors / THREE.FaceColors,
- *
- *  fog: <bool>
- * }
+ * based on  a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
-class PointCloudMaterial extends Material implements TextureMapping {
+part of three;
 
-  var map;
-  num size;
+class PointCloudMaterial extends Material implements TextureMapping {
+  String type = 'PointCloudMaterial';
+
+  Texture map;
+  double size;
   bool sizeAttenuation;
 
-  PointCloudMaterial({ // ParticleBasicMaterial
+  PointCloudMaterial({num color: 0xffffff, this.map, this.size: 1.0, this.sizeAttenuation: true,
+    int vertexColors: NoColors, bool fog: true,
+    // Material
+    String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
+    int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
+    int blendEquation: AddEquation, blendSrcAlpha, blendDstAlpha, blendEquationAlpha, int depthFunc: LessEqualDepth,
+    bool depthTest: true, bool depthWrite: true, bool colorWrite: true, bool polygonOffset: false,
+    int polygonOffsetFactor: 0, int polygonOffsetUnits: 0, double alphaTest: 0.0, double overdraw: 0.0,
+    bool visible: true})
+      : super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
+          blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
+          blendDstAlpha: blendDstAlpha, blendEquationAlpha: blendEquationAlpha, depthFunc: depthFunc,
+          depthTest: depthTest, depthWrite: depthWrite, colorWrite: colorWrite, polygonOffset: polygonOffset,
+          polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
+          overdraw: overdraw, visible: visible,
 
-  this.map, num color: 0xffffff, this.size: 1, this.sizeAttenuation: true, int vertexColors: NoColors, bool fog: true,
-      // Material
-  name: '', side: FrontSide, opacity: 1, transparent: false, blending: NormalBlending, blendSrc: SrcAlphaFactor,
-      blendDst: OneMinusSrcAlphaFactor, blendEquation: AddEquation, depthTest: true, depthWrite: true, polygonOffset: false,
-      polygonOffsetFactor: 0, polygonOffsetUnits: 0, alphaTest: 0, overdraw: false, visible: true})
-      : super._(
-          name: name,
-          side: side,
-          opacity: opacity,
-          transparent: transparent,
-          blending: blending,
-          blendSrc: blendSrc,
-          blendDst: blendDst,
-          blendEquation: blendEquation,
-          depthTest: depthTest,
-          depthWrite: depthWrite,
-          polygonOffset: polygonOffset,
-          polygonOffsetFactor: polygonOffsetFactor,
-          polygonOffsetUnits: polygonOffsetUnits,
-          alphaTest: alphaTest,
-          overdraw: overdraw,
-          visible: visible,
-          color: color,
-          fog: fog,
-          vertexColors: vertexColors);
+          color: color, fog: fog, vertexColors: vertexColors);
 
+  clone() {
+    throw new UnimplementedError();
+  }
 }
 
 

@@ -1,13 +1,18 @@
+/*
+ * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ */
+
 part of three;
 
 /// A material for shiny surfaces, evaluated per pixel.
 class MeshPhongMaterial extends Material implements Lighting, TextureMapping, EnvironmentMapping, Skinning, Morphing {
-
-  /// Ambient color of the material, multiplied by the color of the AmbientLight. Default is white.
-  Color ambient;
   /// Emissive (light) color of the material, essentially a solid color
   /// unaffected by other lighting. Default is black.
   Color emissive;
+
   /// Specular color of the material, i.e., how shiny the material is and the
   /// color of its shine.
   ///
@@ -15,31 +20,34 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
   /// makes the material more metallic-looking; setting this to some gray makes
   /// the material look more plastic. Default is dark gray.
   Color specular;
+
   /// How shiny the specular highlight is; a higher value gives a sharper highlight. Default is 30.
-  num shininess;
+  double shininess;
 
   bool metal;
-  bool perPixel;
-
-  bool wrapAround;
-  Vector3 wrapRGB;
 
   Texture map;
 
-  var lightMap;
+  Texture lightMap;
+  double lightMapIntensity;
 
-  var bumpMap;
-  num bumpScale;
+  Texture aoMap;
+  double aoMapIntensity;
 
-  var normalMap = null;
-  var normalScale;
+  Texture bumpMap;
+  double bumpScale;
 
-  var specularMap;
+  Texture normalMap;
+  Vector2 normalScale;
 
-  var envMap;
+  Texture specularMap;
+
+  Texture alphaMap;
+
+  CubeTexture envMap;
   int combine;
-  num reflectivity;
-  num refractionRatio;
+  double reflectivity;
+  double refractionRatio;
 
   /// How the triangles of a curved surface are rendered: as a smooth surface,
   /// as flat separate facets, or no shading at all.
@@ -49,11 +57,13 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
 
   /// Whether the triangles' edges are displayed instead of surfaces. Default is false.
   bool wireframe;
+
   /// Line thickness for wireframe mode. Default is 1.0.
   ///
   /// Due to limitations in the ANGLE layer, on Windows platforms linewidth will
   /// always be 1 regardless of the set value.
-  num wireframeLinewidth;
+  double wireframeLinewidth;
+
   /// Define appearance of line ends.
   ///
   /// Possible values are "butt", "round" and "square". Default is 'round'.
@@ -61,7 +71,8 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
   /// This setting might not have any effect when used with certain renderers.
   /// For example, it is ignored with the WebGL renderer, but does work with the
   /// Canvas renderer.
-  var wireframeLinecap;
+  String wireframeLinecap;
+
   /// Define appearance of line joints.
   ///
   /// Possible values are "round", "bevel" and "miter". Default is 'round'.
@@ -69,61 +80,59 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
   /// This setting might not have any effect when used with certain renderers.
   /// For example, it is ignored with the WebGL renderer, but does work with the
   /// Canvas renderer.
-  var wireframeLinejoin;
+  String wireframeLinejoin;
 
   /// Define whether the material uses skinning. Default is false.
   bool skinning;
 
-  // Morphing
   /// Define whether the material uses morphTargets. Default is false.
   bool morphTargets;
   bool morphNormals;
-  num numSupportedMorphTargets = 0,
+
+  // Used by renderer
+  int numSupportedMorphTargets = 0,
       numSupportedMorphNormals = 0;
 
-  MeshPhongMaterial({ // MeshLambertMaterial
+  @Deprecated('')
+  Color ambient;
+  @Deprecated('')
+  var perPixel = false;
+  @Deprecated('')
+  var wrapRGB;
+  @Deprecated('')
+  var wrapAround = false;
 
-  num color: 0xffffff, //emissive
-  num ambient: 0xffffff, num emissive: 0x000000, num specular: 0x111111, this.map, this.shininess: 30, this.metal:
-      false, this.perPixel: false, this.wrapAround: false, Vector3 wrapRGB, this.lightMap, this.specularMap, this.envMap,
-      this.bumpMap, this.bumpScale: 1, this.normalMap: null, this.normalScale, this.combine: MultiplyOperation,
-      this.reflectivity: 1, this.refractionRatio: 0.98, this.shading: SmoothShading, int vertexColors: NoColors, bool fog:
-      true, this.wireframe: false, this.wireframeLinewidth: 1, this.wireframeLinecap: 'round', this.wireframeLinejoin:
-      'round', this.skinning: false, this.morphTargets: false, this.morphNormals: false, // Material
-  name: '', side: FrontSide, opacity: 1, transparent: false, blending: NormalBlending, blendSrc: SrcAlphaFactor,
-      blendDst: OneMinusSrcAlphaFactor, blendEquation: AddEquation, depthTest: true, depthWrite: true, polygonOffset: false,
-      polygonOffsetFactor: 0, polygonOffsetUnits: 0, alphaTest: 0, overdraw: false, visible: true})
-      : this.ambient = new Color(ambient),
-        this.emissive = new Color(emissive),
+  MeshPhongMaterial({num color: 0xffffff, num emissive: 0x000000, num specular: 0x111111, this.shininess: 30.0,
+    this.metal: false, this.map, this.lightMap, this.lightMapIntensity: 1.0, this.aoMap, this.aoMapIntensity: 1.0,
+    this.bumpMap, this.bumpScale: 1.0, this.normalMap, Vector2 normalScale, this.specularMap, this.alphaMap,
+    this.envMap, this.combine: MultiplyOperation, this.reflectivity: 1.0, this.refractionRatio: 0.98, bool fog: true,
+    this.shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
+    this.wireframeLinejoin: 'round', int vertexColors: NoColors, this.skinning: false, this.morphTargets: false,
+    this.morphNormals: false, ambient: 0xffffff,
+    // Material
+    String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
+    int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
+    int blendEquation: AddEquation, blendSrcAlpha, blendDstAlpha, blendEquationAlpha, int depthFunc: LessEqualDepth,
+    bool depthTest: true, bool depthWrite: true, bool colorWrite: true, bool polygonOffset: false,
+    int polygonOffsetFactor: 0, int polygonOffsetUnits: 0, double alphaTest: 0.0, double overdraw: 0.0,
+    bool visible: true})
+      : this.emissive = new Color(emissive),
         this.specular = new Color(specular),
+        this.ambient = new Color(ambient),
+        this.normalScale = normalScale != null ? normalScale : new Vector2(1.0, 1.0),
+        super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
+                blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
+                blendDstAlpha: blendDstAlpha, blendEquationAlpha: blendEquationAlpha, depthFunc: depthFunc,
+                depthTest: depthTest, depthWrite: depthWrite, colorWrite: colorWrite, polygonOffset: polygonOffset,
+                polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
+                overdraw: overdraw, visible: visible,
 
-        this.wrapRGB = wrapRGB == null ? new Vector3(1.0, 1.0, 1.0) : wrapRGB,
-
-        super(
-          name: name,
-          side: side,
-          opacity: opacity,
-          transparent: transparent,
-          blending: blending,
-          blendSrc: blendSrc,
-          blendDst: blendDst,
-          blendEquation: blendEquation,
-          depthTest: depthTest,
-          depthWrite: depthWrite,
-          polygonOffset: polygonOffset,
-          polygonOffsetFactor: polygonOffsetFactor,
-          polygonOffsetUnits: polygonOffsetUnits,
-          alphaTest: alphaTest,
-          overdraw: overdraw,
-          visible: visible,
-          color: color,
-          fog: fog,
-          vertexColors: vertexColors) {
-
-    if (normalScale == null) {
-      normalScale = new Vector2(1.0, 1.0);
-    }
-
+                color: color, fog: fog, vertexColors: vertexColors);
+  clone() {
+    throw new UnimplementedError();
   }
 
+  toJSON() {
+    throw new UnimplementedError();
+  }
 }

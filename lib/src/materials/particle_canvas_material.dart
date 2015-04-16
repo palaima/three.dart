@@ -23,10 +23,10 @@ class ParticleCanvasMaterial extends Material {
   ParticleCanvasMaterial({ // ParticleCanvasMaterial
 
   num color: 0xffffff, this.program, // Material
-  name: '', side: FrontSide, opacity: 1, transparent: false, blending: NormalBlending, blendSrc: SrcAlphaFactor,
+  name: '', side: FrontSide, opacity: 1.0, transparent: false, blending: NormalBlending, blendSrc: SrcAlphaFactor,
       blendDst: OneMinusSrcAlphaFactor, blendEquation: AddEquation, depthTest: true, depthWrite: true, polygonOffset: false,
-      polygonOffsetFactor: 0, polygonOffsetUnits: 0, alphaTest: 0, overdraw: false, visible: true})
-      : super(
+      polygonOffsetFactor: 0, polygonOffsetUnits: 0, alphaTest: 0.0, overdraw: 0.0, visible: true})
+      : super._(
           name: name,
           side: side,
           opacity: opacity,

@@ -77,7 +77,7 @@ void init() {
 
   // Plane
 
-  plane = new Mesh(new PlaneGeometry(200.0, 200.0), new MeshBasicMaterial(color: 0xe0e0e0, overdraw: true));
+  plane = new Mesh(new PlaneGeometry(200.0, 200.0), new MeshBasicMaterial(color: 0xe0e0e0, overdraw: 1.0));
   plane.rotation.x = -90.0 * (Math.PI / 180.0);
   //plane.overdraw = true; //TODO where is this prop?
   scene.add(plane);

@@ -41,7 +41,7 @@ init() {
 
   loader.load('models/stl/ascii/slotted_disk.stl').then((geometry) {
 
-    var material = new MeshPhongMaterial(ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200);
+    var material = new MeshPhongMaterial(ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200.0);
     var mesh = new Mesh(geometry, material);
 
     mesh.position.setValues(0.0, -0.25, 0.6);
@@ -57,7 +57,7 @@ init() {
 
   // Binary files
 
-  var material = new MeshPhongMaterial(ambient: 0x555555, color: 0xAAAAAA, specular: 0x111111, shininess: 200);
+  var material = new MeshPhongMaterial(ambient: 0x555555, color: 0xAAAAAA, specular: 0x111111, shininess: 200.0);
 
   loader = new STLLoader();
 

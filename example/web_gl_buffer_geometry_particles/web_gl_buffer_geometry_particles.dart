@@ -65,7 +65,7 @@ void init() {
   }
 
   geometry.computeBoundingSphere();
-  var material = new PointCloudMaterial(size: 15, vertexColors: 2);
+  var material = new PointCloudMaterial(size: 15.0, vertexColors: 2);
 
   particleSystem = new PointCloud(geometry, material);
   scene.add(particleSystem);

@@ -75,7 +75,7 @@ init() {
   var material = new MeshPhongMaterial(
       ambient: 0x444444,
       color: 0x8844AA,
-      shininess: 300,
+      shininess: 300.0,
       specular: 0x33AA33,
       shading: SmoothShading,
       map: texture);
@@ -95,7 +95,7 @@ init() {
   material = new MeshPhongMaterial(
       ambient: 0x444444,
       color: 0x66aa66,
-      shininess: 150,
+      shininess: 150.0,
       specular: 0x888888,
       shading: SmoothShading,
       map: texture);

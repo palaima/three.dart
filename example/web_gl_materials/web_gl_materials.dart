@@ -54,7 +54,7 @@ init() {
       ..add(new MeshLambertMaterial(map: texture, transparent: true))
       ..add(new MeshLambertMaterial(color: 0xdddddd, shading: FlatShading))
       ..add(
-          new MeshPhongMaterial(ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: FlatShading))
+          new MeshPhongMaterial(ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30.0, shading: FlatShading))
       ..add(new MeshNormalMaterial())
       ..add(new MeshBasicMaterial(color: 0xffaa00, transparent: true, blending: AdditiveBlending))
       //materials.push( new THREE.MeshBasicMaterial( { color: 0xff0000, blending: THREE.SubtractiveBlending } ) );
@@ -65,7 +65,7 @@ init() {
               ambient: 0x030303,
               color: 0xdddddd,
               specular: 0x009900,
-              shininess: 30,
+              shininess: 30.0,
               shading: SmoothShading,
               map: texture,
               transparent: true))
@@ -81,7 +81,7 @@ init() {
               specular: 0x666666,
               emissive: 0xff0000,
               ambient: 0x000000,
-              shininess: 10,
+              shininess: 10.0,
               shading: SmoothShading,
               opacity: 0.9,
               transparent: true))

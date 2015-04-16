@@ -1,55 +1,70 @@
+/*
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ */
+
 part of three;
 
 class ShaderMaterial extends Material implements Morphing, Skinning, Wireframe {
+  static const defaultVertexShader = 'void main() {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n}';
+  static const defaultFragmentShader = 'void main() {\n\tgl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n}';
+
+  String type = 'ShaderMaterial';
+
+  Map defines;
+  Map<String, Attribute> attributes;
 
   int shading;
 
-  // Wireframe
+  double lineWidth;
+
   bool wireframe;
-  num wireframeLinewidth;
-  String wireframeLinecap, wireframeLinejoin;
+  double wireframeLinewidth;
 
   bool lights; // set to use scene lights
 
   bool skinning; // set to use skinning attribute streams
 
-  // Morphing
   bool morphTargets; // set to use morph targets
   bool morphNormals; // set to use morph normals
-  num numSupportedMorphTargets = 0,
+
+  // When rendered geometry doesn't include these attributes but the material does,
+  // use these default values in WebGL. This avoids errors when buffer data is missing.
+  final Map<String, List<num>> defaultAttributeValues = {
+    'color': [1, 1, 1],
+    'uv': [0, 0],
+    'uv2': [0, 0]
+  };
+
+  String index0AttributeName;
+
+  // not used
+  String wireframeLinecap, wireframeLinejoin;
+  int numSupportedMorphTargets = 0,
       numSupportedMorphNormals = 0;
 
-  Map<String, Attribute> attributes;
+  ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, String vertexShader: "void main() {}",
+    String fragmentShader: "void main() {}", this.shading: SmoothShading, this.lineWidth: 1.0, this.wireframe: false,
+    this.wireframeLinewidth: 1.0, bool fog: true, this.lights: false, int vertexColors: NoColors, this.skinning: false,
+    this.morphTargets: false, this.morphNormals: false,
+    // Material
+    String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
+    int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
+    int blendEquation: AddEquation, blendSrcAlpha, blendDstAlpha, blendEquationAlpha, int depthFunc: LessEqualDepth,
+    bool depthTest: true, bool depthWrite: true, bool colorWrite: true, bool polygonOffset: false,
+    int polygonOffsetFactor: 0, int polygonOffsetUnits: 0, double alphaTest: 0.0, double overdraw: 0.0,
+    bool visible: true})
+        : super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
+            blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
+            blendDstAlpha: blendDstAlpha, blendEquationAlpha: blendEquationAlpha, depthFunc: depthFunc,
+            depthTest: depthTest, depthWrite: depthWrite, colorWrite: colorWrite, polygonOffset: polygonOffset,
+            polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
+            overdraw: overdraw, visible: visible,
 
-  Map defines = {};
-
-  ShaderMaterial({ // ShaderMaterial
-  this.attributes, String fragmentShader: "void main() {}", String vertexShader: "void main() {}", Map uniforms,
-      this.shading: SmoothShading, int vertexColors: NoColors, bool fog: true, this.wireframe: false, this.wireframeLinewidth:
-      1, this.skinning: false, this.morphTargets: false, this.morphNormals: false, // Material
-  name: '', side: FrontSide, opacity: 1, transparent: false, blending: NormalBlending, blendSrc: SrcAlphaFactor,
-      blendDst: OneMinusSrcAlphaFactor, blendEquation: AddEquation, depthTest: true, depthWrite: true, polygonOffset: false,
-      polygonOffsetFactor: 0, polygonOffsetUnits: 0, alphaTest: 0, overdraw: false, visible: true, this.lights: false})
-      : super(
-          name: name,
-          side: side,
-          opacity: opacity,
-          transparent: transparent,
-          blending: blending,
-          blendSrc: blendSrc,
-          blendDst: blendDst,
-          blendEquation: blendEquation,
-          depthTest: depthTest,
-          depthWrite: depthWrite,
-          polygonOffset: polygonOffset,
-          polygonOffsetFactor: polygonOffsetFactor,
-          polygonOffsetUnits: polygonOffsetUnits,
-          alphaTest: alphaTest,
-          overdraw: overdraw,
-          visible: visible,
-          fog: fog,
-          vertexColors: vertexColors) {
-    this._uniforms = (uniforms != null) ? uniforms : {};
+            color: 0xffffff, fog: fog, vertexColors: vertexColors) {
+    this.defines = defines != null ? defines : {};
+    this._uniforms = uniforms != null ? uniforms : {};
     this._fragmentShader = fragmentShader;
     this._vertexShader = vertexShader;
   }

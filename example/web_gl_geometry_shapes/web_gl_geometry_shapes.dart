@@ -69,25 +69,25 @@ void init() {
       ..scale.setValues(s, s, s));
 
     // solid line
-    group.add(new Line(points, new LineBasicMaterial(color: color, linewidth: 3))
+    group.add(new Line(points, new LineBasicMaterial(color: color, linewidth: 3.0))
       ..position.setValues(x, y, z - 25.0)
       ..rotation.setValues(rx, ry, rz)
       ..scale.setValues(s, s, s));
 
     // vertices from real points
-    group.add(new PointCloud(points.clone(), new PointCloudMaterial(color: color, size: 4))
+    group.add(new PointCloud(points.clone(), new PointCloudMaterial(color: color, size: 4.0))
      ..position.setValues(x, y, z + 25.0)
      ..rotation.setValues(rx, ry, rz)
      ..scale.setValues(s, s, s));
 
     // line from equidistance sampled points
-    group.add(new Line(spacedPoints, new LineBasicMaterial(color: color, linewidth: 3))
+    group.add(new Line(spacedPoints, new LineBasicMaterial(color: color, linewidth: 3.0))
       ..position.setValues(x, y, z + 75.0)
       ..rotation.setValues(rx, ry, rz)
       ..scale.setValues(s, s, s));
 
     // equidistance sampled points
-    group.add(new PointCloud(spacedPoints.clone(), new PointCloudMaterial(color: color, size: 4))
+    group.add(new PointCloud(spacedPoints.clone(), new PointCloudMaterial(color: color, size: 4.0))
       ..position.setValues(x, y, z + 125.0)
       ..rotation.setValues(rx, ry, rz)
       ..scale.setValues(s, s, s));

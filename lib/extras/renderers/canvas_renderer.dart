@@ -317,7 +317,7 @@ class CanvasRenderer implements Renderer {
         _v3.positionScreen.x *= _canvasWidthHalf;
         _v3.positionScreen.y *= _canvasHeightHalf;
 
-        if (material.overdraw) {
+        if (material.overdraw > 0) {
           expand(_v1.positionScreen, _v2.positionScreen);
           expand(_v2.positionScreen, _v3.positionScreen);
           expand(_v3.positionScreen, _v1.positionScreen);
