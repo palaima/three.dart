@@ -165,6 +165,7 @@ part 'src/scenes/fog_linear.dart';
 part 'src/scenes/fog_exp2.dart';
 
 part 'src/textures/texture.dart';
+part 'src/textures/cube_texture.dart';
 part 'src/textures/data_texture.dart';
 part 'src/textures/compressed_texture.dart';
 
