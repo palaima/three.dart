@@ -23,20 +23,20 @@ part of three;
  * }
  */
 
-class ParticleBasicMaterial extends Material implements TextureMapping {
+class PointCloudMaterial extends Material implements TextureMapping {
 
   var map;
   num size;
   bool sizeAttenuation;
 
-  ParticleBasicMaterial({ // ParticleBasicMaterial
+  PointCloudMaterial({ // ParticleBasicMaterial
 
   this.map, num color: 0xffffff, this.size: 1, this.sizeAttenuation: true, int vertexColors: NoColors, bool fog: true,
       // Material
   name: '', side: FrontSide, opacity: 1, transparent: false, blending: NormalBlending, blendSrc: SrcAlphaFactor,
       blendDst: OneMinusSrcAlphaFactor, blendEquation: AddEquation, depthTest: true, depthWrite: true, polygonOffset: false,
       polygonOffsetFactor: 0, polygonOffsetUnits: 0, alphaTest: 0, overdraw: false, visible: true})
-      : super(
+      : super._(
           name: name,
           side: side,
           opacity: opacity,

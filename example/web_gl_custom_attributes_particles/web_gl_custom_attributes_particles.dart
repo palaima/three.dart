@@ -66,7 +66,7 @@ void init() {
 
   }
 
-  sphere = new ParticleSystem(geometry, shaderMaterial);
+  sphere = new PointCloud(geometry, shaderMaterial);
 
   sphere.isDynamic = true;
   //sphere.sortParticles = true;

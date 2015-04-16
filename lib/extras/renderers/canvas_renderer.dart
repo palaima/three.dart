@@ -450,8 +450,8 @@ class CanvasRenderer implements Renderer {
     num width, height, scaleX, scaleY, bitmapWidth, bitmapHeight;
     var bitmap;
 
-    if (material is ParticleBasicMaterial) {
-      ParticleBasicMaterial pbMaterial = material;
+    if (material is PointCloudMaterial) {
+      PointCloudMaterial pbMaterial = material;
       if (pbMaterial.map != null) {
         bitmap = pbMaterial.map.image;
         bitmapWidth = bitmap.width >> 1;

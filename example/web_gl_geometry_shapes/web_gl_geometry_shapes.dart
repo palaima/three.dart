@@ -35,23 +35,23 @@ void init() {
   document.body.append(container);
 
   scene = new Scene();
-  
+
   camera = new PerspectiveCamera(50.0, window.innerWidth / window.innerHeight, 1.0, 1000.0)
     ..position.setValues(0.0, 150.0, 500.0);
-  
+
   scene.add(camera);
-  
+
   var light = new PointLight(0xffffff, intensity: 0.8);
   camera.add(light);
-  
+
   group = new Object3D();
   group.position.y = 50.0;
   scene.add(group);
-  
-  addShape(Shape shape, color, x, y, z, rx, ry, rz, s, 
+
+  addShape(Shape shape, color, x, y, z, rx, ry, rz, s,
       {amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1.0, bevelThickness: 1.0}) {
     x = x.toDouble(); y = y.toDouble(); z = z.toDouble(); rx = rx.toDouble(); ry = ry.toDouble(); rz = rz.toDouble(); s = s.toDouble();
-    
+
     var points = shape.createPointsGeometry();
     var spacedPoints = shape.createSpacedPointsGeometry(50);
     // flat shape
@@ -60,34 +60,34 @@ void init() {
      ..position.setValues(x, y, z - 125.0)
      ..rotation.setValues(rx, ry, rz)
      ..scale.setValues(s, s, s));
-    
+
     // 3d shape
-    group.add(new Mesh(new ExtrudeGeometry(shape, amount: amount, bevelEnabled: bevelEnabled, bevelSegments: bevelSegments, steps: steps, 
+    group.add(new Mesh(new ExtrudeGeometry(shape, amount: amount, bevelEnabled: bevelEnabled, bevelSegments: bevelSegments, steps: steps,
         bevelSize: bevelSize, bevelThickness: bevelThickness), new MeshPhongMaterial(color: color))
       ..position.setValues(x, y, z - 75.0)
       ..rotation.setValues(rx, ry, rz)
       ..scale.setValues(s, s, s));
-    
+
     // solid line
     group.add(new Line(points, new LineBasicMaterial(color: color, linewidth: 3))
       ..position.setValues(x, y, z - 25.0)
       ..rotation.setValues(rx, ry, rz)
       ..scale.setValues(s, s, s));
-    
+
     // vertices from real points
-    group.add(new ParticleSystem(points.clone(), new ParticleBasicMaterial(color: color, size: 4))
+    group.add(new PointCloud(points.clone(), new PointCloudMaterial(color: color, size: 4))
      ..position.setValues(x, y, z + 25.0)
      ..rotation.setValues(rx, ry, rz)
      ..scale.setValues(s, s, s));
-    
+
     // line from equidistance sampled points
     group.add(new Line(spacedPoints, new LineBasicMaterial(color: color, linewidth: 3))
       ..position.setValues(x, y, z + 75.0)
       ..rotation.setValues(rx, ry, rz)
       ..scale.setValues(s, s, s));
-    
+
     // equidistance sampled points
-    group.add(new ParticleSystem(spacedPoints.clone(), new ParticleBasicMaterial(color: color, size: 4))
+    group.add(new PointCloud(spacedPoints.clone(), new PointCloudMaterial(color: color, size: 4))
       ..position.setValues(x, y, z + 125.0)
       ..rotation.setValues(rx, ry, rz)
       ..scale.setValues(s, s, s));
@@ -116,18 +116,18 @@ void init() {
   californiaPts.add(new Vector2 (626.0, 425.0));
   californiaPts.add(new Vector2 (600.0, 370.0));
   californiaPts.add(new Vector2 (610.0, 320.0));
-  for(var i = 0; i < californiaPts.length; i ++) { 
-    californiaPts[i].scale(0.25); 
+  for(var i = 0; i < californiaPts.length; i ++) {
+    californiaPts[i].scale(0.25);
   }
   var californiaShape = new Shape(californiaPts);
-  
+
   // Triangle
   var triangleShape = new Shape();
   triangleShape.moveTo( 80.0, 20.0);
   triangleShape.lineTo( 40.0, 80.0);
   triangleShape.lineTo(120.0, 80.0);
   triangleShape.lineTo( 80.0, 20.0); // close path
-  
+
   // Heart
   var x = 0.0, y = 0.0;
   var heartShape = new Shape(); // From http://blog.burlock.org/html5/130-paths
@@ -138,7 +138,7 @@ void init() {
   heartShape.bezierCurveTo(x + 60.0, y + 77.0, x + 80.0, y + 55.0, x + 80.0, y + 35.0);
   heartShape.bezierCurveTo(x + 80.0, y + 35.0, x + 80.0, y, x + 50.0, y);
   heartShape.bezierCurveTo(x + 35.0, y, x + 25.0, y + 25.0, x + 25.0, y + 25.0);
-  
+
   // Square
   var sqLength = 80.0;
   var squareShape = new Shape();
@@ -147,7 +147,7 @@ void init() {
   squareShape.lineTo(sqLength, sqLength);
   squareShape.lineTo(sqLength, 0.0);
   squareShape.lineTo(0.0, 0.0);
-  
+
   // Rectangle
   var rectLength = 120.0, rectWidth = 40.0;
   var rectShape = new Shape();
@@ -156,10 +156,10 @@ void init() {
   rectShape.lineTo(rectLength, rectWidth);
   rectShape.lineTo(rectLength, 0.0);
   rectShape.lineTo(0.0, 0.0);
-  
+
   // Rounded rectangle
   var roundedRectShape = new Shape();
-  
+
   ((Shape ctx, x, y, width, height, radius) {
     ctx.moveTo(x, y + radius);
     ctx.lineTo(x, y + height - radius);
@@ -171,7 +171,7 @@ void init() {
     ctx.lineTo(x + radius, y);
     ctx.quadraticCurveTo(x, y, x, y + radius);
   })(roundedRectShape, 0.0, 0.0, 50.0, 50.0, 20.0);
-  
+
   // Track
   var trackShape = new Shape();
   trackShape.moveTo(40.0, 40.0);
@@ -179,7 +179,7 @@ void init() {
   trackShape.absarc(60.0, 160.0, 20.0, Math.PI, 0, true);
   trackShape.lineTo(80.0, 40.0);
   trackShape.absarc(60.0, 40.0, 20.0, 2 * Math.PI, Math.PI, true);
-  
+
   // Circle
   var circleRadius = 40.0;
   var circleShape = new Shape();
@@ -188,17 +188,17 @@ void init() {
   circleShape.quadraticCurveTo(circleRadius, -circleRadius, 0, -circleRadius);
   circleShape.quadraticCurveTo(-circleRadius, -circleRadius, -circleRadius, 0);
   circleShape.quadraticCurveTo(-circleRadius, circleRadius, 0, circleRadius);
-  
+
   // Fish
   var fishShape = new Shape();
-  x = y = 0.0; 
+  x = y = 0.0;
   fishShape.moveTo(x, y);
   fishShape.quadraticCurveTo(x + 50.0, y - 80.0, x + 90.0, y - 10.0);
   fishShape.quadraticCurveTo(x + 100.0, y - 10.0, x + 115.0, y - 40.0);
   fishShape.quadraticCurveTo(x + 115.0, y, x + 115.0, y + 40.0);
   fishShape.quadraticCurveTo(x + 100.0, y + 10.0, x + 90.0, y + 10.0);
   fishShape.quadraticCurveTo(x + 50.0, y + 80.0, x, y);
-  
+
   // Arc circle
   var arcShape = new Shape();
   arcShape.moveTo(50.0, 10.0);
@@ -207,7 +207,7 @@ void init() {
   holePath.moveTo(20.0, 10.0);
   holePath.absarc(10.0, 10.0, 10.0, 0.0, Math.PI*2, true);
   arcShape.holes.add(holePath);
-  
+
   // Smiley
   var smileyShape = new Shape();
   smileyShape.moveTo(80.0, 40.0);
@@ -215,11 +215,11 @@ void init() {
   var smileyEye1Path = new Path();
   smileyEye1Path.moveTo(35.0, 20.0);
   smileyEye1Path.absellipse(25.0, 20.0, 10.0, 10.0, 0.0, Math.PI*2, true);
-  smileyShape.holes.add(smileyEye1Path);  
+  smileyShape.holes.add(smileyEye1Path);
   var smileyEye2Path = new Path();
   smileyEye2Path.moveTo(65.0, 20.0);
   smileyEye2Path.absarc(55.0, 20.0, 10.0, 0.0, Math.PI*2, true);
-  smileyShape.holes.add(smileyEye2Path); 
+  smileyShape.holes.add(smileyEye2Path);
   var smileyMouthPath = new Path();
   smileyMouthPath.moveTo(20.0, 40.0);
   smileyMouthPath.quadraticCurveTo(40.0, 60.0, 60.0, 40.0);
@@ -227,7 +227,7 @@ void init() {
   smileyMouthPath.quadraticCurveTo(40.0, 80.0, 20.0, 60.0);
   smileyMouthPath.quadraticCurveTo(5.0, 50.0, 20.0, 40.0);
   smileyShape.holes.add(smileyMouthPath);
-  
+
   // Spline shape
   var splinepts = [];
   splinepts.add(new Vector2 (70.0, 20.0));
@@ -237,7 +237,7 @@ void init() {
   var splineShape = new Shape();
   splineShape.moveTo(0.0, 0.0);
   splineShape.splineThru(splinepts);
-  
+
   // addShape(shape, color, x, y, z, rx, ry,rz, s);
   addShape(californiaShape,  0xf08000, -300, -100, 0, 0, 0, 0, 1);
   addShape(triangleShape,    0x8080f0, -180,    0, 0, 0, 0, 0, 1);

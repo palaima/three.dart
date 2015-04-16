@@ -2901,7 +2901,7 @@ class WebGLRenderer implements Renderer {
 
       // render particles
 
-    } else if (object is ParticleSystem) {
+    } else if (object is PointCloud) {
 
       if (updateBuffers) {
 
@@ -3140,7 +3140,7 @@ class WebGLRenderer implements Renderer {
 
       // render particles
 
-    } else if (object is ParticleSystem) {
+    } else if (object is PointCloud) {
 
       _gl.drawArrays(gl.POINTS, 0, geometryGroup.__webglParticleCount);
 
@@ -3396,7 +3396,7 @@ class WebGLRenderer implements Renderer {
 
       if (object.visible) {
 
-        if (!(object is Mesh || object is ParticleSystem) || !(object.frustumCulled) || _frustum.contains(object)) {
+        if (!(object is Mesh || object is PointCloud) || !(object.frustumCulled) || _frustum.contains(object)) {
 
           setupMatrices(object, camera);
 
@@ -3944,7 +3944,7 @@ class WebGLRenderer implements Renderer {
 
         }
 
-      } else if (object is ParticleSystem) {
+      } else if (object is PointCloud) {
 
         if (geometry.__webglVertexBuffer == null) {
 
@@ -3984,7 +3984,7 @@ class WebGLRenderer implements Renderer {
 
         }
 
-      } else if (object is Line || object is ParticleSystem) {
+      } else if (object is Line || object is PointCloud) {
 
         addBuffer(scene.__webglObjects, geometry, object);
 
@@ -4128,7 +4128,7 @@ class WebGLRenderer implements Renderer {
 
       if (hasAttributes) clearCustomAttributes(material);
 
-    } else if (object is ParticleSystem) {
+    } else if (object is PointCloud) {
 
       if (geometry is BufferGeometry) {
 
@@ -4175,7 +4175,7 @@ class WebGLRenderer implements Renderer {
 
   removeObject(Object3D object, Scene scene) {
 
-    if (object is Mesh || object is ParticleSystem || object is Line) {
+    if (object is Mesh || object is PointCloud || object is Line) {
 
       removeInstances(scene.__webglObjects, object);
 
@@ -4262,7 +4262,7 @@ class WebGLRenderer implements Renderer {
 
       //  shaderID = 'dashed';
 
-    } else if (material is ParticleBasicMaterial) {
+    } else if (material is PointCloudMaterial) {
 
       shaderID = 'particle_basic';
 
@@ -4300,7 +4300,7 @@ class WebGLRenderer implements Renderer {
         fog: fog,
         useFog: material.fog,
         fogExp: fog is FogExp2,
-        sizeAttenuation: (material is ParticleBasicMaterial) ? material.sizeAttenuation : false,
+        sizeAttenuation: (material is PointCloudMaterial) ? material.sizeAttenuation : false,
         skinning: (material is Skinning) ? (material as Skinning).skinning : false,
         maxBones: maxBones,
         useVertexTexture: supportsBoneTextures && object != null && object is SkinnedMesh && object.useVertexTexture,
@@ -4510,7 +4510,7 @@ class WebGLRenderer implements Renderer {
         //  refreshUniformsLine( m_uniforms, material );
         //  refreshUniformsDash( m_uniforms, material );
 
-      } else if (material is ParticleBasicMaterial) {
+      } else if (material is PointCloudMaterial) {
 
         refreshUniformsParticle(m_uniforms, material);
 

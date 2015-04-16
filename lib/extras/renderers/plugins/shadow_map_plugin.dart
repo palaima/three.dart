@@ -282,7 +282,7 @@ class ShadowMapPlugin {
 
         if (object.visible && object.castShadow) {
 
-          if (!(object is Mesh) || (object is ParticleSystem) || !(object.frustumCulled) || _frustum.contains(object)) {
+          if (!(object is Mesh) || (object is PointCloud) || !(object.frustumCulled) || _frustum.contains(object)) {
 
             object._modelViewMatrix = shadowCamera.matrixWorldInverse * object.matrixWorld;
 
