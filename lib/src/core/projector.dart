@@ -12,6 +12,98 @@ part of three;
  * updated to 81ef5c3b32 - Made Projector.projectObject more open for custom rendererers.
  */
 
+abstract class IRenderable {
+  num z = null;
+}
+
+class RenderableFace implements IRenderable {
+  List<RenderableVertex> vertices;
+
+  Vector3 centroidWorld, centroidScreen, normalWorld;
+
+  List vertexNormalsWorld, uvs;
+
+  Material material;
+  Material faceMaterial;
+
+  num z;
+
+  RenderableFace(int size)
+      : centroidWorld = new Vector3.zero(),
+        centroidScreen = new Vector3.zero(),
+
+        normalWorld = new Vector3.zero(),
+        vertexNormalsWorld = [new Vector3.zero(), new Vector3.zero(), new Vector3.zero(), new Vector3.zero()],
+
+        material = null,
+        uvs = [[]],
+
+        z = null {
+    vertices = new List.generate(size, (_) => new RenderableVertex(), growable: false);
+  }
+}
+
+class RenderableFace3 extends RenderableFace {
+
+  RenderableFace3() : super(3);
+
+  RenderableVertex get v1 => vertices[0];
+  RenderableVertex get v2 => vertices[1];
+  RenderableVertex get v3 => vertices[2];
+
+}
+
+class RenderableLine implements IRenderable {
+  num z = null;
+
+  RenderableVertex v1;
+  RenderableVertex v2;
+
+  Material material = null;
+
+  RenderableLine()
+      : v1 = new RenderableVertex(),
+        v2 = new RenderableVertex();
+}
+
+class RenderableObject implements IRenderable {
+  Object3D object = null;
+  num z = null;
+}
+
+class RenderableParticle implements IRenderable {
+  num x = null;
+  num y = null;
+  num z = null;
+
+  num rotation = null;
+  Vector2 scale;
+
+  Material material = null;
+
+  RenderableParticle()
+      : scale = new Vector2.zero();
+
+}
+
+class RenderableVertex {
+  Vector3 positionWorld;
+  Vector4 positionScreen;
+
+  bool visible = true;
+
+  RenderableVertex()
+      : positionWorld = new Vector3.zero(),
+        positionScreen = new Vector4(0.0, 0.0, 0.0, 1.0);
+
+  copy(RenderableVertex vertex) {
+    positionWorld.setFrom(vertex.positionWorld);
+    positionScreen.setFrom(vertex.positionScreen);
+  }
+
+  clone() => new RenderableVertex()..copy(this);
+}
+
 class Projector {
   List<RenderableObject> _objectPool;
   List<RenderableVertex> _vertexPool;

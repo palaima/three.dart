@@ -144,20 +144,11 @@ part 'src/objects/skinned_mesh.dart';
 part 'src/objects/lod.dart';
 part 'src/objects/morph_anim_mesh.dart';
 
-part 'src/renderers/renderables/renderable_object.dart';
-part 'src/renderers/renderables/renderable_vertex.dart';
-part 'src/renderers/renderables/renderable_face.dart';
-part 'src/renderers/renderables/renderable_face3.dart';
-part 'src/renderers/renderables/renderable_line.dart';
-part 'src/renderers/renderables/renderable_particle.dart';
-
 part 'src/renderers/renderer.dart';
 part 'src/renderers/web_gl_renderer.dart';
 part 'src/renderers/web_gl_render_target.dart';
 part 'src/renderers/web_gl_render_target_cube.dart';
 part 'src/renderers/web_gl_shaders.dart';
-
-part 'src/renderers/renderables/irenderable.dart';
 
 part 'src/scenes/scene.dart';
 part 'src/scenes/fog.dart';
