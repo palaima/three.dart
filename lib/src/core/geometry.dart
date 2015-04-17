@@ -576,15 +576,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
   }
 
   // Quick hack to allow setting new properties (used by the renderer)
-  Map __data;
-
-  get _data {
-    if (__data == null) {
-      __data = {};
-    }
-    return __data;
-  }
-
+  Map _data = {};
   operator [](String key) => _data[key];
   operator []=(String key, value) => _data[key] = value;
 }
@@ -605,4 +597,10 @@ class MorphNormal {
   List faceNormals;
   List vertexNormals;
   MorphNormal({this.faceNormals, this.vertexNormals});
+}
+
+abstract class DisposeStream {
+  StreamController _onDisposeController = new StreamController.broadcast();
+  Stream get onDispose => _onDisposeController.stream;
+  StreamSubscription _onDisposeSubscription;
 }
