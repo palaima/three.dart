@@ -150,7 +150,14 @@ part 'src/objects/skinned_mesh.dart';
 part 'src/objects/lod.dart';
 part 'src/objects/morph_anim_mesh.dart';
 
+part 'src/renderers/web_gl/web_gl_extensions.dart';
+part 'src/renderers/web_gl/web_gl_geometries.dart';
+part 'src/renderers/web_gl/web_gl_objects.dart';
+part 'src/renderers/web_gl/web_gl_program.dart';
+part 'src/renderers/web_gl/web_gl_shader.dart';
 part 'src/renderers/web_gl/web_gl_shadow_map.dart';
+part 'src/renderers/web_gl/web_gl_state.dart';
+part 'src/renderers/web_gl/web_gl_textures.dart';
 
 part 'src/renderers/renderer.dart';
 part 'src/renderers/web_gl_renderer.dart';
