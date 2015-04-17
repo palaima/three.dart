@@ -132,6 +132,7 @@ part 'src/materials/mesh_depth_material.dart';
 part 'src/materials/mesh_normal_material.dart';
 part 'src/materials/mesh_phong_material.dart';
 part 'src/materials/shader_material.dart';
+part 'src/materials/raw_shader_material.dart';
 part 'src/materials/sprite_material.dart';
 
 part 'src/objects/bone.dart';
