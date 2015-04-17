@@ -383,7 +383,7 @@ class WebGLRenderer implements Renderer {
 
     // default plugins (order is important)
 
-    shadowMapPlugin = new ShadowMapPlugin();
+    shadowMapPlugin = new WebGLShadowMap();
     addPrePlugin(shadowMapPlugin);
 
     //addPostPlugin( new SpritePlugin() );

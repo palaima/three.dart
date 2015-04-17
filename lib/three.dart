@@ -118,8 +118,6 @@ part 'extras/helpers/arrow_helper.dart';
 part 'extras/helpers/axis_helper.dart';
 part 'extras/helpers/camera_helper.dart';
 
-part 'extras/renderers/plugins/shadow_map_plugin.dart';
-
 part 'src/lights/ambient_light.dart';
 part 'src/lights/directional_light.dart';
 part 'src/lights/point_light.dart';
@@ -151,6 +149,8 @@ part 'src/objects/sprite.dart';
 part 'src/objects/skinned_mesh.dart';
 part 'src/objects/lod.dart';
 part 'src/objects/morph_anim_mesh.dart';
+
+part 'src/renderers/web_gl/web_gl_shadow_map.dart';
 
 part 'src/renderers/renderer.dart';
 part 'src/renderers/web_gl_renderer.dart';

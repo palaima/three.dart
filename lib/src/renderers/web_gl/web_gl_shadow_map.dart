@@ -6,7 +6,7 @@ part of three;
  * @author alteredq / http://alteredqualia.com/
  */
 
-class ShadowMapPlugin {
+class WebGLShadowMap {
 
   static Projector __projector = new Projector();
 
@@ -18,7 +18,7 @@ class ShadowMapPlugin {
   WebGLRenderer _renderer;
   Material _depthMaterial, _depthMaterialMorph, _depthMaterialSkin, _depthMaterialMorphSkin;
 
-  ShadowMapPlugin()
+  WebGLShadowMap()
       : _frustum = new Frustum(),
         _projScreenMatrix = new Matrix4.identity(),
         _min = new Vector3.zero(),
