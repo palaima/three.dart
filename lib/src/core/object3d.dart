@@ -19,6 +19,8 @@ abstract class MaterialObject {
   Material material;
 }
 
+abstract class GeometryMaterialObject = Object with GeometryObject, MaterialObject;
+
 /// Base class for scene graph objects.
 class Object3D {
   static Vector3 defaultUp = new Vector3(0.0, 1.0, 0.0);

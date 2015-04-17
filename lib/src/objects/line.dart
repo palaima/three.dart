@@ -22,7 +22,7 @@ part of three;
 ///     var line = new Line(geometry, material);
 ///     scene.add(line);
 ///
-class Line extends Object3D implements GeometryObject, MaterialObject {
+class Line extends Object3D implements GeometryMaterialObject {
   String type = 'Line';
 
   Geometry geometry;

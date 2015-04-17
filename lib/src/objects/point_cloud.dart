@@ -1,6 +1,6 @@
 part of three;
 
-class PointCloud extends Object3D implements GeometryObject, MaterialObject {
+class PointCloud extends Object3D implements GeometryMaterialObject {
   Geometry geometry;
   Material material;
 

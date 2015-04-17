@@ -10,7 +10,7 @@ part of three;
  */
 
 /// Base class for Mesh objects, such as MorphAnimMesh and SkinnedMesh.
-class Mesh extends Object3D implements GeometryObject, MaterialObject {
+class Mesh extends Object3D implements GeometryMaterialObject {
   String type = 'Mesh';
 
   Geometry geometry;
