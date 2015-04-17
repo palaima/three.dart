@@ -1,6 +1,8 @@
 part of three;
 
-class PointCloud extends Object3D {
+class PointCloud extends Object3D implements GeometryObject, MaterialObject {
+  Geometry geometry;
+  Material material;
 
   bool sortParticles;
 

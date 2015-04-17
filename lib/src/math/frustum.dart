@@ -237,7 +237,7 @@ class Frustum {
   }
 
   bool contains(Object3D object) {
-    var geometry = object.geometry;
+    var geometry = (object as GeometryObject).geometry;
 
     if (geometry.boundingSphere == null) geometry.computeBoundingSphere();
 

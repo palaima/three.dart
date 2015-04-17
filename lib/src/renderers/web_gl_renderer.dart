@@ -819,7 +819,7 @@ class WebGLRenderer implements Renderer {
 
   // Buffer initialization
 
-  initCustomAttributes(Geometry geometry, Object3D object) {
+  initCustomAttributes(Geometry geometry, MaterialObject object) {
 
     var nvertices = geometry.vertices.length;
 
@@ -856,7 +856,7 @@ class WebGLRenderer implements Renderer {
 
   }
 
-  initParticleBuffers(Geometry geometry, Object3D object) {
+  initParticleBuffers(Geometry geometry, PointCloud object) {
 
     var nvertices = geometry.vertices.length;
 
@@ -871,7 +871,7 @@ class WebGLRenderer implements Renderer {
 
   }
 
-  initLineBuffers(Geometry geometry, Object3D object) {
+  initLineBuffers(Geometry geometry, Line object) {
 
     var nvertices = geometry.vertices.length;
 
@@ -885,7 +885,7 @@ class WebGLRenderer implements Renderer {
 
   }
 
-  initMeshBuffers(WebGLGeometry geometryGroup, Object3D object) {
+  initMeshBuffers(WebGLGeometry geometryGroup, Mesh object) {
 
     var geometry = object.geometry,
         faces3 = geometryGroup.faces3,
@@ -1019,7 +1019,7 @@ class WebGLRenderer implements Renderer {
 
   }
 
-  Material getBufferMaterial(Object3D object, WebGLGeometry geometry) {
+  Material getBufferMaterial(MaterialObject object, WebGLGeometry geometry) {
 
     return (object.material is MeshFaceMaterial) ?
         (object.material as MeshFaceMaterial).materials[geometry.materialIndex] :
@@ -1621,7 +1621,7 @@ class WebGLRenderer implements Renderer {
 
   }
 
-  setMeshBuffers(WebGLGeometry geometryGroup, Object3D object, int hint, bool dispose, Material material) {
+  setMeshBuffers(WebGLGeometry geometryGroup, Mesh object, int hint, bool dispose, Material material) {
 
     if (!geometryGroup.__inittedArrays) {
 
@@ -3694,7 +3694,7 @@ class WebGLRenderer implements Renderer {
 
   unrollBufferMaterial(WebGLObject webglobject) {
 
-    Object3D object = webglobject.object;
+    MaterialObject object = webglobject.object as MaterialObject;
     WebGLGeometry buffer = webglobject.buffer;
     Material meshMaterial = object.material;
     int materialIndex;
@@ -3871,8 +3871,8 @@ class WebGLRenderer implements Renderer {
   // Objects adding
 
   addObject(Object3D object, Scene scene) {
-
-    Geometry geometry = object.geometry;
+    var obj = object;
+    Geometry geometry = (obj is GeometryObject) ? obj.geometry : null;
 
     var material;
 
@@ -4026,8 +4026,8 @@ class WebGLRenderer implements Renderer {
   // Objects updates
 
   updateObject(Object3D object) {
-
-    Geometry geometry = object.geometry;
+    var obj = object;
+    Geometry geometry = (obj is GeometryObject) ? obj.geometry : null;
     WebGLGeometry geometryGroup;
     var customAttributesDirty;
 

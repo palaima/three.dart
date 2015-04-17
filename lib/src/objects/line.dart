@@ -22,8 +22,11 @@ part of three;
 ///     var line = new Line(geometry, material);
 ///     scene.add(line);
 ///
-class Line extends Object3D {
+class Line extends Object3D implements GeometryObject, MaterialObject {
   String type = 'Line';
+
+  Geometry geometry;
+  Material material;
 
   /// GL immediate mode ([LinePiece] or [LineStrip]).
   /// * LinePiece (GL_LINES): Draws lines on screen. Every two vertices specified compose a line.

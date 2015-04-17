@@ -10,8 +10,10 @@ part of three;
  */
 
 /// Base class for Mesh objects, such as MorphAnimMesh and SkinnedMesh.
-class Mesh extends Object3D {
+class Mesh extends Object3D implements GeometryObject, MaterialObject {
   String type = 'Mesh';
+
+  Geometry geometry;
 
   /// Defines the object's appearance.
   /// Default is a MeshBasicMaterial with wireframe mode enabled and randomised colour.

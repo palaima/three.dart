@@ -12,7 +12,11 @@
 part of three;
 
 abstract class GeometryObject {
+  Geometry geometry;
+}
 
+abstract class MaterialObject {
+  Material material;
 }
 
 /// Base class for scene graph objects.
@@ -87,12 +91,6 @@ class Object3D {
   /// An object that can be used to store custom data about the Object3d.
   /// It should not hold references to functions as these will not be cloned.
   Map userData = {};
-
-  // TODO : Introduce a mixin for objects with Geometry
-  Geometry geometry;
-
-  // TODO : Introduce a mixin for objects with Material
-  Material material;
 
   // WebGL
   bool __webglInit = false;

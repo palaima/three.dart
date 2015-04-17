@@ -5,7 +5,7 @@
 
 part of three;
 
-class Sprite extends Object3D {
+class Sprite extends Object3D implements MaterialObject {
   SpriteMaterial material;
 
   Sprite(SpriteMaterial material)

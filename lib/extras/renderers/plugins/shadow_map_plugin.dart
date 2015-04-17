@@ -525,8 +525,10 @@ class ShadowMapPlugin {
   // Only the first material will be taken into account for deciding which depth material to use for shadow maps
 
   Material getObjectMaterial(Object3D object) {
-
-    return object.material is MeshFaceMaterial ? object.geometry.materials[0] : object.material;
+    var obj = object;
+    if (obj is MaterialObject) {
+      return obj.material is MeshFaceMaterial ? obj.geometry.materials[0] : obj.material;
+    }
 
   }
 
