@@ -118,6 +118,7 @@ class Object3D {
 
   StreamController _onObjectRemovedController = new StreamController.broadcast();
   Stream get onObjectRemoved => _onObjectRemovedController.stream;
+  StreamSubscription _objectRemovedSubscription;
 
   StreamController _onAddedToSceneController = new StreamController.broadcast();
   Stream get onAddedToScene => _onAddedToSceneController.stream;

@@ -44,6 +44,9 @@ class ShaderMaterial extends Material implements Morphing, Skinning, Wireframe {
   int numSupportedMorphTargets = 0,
       numSupportedMorphNormals = 0;
 
+  // Used in renderer
+  var __webglShader;
+
   ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, String vertexShader: "void main() {}",
     String fragmentShader: "void main() {}", this.shading: SmoothShading, this.lineWidth: 1.0, this.wireframe: false,
     this.wireframeLinewidth: 1.0, bool fog: true, this.lights: false, int vertexColors: NoColors, this.skinning: false,

@@ -4010,14 +4010,14 @@ class WebGLRenderer implements Renderer {
 
   addBuffer(List objlist, WebGLGeometry buffer, Object3D object) {
 
-    var o = new WebGLObject(object, null, null, buffer);
+    var o = new WebGLObject(object: object, buffer: buffer);
     objlist.add(o);
 
   }
 
   addBufferImmediate(List objlist, Object3D object) {
 
-    var o = new WebGLObject(object, null, null, null);
+    var o = new WebGLObject(object: object);
 
     objlist.add(o);
 
@@ -6804,13 +6804,15 @@ class WebGLGeometry {
 }
 
 class WebGLObject {
-
+  int id;
   WebGLGeometry buffer;
   Object3D object;
   Material opaque, transparent;
   bool render;
   var z;
+  var material;
 
-  WebGLObject(this.object, this.opaque, this.transparent, this.buffer, [this.render = true, this.z = 0]);
+  WebGLObject({this.id, this.material, this.object, this.opaque, this.transparent,
+    this.buffer, this.render: true, this.z: 0});
 
 }
