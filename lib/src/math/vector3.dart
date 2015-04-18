@@ -1097,4 +1097,11 @@ class Vector3 implements Vector {
     applyProjection(camera.matrixWorld * projectionMatrixInverse);
     return this;
   }
+
+  Vector3 setFromMatrixTranslation(Matrix4 matrix) {
+    _storage[0] = matrix._storage[12];
+    _storage[1] = matrix._storage[13];
+    _storage[2] = matrix._storage[14];
+    return this;
+  }
 }
