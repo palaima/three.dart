@@ -8,7 +8,7 @@
 part of three;
 
 class BufferGeometry extends Object with DisposeStream implements Geometry {
-  static const maxIndex = 65535;
+  static int maxIndex = 65535;
 
   int id = GeometryIdCount++;
 
@@ -662,7 +662,9 @@ class BufferGeometry extends Object with DisposeStream implements Geometry {
     }
   }
 
-  void computeOffsets([int size = BufferGeometry.maxIndex]) {
+  void computeOffsets([int size]) {
+    if (size == null) size = BufferGeometry.maxIndex;
+
     var indices = aIndex.array;
     var vertices = aPosition.array;
 
