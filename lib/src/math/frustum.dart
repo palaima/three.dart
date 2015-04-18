@@ -236,7 +236,7 @@ class Frustum {
     return d1 < 0 && d2 < 0;
   }
 
-  bool contains(Object3D object) {
+  bool intersectsWithObject(Object3D object) {
     var geometry = (object as GeometryObject).geometry;
 
     if (geometry.boundingSphere == null) geometry.computeBoundingSphere();

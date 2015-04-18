@@ -187,7 +187,7 @@ class Projector {
 
       } else if (object is Mesh || object is Line) {
 
-        if (!object.frustumCulled || _frustum.contains(object)) {
+        if (!object.frustumCulled || _frustum.intersectsWithObject(object)) {
 
           _object = getNextObjectInPool();
           _object.object = object;
