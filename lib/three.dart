@@ -132,6 +132,7 @@ part 'src/materials/mesh_face_material.dart';
 part 'src/materials/point_cloud_material.dart';
 part 'src/materials/particle_canvas_material.dart';
 part 'src/materials/line_basic_material.dart';
+part 'src/materials/line_dashed_material.dart';
 part 'src/materials/mesh_lambert_material.dart';
 part 'src/materials/mesh_depth_material.dart';
 part 'src/materials/mesh_normal_material.dart';
