@@ -141,6 +141,7 @@ part 'src/materials/raw_shader_material.dart';
 part 'src/materials/sprite_material.dart';
 
 part 'src/objects/bone.dart';
+part 'src/objects/group.dart';
 part 'src/objects/mesh.dart';
 part 'src/objects/line.dart';
 part 'src/objects/particle.dart';
