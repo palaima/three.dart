@@ -6,7 +6,7 @@
 
 part of three;
 
-class LineDashedMaterial extends Material {
+class LineDashedMaterial extends Material implements LineMaterial {
   String type = 'LineDashedMaterial';
 
   double linewidth;

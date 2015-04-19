@@ -8,7 +8,7 @@
 part of three;
 
 /// A material for drawing wireframe-style geometries.
-class LineBasicMaterial extends Material {
+class LineBasicMaterial extends Material implements LineMaterial {
   String type = 'LineBasicMaterial';
 
   /// Controls line thickness. Default is 1.
@@ -34,6 +34,9 @@ class LineBasicMaterial extends Material {
   /// For example, it is ignored with the WebGL renderer, but does work with
   /// the Canvas renderer.
   String linejoin;
+
+  // Not used
+  var scale, dashSize, gapSize;
 
   LineBasicMaterial({num color: 0xffffff, this.linewidth: 1.0, this.linecap: 'round',
     this.linejoin: 'round', int vertexColors: NoColors, bool fog: true,

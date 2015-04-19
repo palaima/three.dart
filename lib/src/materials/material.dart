@@ -168,3 +168,11 @@ abstract class Wireframe {
   double wireframeLinewidth;
   String wireframeLinecap, wireframeLinejoin;
 }
+
+abstract class LineMaterial {
+  double linewidth;
+
+  double scale;
+  double dashSize;
+  double gapSize;
+}
