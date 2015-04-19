@@ -15,7 +15,10 @@ part of three;
 
 /// Base class for geometries.
 /// A geometry holds all data necessary to describe a 3D model.
-class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry with only the necessary interface methods
+class Geometry extends Object with DisposeStream { // TODO Create a IGeometry with only the necessary interface methods
+  /// Unique number of this object instance.
+  int id = GeometryIdCount++;
+
   String uuid = ThreeMath.generateUUID();
 
   /// Name for this geometry. Default is an empty string.
@@ -115,9 +118,7 @@ class Geometry extends Object with WebGLGeometry { // TODO Create a IGeometry wi
 
   bool groupsNeedUpdate = false;
 
-  Geometry() {
-    id = GeometryIdCount++;
-  }
+  int maxInstancedCount;
 
   /// Bakes matrix transform directly into vertex coordinates.
   void applyMatrix(Matrix4 matrix) {
