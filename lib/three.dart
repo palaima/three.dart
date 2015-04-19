@@ -14,6 +14,7 @@ import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'dart:math' as Math;
 import 'dart:convert' show JSON;
+import 'dart:mirrors';
 
 import 'extras/three_math.dart' as ThreeMath;
 export 'extras/three_math.dart';
