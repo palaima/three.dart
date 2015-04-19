@@ -16,6 +16,8 @@ class WebGLRenderTarget extends Texture {
   var __webglFramebuffer; // List<WebGLFramebuffer> or WebGLFramebuffer
   var __webglRenderbuffer; // List<WebGLRenderbuffer> or WebGLRenderbuffer
 
+  var activeCubeFace;
+
   WebGLRenderTarget(this.width, this.height, {int wrapS: ClampToEdgeWrapping, int wrapT: ClampToEdgeWrapping,
       int magFilter: LinearFilter, int minFilter: LinearMipMapLinearFilter, int anisotropy: 1, int format: RGBAFormat,
       int type: UnsignedByteType, this.depthBuffer: true, this.stencilBuffer: true, this.offset: null, //new Vector2( 0, 0 ),
@@ -26,10 +28,7 @@ class WebGLRenderTarget extends Texture {
     if (repeat == null) repeat = new Vector2(1.0, 1.0);
   }
 
-  gl.Texture get __webglTexture => this["__webglTexture"];
-  set __webglTexture(gl.Texture tex) {
-    this["__webglTexture"] = tex;
-  }
+  gl.Texture __webglTexture;
 
   WebGLRenderTarget clone() =>
       new WebGLRenderTarget(

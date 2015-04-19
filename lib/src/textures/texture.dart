@@ -56,6 +56,9 @@ class Texture extends Object with DisposeStream {
 
   // WebGL
   var __webglTexture;
+  bool __webglInit = false;
+  var __currentAnisotropy;
+  var sourceFile;
 
   //TODO: resolve dynamic vars, find out what UVMapping is!
   Texture([this.image, this.mapping = null, this.wrapS = ClampToEdgeWrapping, this.wrapT = ClampToEdgeWrapping,
