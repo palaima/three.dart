@@ -212,65 +212,34 @@ class Object3D {
     quaternion.setFromRotation(lookAt.getRotation());
   }
 
+  // based on a5cc2899aafab2461c52e4b63498fb284d0c167b
   /// Adds [object] as child of this object.
-  Object3D add(object) {
-    if (object is List) {
-      object.forEach((o) => add(o));
-      return this;
-    }
-
+  Object3D add(Object3D object) {
     if (object == this) {
       print('Object3D.add: An object can\'t be added as a child of itself.');
       return this;
     }
 
-    if (object is Object3D) {
-      if (object.parent != null) {
-        object.parent.remove(object);
-      }
-
-      object.parent = this;
-      object._onObjectAddedController.add(null);
-
-      children.add(object);
-
-      // add to scene
-      var scene = this;
-
-      while (scene.parent != null) {
-        scene = scene.parent;
-      }
-
-      if (scene != null && scene is Scene)  {
-        scene.__addObject(object);
-      }
+    if (object.parent != null) {
+      object.parent.remove(object);
     }
+
+    object.parent = this;
+    object._onObjectAddedController.add(null);
+
+    children.add(object);
 
     return this;
   }
 
+  // based on a5cc2899aafab2461c52e4b63498fb284d0c167b
   /// Removes [object] as child of this object.
-  void remove(object) {
-    if (object is List) {
-      object.forEach((o) => remove(o));
-    }
-
+  void remove(Object3D object) {
     if (children.contains(object)) {
       object.parent = null;
       object._onObjectRemovedController.add(null);
 
       children.remove(object);
-
-      // remove from scene
-      var scene = this;
-
-      while (scene.parent != null) {
-        scene = scene.parent;
-      }
-
-      if (scene != null && scene is Scene) {
-        scene.__removeObject(object);
-      }
     }
   }
 
