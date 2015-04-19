@@ -26,6 +26,8 @@ import 'extras/shader_utils.dart' as ShaderUtils;
 import 'extras/core/curve_utils.dart' as CurveUtils;
 import 'extras/core/shape_utils.dart' as ShapeUtils;
 
+import 'src/renderers/shaders/uniforms_utils.dart' as UniformsUtils;
+
 part 'src/cameras/camera.dart';
 part 'src/cameras/perspective_camera.dart';
 part 'src/cameras/orthographic_camera.dart';
@@ -152,6 +154,12 @@ part 'src/objects/skinned_mesh.dart';
 part 'src/objects/lod.dart';
 part 'src/objects/morph_anim_mesh.dart';
 
+part 'src/renderers/shaders/attribute.dart';
+part 'src/renderers/shaders/shader_chunk.dart';
+part 'src/renderers/shaders/shader_lib.dart';
+part 'src/renderers/shaders/uniform.dart';
+part 'src/renderers/shaders/uniforms_lib.dart';
+
 part 'src/renderers/web_gl/web_gl_extensions.dart';
 part 'src/renderers/web_gl/web_gl_geometries.dart';
 part 'src/renderers/web_gl/web_gl_objects.dart';
@@ -165,7 +173,6 @@ part 'src/renderers/renderer.dart';
 part 'src/renderers/web_gl_renderer.dart';
 part 'src/renderers/web_gl_render_target.dart';
 part 'src/renderers/web_gl_render_target_cube.dart';
-part 'src/renderers/web_gl_shaders.dart';
 
 part 'src/scenes/scene.dart';
 part 'src/scenes/fog.dart';
