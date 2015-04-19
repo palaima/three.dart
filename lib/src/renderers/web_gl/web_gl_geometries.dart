@@ -7,7 +7,7 @@
 part of three;
 
 class WebGLGeometries {
-  Map geometries = {};
+  Map<String, BufferGeometry> geometries = {};
 
   gl.RenderingContext _gl;
   WebGLRendererInfo _info;
@@ -16,8 +16,8 @@ class WebGLGeometries {
 
   WebGLGeometries(this._gl, this._info);
 
-  Geometry get(GeometryObject object) {
-    var geometry = object.geometry;
+  BufferGeometry get(Object3D object) {
+    var geometry = (object as GeometryObject).geometry;
 
     if (geometries[geometry.id] != null) {
       return geometries[geometry.id];
@@ -29,7 +29,7 @@ class WebGLGeometries {
       geometries[geometry.id] = geometry;
     } else {
       geometries[geometry.id] = new BufferGeometry()
-        ..setFromObject(object as Object3D);
+        ..setFromObject(object);
     }
 
     _info.memory.geometries++;
@@ -42,11 +42,11 @@ class WebGLGeometries {
 
     var geo = geometries[geometry.id];
 
-    for (var name in geo.attributes) {
+    for (var name in geo.attributes.keys) {
       var attribute = geo.attributes[name];
 
       if (attribute.buffer != null) {
-        _gl.deleteBuffer(attribute.buffer);
+        _gl.deleteBuffer(attribute.buffer._glbuffer);
 
         attribute.buffer = null;
       }

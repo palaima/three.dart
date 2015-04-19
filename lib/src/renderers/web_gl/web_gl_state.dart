@@ -46,9 +46,7 @@ class WebGLState {
   }
 
   void initAttributes() {
-    for (var i = 0; i < _newAttributes.length; i++) {
-      _newAttributes[i] = 0;
-    }
+    _newAttributes.map((_) => 0);
   }
 
   void enableAttribute(int attribute) {
@@ -69,7 +67,8 @@ class WebGLState {
     }
   }
 
-  void setBlending(int blending, int blendEquation, int blendSrc, int blendDst, int blendEquationAlpha, int blendSrcAlpha, int blendDstAlpha) {
+  void setBlending({int blending, int blendEquation, int blendSrc, int blendDst,
+    int blendEquationAlpha, int blendSrcAlpha, int blendDstAlpha}) {
     if (blending != _currentBlending) {
       if (blending == NoBlending) {
         _gl.disable(gl.BLEND);
@@ -143,7 +142,7 @@ class WebGLState {
           case GreaterDepth: _gl.depthFunc(gl.GREATER); break;
           case NotEqualDepth: _gl.depthFunc(gl.NOTEQUAL); break;
           default: _gl.depthFunc(gl.LEQUAL);
-          }
+        }
       } else {
         _gl.depthFunc(gl.LEQUAL);
       }
@@ -248,11 +247,11 @@ class WebGLState {
       _currentBoundTextures[_currentTextureSlot] = boundTexture;
     }
 
-    if (boundTexture.type != webglType || boundTexture.texture != webglTexture) {
+    if (boundTexture['type'] != webglType || boundTexture['texture'] != webglTexture) {
       _gl.bindTexture(webglType, webglTexture);
 
-      boundTexture.type = webglType;
-      boundTexture.texture = webglTexture;
+      boundTexture['type'] = webglType;
+      boundTexture['texture'] = webglTexture;
     }
   }
 

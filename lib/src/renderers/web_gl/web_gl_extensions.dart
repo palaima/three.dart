@@ -13,7 +13,7 @@ class WebGLExtensions {
 
   WebGLExtensions(this._gl);
 
-  Object get(String name) {
+  get(String name) {
     if (extensions[name] != null) {
       return extensions[name];
     }

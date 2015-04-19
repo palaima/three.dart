@@ -7,13 +7,13 @@
 part of three;
 
 class WebGLObjects {
-  Map objects = {};
+  Map<int, WebGLObject> objects = {};
   List objectsImmediate = [];
 
   WebGLGeometries geometries;
 
-  var geometryGroups = {};
-  var geometryGroupCounter = 0;
+  Map geometryGroups = {};
+  int geometryGroupCounter = 0;
 
   gl.RenderingContext _gl;
   WebGLRendererInfo _info;
@@ -32,7 +32,7 @@ class WebGLObjects {
   void removeObject(Object3D object) {
     if (object is Mesh || object is PointCloud || object is Line) {
       objects[object.id] = null;
-    } else if (object is ImmediateRenderObject || object.immediateRenderCallback) {
+    } else if (object is ImmediateRenderObject || object.immediateRenderCallback != null) {
       removeInstances(objectsImmediate, object);
     }
 
@@ -52,7 +52,7 @@ class WebGLObjects {
   }
 
   void init(Object3D object) {
-    if (object.__webglInit == null){
+    if (!object.__webglInit) {
       object.__webglInit = true;
       object._modelViewMatrix = new Matrix4.identity();
       object._normalMatrix = new Matrix3.identity();
@@ -60,41 +60,42 @@ class WebGLObjects {
       object._objectRemovedSubscription = object.onObjectRemoved.listen(onObjectRemoved);
     }
 
-    if (object.__webglActive == null) {
+    if (!object.__webglActive) {
       object.__webglActive = true;
 
       if (object is Mesh || object is Line || object is PointCloud) {
         objects[object.id] =
             new WebGLObject(id: object.id, object: object, material: null, z: 0);
 
-      } else if (object is ImmediateRenderObject || object.immediateRenderCallback) {
+      } else if (object is ImmediateRenderObject || object.immediateRenderCallback != null) {
         objectsImmediate.add(
             new WebGLObject(id: null, object: object, opaque: null, transparent: null, z: 0));
       }
     }
   }
 
-  void update(GeometryMaterialObject object) {
+  void update(Object3D object) {
+    var obj = object;
     var geometry = geometries.get(object);
 
-    if (object.geometry is DynamicGeometry) {
+    if (obj is GeometryObject && obj.geometry is DynamicGeometry) {
       geometry.updateFromObject(object);
     }
 
-    geometry.updateFromMaterial(object.material);
+    if (obj is MaterialObject && obj.material is ShaderMaterial) {
+      geometry.updateFromMaterial(obj.material);
+    }
 
     if (geometry is BufferGeometry) {
-      var attributes = geometry.attributes;
-
-      attributes.keys.forEach((key) {
-        var attribute = attributes[key];
+      for (var key in geometry.attributes.keys) {
+        var attribute = geometry.attributes[key];
         var bufferType = (key == 'index') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
 
-        var data = (attribute is InterleavedBufferAttribute) ? attribute.data : attribute;
+        BufferAttribute data = (attribute is InterleavedBufferAttribute) ? attribute.data : attribute;
 
         if (data.buffer == null) {
-          data.buffer = _gl.createBuffer();
-          _gl.bindBuffer(bufferType, data.buffer);
+          data.buffer = new Buffer(_gl);
+          data.buffer.bind(bufferType);
 
           var usage = gl.STATIC_DRAW;
 
@@ -104,16 +105,16 @@ class WebGLObjects {
             usage = gl.DYNAMIC_DRAW;
           }
 
-          _gl.bufferData(bufferType, data.array, usage);
+          _gl.bufferDataTyped(bufferType, data.array as TypedData, usage);
 
           data.needsUpdate = false;
 
         } else if (data.needsUpdate) {
-          _gl.bindBuffer(bufferType, data.buffer);
+          data.buffer.bind(bufferType);
 
           if (data.updateRange == null || data.updateRange.count == -1) { // Not using update ranges
             _gl.bufferSubData(bufferType, 0, data.array);
-          } else if (data.updateRange.count == 0){
+          } else if (data.updateRange.count == 0) {
             error('WebGLRenderer.updateObject: using updateRange for DynamicBufferAttribute and marked' +
                   'as needsUpdate but count is 0, ensure you are using set methods or updating manually.');
           } else {
@@ -125,7 +126,7 @@ class WebGLObjects {
 
           data.needsUpdate = false;
         }
-      });
+      };
     }
   }
 }

@@ -10,7 +10,7 @@ class WebGLTextures {
   Map _textures = {};
   gl.RenderingContext _gl;
 
-  WebGLTextures._(this._gl);
+  WebGLTextures(this._gl);
 
   Texture get(Texture texture) {
     if (_textures[texture.id] != null) {

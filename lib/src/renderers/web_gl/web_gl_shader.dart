@@ -17,7 +17,7 @@ class WebGLShader {
 
   gl.Shader _shader;
 
-  gl.Shader get() => _shader;
+  gl.Shader call() => _shader;
 
   WebGLShader(gl.RenderingContext _gl, int type, String string) {
     _shader = _gl.createShader(type);

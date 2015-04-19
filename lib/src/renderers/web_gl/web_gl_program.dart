@@ -10,9 +10,9 @@ class WebGLProgram {
   Map<String, gl.UniformLocation> uniforms;
   Map<String, int> attributes;
 
-  var id = programIdCount++;
-  var code;
-  var usedTimes = 1;
+  int id = WebGLProgram.programIdCount++;
+  String code;
+  int  usedTimes = 1;
   gl.Program program;
   gl.Shader vertexShader;
   gl.Shader fragmentShader;
@@ -49,24 +49,24 @@ class WebGLProgram {
     return previousValue;
   }
 
-  WebGLProgram(WebGLRenderer renderer, this.code, ShaderMaterial material, {
-    morphTargets, shadowMapType, envMap, precision, supportsVertexTextures, maxDirLights, maxPointLights,
-    maxSpotLights, maxHemiLights, maxShadows, maxBones, map, envMapModeDefine, lightMap, aoMap, bumpMap,
-    normalMap, specularMap, alphaMap, vertexColors, flatShading, skinning, useVertexTexture, morphNormals,
-    doubleSided, flipSided, shadowMapEnabled, shadowMapTypeDefine, shadowMapDebug, shadowMapCascade, sizeAttenuation,
-    logarithmicDepthBuffer, alphaTest, useFog, fog, fogExp, envMapTypeDefine, envMapBlendingDefine, metal,
-    maxMorphTargets, maxMorphNormals}) {
-    var _this = renderer;
-    var _gl = _this.context;
+  WebGLProgram._(WebGLRenderer renderer, this.code, Material material, {
+    String precision, bool supportsVertexTextures, bool map, bool envMap, bool envMapMode, bool lightMap,
+    bool aoMap, bool bumpMap, bool normalMap, bool specularMap, bool alphaMap, int combine, int vertexColors,
+    bool fog, bool useFog, bool fogExp, bool flatShading, bool sizeAttenuation, bool logarithmicDepthBuffer,
+    bool skinning, int maxBones, bool useVertexTexture, bool morphTargets, bool morphNormals, int maxMorphTargets,
+    int maxMorphNormals, int maxDirLights, int maxPointLights, int maxSpotLights, int maxHemiLights, int maxShadows,
+    bool shadowMapEnabled, int shadowMapType, bool shadowMapDebug, bool shadowMapCascade, double alphaTest, bool metal,
+    bool doubleSided, bool flipSided}) {
+    var _gl = renderer._gl;
 
-    var defines = material.defines;
-    var uniforms = material.__webglShader.uniforms;
-    var attributes = material.attributes;
+    var defines = material is ShaderMaterial ? material.defines : {};
+    Map<String, Uniform> uniforms = material.__webglShader['uniforms'];
+    Map<String, Attribute> attributes = material is ShaderMaterial ? material.attributes : {};
 
-    var vertexShader = material.__webglShader.vertexShader;
-    var fragmentShader = material.__webglShader.fragmentShader;
+    var vertexShader = material.__webglShader['vertexShader'];
+    var fragmentShader = material.__webglShader['fragmentShader'];
 
-    var index0AttributeName = material.index0AttributeName;
+    var index0AttributeName = material is ShaderMaterial ? material.index0AttributeName : null;
 
     if (index0AttributeName == null && morphTargets) {
       // programs with morphTargets displace position out of attribute 0
@@ -86,7 +86,7 @@ class WebGLProgram {
     var envMapBlendingDefine = 'ENVMAP_BLENDING_MULTIPLY';
 
     var mat = material;
-    if (envMap && mat is EnvironmentMapping) {
+    if (envMap && mat is Mapping) {
       switch (mat.envMap.mapping) {
         case CubeReflectionMapping:
         case CubeRefractionMapping:
@@ -121,7 +121,7 @@ class WebGLProgram {
       }
     }
 
-    var gammaFactorDefine = 1.0; //TODO (renderer.gammaFactor > 0) ? renderer.gammaFactor : 1.0;
+    var gammaFactorDefine = (renderer.gammaFactor > 0) ? renderer.gammaFactor : 1.0;
 
     // log('building new program ');
 
@@ -135,13 +135,15 @@ class WebGLProgram {
 
     var prefix_vertex, prefix_fragment;
 
+    nn(o) => o != null;
+
     if (material is RawShaderMaterial) {
       prefix_vertex = '';
       prefix_fragment = '';
     } else {
       prefix_vertex = [
-        'precision ' + precision + ' float;',
-        'precision ' + precision + ' int;',
+        'precision $precision float;\n',
+        'precision $precision int;',
 
         customDefines,
 
@@ -149,27 +151,27 @@ class WebGLProgram {
 
         renderer.gammaInput ? '#define GAMMA_INPUT' : '',
         renderer.gammaOutput ? '#define GAMMA_OUTPUT' : '',
-        '#define GAMMA_FACTOR ' + gammaFactorDefine,
+        '#define GAMMA_FACTOR $gammaFactorDefine',
 
-        '#define MAX_DIR_LIGHTS ' + maxDirLights,
-        '#define MAX_POINT_LIGHTS ' + maxPointLights,
-        '#define MAX_SPOT_LIGHTS ' + maxSpotLights,
-        '#define MAX_HEMI_LIGHTS ' + maxHemiLights,
+        '#define MAX_DIR_LIGHTS $maxDirLights',
+        '#define MAX_POINT_LIGHTS $maxPointLights',
+        '#define MAX_SPOT_LIGHTS $maxSpotLights',
+        '#define MAX_HEMI_LIGHTS $maxHemiLights',
 
-        '#define MAX_SHADOWS ' + maxShadows,
+        '#define MAX_SHADOWS $maxShadows',
 
-        '#define MAX_BONES ' + maxBones,
+        '#define MAX_BONES $maxBones',
 
         map ? '#define USE_MAP' : '',
         envMap ? '#define USE_ENVMAP' : '',
-        envMap ? '#define ' + envMapModeDefine : '',
+        envMap ? '#define $envMapModeDefine' : '',
         lightMap ? '#define USE_LIGHTMAP' : '',
         aoMap ? '#define USE_AOMAP' : '',
         bumpMap ? '#define USE_BUMPMAP' : '',
         normalMap ? '#define USE_NORMALMAP' : '',
         specularMap ? '#define USE_SPECULARMAP' : '',
         alphaMap ? '#define USE_ALPHAMAP' : '',
-        vertexColors ? '#define USE_COLOR' : '',
+        vertexColors != NoColors ? '#define USE_COLOR' : '',
 
         flatShading ? '#define FLAT_SHADED': '',
 
@@ -180,11 +182,11 @@ class WebGLProgram {
         morphNormals ? '#define USE_MORPHNORMALS' : '',
         doubleSided ? '#define DOUBLE_SIDED' : '',
         flipSided ? '#define FLIP_SIDED' : '',
-
-        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
-        shadowMapEnabled ? '#define ' + shadowMapTypeDefine : '',
-        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
-        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
+// TODO
+//        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
+//        shadowMapEnabled ? '#define $shadowMapTypeDefine' : '',
+//        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
+//        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
 
         sizeAttenuation ? '#define USE_SIZEATTENUATION' : '',
 
@@ -243,67 +245,67 @@ class WebGLProgram {
      ].reduce(programArrayToString);
 
       prefix_fragment = [
-        'precision ' + precision + ' float;',
-        'precision ' + precision + ' int;',
+        'precision $precision float;\n',
+        'precision $precision int;',
 
         (bumpMap || normalMap || flatShading) ? '#extension GL_OES_standard_derivatives : enable' : '',
 
         customDefines,
 
-        '#define MAX_DIR_LIGHTS ' + maxDirLights,
-        '#define MAX_POINT_LIGHTS ' + maxPointLights,
-        '#define MAX_SPOT_LIGHTS ' + maxSpotLights,
-        '#define MAX_HEMI_LIGHTS ' + maxHemiLights,
+        '#define MAX_DIR_LIGHTS $maxDirLights',
+        '#define MAX_POINT_LIGHTS $maxPointLights',
+        '#define MAX_SPOT_LIGHTS $maxSpotLights',
+        '#define MAX_HEMI_LIGHTS $maxHemiLights',
 
-        '#define MAX_SHADOWS ' + maxShadows,
+        '#define MAX_SHADOWS $maxShadows',
 
-        alphaTest ? '#define ALPHATEST ' + alphaTest : '',
+        nn(alphaTest) ? '#define ALPHATEST $alphaTest' : '',
 
         renderer.gammaInput ? '#define GAMMA_INPUT' : '',
         renderer.gammaOutput ? '#define GAMMA_OUTPUT' : '',
-        '#define GAMMA_FACTOR ' + gammaFactorDefine,
+        '#define GAMMA_FACTOR $gammaFactorDefine',
 
         (useFog && fog) ? '#define USE_FOG' : '',
         (useFog && fogExp) ? '#define FOG_EXP2' : '',
 
         map ? '#define USE_MAP' : '',
         envMap ? '#define USE_ENVMAP' : '',
-        envMap ? '#define ' + envMapTypeDefine : '',
-        envMap ? '#define ' + envMapModeDefine : '',
-        envMap ? '#define ' + envMapBlendingDefine : '',
+        envMap ? '#define $envMapTypeDefine' : '',
+        envMap ? '#define $envMapModeDefine' : '',
+        envMap ? '#define $envMapBlendingDefine' : '',
         lightMap ? '#define USE_LIGHTMAP' : '',
         aoMap ? '#define USE_AOMAP' : '',
         bumpMap ? '#define USE_BUMPMAP' : '',
         normalMap ? '#define USE_NORMALMAP' : '',
         specularMap ? '#define USE_SPECULARMAP' : '',
         alphaMap ? '#define USE_ALPHAMAP' : '',
-        vertexColors ? '#define USE_COLOR' : '',
+        vertexColors != NoColors ? '#define USE_COLOR' : '',
 
         flatShading ? '#define FLAT_SHADED': '',
 
         metal ? '#define METAL' : '',
         doubleSided ? '#define DOUBLE_SIDED' : '',
         flipSided ? '#define FLIP_SIDED' : '',
-
-        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
-        shadowMapEnabled ? '#define ' + shadowMapTypeDefine : '',
-        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
-        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
+// TODO
+//        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
+//        shadowMapEnabled ? '#define $shadowMapTypeDefine' : '',
+//        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
+//        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
 
         logarithmicDepthBuffer ? '#define USE_LOGDEPTHBUF' : '',
-        //renderer.glExtensionFragDepth ? '#define USE_LOGDEPTHBUF_EXT' : '',
 
         'uniform mat4 viewMatrix;',
         'uniform vec3 cameraPosition;',
+
         ''
       ].reduce(programArrayToString);
     }
 
-    var glVertexShader = new WebGLShader(_gl, gl.VERTEX_SHADER, prefix_vertex + vertexShader);
-    var glFragmentShader = new WebGLShader(_gl, gl.FRAGMENT_SHADER, prefix_fragment + fragmentShader);
+    var glVertexShader = new WebGLShader(_gl, gl.VERTEX_SHADER, prefix_vertex + vertexShader)();
+    var glFragmentShader = new WebGLShader(_gl, gl.FRAGMENT_SHADER, prefix_fragment + fragmentShader)();
 
-    _gl.attachShader(program, glVertexShader.get());
-    _gl.attachShader(program, glFragmentShader.get());
+    _gl.attachShader(program, glVertexShader);
+    _gl.attachShader(program, glFragmentShader);
 
     if (index0AttributeName != null) {
       // Force a particular attribute to index 0.
@@ -316,11 +318,11 @@ class WebGLProgram {
     _gl.linkProgram(program);
 
     var programLogInfo = _gl.getProgramInfoLog(program);
-    var vertexErrorLogInfo = _gl.getShaderInfoLog(glVertexShader.get());
-    var fragmentErrorLogInfo = _gl.getShaderInfoLog(glFragmentShader.get());
+    var vertexErrorLogInfo = _gl.getShaderInfoLog(glVertexShader);
+    var fragmentErrorLogInfo = _gl.getShaderInfoLog(glFragmentShader);
 
     if (!_gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      error('THREE.WebGLProgram: shader error: ${_gl.getError()} gl.VALIDATE_STATUS' +
+      error('WebGLProgram: shader error: ${_gl.getError()} gl.VALIDATE_STATUS' +
             '${_gl.getProgramParameter(program, gl.VALIDATE_STATUS)} gl.getProgramInfoLog' +
             '$programLogInfo $vertexErrorLogInfo $fragmentErrorLogInfo');
     }
@@ -331,8 +333,8 @@ class WebGLProgram {
 
     // clean up
 
-    _gl.deleteShader(glVertexShader.get());
-    _gl.deleteShader(glFragmentShader.get());
+    _gl.deleteShader(glVertexShader);
+    _gl.deleteShader(glFragmentShader);
 
     // cache uniform locations
 
@@ -358,7 +360,7 @@ class WebGLProgram {
       identifiers.add('logDepthBufFC');
     }
 
-    for (var u in uniforms) {
+    for (var u in uniforms.keys) {
       identifiers.add(u);
     }
 
@@ -386,7 +388,7 @@ class WebGLProgram {
       identifiers.add('morphNormal$i');
     }
 
-    for (var a in attributes) {
+    for (var a in attributes.keys) {
       identifiers.add(a);
     }
 
@@ -395,7 +397,7 @@ class WebGLProgram {
     //
 
     this.program = program;
-    this.vertexShader = glVertexShader.get();
-    this.fragmentShader = glFragmentShader.get();
+    this.vertexShader = glVertexShader;
+    this.fragmentShader = glFragmentShader;
   }
 }
