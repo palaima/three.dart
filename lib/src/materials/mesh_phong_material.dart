@@ -8,7 +8,7 @@
 part of three;
 
 /// A material for shiny surfaces, evaluated per pixel.
-class MeshPhongMaterial extends Material implements Lighting, TextureMapping, EnvironmentMapping, Skinning, Morphing {
+class MeshPhongMaterial extends Material implements Lighting, Mapping, Morphing {
   /// Emissive (light) color of the material, essentially a solid color
   /// unaffected by other lighting. Default is black.
   Color emissive;
@@ -49,12 +49,6 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
   double reflectivity;
   double refractionRatio;
 
-  /// How the triangles of a curved surface are rendered: as a smooth surface,
-  /// as flat separate facets, or no shading at all.
-  ///
-  /// Options are SmoothShading (default), FlatShading, NoShading.
-  int shading;
-
   /// Whether the triangles' edges are displayed instead of surfaces. Default is false.
   bool wireframe;
 
@@ -89,26 +83,13 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
   bool morphTargets;
   bool morphNormals;
 
-  // Used by renderer
-  int numSupportedMorphTargets = 0,
-      numSupportedMorphNormals = 0;
-
-  @Deprecated('')
-  Color ambient;
-  @Deprecated('')
-  var perPixel = false;
-  @Deprecated('')
-  var wrapRGB;
-  @Deprecated('')
-  var wrapAround = false;
-
   MeshPhongMaterial({num color: 0xffffff, num emissive: 0x000000, num specular: 0x111111, this.shininess: 30.0,
     this.metal: false, this.map, this.lightMap, this.lightMapIntensity: 1.0, this.aoMap, this.aoMapIntensity: 1.0,
     this.bumpMap, this.bumpScale: 1.0, this.normalMap, Vector2 normalScale, this.specularMap, this.alphaMap,
     this.envMap, this.combine: MultiplyOperation, this.reflectivity: 1.0, this.refractionRatio: 0.98, bool fog: true,
-    this.shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
+    int shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
     this.wireframeLinejoin: 'round', int vertexColors: NoColors, this.skinning: false, this.morphTargets: false,
-    this.morphNormals: false, ambient: 0xffffff,
+    this.morphNormals: false,
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
     int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
@@ -118,7 +99,6 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
     bool visible: true})
       : this.emissive = new Color(emissive),
         this.specular = new Color(specular),
-        this.ambient = new Color(ambient),
         this.normalScale = normalScale != null ? normalScale : new Vector2(1.0, 1.0),
         super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
                 blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
@@ -127,7 +107,7 @@ class MeshPhongMaterial extends Material implements Lighting, TextureMapping, En
                 polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
                 overdraw: overdraw, visible: visible,
 
-                color: color, fog: fog, vertexColors: vertexColors);
+                color: color, fog: fog, vertexColors: vertexColors, shading: shading);
   clone() {
     throw new UnimplementedError();
   }

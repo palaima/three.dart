@@ -7,12 +7,16 @@
 
 part of three;
 
-class PointCloudMaterial extends Material implements TextureMapping {
+class PointCloudMaterial extends Material implements Mapping {
   String type = 'PointCloudMaterial';
 
   Texture map;
   double size;
   bool sizeAttenuation;
+
+  // Not used
+  var aoMap, normalScale, normalMap, bumpMap, bumpScale, refractionRatio, combine,
+  reflectivity, lightMap, alphaMap, specularMap, envMap;
 
   PointCloudMaterial({num color: 0xffffff, this.map, this.size: 1.0, this.sizeAttenuation: true,
     int vertexColors: NoColors, bool fog: true,
@@ -33,6 +37,10 @@ class PointCloudMaterial extends Material implements TextureMapping {
           color: color, fog: fog, vertexColors: vertexColors);
 
   clone() {
+    throw new UnimplementedError();
+  }
+
+  toJSON() {
     throw new UnimplementedError();
   }
 }

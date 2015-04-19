@@ -11,7 +11,7 @@ part of three;
 ///
 /// The default will render as flat polygons. To draw the mesh as wireframe,
 /// simply set the 'wireframe' property to true.
-class MeshBasicMaterial extends Material implements TextureMapping, EnvironmentMapping, Skinning, Morphing, Wireframe {
+class MeshBasicMaterial extends Material implements Mapping, Morphing, Wireframe {
   String type = 'MeshBasicMaterial';
 
   Texture map;
@@ -24,8 +24,6 @@ class MeshBasicMaterial extends Material implements TextureMapping, EnvironmentM
   int combine;
   double reflectivity;
   double refractionRatio;
-
-  int shading;
 
   /// Render geometry as wireframe. Default is false (i.e. render as flat polygons).
   bool wireframe;
@@ -61,18 +59,12 @@ class MeshBasicMaterial extends Material implements TextureMapping, EnvironmentM
   bool morphTargets;
 
   // Not used
-  bool morphNormals = false;
-  int numSupportedMorphTargets;
-  int numSupportedMorphNormals;
-
-  @Deprecated('')
-  Texture lightMap;
+  var aoMap, normalMap, bumpMap, bumpScale, normalScale, morphNormals, lightMap;
 
   MeshBasicMaterial({num color: 0xffffff, this.map, this.specularMap, this.alphaMap, this.envMap,
     this.combine: MultiplyOperation, this.reflectivity: 1.0, this.refractionRatio: 0.98, bool fog: true,
-    this.shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
+    int shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
     this.wireframeLinejoin: 'round', int vertexColors: NoColors, this.skinning: false, this.morphTargets: false,
-    this.lightMap,
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
     int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
@@ -87,7 +79,7 @@ class MeshBasicMaterial extends Material implements TextureMapping, EnvironmentM
           polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
           overdraw: overdraw, visible: visible,
 
-          color: color, fog: fog, vertexColors: vertexColors);
+          color: color, fog: fog, vertexColors: vertexColors, shading: shading);
 
   clone() {
     throw new UnimplementedError();

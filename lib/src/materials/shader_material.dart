@@ -6,7 +6,7 @@
 
 part of three;
 
-class ShaderMaterial extends Material implements Morphing, Skinning, Wireframe {
+class ShaderMaterial extends Material implements Morphing, Wireframe {
   static const defaultVertexShader = 'void main() {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n}';
   static const defaultFragmentShader = 'void main() {\n\tgl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n}';
 
@@ -14,8 +14,6 @@ class ShaderMaterial extends Material implements Morphing, Skinning, Wireframe {
 
   Map defines;
   Map<String, Attribute> attributes;
-
-  int shading;
 
   double lineWidth;
 
@@ -39,16 +37,11 @@ class ShaderMaterial extends Material implements Morphing, Skinning, Wireframe {
 
   String index0AttributeName;
 
-  // not used
-  String wireframeLinecap, wireframeLinejoin;
-  int numSupportedMorphTargets = 0,
-      numSupportedMorphNormals = 0;
+  // Not used
+  var wireframeLinecap, wireframeLinejoin;
 
-  // Used in renderer
-  var __webglShader;
-
-  ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, String vertexShader: "void main() {}",
-    String fragmentShader: "void main() {}", this.shading: SmoothShading, this.lineWidth: 1.0, this.wireframe: false,
+  ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, String vertexShader: defaultVertexShader,
+    String fragmentShader: defaultFragmentShader, int shading: SmoothShading, this.lineWidth: 1.0, this.wireframe: false,
     this.wireframeLinewidth: 1.0, bool fog: true, this.lights: false, int vertexColors: NoColors, this.skinning: false,
     this.morphTargets: false, this.morphNormals: false,
     // Material
@@ -65,7 +58,7 @@ class ShaderMaterial extends Material implements Morphing, Skinning, Wireframe {
             polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
             overdraw: overdraw, visible: visible,
 
-            color: 0xffffff, fog: fog, vertexColors: vertexColors) {
+            fog: fog, vertexColors: vertexColors, shading: shading) {
     this.defines = defines != null ? defines : {};
     this._uniforms = uniforms != null ? uniforms : {};
     this._fragmentShader = fragmentShader;

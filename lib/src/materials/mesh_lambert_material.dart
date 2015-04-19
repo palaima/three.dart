@@ -8,8 +8,7 @@
 part of three;
 
 /// A material for non-shiny (Lambertian) surfaces, evaluated per vertex.
-class MeshLambertMaterial extends Material implements Lighting, TextureMapping, EnvironmentMapping, Skinning, Morphing,
-    Wireframe {
+class MeshLambertMaterial extends Material implements Lighting, Mapping, Morphing, Wireframe {
   String type = 'MeshLambertMaterial';
 
   /// Emissive (light) color of the material, essentially a solid color unaffected by other lighting. Default is black.
@@ -25,12 +24,6 @@ class MeshLambertMaterial extends Material implements Lighting, TextureMapping, 
   int combine;
   double reflectivity;
   double refractionRatio;
-
-  /// How the triangles of a curved surface are rendered: as a smooth surface,
-  /// as flat separate facets, or no shading at all.
-  ///
-  /// Options are SmoothShading (default), FlatShading, NoShading.
-  int shading;
 
   /// Whether the triangles' edges are displayed instead of surfaces. Default is false.
   bool wireframe;
@@ -64,28 +57,14 @@ class MeshLambertMaterial extends Material implements Lighting, TextureMapping, 
   bool morphTargets;
   bool morphNormals;
 
-  // Used in renderer.
-  int numSupportedMorphTargets = 0,
-      numSupportedMorphNormals = 0;
-
-  @Deprecated('')
-  Color ambient;
-  @Deprecated('')
-  Color specular;
-  @Deprecated('')
-  bool wrapAround = false;
-  @Deprecated('')
-  Vector3 wrapRGB = new Vector3(1.0, 1.0, 1.0);
-  @Deprecated('')
-  Texture lightMap;
-
-  Color color;
+  // Not used
+  var aoMap, normalScale, normalMap, bumpMap, bumpScale, lightMap, specular;
 
   MeshLambertMaterial({num color: 0xffffff, num emissive: 0x000000, this.map, this.specularMap, this.alphaMap,
     this.envMap, this.combine: MultiplyOperation, this.reflectivity: 1.0, this.refractionRatio: 0.98, bool fog: true,
-    this.shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
+    int shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
     this.wireframeLinejoin: 'round', int vertexColors: NoColors, this.skinning: false, this.morphTargets: false,
-    this.morphNormals: false, ambient: 0xffffff, this.lightMap,
+    this.morphNormals: false, ambient: 0xffffff,
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
     int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
@@ -93,9 +72,7 @@ class MeshLambertMaterial extends Material implements Lighting, TextureMapping, 
     bool depthTest: true, bool depthWrite: true, bool colorWrite: true, bool polygonOffset: false,
     int polygonOffsetFactor: 0, int polygonOffsetUnits: 0, double alphaTest: 0.0, double overdraw: 0.0,
     bool visible: true})
-      : this.color = new Color(color),
-          this.ambient = new Color(ambient),
-          this.emissive = new Color(emissive),
+      : this.emissive = new Color(emissive),
         super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
           blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
           blendDstAlpha: blendDstAlpha, blendEquationAlpha: blendEquationAlpha, depthFunc: depthFunc,
@@ -103,7 +80,7 @@ class MeshLambertMaterial extends Material implements Lighting, TextureMapping, 
           polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
           overdraw: overdraw, visible: visible,
 
-          color: color, fog: fog, vertexColors: vertexColors);
+          color: color, fog: fog, vertexColors: vertexColors, shading: shading);
 
   clone() {
     throw new UnimplementedError();

@@ -6,11 +6,15 @@
 
 part of three;
 
-class SpriteMaterial extends Material implements TextureMapping {
+class SpriteMaterial extends Material implements Mapping {
   String type = 'SpriteMaterial';
   Texture map;
 
   double rotation;
+
+  // Not used
+  var aoMap, normalScale, normalMap, bumpMap, bumpScale, refractionRatio, combine,
+  reflectivity, lightMap, alphaMap, specularMap, envMap;
 
   SpriteMaterial({num color: 0xffffff, this.map, this.rotation: 0.0, bool fog: false,
     // Material

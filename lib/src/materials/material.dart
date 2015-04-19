@@ -56,9 +56,9 @@ class Material extends Object with DisposeStream {
   /// It's one of the constants defined in three.dart. Default is AddEquation.
   int blendEquation;
 
-  double blendSrcAlpha;
-  double blendDstAlpha;
-  double blendEquationAlpha;
+  int blendSrcAlpha;
+  int blendDstAlpha;
+  int blendEquationAlpha;
 
   int depthFunc = LessEqualDepth;
 
@@ -111,12 +111,17 @@ class Material extends Object with DisposeStream {
 
   int vertexColors;
 
+  int shading;
+
   // WebGL
-  var _program;
+  Map __webglShader;
+  WebGLProgram _program;
   String _fragmentShader;
   String _vertexShader;
   Map<String, Uniform> _uniforms;
-  var _uniformsList;
+  List _uniformsList;
+  int _numSupportedMorphTargets;
+  int _numSupportedMorphNormals;
 
   // Used by ShadowMapPlugin
   bool shadowPass = false;
@@ -129,8 +134,8 @@ class Material extends Object with DisposeStream {
     this.blendEquationAlpha, this.depthFunc, this.depthTest, this.depthWrite, this.colorWrite, this.polygonOffset,
     this.polygonOffsetFactor, this.polygonOffsetUnits, this.alphaTest, this.overdraw, this.visible,
 
-    num color, this.fog, this.vertexColors})
-      : this.color = color != null ? new Color(color) : new Color.white();
+    num color: 0xffffff, this.fog, this.vertexColors, this.shading: NoShading})
+      : this.color = new Color(color);
 
   void update() {
     _onUpdateController.add(null);
@@ -141,59 +146,25 @@ class Material extends Object with DisposeStream {
   }
 }
 
-abstract class TextureMapping {
-  /// color texture map
-  Texture map;
-}
-
-abstract class EnvironmentMapping {
-  Texture envMap;
-
-
-  /// Since this material does not have a specular component, the specular value affects only
-  /// how much of the environment map affects the surface.
-  Texture specularMap;
-  Texture lightMap;
-
-  double reflectivity, refractionRatio;
-
-  /// How to combine the result of the surface's color with the environment map, if any
+abstract class Mapping {
+  Texture map, envMap, aoMap, alphaMap, specularMap, lightMap, normalMap, bumpMap;
+  double reflectivity, refractionRatio, bumpScale;
+  Vector2 normalScale;
   int combine;
 }
 
-abstract class BumpMapping {
-  var bumpMap;
-  num bumpScale;
-
-  Texture normalMap;
-  var normalScale;
-}
-
 abstract class Lighting {
-  /// Ambient color of the material, multiplied by the color of the AmbientLight
-  Color ambient;
-  /// Emissive (light) color of the material, essentially a solid color unaffected by other lighting
-  Color emissive;
-  Color specular;
-
-  bool wrapAround = false;
-  Vector3 wrapRGB;
+  Color emissive, specular;
 }
 
-/** [Material] that uses skinning **/
+/// Material that uses skinning.
 abstract class Morphing {
-  bool morphTargets = false,
-      morphNormals = false;
-  num numSupportedMorphTargets = 0,
-      numSupportedMorphNormals = 0;
-}
-
-abstract class Skinning {
   bool skinning;
+  bool morphTargets, morphNormals;
 }
 
 abstract class Wireframe {
   bool wireframe;
-  num wireframeLinewidth;
+  double wireframeLinewidth;
   String wireframeLinecap, wireframeLinejoin;
 }

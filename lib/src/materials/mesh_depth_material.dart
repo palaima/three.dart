@@ -26,14 +26,9 @@ class MeshDepthMaterial extends Material implements Wireframe {
   double wireframeLinewidth;
 
   // Not used
-  String wireframeLinecap;
-  String wireframeLinejoin;
-
-  @Deprecated('')
-  int shading;
+  var wireframeLinecap, wireframeLinejoin;
 
   MeshDepthMaterial({this.morphTargets: false, this.wireframe: false, this.wireframeLinewidth: 1.0,
-    this.shading: SmoothShading,
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
     int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,

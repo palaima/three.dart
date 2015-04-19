@@ -19,17 +19,12 @@ class MeshNormalMaterial extends Material implements Wireframe {
   /// always be 1 regardless of the set value.
   double wireframeLinewidth;
 
-  bool morphTargets = false;
+  bool morphTargets;
 
-  // not used
-  String wireframeLinecap;
-  String wireframeLinejoin;
-
-  @Deprecated('')
-  int shading;
+  // Not used
+  var wireframeLinecap, wireframeLinejoin;
 
   MeshNormalMaterial({this.wireframe: false, this.wireframeLinewidth: 1.0, this.morphTargets: false,
-    this.shading: SmoothShading, bool fog: false, // TODO Remove shading and fog
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
     int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
@@ -42,9 +37,7 @@ class MeshNormalMaterial extends Material implements Wireframe {
           blendDstAlpha: blendDstAlpha, blendEquationAlpha: blendEquationAlpha, depthFunc: depthFunc,
           depthTest: depthTest, depthWrite: depthWrite, colorWrite: colorWrite, polygonOffset: polygonOffset,
           polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
-          overdraw: overdraw, visible: visible,
-
-          fog: fog);
+          overdraw: overdraw, visible: visible);
 
   clone() {
     throw new UnimplementedError();
