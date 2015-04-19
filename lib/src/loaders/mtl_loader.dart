@@ -286,7 +286,6 @@ class MaterialCreator {
           name: params['name'],
           side: params['side'],
           color: params.containsKey('color') ? (params['color'] as Color).getHex() : 0xffffff,
-          ambient: params.containsKey('ambient') ? (params['ambient'] as Color).getHex() : 0xffffff,
           transparent: params.containsKey('transparent') ? params['transparent'] : false,
           opacity: params.containsKey('opacity') ? params['opacity'] : 1,
           shininess: params.containsKey('shininess') ? params['shininess'] : 30,

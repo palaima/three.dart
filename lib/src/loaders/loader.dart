@@ -445,7 +445,6 @@ class Loader {
               map: map,
               color: color,
               ambient: ambient,
-              lightMap: lightMap,
               specularMap: specularMap,
               vertexColors: vertexColors,
               wireframe: wireframe,
@@ -462,7 +461,6 @@ class Loader {
           material = new MeshPhongMaterial(
               map: map,
               color: color,
-              ambient: ambient,
               shininess: shininess,
               lightMap: lightMap,
               bumpMap: bumpMap,
@@ -483,7 +481,6 @@ class Loader {
           material = new MeshBasicMaterial(
               map: map,
               color: color,
-              lightMap: lightMap,
               specularMap: specularMap,
               vertexColors: vertexColors,
               wireframe: wireframe,
