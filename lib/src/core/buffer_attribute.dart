@@ -12,34 +12,41 @@ class BufferAttribute {
   int numItems;
 
   bool needsUpdate = false;
-  BufferAttribute(this.array, this.itemSize);
+  BufferAttribute(this.array, this.itemSize, [this.bytesPerElement]) {
+    if (bytesPerElement == null) {
+      reflectClass(array.runtimeType).getField(#BYTES_PER_ELEMENT).reflectee;
+    }
+  }
 
   // Used in WebGL Renderer
   Buffer buffer;
+  int bytesPerElement;
+
+  var updateRange;
 
   factory BufferAttribute.int8(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Int8List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Int8List(length), itemSize, Int8List.BYTES_PER_ELEMENT)..numItems = length;
 
   factory BufferAttribute.uint8(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Uint8List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Uint8List(length), itemSize, Uint8List.BYTES_PER_ELEMENT)..numItems = length;
 
   factory BufferAttribute.int16(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Int16List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Int16List(length), itemSize, Int16List.BYTES_PER_ELEMENT)..numItems = length;
 
   factory BufferAttribute.uint16(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Uint16List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Uint16List(length), itemSize, Uint16List.BYTES_PER_ELEMENT)..numItems = length;
 
   factory BufferAttribute.int32(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Int32List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Int32List(length), itemSize, Int32List.BYTES_PER_ELEMENT)..numItems = length;
 
   factory BufferAttribute.uint32(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Uint32List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Uint32List(length), itemSize, Uint32List.BYTES_PER_ELEMENT)..numItems = length;
 
   factory BufferAttribute.float32(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Float32List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Float32List(length), itemSize, Float32List.BYTES_PER_ELEMENT)..numItems = length;
 
   factory BufferAttribute.float64(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Float64List(length), itemSize)..numItems = length;
+      new BufferAttribute(new Float64List(length), itemSize, Float64List.BYTES_PER_ELEMENT)..numItems = length;
 
   int get length => array.length;
 
@@ -121,7 +128,7 @@ class BufferAttribute {
     }
   }
 
-  void set(value, offset) {
+  void set(num value, int offset) {
     if (offset == null) offset = 0;
     array[offset] = value;
   }
