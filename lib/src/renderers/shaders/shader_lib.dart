@@ -397,7 +397,7 @@ final Map<String, Map> ShaderLib = {
   },
   'normal': {
     'uniforms': {
-      "opacity" : {"opacity": new Uniform.float(1.0)}
+      "opacity" : new Uniform.float(1.0)
     },
     'vertexShader': [
       "varying vec3 vNormal;",
