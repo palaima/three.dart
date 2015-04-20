@@ -137,7 +137,7 @@ class BufferGeometry extends Object with DisposeStream implements Geometry {
     if (mat is ShaderMaterial && mat.attributes != null) {
       var attributes = material.attributes;
 
-      for (var name in attributes) {
+      for (var name in attributes.keys) {
         var attribute = attributes[name];
 
         var type = attribute.type;
@@ -227,10 +227,10 @@ class BufferGeometry extends Object with DisposeStream implements Geometry {
     var faceVertexUvs = geometry.faceVertexUvs;
     var vertexColors = material != null ? material.vertexColors : NoColors;
 
-    var hasFaceVertexUv = faceVertexUvs[0].length > 0;
+    var hasFaceVertexUv = faceVertexUvs.length > 0 && faceVertexUvs[0].length > 0;
     var hasFaceVertexUv2 = faceVertexUvs.length > 1 && faceVertexUvs[1].length > 0;
 
-    var hasFaceVertexNormals = faces[0].vertexNormals.length == 3;
+    var hasFaceVertexNormals = faces.length > 0 && faces[0].vertexNormals.length == 3;
     var colors, uvs, uvs2;
 
     aPosition = new BufferAttribute.float32(faces.length * 3 * 3, 3);
