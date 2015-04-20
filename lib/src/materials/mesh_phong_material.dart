@@ -8,7 +8,9 @@
 part of three;
 
 /// A material for shiny surfaces, evaluated per pixel.
-class MeshPhongMaterial extends Material implements Lighting, Mapping, Morphing {
+class MeshPhongMaterial extends Material implements Lighting, Mapping, Morphing, Wireframe {
+  String type = 'MeshPhongMaterial';
+
   /// Emissive (light) color of the material, essentially a solid color
   /// unaffected by other lighting. Default is black.
   Color emissive;

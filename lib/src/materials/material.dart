@@ -134,7 +134,7 @@ class Material extends Object with DisposeStream {
     this.blendEquationAlpha, this.depthFunc, this.depthTest, this.depthWrite, this.colorWrite, this.polygonOffset,
     this.polygonOffsetFactor, this.polygonOffsetUnits, this.alphaTest, this.overdraw, this.visible,
 
-    num color: 0xffffff, this.fog, this.vertexColors, this.shading: NoShading})
+    num color: 0xffffff, this.fog: false, this.vertexColors, this.shading: NoShading})
       : this.color = new Color(color);
 
   void update() {

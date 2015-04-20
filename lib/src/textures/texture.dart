@@ -38,7 +38,7 @@ class ImageList extends Object with ListMixin<ImageElement> {
 class Texture extends Object with DisposeStream {
   int id;
   var image;
-  var mapping; //UVMapping appears to be missing..
+  int mapping; //UVMapping appears to be missing..
   int wrapS, wrapT, magFilter, minFilter, format, type, anisotropy;
   Vector2 offset, repeat;
   bool generateMipmaps;

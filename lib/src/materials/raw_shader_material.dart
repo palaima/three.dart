@@ -22,7 +22,7 @@ class RawShaderMaterial extends ShaderMaterial {
     int polygonOffsetFactor: 0, int polygonOffsetUnits: 0, double alphaTest: 0.0, double overdraw: 0.0,
     bool visible: true})
       : super(defines: defines, uniforms: uniforms, attributes: attributes, vertexShader: vertexShader,
-          fragmentShader: fragmentShader, shading: shading, lineWidth: lineWidth, wireframe: wireframe,
+          fragmentShader: fragmentShader, shading: shading, linewidth: lineWidth, wireframe: wireframe,
           wireframeLinewidth: wireframeLinewidth, fog: fog, lights: lights, vertexColors: vertexColors,
           skinning: skinning, morphTargets: morphTargets, morphNormals: morphNormals,
 

@@ -6,7 +6,7 @@
 
 part of three;
 
-class ShaderMaterial extends Material implements Morphing, Wireframe {
+class ShaderMaterial extends Material implements Morphing, Wireframe, LineMaterial {
   static const defaultVertexShader = 'void main() {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n}';
   static const defaultFragmentShader = 'void main() {\n\tgl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n}';
 
@@ -15,7 +15,7 @@ class ShaderMaterial extends Material implements Morphing, Wireframe {
   Map defines;
   Map<String, Attribute> attributes;
 
-  double lineWidth;
+  double linewidth;
 
   bool wireframe;
   double wireframeLinewidth;
@@ -38,10 +38,10 @@ class ShaderMaterial extends Material implements Morphing, Wireframe {
   String index0AttributeName;
 
   // Not used
-  var wireframeLinecap, wireframeLinejoin;
+  var wireframeLinecap, wireframeLinejoin, scale, dashSize, gapSize;
 
   ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, String vertexShader: defaultVertexShader,
-    String fragmentShader: defaultFragmentShader, int shading: SmoothShading, this.lineWidth: 1.0, this.wireframe: false,
+    String fragmentShader: defaultFragmentShader, int shading: SmoothShading, this.linewidth: 1.0, this.wireframe: false,
     this.wireframeLinewidth: 1.0, bool fog: true, this.lights: false, int vertexColors: NoColors, this.skinning: false,
     this.morphTargets: false, this.morphNormals: false,
     // Material
