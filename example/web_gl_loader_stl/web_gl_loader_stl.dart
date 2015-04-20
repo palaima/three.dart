@@ -27,7 +27,7 @@ init() {
   // Ground
 
   var plane =
-      new Mesh(new PlaneGeometry(40.0, 40.0), new MeshPhongMaterial(ambient: 0x999999, color: 0x999999, specular: 0x101010));
+      new Mesh(new PlaneGeometry(40.0, 40.0), new MeshPhongMaterial(color: 0x999999, specular: 0x101010));
   plane.rotation.x = -Math.PI / 2;
   plane.position.y = -0.5;
   scene.add(plane);
@@ -41,7 +41,7 @@ init() {
 
   loader.load('models/stl/ascii/slotted_disk.stl').then((geometry) {
 
-    var material = new MeshPhongMaterial(ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200.0);
+    var material = new MeshPhongMaterial(color: 0xff5533, specular: 0x111111, shininess: 200.0);
     var mesh = new Mesh(geometry, material);
 
     mesh.position.setValues(0.0, -0.25, 0.6);
@@ -57,7 +57,7 @@ init() {
 
   // Binary files
 
-  var material = new MeshPhongMaterial(ambient: 0x555555, color: 0xAAAAAA, specular: 0x111111, shininess: 200.0);
+  var material = new MeshPhongMaterial(color: 0xAAAAAA, specular: 0x111111, shininess: 200.0);
 
   loader = new STLLoader();
 
@@ -103,7 +103,7 @@ init() {
   renderer = new WebGLRenderer(antialias: true, alpha: false);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  renderer.setClearColor(scene.fog.color, 1);
+  renderer.setClearColor(scene.fog.color, 1.0);
 
   renderer.gammaInput = true;
   renderer.gammaOutput = true;

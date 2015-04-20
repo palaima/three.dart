@@ -21,17 +21,13 @@ List<double> noise;
 
 var rnd = new Math.Random();
 
-var WIDTH = window.innerWidth,
-    HEIGHT = window.innerHeight;
-
 void main() {
   init();
   animate(0);
 }
 
 void init() {
-
-  camera = new PerspectiveCamera(30.0, WIDTH / HEIGHT, 1.0, 10000.0)..position.z = 300.0;
+  camera = new PerspectiveCamera(30.0, window.innerWidth / window.innerHeight, 1.0, 10000.0)..position.z = 300.0;
 
   scene = new Scene();
 
@@ -73,14 +69,16 @@ void init() {
   noise = new List.generate(vertices.length, (_) => rnd.nextDouble() * 5);
   displacement.value.addAll(new List.filled(vertices.length, 0));
 
-  renderer = new WebGLRenderer(clearColorHex: 0x050505, clearAlpha: 1)..setSize(WIDTH, HEIGHT);
-
-  Element container = document.querySelector('#container')..children.add(renderer.domElement);
+  renderer = new WebGLRenderer()
+    ..setClearColor(0x050505)
+    ..setPixelRatio(window.devicePixelRatio)
+    ..setSize(window.innerWidth, window.innerHeight);
+  document.body.append(renderer.domElement);
 
   window.onResize.listen(onWindowResize);
 }
 
-onWindowResize(event) {
+void onWindowResize(event) {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
@@ -88,12 +86,12 @@ onWindowResize(event) {
 }
 
 
-animate(num time) {
+void animate(num time) {
   window.requestAnimationFrame(animate);
   render();
 }
 
-render() {
+void render() {
 
   var time = new DateTime.now().millisecondsSinceEpoch * 0.01;
 

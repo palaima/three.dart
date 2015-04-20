@@ -3,11 +3,48 @@ import 'dart:math' as Math;
 import 'package:three/three.dart';
 import 'package:three/extras/image_utils.dart' as ImageUtils;
 
-var container, camera, scene, renderer, sphere;
-var uniforms, amplitude, color;
-var attributes, size, customColor;
+final vertexShader = r'''
+uniform float amplitude;
+attribute float size;
+attribute vec3 customColor;
 
-var rnd = new Math.Random();
+varying vec3 vColor;
+
+void main() {
+  vColor = customColor;
+
+  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+
+  //gl_PointSize = size;
+  gl_PointSize = size * (300.0 / length(mvPosition.xyz));
+
+  gl_Position = projectionMatrix * mvPosition;
+}
+''';
+
+final fragmentShader = r'''
+uniform vec3 color;
+uniform sampler2D texture;
+
+varying vec3 vColor;
+
+void main() {
+  gl_FragColor = vec4(color * vColor, 1.0);
+  gl_FragColor = gl_FragColor * texture2D(texture, gl_PointCoord);
+}
+''';
+
+PerspectiveCamera camera;
+Scene scene;
+WebGLRenderer renderer;
+
+PointCloud sphere;
+
+Map<String, Uniform> uniforms;
+Uniform amplitude, color;
+
+Map<String, Attribute> attributes;
+Attribute size, customColor;
 
 void main() {
   init();
@@ -15,11 +52,8 @@ void main() {
 }
 
 void init() {
-
-  container = new Element.tag('div');
-  document.body.nodes.add(container);
-
-  camera = new PerspectiveCamera(40.0, window.innerWidth / window.innerHeight, 1.0, 10000.00)..position.z = 300.0;
+  camera = new PerspectiveCamera(40.0, window.innerWidth / window.innerHeight, 1.0, 10000.00)
+    ..position.z = 300.0;
 
   scene = new Scene();
 
@@ -43,33 +77,28 @@ void init() {
   var shaderMaterial = new ShaderMaterial(
       uniforms: uniforms,
       attributes: attributes,
-      vertexShader: querySelector('#vertexshader').text,
-      fragmentShader: querySelector('#fragmentshader').text,
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
       blending: AdditiveBlending,
       depthTest: false,
       transparent: true);
 
-
-
   var radius = 200.0;
   var geometry = new Geometry();
 
-  for (var i = 0; i < 100000; i++) {
+  var rnd = new Math.Random();
 
-    var vertex = new Vector3.zero();
-    vertex.x = rnd.nextDouble() * 2 - 1;
-    vertex.y = rnd.nextDouble() * 2 - 1;
-    vertex.z = rnd.nextDouble() * 2 - 1;
-    vertex.scale(radius);
+  for (var i = 0; i < 100000; i++) {
+    var vertex = new Vector3.zero()
+      ..x = rnd.nextDouble() * 2 - 1
+      ..y = rnd.nextDouble() * 2 - 1
+      ..z = rnd.nextDouble() * 2 - 1
+      ..scale(radius);
 
     geometry.vertices.add(vertex);
-
   }
 
   sphere = new PointCloud(geometry, shaderMaterial);
-
-  sphere.isDynamic = true;
-  //sphere.sortParticles = true;
 
   var vertices = sphere.geometry.vertices;
 
@@ -83,51 +112,41 @@ void init() {
     } else {
       customColor.value[v].setHSL(0.0 + 0.1 * (v / vertices.length), 0.9, 0.5);
     }
-
   }
 
   scene.add(sphere);
 
-  renderer = new WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  //renderer.sortObjects = false;
+  renderer = new WebGLRenderer()
+    ..setPixelRatio(window.devicePixelRatio)
+    ..setSize(window.innerWidth, window.innerHeight);
 
-  container.nodes.add(renderer.domElement);
+  document.body.append(renderer.domElement);
 
   window.onResize.listen(onWindowResize);
 }
 
-onWindowResize(event) {
-
+void onWindowResize(Event e) {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-animate(num time) {
+void animate(num time) {
   window.requestAnimationFrame(animate);
   render();
 }
 
-var start_time = null;
+void render() {
+  var time = new DateTime.now().millisecondsSinceEpoch * 0.005;
 
-render() {
-  if (start_time == null) {
-    start_time = new DateTime.now().millisecondsSinceEpoch;
-  }
-  var delta = new DateTime.now().millisecondsSinceEpoch - start_time,
-      delta_in_sec = delta * 0.001;
-
-  sphere.rotation.z = delta_in_sec * 0.05;
+  sphere.rotation.z = 0.01 * time;
 
   for (var i = 0; i < size.value.length; i++) {
-
-    size.value[i] = 14 + 13 * Math.sin(0.1 * i + (delta_in_sec * 5));
+    size.value[i] = 14 + 13 * Math.sin(0.1 * i + time);
   }
 
   size.needsUpdate = true;
 
   renderer.render(scene, camera);
-
 }

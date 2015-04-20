@@ -121,7 +121,7 @@ void init() {
 
   renderer = new WebGLRenderer(antialias: true)
       ..setSize(window.innerWidth, window.innerHeight)
-      ..setClearColor(new Color(0x000000), 1);
+      ..setClearColor(new Color(0x000000), 1.0);
 
   container.nodes.add(renderer.domElement);
 

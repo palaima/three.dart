@@ -34,7 +34,7 @@ void init() {
 
   scene = new Scene();
 
-  var material = new MeshNormalMaterial(shading: SmoothShading);
+  var material = new MeshNormalMaterial();
 
   var loader = new JSONLoader();
   loader.load('obj/Suzanne.js', (geometry) {
@@ -62,7 +62,7 @@ void init() {
 
   });
 
-  renderer = new WebGLRenderer(clearColorHex: 0xffffff);
+  renderer = new WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   container.children.add(renderer.domElement);
 

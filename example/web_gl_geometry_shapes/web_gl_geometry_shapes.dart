@@ -20,7 +20,7 @@ var mouseEvts = [];
 var targetRotation = 0;
 var targetRotationOnMouseDown = 0;
 
-Object3D group, text, plane;
+Group group;
 
 void main() {
   windowHalfX = window.innerWidth / 2;
@@ -44,8 +44,8 @@ void init() {
   var light = new PointLight(0xffffff, intensity: 0.8);
   camera.add(light);
 
-  group = new Object3D();
-  group.position.y = 50.0;
+  group = new Group()
+    ..position.y = 50.0;
   scene.add(group);
 
   addShape(Shape shape, color, x, y, z, rx, ry, rz, s,
@@ -252,8 +252,9 @@ void init() {
   addShape(splineShape,      0x808080,  -50, -100, 0, 0, 0, 0, 1);
   //
 
-  renderer = new WebGLRenderer()
-    ..setClearColorHex(0xf0f0f0, 1.0)
+  renderer = new WebGLRenderer(antialias: true)
+    ..setClearColor(new Color(0xf0f0f0))
+    ..setPixelRatio(window.devicePixelRatio)
     ..setSize(window.innerWidth, window.innerHeight);
 
   container.nodes.add(renderer.domElement);

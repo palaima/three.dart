@@ -148,8 +148,9 @@ void init() {
 
   //
 
-  renderer = new WebGLRenderer(antialias: false, clearColorHex: 0x050505, clearAlpha: 1, alpha: false);
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer = new WebGLRenderer(antialias: false, alpha: false)
+    ..setClearColor(0x050505, 1.0)
+    ..setSize(window.innerWidth, window.innerHeight);
 
   container.children.add(renderer.domElement);
 

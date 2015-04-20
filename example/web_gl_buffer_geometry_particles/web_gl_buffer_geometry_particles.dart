@@ -71,7 +71,7 @@ void init() {
   scene.add(particleSystem);
 
   renderer = new WebGLRenderer()
-      ..setClearColor(scene.fog.color, 1)
+      ..setClearColor(scene.fog.color, 1.0)
       ..setSize(window.innerWidth, window.innerHeight);
 
   container.children.add(renderer.domElement);

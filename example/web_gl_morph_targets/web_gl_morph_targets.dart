@@ -70,9 +70,10 @@ void init() {
   scene.add(mesh);
 
 
-  renderer = new WebGLRenderer(clearColorHex: 0x222222, clearAlpha: 1);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.sortObjects = false;
+  renderer = new WebGLRenderer()
+    ..setClearColor(0x222222, 1.0)
+    ..setSize(window.innerWidth, window.innerHeight)
+    ..sortObjects = false;
 
   container.nodes.add(renderer.domElement);
 

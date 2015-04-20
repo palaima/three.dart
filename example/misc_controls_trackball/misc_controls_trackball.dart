@@ -96,7 +96,7 @@ void init() {
   // Renderer
 
   renderer = new WebGLRenderer(antialias: false);
-  renderer.setClearColor(scene.fog.color, 1);
+  renderer.setClearColor(scene.fog.color, 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   container.nodes.add(renderer.domElement);

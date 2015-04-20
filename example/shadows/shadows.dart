@@ -73,7 +73,6 @@ init() {
   texture.repeat.setValues(0.7, 1.0);
   texture.wrapS = texture.wrapT = RepeatWrapping;
   var material = new MeshPhongMaterial(
-      ambient: 0x444444,
       color: 0x8844AA,
       shininess: 300.0,
       specular: 0x33AA33,
@@ -93,7 +92,6 @@ init() {
   texture.repeat.setValues(0.5, 0.8);
   texture.wrapS = texture.wrapT = RepeatWrapping;
   material = new MeshPhongMaterial(
-      ambient: 0x444444,
       color: 0x66aa66,
       shininess: 150.0,
       specular: 0x888888,

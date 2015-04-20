@@ -46,7 +46,7 @@ void init() {
     [new IcosahedronGeometry(100.0, 1), 2000.0],
     [new IcosahedronGeometry(100.0, 0), 8000.0]];
 
-  var material = new MeshLambertMaterial(color: 0xffffff, wireframe: true);
+  var material = new MeshLambertMaterial(color: 0xffffff, wireframe: false);
 
   for (var j = 0; j < 1000; j++) {
     var lod = new LOD();

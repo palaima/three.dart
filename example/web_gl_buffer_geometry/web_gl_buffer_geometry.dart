@@ -68,7 +68,9 @@ void init() {
   mesh = new Mesh(geometry, material);
   scene.add(mesh);
 
-  renderer = new WebGLRenderer(antialias: true)..setSize(window.innerWidth, window.innerHeight);
+  renderer = new WebGLRenderer(antialias: true)
+    ..setClearColor(0xffffff)
+    ..setSize(window.innerWidth, window.innerHeight);
 
   container.children.add(renderer.domElement);
 
