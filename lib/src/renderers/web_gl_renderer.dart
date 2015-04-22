@@ -2543,7 +2543,7 @@ class WebGLRenderer implements Renderer {
     if (texture.needsUpdate) {
       var image = texture.image;
 
-      if (!image.complete) {
+      if (image is ImageElement && !image.complete) {
         warn('WebGLRenderer: Texture marked for update but image is incomplete $texture');
         return;
       }
