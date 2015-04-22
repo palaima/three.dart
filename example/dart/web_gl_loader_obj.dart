@@ -10,12 +10,12 @@ var mouseX = 0,
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 
-main() {
-  init();
+main() async {
+  await init();
   animate(0);
 }
 
-init() {
+init() async {
   container = document.createElement('div');
   document.body.append(container);
 
@@ -51,14 +51,14 @@ init() {
   // model
 
   var loader = new OBJLoader(useMtl: false);
-  loader.load('obj/male02.obj').then((object) {
-    object.children.forEach((Object3D e) {
-      e.children.forEach((Object3D obj) {
-        if (obj is Mesh) {
-          (obj.material as MeshLambertMaterial).map = texture;
-        }
-      });
+  var object = await loader.load('obj/male02/male02.obj');
+  object.children.forEach((e) {
+    e.children.forEach((obj) {
+      if (obj is Mesh) {
+        (obj.material as MeshLambertMaterial).map = texture;
+      }
     });
+
     object.position.y = -80.0;
     scene.add(object);
   });

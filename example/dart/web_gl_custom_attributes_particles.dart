@@ -71,7 +71,7 @@ void init() {
   uniforms = {
     "amplitude": amplitude,
     "color": color,
-    "texture": new Uniform.texture(ImageUtils.loadTexture("spark1.png"))
+    "texture": new Uniform.texture(ImageUtils.loadTexture("textures/sprites/spark1.png"))
   };
 
   var shaderMaterial = new ShaderMaterial(

@@ -28,16 +28,15 @@ var text = "three.dart",
 
 var rnd = new Math.Random();
 
-Future loadFonts() =>
-    Future.wait(["fonts/helvetiker_regular.json"].map((path) => HttpRequest.getString(path).then((data) {
-  FontUtils.loadFace(JSON.decode(data));
-})));
+Future loadFonts() async {
+  var face = JSON.decode(await HttpRequest.getString("fonts/helvetiker_regular.typeface.json"));
+  FontUtils.loadFace(face);
+}
 
-void main() {
-  loadFonts().then((_) {
-    init();
-    animate(0);
-  });
+main() async {
+  await loadFonts();
+  init();
+  animate(0);
 }
 
 void init() {

@@ -36,7 +36,7 @@ init() {
 
   // model
   var loader = new OBJLoader();
-  loader.load('obj/male02.obj').then((object) {
+  loader.load('obj/male02/male02.obj').then((object) {
     object.position.y = -80.0;
     scene.add(object);
   });
