@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>WebGL - Custom Attributes Lines</title>
+    <title>WebGL - Performance</title>
   <style>
     body {
         color: #ffffff;
@@ -24,22 +24,21 @@
   </head>
   <body>
     <div id="info"><a href="http://threedart.github.io/three.dart/" target="_blank">three.dart</a> - custom attributes example</div>
-    <div id="container"></div>
     <script type="x-shader/x-vertex" id="vertexshader">
 
       uniform float amplitude;
 
-      attribute vec3 displacement;
-      attribute vec3 customColor;
+      attribute float displacement;
 
-      varying vec3 vColor;
+      varying vec3 vNormal;
+      varying vec2 vUv;
 
       void main() {
 
-        vec3 newPosition = position + amplitude * displacement;
+        vNormal = normal;
+        vUv = ( 0.5 + amplitude ) * uv + vec2( amplitude );
 
-        vColor = customColor;
-
+        vec3 newPosition = position + amplitude * normal * vec3( displacement );
         gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
 
       }
@@ -48,19 +47,28 @@
 
     <script type="x-shader/x-fragment" id="fragmentshader">
 
-      uniform vec3 color;
-      uniform float opacity;
+      varying vec3 vNormal;
+      varying vec2 vUv;
 
-      varying vec3 vColor;
+      uniform vec3 color;
+      uniform sampler2D texture;
 
       void main() {
 
-        gl_FragColor = vec4( vColor * color, opacity );
+        vec3 light = vec3( 0.5, 0.2, 1.0 );
+        light = normalize( light );
+
+        float dProd = dot( vNormal, light ) * 0.5 + 0.5;
+
+        vec4 tcolor = texture2D( texture, vUv );
+        vec4 gray = vec4( vec3( tcolor.r * 0.3 + tcolor.g * 0.59 + tcolor.b * 0.11 ), 1.0 );
+
+        gl_FragColor = gray * vec4( vec3( dProd ) * vec3( color ), 1.0 );
 
       }
 
     </script>
-    <script type="application/dart" src="dart/web_gl_custom_attributes_lines.dart"></script>
+    <script type="application/dart" src="dart/webgl_custom_attributes.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>
 </html>
