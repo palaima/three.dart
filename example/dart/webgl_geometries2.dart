@@ -33,7 +33,7 @@ void init() {
   scene.add(new DirectionalLight(0xffffff)
     ..position = new Vector3(0.0, 0.0, 1.0));
 
-  var map = ImageUtils.loadTexture('UV_Grid_Sm.jpg');
+  var map = ImageUtils.loadTexture('textures/UV_Grid_Sm.jpg');
   map.wrapS = map.wrapT = RepeatWrapping;
   map.anisotropy = 16;
 

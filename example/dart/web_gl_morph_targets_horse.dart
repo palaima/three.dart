@@ -37,7 +37,7 @@ void init() {
   scene.add(light);
 
   var loader = new JSONLoader(showStatus: true);
-  loader.load("horse.js", (geometry) {
+  loader.load("models/animated/horse.js", (geometry) {
 
     mesh = new Mesh(geometry, new MeshLambertMaterial(color: 0x606060, morphTargets: true));
     mesh.scale.setValues(1.5, 1.5, 1.5);
