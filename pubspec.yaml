@@ -15,6 +15,7 @@ dependencies:
   browser: '>=0.9.0 <0.11.0'
   datgui:
     git: git://github.com/cgrabowski/datgui.git
+  http: any
   stats:
     git: git://github.com/Dartist/stats.dart.git
 dev_dependencies:
