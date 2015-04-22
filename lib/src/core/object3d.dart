@@ -1,12 +1,10 @@
 /*
- * @author mr.doob / http://mrdoob.com/
+ * @author mrdoob / http://mrdoob.com/
  * @author mikael emtinger / http://gomo.se/
  * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
  *
- * Ported to Dart from JS by:
- * @author rob silverton / http://www.unwrong.com/
- *
- * based on r68
+ * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
 part of three;
@@ -34,6 +32,8 @@ class Object3D {
   /// Optional name of the object (doesn't need to be unique).
   String name = '';
 
+  String type = 'Object3D';
+
   /// Object's parent in the scene graph.
   Object3D parent;
 
@@ -54,9 +54,6 @@ class Object3D {
 
   /// Object's local scale.
   Vector3 scale = new Vector3(1.0, 1.0, 1.0);
-
-  /// Override depth-sorting order if non null.
-  double renderDepth;
 
   /// When set, the rotationMatrix gets calculated every frame.
   bool rotationAutoUpdate = true;
@@ -94,24 +91,9 @@ class Object3D {
   /// It should not hold references to functions as these will not be cloned.
   Map userData = {};
 
-  // WebGL
-  bool __webglInit = false;
-  bool __webglActive = false;
-  var immediateRenderCallback;
+  Function immediateRenderCallback;
 
-  Matrix4 _modelViewMatrix;
-  Matrix3 _normalMatrix;
-
-  int count;
-  bool hasPositions, hasNormals, hasUvs, hasColors;
-  var positionArray, normalArray, uvArray, colorArray;
-  gl.Buffer __webglVertexBuffer, __webglNormalBuffer, __webglUVBuffer, __webglColorBuffer;
-
-  var __webglMorphTargetInfluences;
-
-  // TODO remove these
-  num boundRadius, boundRadiusScale;
-  Matrix4 matrixRotationWorld = new Matrix4.identity();
+  // Streams
 
   StreamController _onObjectAddedController = new StreamController.broadcast();
   Stream get onObjectAdded => _onObjectAddedController.stream;
@@ -126,7 +108,19 @@ class Object3D {
   StreamController _onRemovedFromSceneController = new StreamController.broadcast();
   Stream get onRemovedFromScene => _onRemovedFromSceneController.stream;
 
-  ShaderMaterial customDepthMaterial;
+  // WebGL
+
+  bool __webglInit = false;
+  bool __webglActive = false;
+
+  Matrix4 _modelViewMatrix;
+  Matrix3 _normalMatrix;
+  int _count;
+  bool _hasPositions, _hasNormals, _hasUvs, _hasColors;
+  TypedData _positionArray, _normalArray, _uvArray, _colorArray;
+  gl.Buffer __webglVertexBuffer, __webglNormalBuffer, __webglUVBuffer, __webglColorBuffer;
+
+  var __webglMorphTargetInfluences;
 
   /// The constructor takes no arguments.
   Object3D() {
@@ -212,7 +206,6 @@ class Object3D {
     quaternion.setFromRotation(lookAt.getRotation());
   }
 
-  // based on a5cc2899aafab2461c52e4b63498fb284d0c167b
   /// Adds [object] as child of this object.
   Object3D add(Object3D object) {
     if (object == this) {
@@ -232,7 +225,6 @@ class Object3D {
     return this;
   }
 
-  // based on a5cc2899aafab2461c52e4b63498fb284d0c167b
   /// Removes [object] as child of this object.
   void remove(Object3D object) {
     if (children.contains(object)) {
@@ -243,74 +235,22 @@ class Object3D {
     }
   }
 
-  raycast(raycaster, intersects) {
-    throw new UnimplementedError();
-  }
+  Object3D getObjectById(int id) => getObjectByProperty('id', id);
 
-  /// Executes [callback] on this object and all descendants.
-  void traverse(void callback(Object3D obj)) {
-    callback(this);
-    children.forEach((child) => child.traverse(callback));
-  }
+  Object3D getObjectByName(String name) => getObjectByProperty('name', name);
 
-  void traverseVisible(void callback(Object3D obj)) {
-    if (!visible) return;
-    callback(this);
-    children.forEach((child) => child.traverseVisible(callback));
-  }
-
-  /// Searches through the object's children and returns the first with a matching [id],
-  /// optionally [recursive].
-  Object3D getObjectById(int id, [bool recursive = false]) {
-    children.forEach((child) {
-      if (child.id == id) return child;
-
-      if (recursive) {
-        child = child.getObjectById(id, recursive);
-        if (child != null) return child;
-      }
-    });
-
-    return null;
-  }
-
-  /// Searches through the object's children and returns the first with a matching [name],
-  /// optionally [recursive].
-  Object3D getObjectByName(String name, [bool recursive = false]) {
-    children.forEach((child) {
-      if (child.name == name) return child;
-
-      if (recursive) {
-        child = child.getObjectByName(name, recursive);
-        if (child != null) return child;
-      }
-    });
-
-    return null;
-  }
-
-  void updateMatrix() {
-    matrix.setFromTranslationRotationScale(position, quaternion, scale);
-    matrixWorldNeedsUpdate = true;
-  }
-
-  void updateMatrixWorld({bool force: false}) {
-    if (matrixAutoUpdate) updateMatrix();
-
-    if (matrixWorldNeedsUpdate || force) {
-      if (parent == null) {
-        matrixWorld.setFrom(matrix);
-      } else {
-        matrixWorld = parent.matrixWorld * matrix;
-      }
-
-      matrixWorldNeedsUpdate = false;
-
-      force = true;
+  Object3D getObjectByProperty(String name, value) {
+    if ((name == 'id' && this.id == value) ||
+        (name == 'name' && this.name == value)) {
+      return this;
     }
 
-    // update children
-    children.forEach((child) => child.updateMatrixWorld(force: force));
+    children.forEach((child) {
+      var object = child.getObjectByProperty(name, value);
+      if (object != null) return object;
+    });
+
+    return null;
   }
 
   Vector3 getWorldPosition() {
@@ -347,6 +287,61 @@ class Object3D {
 
   Vector3 getWorldDirection() => new Vector3(0.0, 0.0, 1.0)..applyQuaternion(getWorldQuaternion());
 
+  raycast(raycaster, intersects) {
+    throw new UnimplementedError();
+  }
+
+  /// Executes [callback] on this object and all descendants.
+  void traverse(void callback(Object3D obj)) {
+    callback(this);
+    children.forEach((child) => child.traverse(callback));
+  }
+
+  /// Like [traverse], except that [callback] is only executed on visible objects.
+  void traverseVisible(void callback(Object3D obj)) {
+    if (!visible) return;
+    callback(this);
+    children.forEach((child) => child.traverseVisible(callback));
+  }
+
+  void traverseAncestors(void callback(Object3D obj)) {
+    if (parent != null) {
+      callback(parent);
+      parent.traverseAncestors(callback);
+    }
+  }
+
+
+  /// Updates local transform.
+  void updateMatrix() {
+    matrix.setFromTranslationRotationScale(position, quaternion, scale);
+    matrixWorldNeedsUpdate = true;
+  }
+
+  /// Updates global transform of the object and its children.
+  void updateMatrixWorld({bool force: false}) {
+    if (matrixAutoUpdate) updateMatrix();
+
+    if (matrixWorldNeedsUpdate || force) {
+      if (parent == null) {
+        matrixWorld.setFrom(matrix);
+      } else {
+        matrixWorld = parent.matrixWorld * matrix;
+      }
+
+      matrixWorldNeedsUpdate = false;
+
+      force = true;
+    }
+
+    // update children
+    children.forEach((child) => child.updateMatrixWorld(force: force));
+  }
+
+  toJSON() {
+    throw new UnimplementedError();
+  }
+
   /// Creates a new clone of this object and all descendants.
   Object3D clone([Object3D object, bool recursive = true]) {
     if (object == null) object = new Object3D();
@@ -359,8 +354,6 @@ class Object3D {
       ..position.setFrom(position)
       ..quaternion.setFrom(quaternion)
       ..scale.setFrom(scale)
-
-      ..renderDepth = renderDepth
 
       ..rotationAutoUpdate = rotationAutoUpdate
 
@@ -385,9 +378,4 @@ class Object3D {
 
     return object;
   }
-
-  // Quick hack to allow setting new properties (used by the renderer)
-  Map __data = {};
-  operator [](String key) => __data[key];
-  operator []=(String key, value) => __data[key] = value;
 }
