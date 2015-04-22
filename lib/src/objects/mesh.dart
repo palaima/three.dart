@@ -13,7 +13,7 @@ part of three;
 class Mesh extends Object3D implements GeometryMaterialObject {
   String type = 'Mesh';
 
-  Geometry geometry;
+  IGeometry geometry;
 
   /// Defines the object's appearance.
   /// Default is a MeshBasicMaterial with wireframe mode enabled and randomised colour.
@@ -24,7 +24,7 @@ class Mesh extends Object3D implements GeometryMaterialObject {
   List morphTargetInfluences;
   Map  morphTargetDictionary;
 
-  Mesh([Geometry geometry, Material material]) : super() {
+  Mesh([IGeometry geometry, Material material]) : super() {
     this.geometry = geometry != null ? geometry : new Geometry();
     this.material = material != null
         ? material

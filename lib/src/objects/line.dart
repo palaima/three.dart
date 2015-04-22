@@ -25,7 +25,7 @@ part of three;
 class Line extends Object3D implements GeometryMaterialObject {
   String type = 'Line';
 
-  Geometry geometry;
+  IGeometry geometry;
   Material material;
 
   /// GL immediate mode ([LinePiece] or [LineStrip]).
@@ -35,7 +35,7 @@ class Line extends Object3D implements GeometryMaterialObject {
   int mode;
 
   /// Creates a new [Line].
-  Line([Geometry geometry, Material material, this.mode = LineStrip]) : super() {
+  Line([IGeometry geometry, Material material, this.mode = LineStrip]) : super() {
     this.geometry = geometry != null ? geometry : new Geometry();
     this.material = material != null ? material : new LineBasicMaterial(color: new Math.Random().nextInt(0xffffff));
   }

@@ -100,7 +100,7 @@ void init() {
 
   sphere = new PointCloud(geometry, shaderMaterial);
 
-  var vertices = sphere.geometry.vertices;
+  var vertices = (sphere.geometry as Geometry).vertices;
 
   for (var v = 0; v < vertices.length; v++) {
 

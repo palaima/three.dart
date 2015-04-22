@@ -7,7 +7,7 @@
 
 part of three;
 
-class BufferGeometry extends Object with DisposeStream implements Geometry {
+class BufferGeometry extends Object with DisposeStream implements IGeometry {
   static int maxIndex = 65535;
 
   int id = GeometryIdCount++;

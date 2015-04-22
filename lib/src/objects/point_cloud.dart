@@ -1,12 +1,12 @@
 part of three;
 
 class PointCloud extends Object3D implements GeometryMaterialObject {
-  Geometry geometry;
+  IGeometry geometry;
   Material material;
 
   bool sortParticles;
 
-  PointCloud(Geometry geometry, [Material material = null])
+  PointCloud(IGeometry geometry, [Material material = null])
       : sortParticles = false,
         super() {
     if (material == null) {

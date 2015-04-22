@@ -13,9 +13,20 @@ part of three;
  * based on r70
  */
 
+abstract class IGeometry {
+  int id;
+  String uuid;
+  String type;
+  List<MorphTarget> morphTargets;
+  List<MorphColor> morphColors;
+  List<MorphNormal> morphNormals;
+  Sphere boundingSphere;
+  void computeBoundingSphere();
+}
+
 /// Base class for geometries.
 /// A geometry holds all data necessary to describe a 3D model.
-class Geometry extends Object with DisposeStream { // TODO Create a IGeometry with only the necessary interface methods
+class Geometry extends Object with DisposeStream implements IGeometry {
   /// Unique number of this object instance.
   int id = GeometryIdCount++;
 

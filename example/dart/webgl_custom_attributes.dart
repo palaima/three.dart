@@ -64,7 +64,7 @@ void init() {
 
   scene.add(sphere);
 
-  var vertices = sphere.geometry.vertices;
+  var vertices = (sphere.geometry as Geometry).vertices;
 
   noise = new List.generate(vertices.length, (_) => rnd.nextDouble() * 5);
   displacement.value.addAll(new List.filled(vertices.length, 0));
