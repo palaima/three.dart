@@ -4,7 +4,7 @@
 
 part of three;
 
-class DynamicGeometry extends Object with DisposeStream {
+class DynamicGeometry extends Object with DisposeStream implements IGeometry {
   int id = GeometryIdCount++;
 
   String uuid = ThreeMath.generateUUID();
@@ -12,11 +12,11 @@ class DynamicGeometry extends Object with DisposeStream {
   String name = '';
   String type = 'DynamicGeometry';
 
-  List vertices = [];
-  List colors = [];
-  List normals = [];
-  List uvs = [];
-  List faces = [];
+  List<Vector3> vertices = [];
+  List<Vector3> colors = [];
+  List<Vector3> normals = [];
+  List<Vector2> uvs = [];
+  List<Face3> faces = [];
 
   /*
   List morphTargets = [];
@@ -37,8 +37,11 @@ class DynamicGeometry extends Object with DisposeStream {
   bool colorsNeedUpdate = false;
   bool uvsNeedUpdate = false;
 
-  StreamController _onDisposeController = new StreamController();
-  Stream get onDispose => _onDisposeController.stream;
+  DynamicGeometry();
+
+  DynamicGeometry.fromGeometry(Geometry geometry) {
+    setFromGeometry(geometry);
+  }
 
   /// Computes bounding box of the geometry, updating Geometry.boundingBox.
   void computeBoundingBox() {
@@ -67,7 +70,7 @@ class DynamicGeometry extends Object with DisposeStream {
   }
 
   void computeVertexNormals() {
-    warn('DynamicGeometry: computeVertexNormals  () is not a method of this type of geometry.');
+    warn('DynamicGeometry: computeVertexNormals() is not a method of this type of geometry.');
   }
 
   void setFromGeometry(Geometry geometry) {
@@ -76,6 +79,8 @@ class DynamicGeometry extends Object with DisposeStream {
 
     var faces = geometry.faces;
     var faceVertexUvs = geometry.faceVertexUvs[0];
+
+    normals.length = colors.length = uvs.length = geometry._maxFaceIndex;
 
     for (var i = 0; i < faces.length; i++) {
       var face = faces[i];
@@ -97,6 +102,8 @@ class DynamicGeometry extends Object with DisposeStream {
         uvs[indices[j]] = vertexUvs[j];
       }
     }
+
+    if (colors.any((e) => e == null)) colors.length = 0;
   }
 
   void dispose() {

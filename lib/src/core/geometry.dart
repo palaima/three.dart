@@ -21,6 +21,11 @@ abstract class IGeometry {
   List<MorphColor> morphColors;
   List<MorphNormal> morphNormals;
   Sphere boundingSphere;
+
+  bool verticesNeedUpdate;
+
+  List<Vector3> vertices;
+
   void computeBoundingSphere();
 }
 
@@ -128,8 +133,6 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   bool lineDistancesNeedUpdate = false;
 
   bool groupsNeedUpdate = false;
-
-  int maxInstancedCount;
 
   /// Bakes matrix transform directly into vertex coordinates.
   void applyMatrix(Matrix4 matrix) {
@@ -573,6 +576,16 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     }
 
     return geometry;
+  }
+
+  // Used in DynamicGeometry
+  int get _maxFaceIndex {
+    var maxIndex = 0;
+    faces.forEach((face) {
+      var max = face.indices.reduce(Math.max);
+      if (max > maxIndex) maxIndex = max;
+    });
+    return maxIndex + 1;
   }
 }
 
