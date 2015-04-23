@@ -35,7 +35,7 @@ class ExtrudeGeometry extends Geometry {
 
   ExtrudeGeometry(shapes, {int curveSegments: 12, int steps: 1, int amount: 100, bool bevelEnabled: true,
     double bevelThickness: 6.0, double bevelSize, int bevelSegments: 3,
-    Curve extrudePath, TubeGeometryFrenetFrames frames, int material, int extrudeMaterial, ExtrudeGeometryWorldUVGenerator uvGenerator}) : super() {
+    Curve extrudePath, TubeGeometryFrenetFrames frames, WorldUVGenerator uvGenerator}) : super() {
 
     if (bevelSize == null) bevelSize = bevelThickness - 2.0;
 
@@ -47,21 +47,17 @@ class ExtrudeGeometry extends Geometry {
     this.shapes = shapes is! List ? [shapes] : shapes;
 
     addShapeList(this.shapes, curveSegments, steps, amount, bevelEnabled, bevelThickness, bevelSize, bevelSegments,
-        extrudePath, frames, material, extrudeMaterial, uvGenerator);
+        extrudePath, frames, uvGenerator);
 
-    computeCentroids();
     computeFaceNormals();
   }
 
   void addShapeList(shapes, curveSegments, steps, amount, bevelEnabled, bevelThickness, bevelSize, bevelSegments,
-                    extrudePath, frames, material, extrudeMaterial, uvGenerator) {
-    var sl = shapes.length;
-
-    for (var s = 0; s < sl; s++) {
-      var shape = shapes[s];
+                    extrudePath, frames, uvGenerator) {
+    shapes.forEach((shape) {
       addShape(shape, curveSegments, steps, amount, bevelEnabled, bevelThickness, bevelSize, bevelSegments,
-               extrudePath, frames, material, extrudeMaterial, uvGenerator);
-    }
+               extrudePath, frames, uvGenerator);
+    });
   }
 
   // addShape Helpers
@@ -111,7 +107,7 @@ class ExtrudeGeometry extends Geometry {
       // scaling factor for v_prev to intersection point
 
       var sf = ((ptNextShift_x - ptPrevShift_x) * v_next_y -
-            (ptNextShift_y - ptPrevShift_y) * v_next_x  ) /
+            (ptNextShift_y - ptPrevShift_y) * v_next_x ) /
             (v_prev_x * v_next_y - v_prev_y * v_next_x);
 
       // vector from inPt to intersection point
@@ -159,8 +155,8 @@ class ExtrudeGeometry extends Geometry {
     vertices.add(new Vector3(x, y, z));
   }
 
-  void addShape(Shape shape, curveSegments, steps, amount, bevelEnabled, bevelThickness, bevelSize, bevelSegments,
-                extrudePath, frames, material, extrudeMaterial, uvGenerator) {
+  void addShape(Shape shape, int curveSegments, int steps, int amount, bool bevelEnabled, bevelThickness, bevelSize, bevelSegments,
+                extrudePath, frames, WorldUVGenerator uvGenerator) {
     var extrudePts,
         extrudeByPath = false;
 
@@ -170,7 +166,7 @@ class ExtrudeGeometry extends Geometry {
     TubeGeometryFrenetFrames splineTube;
 
     if (extrudePath != null) {
-      extrudePts = extrudePath.getSpacedPoints( steps );
+      extrudePts = extrudePath.getSpacedPoints(steps);
 
       extrudeByPath = true;
       bevelEnabled = false; // bevels not supported for path extrusion
@@ -384,27 +380,27 @@ class ExtrudeGeometry extends Geometry {
 
     /////  Internal functions
 
-    f3(a, b, c) {
+    f3(int a, int b, int c) {
       a += shapesOffset;
       b += shapesOffset;
       c += shapesOffset;
 
       // normal, color, material
-      this.faces.add(new Face3(a, b, c, materialIndex: material));
+      this.faces.add(new Face3(a, b, c));
 
       var uvs = uvgen.generateTopUV(this, a, b, c);
 
       this.faceVertexUvs[0].add(uvs);
     }
 
-    f4(a, b, c, d, wallContour, stepIndex, stepsLength) {
+    f4(int a, int b, int c, int d) {
       a += shapesOffset;
       b += shapesOffset;
       c += shapesOffset;
       d += shapesOffset;
 
-      this.faces.add(new Face3(a, b, d, materialIndex: extrudeMaterial));
-      this.faces.add(new Face3(b, c, d, materialIndex: extrudeMaterial));
+      this.faces.add(new Face3(a, b, d));
+      this.faces.add(new Face3(b, c, d));
 
       var uvs = uvgen.generateSideWallUV(this, a, b, c, d);
 
@@ -469,7 +465,7 @@ class ExtrudeGeometry extends Geometry {
               c = layeroffset + k + slen2,
               d = layeroffset + j + slen2;
 
-          f4(a, b, c, d, contour, s, sl);
+          f4(a, b, c, d);
         }
       }
     }
@@ -491,7 +487,12 @@ class ExtrudeGeometry extends Geometry {
   }
 }
 
-class ExtrudeGeometryWorldUVGenerator {
+abstract class WorldUVGenerator {
+  List<Vector2> generateTopUV(Geometry geometry, int indexA, int indexB, int indexC);
+  List<Vector2> generateSideWallUV(Geometry geometry, int indexA, int indexB, int indexC, int indexD);
+}
+
+class ExtrudeGeometryWorldUVGenerator implements WorldUVGenerator {
   List<Vector2> generateTopUV(Geometry geometry, int indexA, int indexB, int indexC) {
     var vertices = geometry.vertices;
 

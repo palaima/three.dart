@@ -86,8 +86,6 @@ void init() {
       curveSegments,
       1,
       null,
-      0,
-      1,
       size,
       font,
       weight,

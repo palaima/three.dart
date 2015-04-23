@@ -4,7 +4,7 @@ class TextGeometry extends ExtrudeGeometry {
   factory TextGeometry(String text, [num height = 50, // height <=> amount,
   bool bend = false, // ExtrudeGeometry parameters
   double bevelThickness = 10.0, num bevelSize = 8, int bevelSegments = 3, bool bevelEnabled = false, int curveSegments = 12,
-      int steps = 1, extrudePath, int material, int extrudeMaterial, // FontUtils.generateShapes parameters
+      int steps = 1, extrudePath, // FontUtils.generateShapes parameters
   int size = 100, String font = "helvetiker", String weight = "normal", String style = "normal"]) {
 
     var textShapes = FontUtils.generateShapes(text, size, curveSegments, font, weight, style);
@@ -29,13 +29,11 @@ class TextGeometry extends ExtrudeGeometry {
         curveSegments,
         steps,
         bendPath,
-        extrudePath,
-        material,
-        extrudeMaterial);
+        extrudePath);
   }
 
   TextGeometry._internal(shapes, amount, bevelThickness, bevelSize, bevelSegments, bevelEnabled, curveSegments, steps,
-      bendPath, extrudePath, material, extrudeMaterial)
+      bendPath, extrudePath)
       : super(
           shapes,
           amount: amount,
@@ -45,7 +43,5 @@ class TextGeometry extends ExtrudeGeometry {
           bevelEnabled: bevelEnabled,
           curveSegments: curveSegments,
           steps: steps,
-          extrudePath: extrudePath,
-          material: material,
-          extrudeMaterial: extrudeMaterial);
+          extrudePath: extrudePath);
 }

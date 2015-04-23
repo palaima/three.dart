@@ -78,7 +78,6 @@ class JSONLoader extends Loader {
     _parseSkin(json, geometry);
     _parseMorphing(json, geometry, scale);
 
-    geometry.computeCentroids();
     geometry.computeFaceNormals();
 
     if (_hasNormals(geometry)) geometry.computeTangents();
@@ -145,8 +144,8 @@ class JSONLoader extends Loader {
 
         if (hasMaterial) {
           var materialIndex = faces[offset ++];
-          faceA.materialIndex = materialIndex;
-          faceB.materialIndex = materialIndex;
+          //faceA.materialIndex = materialIndex;
+          //faceB.materialIndex = materialIndex;
         }
 
         // to get face <=> uv index correspondence
@@ -232,7 +231,7 @@ class JSONLoader extends Loader {
 
         if (hasMaterial) {
           var materialIndex = faces[offset ++];
-          face.materialIndex = materialIndex;
+          //face.materialIndex = materialIndex;
         }
 
         // to get face <=> uv index correspondence

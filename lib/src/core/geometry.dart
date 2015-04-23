@@ -210,18 +210,6 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     return this;
   }
 
-  void computeCentroids() {
-    faces.forEach((face) {
-      face.centroid.setValues(0.0, 0.0, 0.0);
-
-      face.indices.forEach((idx) {
-        face.centroid.add(vertices[idx]);
-      });
-
-      face.centroid /= 3.0;
-    });
-  }
-
   Vector3 center() {
     computeBoundingBox();
 
@@ -586,11 +574,6 @@ class Geometry extends Object with DisposeStream implements IGeometry {
 
     return geometry;
   }
-
-  // Quick hack to allow setting new properties (used by the renderer)
-  Map _data = {};
-  operator [](String key) => _data[key];
-  operator []=(String key, value) => _data[key] = value;
 }
 
 class MorphTarget {

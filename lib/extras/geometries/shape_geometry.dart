@@ -1,6 +1,4 @@
-part of three;
-
-/**
+/*
  * @author jonobr1 / http://jonobr1.com
  *
  * Creates a one-sided polygonal geometry from a path shape. Similar to
@@ -14,14 +12,16 @@ part of three;
  *  uvGenerator: <Object> // object that provides UV generator functions
  *
  * }
- **/
+ */
+
+part of three;
 
 class ShapeGeometry extends Geometry {
   String type = 'ShapeGeometry';
 
   List<Shape> shapes;
 
-  ShapeGeometry(shapes, {int curveSegments: 12, int material, ExtrudeGeometryWorldUVGenerator uvGenerator})
+  ShapeGeometry(shapes, {int curveSegments: 12, WorldUVGenerator uvGenerator})
       : super() {
 
     if (shapes == null) {
@@ -31,32 +31,25 @@ class ShapeGeometry extends Geometry {
 
     this.shapes = shapes is! List ? [shapes] : shapes;
 
-    addShapeList(this.shapes, curveSegments, material, uvGenerator);
+    addShapeList(this.shapes, curveSegments: curveSegments, uvGenerator: uvGenerator);
 
-    computeCentroids();
     computeFaceNormals();
   }
 
-  void addShapeList(List<Shape> shapes, num curveSegments, int material, [ExtrudeGeometryWorldUVGenerator uvGenerator]) {
-    var sl = shapes.length;
-
-    for (var s = 0; s < sl; s++) {
-      var shape = shapes[s];
-      addShape(shape, curveSegments, material, uvGenerator);
-    }
+  void addShapeList(List<Shape> shapes, {int curveSegments, WorldUVGenerator uvGenerator}) {
+    shapes.forEach((shape) => addShape(shape, curveSegments: curveSegments, uvGenerator: uvGenerator));
   }
 
-  void addShape(Shape shape, num curveSegments, int material, [ExtrudeGeometryWorldUVGenerator uvGenerator]) {
-    curveSegments = curveSegments != null ? curveSegments : 12;
-    var uvgen = uvGenerator == null ? new ExtrudeGeometryWorldUVGenerator() : uvGenerator;
+  void addShape(Shape shape, {int curveSegments: 12, WorldUVGenerator uvGenerator}) {
+    var uvgen = uvGenerator != null ? uvGenerator : new ExtrudeGeometryWorldUVGenerator();
 
     //
 
     var shapesOffset = this.vertices.length;
     var shapePoints = shape.extractPoints(curveSegments);
 
-    var vertices = shapePoints['shape'];
-    var holes = shapePoints['holes'];
+    List vertices = shapePoints['shape'];
+    List holes = shapePoints['holes'];
 
     var reverse = !ShapeUtils.isClockWise(vertices);
 
@@ -65,7 +58,7 @@ class ShapeGeometry extends Geometry {
 
       // Maybe we should also check if holes are in the opposite direction, just to be safe...
 
-      for (var i = 0, l = holes.length; i < l; i ++) {
+      for (var i = 0; i < holes.length; i++) {
         var hole = holes[i];
 
         if (ShapeUtils.isClockWise(hole)) {
@@ -80,32 +73,20 @@ class ShapeGeometry extends Geometry {
 
     // Vertices
 
-    for (var i = 0, l = holes.length; i < l; i ++) {
-      var hole = holes[i];
-      vertices.addAll(hole);
-    }
+    holes.forEach((hole) => vertices.addAll(hole));
 
     //
 
-    var vlen = vertices.length;
-    var flen = faces.length;
+    vertices.forEach((vertex) =>  this.vertices.add(new Vector3(vertex.x, vertex.y, 0.0)));
 
-    for (var i = 0; i < vlen; i ++) {
-      var vert = vertices[i];
-
-      this.vertices.add(new Vector3(vert.x, vert.y, 0.0));
-    }
-
-    for (var i = 0; i < flen; i ++) {
-      var face = faces[i];
-
+    faces.forEach((face) {
       var a = face[0] + shapesOffset;
       var b = face[1] + shapesOffset;
       var c = face[2] + shapesOffset;
 
-      this.faces.add(new Face3(a, b, c, materialIndex: material));
+      this.faces.add(new Face3(a, b, c));
       this.faceVertexUvs[0].add(uvgen.generateTopUV(this, a, b, c));
-    }
+    });
   }
 }
 

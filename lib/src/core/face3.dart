@@ -14,10 +14,6 @@ class Face3 {
 
   List vertexTangents = [];
 
-  int materialIndex;
-
-  Vector3 centroid = new Vector3.zero(); // TODO remove this
-
   /// Vertex A index.
   int get a => indices[0];
 
@@ -42,7 +38,7 @@ class Face3 {
     indices[2] = i;
   }
 
-  Face3(int a, int b, int c, {normal, color, this.materialIndex})
+  Face3(int a, int b, int c, {normal, color})
       : indices = new Int32List.fromList([a, b, c]) {
     this.normal = normal is Vector3 ? normal : new Vector3.zero();
     vertexNormals = normal is List ? normal : [];
@@ -54,8 +50,7 @@ class Face3 {
   Face3 clone() {
     var face = new Face3(indices[0], indices[1], indices[2])
       ..normal.setFrom(normal)
-      ..color.setFrom(color)
-      ..materialIndex = materialIndex;
+      ..color.setFrom(color);
 
     for (var i = 0; i < vertexNormals.length; i++) {
       face.vertexNormals[i] = vertexNormals[i].clone();
