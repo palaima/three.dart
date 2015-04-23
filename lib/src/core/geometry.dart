@@ -454,7 +454,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
         faceCopy.vertexColors.add(color.clone());
       }
 
-      faceCopy.materialIndex = face.materialIndex + materialIndexOffset;
+      //faceCopy.materialIndex = face.materialIndex + materialIndexOffset;
 
       faces1.add(faceCopy);
     }
