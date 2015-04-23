@@ -10,7 +10,7 @@ PerspectiveCamera camera;
 Scene scene;
 CanvasRenderer renderer;
 
-CubeGeometry geometry;
+BoxGeometry geometry;
 Object3D group;
 
 num mouseX = 0,
@@ -48,7 +48,7 @@ void init() {
     materials.add(new MeshBasicMaterial(color: rnd.nextDouble() * 0xffffff));
   }
 
-  geometry = new CubeGeometry(100.0, 100.0, 100.0);
+  geometry = new BoxGeometry(100.0, 100.0, 100.0);
   MeshNormalMaterial material = new MeshNormalMaterial();
 
   group = new Object3D();

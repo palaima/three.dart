@@ -69,7 +69,7 @@ void init() {
   }
 
   cube = new Mesh(
-      new CubeGeometry(200.0, 200.0, 200.0, 1, 1, 1, materials),
+      new BoxGeometry(200.0, 200.0, 200.0, 1, 1, 1, materials),
       new MeshFaceMaterial(materials));// { 'overdraw' : true }) );
   cube.position.y = 150.0;
   //cube.overdraw = true; //TODO where is this prop?

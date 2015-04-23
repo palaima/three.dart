@@ -62,7 +62,7 @@ void init() {
 
   // Cubes
 
-  geometry = new CubeGeometry(50.0, 50.0, 50.0);
+  geometry = new BoxGeometry(50.0, 50.0, 50.0);
   material = new MeshLambertMaterial(color: 0xffffff, overdraw: 1.0);
 
   var rnd = new Math.Random();

@@ -55,7 +55,7 @@ void init() {
   scene.add(new Mesh(new PlaneGeometry(100.0, 100.0, 4, 4), material)
     ..position.setValues(-400.0, 0.0, 0.0));
 
-  scene.add(new Mesh(new CubeGeometry(100.0, 100.0, 100.0, 4, 4, 4), material)
+  scene.add(new Mesh(new BoxGeometry(100.0, 100.0, 100.0, 4, 4, 4), material)
     ..position.setValues(-200.0, 0.0, 0.0));
 
   scene.add(new Mesh(new CircleGeometry(50.0, 20, 0.0, Math.PI * 2), material)

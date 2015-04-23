@@ -310,7 +310,7 @@ render(t) {
 
 helper(o, x, y, z, w, h, d, c) {
   var material = new MeshLambertMaterial(color: c);
-  var geometry = new CubeGeometry(w.toDouble(), h.toDouble(), d.toDouble(), 1, 1, 1);
+  var geometry = new BoxGeometry(w.toDouble(), h.toDouble(), d.toDouble(), 1, 1, 1);
   var mesh = new Mesh(geometry, material);
   mesh.position.x = x.toDouble() + (w.toDouble() / 2.0);
   mesh.position.y = y.toDouble() - (h.toDouble() / 2.0);

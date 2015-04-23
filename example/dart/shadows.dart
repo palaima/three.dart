@@ -87,7 +87,7 @@ init() {
   mainObj = mesh;
 
   // Add the ground cube
-  geometry = new CubeGeometry(10.0, 0.5, 10.0);
+  geometry = new BoxGeometry(10.0, 0.5, 10.0);
   texture = loadTexture("images/water.jpg");
   texture.repeat.setValues(0.5, 0.8);
   texture.wrapS = texture.wrapT = RepeatWrapping;

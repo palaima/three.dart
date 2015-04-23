@@ -43,7 +43,7 @@ void init() {
   scene.add(light);
 
 
-  var geometry = new CubeGeometry(20.0, 20.0, 20.0);
+  var geometry = new BoxGeometry(20.0, 20.0, 20.0);
 
   var rnd = new Math.Random();
 

@@ -77,7 +77,7 @@ part 'src/loaders/obj_loader.dart';
 
 part 'extras/geometries/circle_geometry.dart';
 part 'extras/geometries/convex_geometry.dart';
-part 'extras/geometries/cube_geometry.dart';
+part 'extras/geometries/box_geometry.dart';
 part 'extras/geometries/cylinder_geometry.dart';
 part 'extras/geometries/extrude_geometry.dart';
 part 'extras/geometries/icosahedron_geometry.dart';

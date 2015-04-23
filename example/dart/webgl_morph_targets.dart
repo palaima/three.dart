@@ -39,7 +39,7 @@ void init() {
 
   scene.add(new AmbientLight(0x111111));
 
-  var geometry = new CubeGeometry(100.0, 100.0, 100.0);
+  var geometry = new BoxGeometry(100.0, 100.0, 100.0);
   var material = new MeshLambertMaterial(color: 0xffffff, morphTargets: true);
 
   // construct 8 blend shapes

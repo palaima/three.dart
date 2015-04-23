@@ -42,7 +42,7 @@ void init() {
 
   scene.add(camera);
 
-  CubeGeometry geometry = new CubeGeometry(100.0, 100.0, 100.0);
+  BoxGeometry geometry = new BoxGeometry(100.0, 100.0, 100.0);
 
   var rnd = new Math.Random();
   for (int i = 0; i < 10; i++) {

@@ -24,7 +24,7 @@ void init() {
 
   scene = new Scene();
 
-  var geometry = new CubeGeometry(200.0, 200.0, 200.0);
+  var geometry = new BoxGeometry(200.0, 200.0, 200.0);
 
   var texture = ImageUtils.loadTexture('textures/crate.gif')
     ..anisotropy = renderer.getMaxAnisotropy();

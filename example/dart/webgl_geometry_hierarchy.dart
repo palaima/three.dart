@@ -36,7 +36,7 @@ void init() {
   scene.fog = new FogLinear(0xffffff, 1.0, 10000.0);
   scene.add(camera);
 
-  var geometry = new CubeGeometry(100.0, 100.0, 100.0);
+  var geometry = new BoxGeometry(100.0, 100.0, 100.0);
   var material = new MeshNormalMaterial();
 
   group = new Object3D();
