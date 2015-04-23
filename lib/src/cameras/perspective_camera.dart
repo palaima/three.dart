@@ -24,7 +24,7 @@ class PerspectiveCamera extends Camera {
   double _height;
 
 
-  PerspectiveCamera([this.fov = 50.0, this.aspect = 1.0, near = 0.1, far = 2000.0])
+  PerspectiveCamera([this.fov = 50.0, this.aspect = 1.0, double near = 0.1, double far = 2000.0])
       : super(near, far) {
 
     updateProjectionMatrix();
