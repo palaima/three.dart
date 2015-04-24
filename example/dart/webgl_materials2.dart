@@ -26,11 +26,11 @@ void init() {
 
   scene = new Scene();
 
-  var imgTexture2 = ImageUtils.loadTexture("moon.jpg");
+  var imgTexture2 = ImageUtils.loadTexture("textures/planets/moon_1024.jpg");
   imgTexture2.wrapS = imgTexture2.wrapT = RepeatWrapping;
   imgTexture2.anisotropy = 16;
 
-  var imgTexture = ImageUtils.loadTexture("lava.jpg");
+  var imgTexture = ImageUtils.loadTexture("textures/lava/lavatile.jpg");
   imgTexture.repeat.setValues(4.0, 2.0);
   imgTexture.wrapS = imgTexture.wrapT = RepeatWrapping;
   imgTexture.anisotropy = 16;
