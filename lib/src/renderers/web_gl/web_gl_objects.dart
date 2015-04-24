@@ -8,7 +8,7 @@ part of three;
 
 class WebGLObjects {
   Map<int, WebGLObject> objects = {};
-  List objectsImmediate = [];
+  List<WebGLObject> objectsImmediate = [];
 
   WebGLGeometries geometries;
 
@@ -119,10 +119,10 @@ class WebGLObjects {
                   'as needsUpdate but count is 0, ensure you are using set methods or updating manually.');
           } else {
 
-            _gl.bufferSubData(bufferType, data.updateRange.offset * data.bytesPerElement,
-                data.array.getRange(data.updateRange.offset, data.updateRange.offset + data.updateRange.count));
+            _gl.bufferSubData(bufferType, data.updateRange['offset'] * data.bytesPerElement,
+                data.array.getRange(data.updateRange['offset'], data.updateRange['offset'] + data.updateRange['count']));
 
-            data.updateRange.count = 0; // reset range
+            data.updateRange['count'] = 0; // reset range
           }
 
           data.needsUpdate = false;

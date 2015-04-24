@@ -13,7 +13,11 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
   String type = 'ShaderMaterial';
 
   Map defines;
+  Map<String, Uniform> uniforms;
   Map<String, Attribute> attributes;
+
+  String vertexShader;
+  String fragmentShader;
 
   double linewidth;
 
@@ -40,8 +44,8 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
   // Not used
   var wireframeLinecap, wireframeLinejoin, scale, dashSize, gapSize;
 
-  ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, String vertexShader: defaultVertexShader,
-    String fragmentShader: defaultFragmentShader, int shading: SmoothShading, this.linewidth: 1.0, this.wireframe: false,
+  ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, this.vertexShader: defaultVertexShader,
+    this.fragmentShader: defaultFragmentShader, int shading: SmoothShading, this.linewidth: 1.0, this.wireframe: false,
     this.wireframeLinewidth: 1.0, bool fog: true, this.lights: false, int vertexColors: NoColors, this.skinning: false,
     this.morphTargets: false, this.morphNormals: false,
     // Material
@@ -51,32 +55,14 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
     bool depthTest: true, bool depthWrite: true, bool colorWrite: true, bool polygonOffset: false,
     int polygonOffsetFactor: 0, int polygonOffsetUnits: 0, double alphaTest: 0.0, double overdraw: 0.0,
     bool visible: true})
-        : super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
-            blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
-            blendDstAlpha: blendDstAlpha, blendEquationAlpha: blendEquationAlpha, depthFunc: depthFunc,
-            depthTest: depthTest, depthWrite: depthWrite, colorWrite: colorWrite, polygonOffset: polygonOffset,
-            polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
-            overdraw: overdraw, visible: visible,
+      : this.defines = defines != null ? defines : {},
+        this.uniforms = uniforms != null ? uniforms : {},
+        super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
+          blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
+          blendDstAlpha: blendDstAlpha, blendEquationAlpha: blendEquationAlpha, depthFunc: depthFunc,
+          depthTest: depthTest, depthWrite: depthWrite, colorWrite: colorWrite, polygonOffset: polygonOffset,
+          polygonOffsetFactor: polygonOffsetFactor, polygonOffsetUnits: polygonOffsetUnits, alphaTest: alphaTest,
+          overdraw: overdraw, visible: visible,
 
-            fog: fog, vertexColors: vertexColors, shading: shading) {
-    this.defines = defines != null ? defines : {};
-    this._uniforms = uniforms != null ? uniforms : {};
-    this._fragmentShader = fragmentShader;
-    this._vertexShader = vertexShader;
-  }
-
-  set vertexShader(String value) {
-    _vertexShader = value;
-    needsUpdate = true;
-  }
-
-  set fragmentShader(String value) {
-    _fragmentShader = value;
-    needsUpdate = true;
-  }
-
-  set uniforms(Map<String, Uniform> value) {
-    _uniforms = value;
-    needsUpdate = true;
-  }
+          fog: fog, vertexColors: vertexColors, shading: shading);
 }

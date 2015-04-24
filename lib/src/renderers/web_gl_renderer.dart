@@ -568,7 +568,7 @@ class WebGLRenderer implements Renderer {
 
       if (material is! MeshPhongMaterial && material.shading == FlatShading) {
         for (var i = 0; i < object._count * 3; i += 9) {
-          var normalArray = object._normalArray;
+          var normalArray = object._normalArray as List;
 
           var nax  = normalArray[i + 0];
           var nay  = normalArray[i + 1];
@@ -656,13 +656,13 @@ class WebGLRenderer implements Renderer {
           var size = geometryAttribute.itemSize;
           state.enableAttribute(programAttribute);
 
-          if (geometryAttribute is InterleavedBufferAttribute) {
+          if (geometryAttribute is InterleavedBufferAttribute && geometry is InstancedBufferGeometry) {
             var data = geometryAttribute.data;
             var stride = data.stride;
             var offset = geometryAttribute.offset;
 
             _gl.bindBuffer(gl.ARRAY_BUFFER, geometryAttribute.data.buffer);
-            _gl.vertexAttribPointer(programAttribute, size, gl.FLOAT, false, stride * data.array.BYTES_PER_ELEMENT,
+            _gl.vertexAttribPointer(programAttribute, size, gl.FLOAT, false, stride * data.array.bytesPerElement,
                 (startIndex * stride + offset) * data.array.BYTES_PER_ELEMENT);
 
             if (data is InstancedInterleavedBuffer) {
@@ -672,24 +672,24 @@ class WebGLRenderer implements Renderer {
                 return;
               }
 
-              extension.vertexAttribDivisorANGLE(programAttribute, data.meshPerAttribute);
+              extension.vertexAttribDivisorAngle(programAttribute, data.meshPerAttribute);
 
               if (geometry.maxInstancedCount == null) {
-                geometry.maxInstancedCount = data.meshPerAttribute * (data.array.length / data.stride);
+                geometry.maxInstancedCount = data.meshPerAttribute * (data.array.length ~/ data.stride);
               }
             }
           } else {
             geometryAttribute.buffer.bind(gl.ARRAY_BUFFER);
             _gl.vertexAttribPointer(programAttribute, size, gl.FLOAT, false, 0, startIndex * size * 4); // 4 bytes per Float32
 
-            if (geometryAttribute is InstancedBufferAttribute) {
+            if (geometryAttribute is InstancedBufferAttribute && geometry is InstancedBufferGeometry) {
               if (extension == null) {
                 error('WebGLRenderer.setupVertexAttributes: using InstancedBufferAttribute' +
                       'but hardware does not support extension ANGLE_instanced_arrays.');
                 return;
               }
 
-              extension.vertexAttribDivisorANGLE(programAttribute, geometryAttribute.meshPerAttribute);
+              extension.vertexAttribDivisorAngle(programAttribute, geometryAttribute.meshPerAttribute);
 
               if (geometry.maxInstancedCount == null) {
                 geometry.maxInstancedCount =
@@ -803,8 +803,7 @@ class WebGLRenderer implements Renderer {
                 return;
               }
 
-              extension.drawElementsInstancedAngle(
-                  mode, offsets[i].count, type, offsets[i].start * size, offsets[i].count, type, offsets[i].instances); // Draw the instanced meshes
+              extension.drawElementsInstancedAngle(mode, offsets[i].count, type, offsets[i].start * size, offsets[i].instances); // Draw the instanced meshes
 
             } else {
               _gl.drawElements(mode, offsets[i].count, type, offsets[i].start * size);
@@ -835,9 +834,9 @@ class WebGLRenderer implements Renderer {
           }
 
           if (position is InterleavedBufferAttribute) {
-            extension.drawArraysInstancedAngle(mode, 0, position.data.array.length / position.data.stride, geometry.maxInstancedCount); // Draw the instanced meshes
+            extension.drawArraysInstancedAngle(mode, 0, position.data.array.length ~/ position.data.stride, geometry.maxInstancedCount); // Draw the instanced meshes
           } else {
-            extension.drawArraysInstancedAngle(mode, 0, position.array.length / position.itemSize, geometry.maxInstancedCount); // Draw the instanced meshes
+            extension.drawArraysInstancedAngle(mode, 0, position.array.length ~/ position.itemSize, geometry.maxInstancedCount); // Draw the instanced meshes
           }
         } else {
           if (position is InterleavedBufferAttribute) {
@@ -1328,8 +1327,8 @@ class WebGLRenderer implements Renderer {
     }
   }
 
-  void renderObjectsImmediate(List renderList, materialType, camera, lights,
-                              fog, overrideMaterial) {
+  void renderObjectsImmediate(List<WebGLObject> renderList, String materialType, Camera camera, List<Light> lights,
+                              Fog fog, Material overrideMaterial) {
     var material;
 
     for (var i = 0; i < renderList.length; i++) {
@@ -1337,7 +1336,7 @@ class WebGLRenderer implements Renderer {
       var object = webglObject.object;
 
       if (object.visible) {
-        if (overrideMaterial) {
+        if (overrideMaterial != null) {
           material = overrideMaterial;
         } else {
           material = webglObject[materialType];
@@ -1352,14 +1351,14 @@ class WebGLRenderer implements Renderer {
     }
   }
 
-  void renderImmediateObject(camera, lights, fog, material, object) {
+  void renderImmediateObject(Camera camera, List<Light> lights, Fog fog, Material material, Object3D object) {
     var program = setProgram(camera, lights, fog, material, object);
 
     _currentGeometryProgram = '';
 
     setMaterialFaces(material);
 
-    if (object.immediateRenderCallback) {
+    if (object.immediateRenderCallback != null) {
       object.immediateRenderCallback(program, _gl, _frustum);
     } else {
       object.render((object) => renderBufferImmediate(object, program, material));
@@ -1381,7 +1380,7 @@ class WebGLRenderer implements Renderer {
 
   void unrollBufferMaterial(WebGLObject globject) {
     var object = globject.object;
-    var material = object.material;
+    var material = (object as MaterialObject).material;
 
     if (material != null) {
       globject.material = material;
@@ -1407,7 +1406,7 @@ class WebGLRenderer implements Renderer {
     'PointCloudMaterial': 'particle_basic'
   };
 
-  void initMaterial(Material material, lights, fog, object) {
+  void initMaterial(Material material, List<Light> lights, Fog fog, Object3D object) {
     var shaderID = shaderIDs[material.type];
 
     // heuristics to create shader parameters according to lights in the scene
@@ -1482,8 +1481,8 @@ class WebGLRenderer implements Renderer {
     if (shaderID != null) {
       chunks.add(shaderID);
     } else {
-      chunks.add(material._fragmentShader);
-      chunks.add(material._vertexShader);
+      chunks.add((material as ShaderMaterial).fragmentShader);
+      chunks.add((material as ShaderMaterial).vertexShader);
     }
 
     if (material is ShaderMaterial && material.defines != null) {
@@ -1522,9 +1521,9 @@ class WebGLRenderer implements Renderer {
       };
     } else {
       material.__webglShader = {
-        'uniforms': material._uniforms,
-        'vertexShader': material._vertexShader,
-        'fragmentShader': material._fragmentShader
+        'uniforms': (material as ShaderMaterial).uniforms,
+        'vertexShader': (material as ShaderMaterial).vertexShader,
+        'fragmentShader': (material as ShaderMaterial).fragmentShader
       };
     }
 
@@ -1610,7 +1609,7 @@ class WebGLRenderer implements Renderer {
     state.setPolygonOffset(material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits);
   }
 
-  setProgram(Camera camera, lights, fog, Material material, Object3D object) {
+  setProgram(Camera camera, List<Light> lights, Fog fog, Material material, Object3D object) {
     _usedTextureUnits = 0;
 
     if (material.needsUpdate) {
@@ -1771,8 +1770,8 @@ class WebGLRenderer implements Renderer {
         m_uniforms['opacity'].value = material.opacity;
       }
 
-      if (object.receiveShadow && material.shadowPass) {
-        refreshUniformsShadow(m_uniforms, lights);
+      if (object.receiveShadow && !material._shadowPass) {
+        refreshUniformsShadow(m_uniforms, lights as List<ShadowCaster>);
       }
 
       // load common uniforms
@@ -1999,17 +1998,15 @@ class WebGLRenderer implements Renderer {
   }
 
   void loadUniformsGeneric(List<List> uniforms) {
-    var texture, textureUnit, offset;
-
     for (var j = 0; j < uniforms.length; j++) {
       var uniform = uniforms[j][0];
 
       // needsUpdate property is not added to all uniforms.
       //if (!uniform.needsUpdate) continue;
 
-      var type = uniform.type;
+      String type = uniform.type;
       var value = uniform.typedValue;
-      var location = uniforms[j][1];
+      gl.UniformLocation location = uniforms[j][1];
 
       switch (type) {
         case '1i': _gl.uniform1i(location, value); break;
@@ -2051,8 +2048,8 @@ class WebGLRenderer implements Renderer {
             uniform._array = new Float32List(2 * value.length);
           }
 
-          for (var i = 0, il = value.length; i < il; i ++) {
-            offset = i * 2;
+          for (var i = 0; i < value.length; i++) {
+            var offset = i * 2;
 
             uniform._array[offset]   = value[i].x;
             uniform._array[offset + 1] = value[i].y;
@@ -2067,7 +2064,7 @@ class WebGLRenderer implements Renderer {
           }
 
           for (var i = 0, il = value.length; i < il; i ++) {
-            offset = i * 3;
+            var offset = i * 3;
 
             uniform._array[offset]   = value[i].x;
             uniform._array[offset + 1] = value[i].y;
@@ -2082,7 +2079,7 @@ class WebGLRenderer implements Renderer {
           }
 
           for (var i = 0, il = value.length; i < il; i ++) {
-            offset = i * 4;
+            var offset = i * 4;
 
             uniform._array[offset]   = value[i].x;
             uniform._array[offset + 1] = value[i].y;
@@ -2121,8 +2118,8 @@ class WebGLRenderer implements Renderer {
           break;
         case 't':
           // single Texture (2d or cube)
-          texture = value;
-          textureUnit = getTextureUnit();
+          var texture = value;
+          var textureUnit = getTextureUnit();
 
           _gl.uniform1i(location, textureUnit);
 
@@ -2130,7 +2127,6 @@ class WebGLRenderer implements Renderer {
 
           if (texture is CubeTexture ||
               (texture.image is List && texture.image.length == 6)) { // CompressedTexture can have Array in image :/
-
             setCubeTexture(texture, textureUnit);
           } else if (texture is WebGLRenderTargetCube) {
             setCubeTextureDynamic(texture, textureUnit);
@@ -2151,8 +2147,8 @@ class WebGLRenderer implements Renderer {
           _gl.uniform1iv(location, uniform._array);
 
           for (var i = 0, il = uniform.value.length; i < il; i ++) {
-            texture = uniform.value[i];
-            textureUnit = uniform._array[i];
+            var texture = uniform.value[i];
+            var textureUnit = uniform._array[i];
 
             if (texture == null) continue;
 
@@ -2222,27 +2218,21 @@ class WebGLRenderer implements Renderer {
       if (light is ShadowCaster && light.onlyShadow) continue;
 
       var color = light.color;
-      var intensity, distance;
-
-      if ((light is DirectionalLight) || (light is SpotLight) || (light is PointLight)) {
-        intensity = (light as dynamic).intensity;
-        distance = (light as dynamic).distance;
-      } else if (light is HemisphereLight) {
-        intensity = (light as dynamic).intensity;
-      }
 
       if (light is AmbientLight) {
-
-        if (! light.visible) continue;
+        if (!light.visible) continue;
 
         r += color.r;
         g += color.g;
         b += color.b;
 
       } else if (light is DirectionalLight) {
+        var intensity = light.intensity;
+
         dirCount += 1;
 
         if (!light.visible) continue;
+
         _direction.setFromMatrixTranslation(light.matrixWorld);
         _vector3.setFromMatrixTranslation(light.target.matrixWorld);
         _direction.sub(_vector3);
@@ -2263,10 +2253,12 @@ class WebGLRenderer implements Renderer {
         dirLength += 1;
 
       } else if (light is PointLight) {
+        var intensity = light.intensity;
+        var distance = light.distance;
 
         pointCount += 1;
 
-        if (! light.visible) continue;
+        if (!light.visible) continue;
 
         pointOffset = pointLength * 3;
 
@@ -2291,6 +2283,8 @@ class WebGLRenderer implements Renderer {
         pointLength += 1;
 
       } else if (light is SpotLight) {
+        var intensity = light.intensity;
+        var distance = light.distance;
 
         spotCount += 1;
 
@@ -2327,8 +2321,8 @@ class WebGLRenderer implements Renderer {
         spotDecays[spotLength] = (light.distance == 0) ? 0.0 : light.decay;
 
         spotLength += 1;
-
       } else if (light is HemisphereLight) {
+        var intensity = light.intensity;
 
         hemiCount += 1;
 
@@ -2433,9 +2427,8 @@ class WebGLRenderer implements Renderer {
       _gl.texParameteri(textureType, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
       if (texture.wrapS != ClampToEdgeWrapping || texture.wrapT != ClampToEdgeWrapping) {
-        warn('WebGLRenderer: Texture is not power of two. ' +
-             'Texture.wrapS and Texture.wrapT should be set to ' +
-             'ClampToEdgeWrapping. (${texture.sourceFile})');
+        warn('WebGLRenderer: Texture is not power of two. Texture.wrapS and Texture.wrapT ' +
+              'should be set to ClampToEdgeWrapping. (${texture.sourceFile})');
       }
 
       _gl.texParameteri(textureType, gl.TEXTURE_MAG_FILTER, filterFallback(texture.magFilter));
@@ -2501,7 +2494,7 @@ class WebGLRenderer implements Renderer {
         _gl.texImage2D(gl.TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data);
       }
     } else if (texture is CompressedTexture) {
-      for (var i = 0; i <mipmaps.length; i ++) {
+      for (var i = 0; i < mipmaps.length; i ++) {
         var mipmap = mipmaps[i];
 
         if (texture.format != RGBAFormat && texture.format != RGBFormat) {
@@ -2521,7 +2514,7 @@ class WebGLRenderer implements Renderer {
       // set 0 level mipmap and then use GL to generate other mipmap levels
 
       if (mipmaps.length > 0 && isImagePowerOfTwo) {
-        for (var i = 0, il = mipmaps.length; i < il; i ++) {
+        for (var i = 0; i < mipmaps.length; i++) {
           var mipmap = mipmaps[i];
           _gl.texImage2D(gl.TEXTURE_2D, i, glFormat, glFormat, glType, mipmap);
         }
@@ -2600,15 +2593,10 @@ class WebGLRenderer implements Renderer {
 
         for (var i = 0; i < 6; i ++) {
           if (autoScaleCubemaps && ! isCompressed && ! isDataTexture) {
-
             cubeImage[i] = clampToMaxSize(texture.image[i], _maxCubemapSize);
-
           } else {
-
             cubeImage[i] = isDataTexture ? texture.image[i].image : texture.image[i];
-
           }
-
         }
 
         var image = cubeImage[0],
@@ -2729,13 +2717,17 @@ class WebGLRenderer implements Renderer {
           renderTarget.__webglFramebuffer[i] = _gl.createFramebuffer();
           renderTarget.__webglRenderbuffer[i] = _gl.createRenderbuffer();
 
-          _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null);
+          _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget.width,
+              renderTarget.height, 0, glFormat, glType, null);
 
-          setupFrameBuffer(renderTarget.__webglFramebuffer[i], renderTarget, gl.TEXTURE_CUBE_MAP_POSITIVE_X + i);
+          setupFrameBuffer(renderTarget.__webglFramebuffer[i], renderTarget,
+              gl.TEXTURE_CUBE_MAP_POSITIVE_X + i);
           setupRenderBuffer(renderTarget.__webglRenderbuffer[i], renderTarget);
         }
 
-        if (renderTarget.generateMipmaps && isTargetPowerOfTwo) _gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+        if (renderTarget.generateMipmaps && isTargetPowerOfTwo) {
+          _gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+        }
       } else {
         renderTarget.__webglFramebuffer = _gl.createFramebuffer();
 
@@ -2748,15 +2740,18 @@ class WebGLRenderer implements Renderer {
         state.bindTexture(gl.TEXTURE_2D, renderTarget.__webglTexture);
         setTextureParameters(gl.TEXTURE_2D, renderTarget, isTargetPowerOfTwo);
 
-        _gl.texImage2D(gl.TEXTURE_2D, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null);
+        _gl.texImage2D(gl.TEXTURE_2D, 0, glFormat, renderTarget.width, renderTarget.height,
+            0, glFormat, glType, null);
 
         setupFrameBuffer(renderTarget.__webglFramebuffer, renderTarget, gl.TEXTURE_2D);
 
         if (renderTarget.shareDepthFrom) {
           if (renderTarget.depthBuffer && !renderTarget.stencilBuffer) {
-            _gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderTarget.__webglRenderbuffer);
+            _gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER,
+                renderTarget.__webglRenderbuffer);
           } else if (renderTarget.depthBuffer && renderTarget.stencilBuffer) {
-            _gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, renderTarget.__webglRenderbuffer);
+            _gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER,
+                renderTarget.__webglRenderbuffer);
           }
         } else {
           setupRenderBuffer(renderTarget.__webglRenderbuffer, renderTarget);
@@ -2980,7 +2975,7 @@ class WebGLRenderer implements Renderer {
     }
   }
 
-  Map<String, int> allocateLights(List lights) {
+  Map<String, int> allocateLights(List<Light> lights) {
     var dirLights = 0;
     var pointLights = 0;
     var spotLights = 0;
@@ -3000,17 +2995,13 @@ class WebGLRenderer implements Renderer {
     return {'directional': dirLights, 'point': pointLights, 'spot': spotLights, 'hemi': hemiLights};
   }
 
-  int allocateShadows(List<ShadowCaster> lights) {
+  int allocateShadows(List<Light> lights) {
     var maxShadows = 0;
 
-    for (var l = 0; l < lights.length; l++) {
-      var light = lights[l];
-
-      if (!light.castShadow) continue;
-
+    lights.where((l) => l.castShadow).forEach((light) {
       if (light is SpotLight) maxShadows++;
       if (light is DirectionalLight && !light.shadowCascade) maxShadows++;
-    }
+    });
 
     return maxShadows;
   }

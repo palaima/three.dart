@@ -116,15 +116,10 @@ class Material extends Object with DisposeStream {
   // WebGL
   Map __webglShader;
   WebGLProgram _program;
-  String _fragmentShader;
-  String _vertexShader;
-  Map<String, Uniform> _uniforms;
   List _uniformsList;
   int _numSupportedMorphTargets;
   int _numSupportedMorphNormals;
-
-  // Used by ShadowMapPlugin
-  bool shadowPass = false;
+  bool _shadowPass = false;
 
   StreamController _onUpdateController = new StreamController();
   Stream get onUpdate => _onUpdateController.stream;
