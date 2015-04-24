@@ -1,53 +1,62 @@
+/*
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * based on r71
+ */
+
 part of three;
 
 /// A point light that can cast shadow in one direction.
 ///
 /// Affects objects using MeshLambertMaterial or MeshPhongMaterial.
-class SpotLight extends ShadowCaster {
-  /// Spotlight focus points at target.position.
-  Object3D target;
+class SpotLight extends Light implements ShadowCaster {
+  String type = 'SpotLight';
 
-  /// Light's intensity.
+  Object3D target = new Object3D();
+
   double intensity;
-  /// If non-zero, light will attenuate linearly from maximum intensity at
-  /// light position down to zero at distance.
   double distance;
-  /// Maximum extent of the spotlight, in radians, from its direction.
-  /// Should be no more than Math.PI/2.
   double angle;
-  /// Rapidity of the falloff of light from its target direction.
-  num exponent;
+  int exponent;
+  double decay;
 
-  SpotLight(num hex, [this.intensity = 1.0, this.distance = 0.0, this.angle = Math.PI /
-      2, this.exponent = 10]) : super(hex) {
-    //THREE.Light.call( this, hex );
+  bool castShadow = false;
+  bool onlyShadow = false;
 
-    position = new Vector3(0.0, 1.0, 0.0);
-    target = new Object3D();
+  //
 
-    castShadow = false;
-    onlyShadow = false;
+  double shadowCameraNear = 50.0;
+  double shadowCameraFar = 5000.0;
+  double shadowCameraFov = 50.0;
 
-    //
+  bool shadowCameraVisible = false;
 
-    shadowCameraNear = 50.0;
-    shadowCameraFar = 5000.0;
-    shadowCameraFov = 50.0;
+  double shadowBias = 0.0;
+  double shadowDarkness = 0.5;
 
-    shadowCameraVisible = false;
+  double shadowMapWidth = 512.0;
+  double shadowMapHeight = 512.0;
 
-    shadowBias = 0;
-    shadowDarkness = 0.5;
+  //
 
-    shadowMapWidth = 512;
-    shadowMapHeight = 512;
+  WebGLRenderTarget shadowMap;
+  Vector2 shadowMapSize;
+  Camera shadowCamera;
+  Matrix4 shadowMatrix;
 
-    //
-
-    shadowMap = null;
-    shadowMapSize = null;
-    shadowCamera = null;
-    shadowMatrix = null;
-
+  SpotLight(num color, {this.intensity: 1.0, this.distance: 0.0, this.angle: Math.PI / 3,
+    this.exponent: 10, this.decay: 1.0})
+      : super(color) {
+    position.setValues(0.0, 1.0, 0.0);
   }
+
+  clone([light, recursive = true]) {
+    throw new UnimplementedError();
+  }
+
+  toJSON() {
+    throw new UnimplementedError();
+  }
+
+  noSuchMethod(Invocation invocation) {}
 }

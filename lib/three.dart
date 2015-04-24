@@ -124,12 +124,12 @@ part 'extras/helpers/axis_helper.dart';
 part 'extras/helpers/camera_helper.dart';
 
 part 'src/lights/ambient_light.dart';
+part 'src/lights/area_light.dart';
 part 'src/lights/directional_light.dart';
 part 'src/lights/point_light.dart';
 part 'src/lights/spot_light.dart';
 part 'src/lights/hemisphere_light.dart';
 part 'src/lights/light.dart';
-part 'src/lights/shadow_caster.dart';
 
 part 'src/materials/material.dart';
 part 'src/materials/mesh_basic_material.dart';

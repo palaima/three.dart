@@ -1,16 +1,32 @@
+/*
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * based on r71
+ */
+
 part of three;
 
 /// A light source positioned directly above the scene.
 class HemisphereLight extends Light {
-  Vector3 _position;
-  /// Light's intensity.
-  double intensity;
+  String type = 'HemisphereLight';
+
   /// Light's ground color.
   Color groundColor;
 
-  HemisphereLight(num skyColorHex, num groundColorHex, {this.intensity: 1.0}) : super(skyColorHex) {
-    groundColor = new Color(groundColorHex);
+  /// Light's intensity.
+  double intensity;
 
-    _position = new Vector3(0.0, 100.0, 0.0);
+  HemisphereLight(num skyColor, num groundColor, {this.intensity: 1.0})
+      : groundColor = new Color(groundColor),
+        super(skyColor) {
+    position = new Vector3(0.0, 100.0, 0.0);
+  }
+
+  clone([light, recursive = true]) {
+    throw new UnimplementedError();
+  }
+
+  toJSON() {
+    throw new UnimplementedError();
   }
 }

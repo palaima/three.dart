@@ -1,74 +1,111 @@
-part of three;
-
-/**
+/*
  * @author mr.doob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  *
- * Ported to Dart from JS by:
- * @author rob silverton / http://www.unwrong.com/
- * @author Nelson Silva
- *
- * rev: r56
+ * based on r71
  */
 
+part of three;
+
 /// Affects objects using MeshLambertMaterial or MeshPhongMaterial.
-class DirectionalLight extends ShadowCaster {
+class DirectionalLight extends Light implements ShadowCaster {
+  String type = 'DirectionalLight';
 
-  Vector3 position;
-  /// Target used for shadow camera orientation.
-  Object3D target;
-  /// Light's intensity (default: 1.0)
+  Object3D target = new Object3D();
+
   double intensity;
-  num distance;
 
-  /// Orthographic shadow camera frustum parameter (default: -500)
-  num shadowCameraLeft;
-  /// Orthographic shadow camera frustum parameter (default: 500)
-  num shadowCameraRight;
-  /// Orthographic shadow camera frustum parameter (default: 500)
-  num shadowCameraTop;
-  /// Orthographic shadow camera frustum parameter (default: -500)
-  num shadowCameraBottom;
+  bool castShadow = false;
+  bool onlyShadow = false;
 
-  bool shadowCascade;
+  //
 
-  Vector3 shadowCascadeOffset;
-  num shadowCascadeCount;
+  double shadowCameraNear = 50.0;
+  double shadowCameraFar = 5000.0;
 
-  List<num> shadowCascadeBias, shadowCascadeWidth, shadowCascadeHeight, shadowCascadeNearZ, shadowCascadeFarZ,
-      shadowCascadeArray;
+  double shadowCameraLeft = -500.0;
+  double shadowCameraRight = 500.0;
+  double shadowCameraTop = 500.0;
+  double shadowCameraBottom = -500.0;
 
-  /// Creates a light that shines from a specific direction not from a specific position.
-  ///
-  /// This light will behave as though it is infinitely far away and the rays
-  /// produced from it are all parallel.
-  /// The best analogy would be a light source that acts like the sun: the sun
-  /// is so far away that all sunlight hitting objects comes from the same angle.
-  DirectionalLight(num hex, [this.intensity = 1.0, this.distance = 0]) : super(hex) {
+  bool shadowCameraVisible = false;
 
-    position = new Vector3(0.0, 1.0, 0.0);
-    target = new Object3D();
+  double shadowBias = 0.0;
+  double shadowDarkness = 0.5;
 
-    shadowCameraLeft = -500;
-    shadowCameraRight = 500;
-    shadowCameraTop = 500;
-    shadowCameraBottom = -500;
+  double shadowMapWidth = 512.0;
+  double shadowMapHeight = 512.0;
+
+  //
+
+  bool shadowCascade = false;
+
+  Vector3 shadowCascadeOffset = new Vector3(0.0, 0.0, -1000.0);
+  int shadowCascadeCount = 2;
+
+  List<double> shadowCascadeBias = [0, 0, 0];
+  List<double> shadowCascadeWidth = [512, 512, 512];
+  List<double> shadowCascadeHeight = [512, 512, 512];
+
+  List<double> shadowCascadeNearZ = [-1.000, 0.990, 0.998];
+  List<double> shadowCascadeFarZ = [0.990, 0.998, 1.000];
+
+  List<VirtualLight> shadowCascadeArray = [];
+
+  //
+
+  WebGLRenderTarget shadowMap;
+  Vector2 shadowMapSize;
+  Camera shadowCamera;
+  Matrix4 shadowMatrix;
+
+  DirectionalLight(num color, [this.intensity = 1.0])
+      : super(color) {
+    position.setValues(0.0, 1.0, 0.0);
+  }
+
+  DirectionalLight clone([DirectionalLight light, bool recursive = true]) {
+    light = new DirectionalLight(color.getHex(), intensity);
+
+    super.clone(light);
+
+    light.target = target.clone();
+
+    light.castShadow = castShadow;
+    light.onlyShadow = onlyShadow;
 
     //
 
-    shadowCascade = false;
+    light.shadowCameraNear = shadowCameraNear;
+    light.shadowCameraFar = shadowCameraFar;
 
-    shadowCascadeOffset = new Vector3(0.0, 0.0, -1000.0);
-    shadowCascadeCount = 2;
+    light.shadowCameraLeft = shadowCameraLeft;
+    light.shadowCameraRight = shadowCameraRight;
+    light.shadowCameraTop = shadowCameraTop;
+    light.shadowCameraBottom = shadowCameraBottom;
 
-    shadowCascadeBias = [0, 0, 0];
-    shadowCascadeWidth = [512, 512, 512];
-    shadowCascadeHeight = [512, 512, 512];
+    light.shadowCameraVisible = shadowCameraVisible;
 
-    shadowCascadeNearZ = [-1.000, 0.990, 0.998];
-    shadowCascadeFarZ = [0.990, 0.998, 1.000];
+    light.shadowBias = shadowBias;
+    light.shadowDarkness = shadowDarkness;
 
-    shadowCascadeArray = [];
+    light.shadowMapWidth = shadowMapWidth;
+    light.shadowMapHeight = shadowMapHeight;
 
+    //
+
+    light.shadowCascade = shadowCascade;
+
+    light.shadowCascadeOffset.setFrom(shadowCascadeOffset);
+    light.shadowCascadeCount = shadowCascadeCount;
+
+    light.shadowCascadeBias = new List.from(shadowCascadeBias);
+    light.shadowCascadeWidth = new List.from(shadowCascadeWidth);
+    light.shadowCascadeHeight = new List.from(shadowCascadeHeight);
+
+    light.shadowCascadeNearZ = new List.from(shadowCascadeNearZ);
+    light.shadowCascadeFarZ = new List.from(shadowCascadeFarZ);
+
+    return light;
   }
 }
