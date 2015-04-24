@@ -8,7 +8,7 @@ import 'dart:math' show exp;
 import 'package:three/three.dart' show Uniform, ShaderChunk, UniformsLib;
 import 'package:three/src/renderers/shaders/uniforms_utils.dart' as UniformsUtils;
 
-final Map basicShader = {
+final Map basic = {
   'uniforms': {},
   'vertexShader': '''
 void main() {
@@ -22,7 +22,7 @@ void main() {
 '''
 };
 
-final Map bleachBypassShader = {
+final Map bleachBypass = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'opacity': new Uniform.float(1.0)
@@ -64,7 +64,7 @@ void main() {
 '''
 };
 
-final Map blendShader = {
+final Map blend = {
   'uniforms': {
     'tDiffuse1': new Uniform.texture(),
     'tDiffuse2': new Uniform.texture(),
@@ -95,7 +95,7 @@ void main() {
 '''
 };
 
-final Map bokehShader = {
+final Map bokeh = {
   'uniforms': {
     'tColor': new Uniform.texture(),
     'tDepth': new Uniform.texture(),
@@ -542,7 +542,7 @@ void main() {
 '''
 };
 
-final Map brightnessContrastShader = {
+final Map brightnessContrast = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'brightness': new Uniform.float(0.0),
@@ -576,7 +576,7 @@ void main() {
 '''
 };
 
-final Map colorCorrectionShader = {
+final Map colorCorrection = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'powRGB': new Uniform.vector3(0.0, 0.0, 0.0),
@@ -605,7 +605,7 @@ void main() {
 '''
 };
 
-final Map colorifyShader = {
+final Map colorify = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'color': new Uniform.color(0xffffff)
@@ -634,7 +634,7 @@ void main() {
 '''
 };
 
-final Map convolutionShader = {
+final Map convolution = {
   'defines': {
     'KERNEL_SIZE_FLOAT': '25.0',
     'KERNEL_SIZE_INT': '25',
@@ -700,7 +700,7 @@ void main() {
   }
 };
 
-final Map copyShader = {
+final Map copy = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'opacity': new Uniform.float(1.0)
@@ -726,7 +726,7 @@ void main() {
 '''
 };
 
-final Map dofMipMapShader = {
+final Map dofMipMap = {
   'uniforms': {
     'tColor': new Uniform.texture(),
     'tDepth': new Uniform.texture(),
@@ -846,7 +846,7 @@ void main() {
 '''
 };
 
-final Map dotScreenShader = {
+final Map dotScreen = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'tSize': new Uniform.vector2(256.0, 256.0),
@@ -890,7 +890,7 @@ void main() {
 '''
 };
 
-final Map edgeShader = {
+final Map edge = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'aspect': new Uniform.vector2(512.0, 512.0),
@@ -964,7 +964,7 @@ void main(void)
 '''
 };
 
-final Map edgeShader2 = {
+final Map edge2 = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'aspect': new Uniform.vector2(512.0, 512.0),
@@ -1016,7 +1016,7 @@ void main(void)
 '''
 };
 
-final Map fxaaShader = {
+final Map fxaa = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'resolution': new Uniform.vector2(1 / 1024, 1 / 512),
@@ -1079,7 +1079,7 @@ void main() {
 '''
 };
 
-final Map filmShader = {
+final Map film = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'time': new Uniform.float(0.0),
@@ -1145,7 +1145,7 @@ void main() {
 '''
 };
 
-final Map focusShader = {
+final Map focus = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'screenWidth': new Uniform.float(1024.0),
@@ -1214,7 +1214,7 @@ void main() {
 '''
 };
 
-final Map fresnelShader = {
+final Map fresnel = {
   'uniforms': {
     'mRefractionRatio': new Uniform.float(1.02),
     'mFresnelBias': new Uniform.float(0.1),
@@ -1271,7 +1271,7 @@ void main() {
 '''
 };
 
-final Map gammaCorrectionShader = {
+final Map gammaCorrection = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
   },
@@ -1300,7 +1300,7 @@ void main() {
 '''
 };
 
-final Map horizontalBlurShader = {
+final Map horizontalBlur = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'h': new Uniform.float(1.0 / 512.0)
@@ -1336,7 +1336,7 @@ void main() {
 '''
 };
 
-final Map horizontalTiltShiftShader = {
+final Map horizontalTiltShift = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'h': new Uniform.float(1.0 / 512.0),
@@ -1376,7 +1376,7 @@ void main() {
 '''
 };
 
-final Map hueSaturationShader = {
+final Map hueSaturation = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'hue': new Uniform.float(0.0),
@@ -1423,7 +1423,7 @@ void main() {
 '''
 };
 
-final Map kaleidoShader = {
+final Map kaleido = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'sides': new Uniform.float(6.0),
@@ -1459,7 +1459,7 @@ void main() {
 '''
 };
 
-final Map luminosityShader = {
+final Map luminosity = {
   'uniforms': {
     'tDiffuse': new Uniform.texture()
   },
@@ -1489,7 +1489,7 @@ void main() {
 '''
 };
 
-final Map mirrorShader = {
+final Map mirror = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'side': new Uniform.int(1)
@@ -1526,7 +1526,7 @@ void main() {
 '''
 };
 
-final Map normalDisplacementShader = {
+final Map normalDisplacement = {
   'uniforms': UniformsUtils.merge([
     UniformsLib['fog'],
     UniformsLib['lights'],
@@ -2080,7 +2080,7 @@ ${ShaderChunk['alphatest_fragment']}
 '''
 };
 
-final Map normalMapShader = {
+final Map normalMap = {
   'uniforms': {
     'heightMap': new Uniform.texture(),
     'resolution': new Uniform.vector2(512.0, 512.0),
@@ -2483,7 +2483,7 @@ void main (void) {
 '''
 };
 
-final Map parallaxShader = {
+final Map parallax = {
   'modes': {
     'none':  'NO_PARALLAX',
     'basic': 'USE_BASIC_PARALLAX',
@@ -2650,7 +2650,7 @@ void main() {
 '''
 };
 
-final Map rgbShiftShader = {
+final Map rgbShift = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'amount': new Uniform.float(0.005),
@@ -2680,7 +2680,7 @@ void main() {
 '''
 };
 
-final Map ssaoShader = {
+final Map ssao = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'tDepth': new Uniform.texture(),
@@ -2883,7 +2883,7 @@ void main() {
 '''
 };
 
-final Map sepiaShader = {
+final Map sepia = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'amount': new Uniform.float(1.0),
@@ -2915,7 +2915,7 @@ void main() {
 '''
 };
 
-final Map technicolorShader = {
+final Map technicolor = {
   'uniforms': {
     'tDiffuse': new Uniform.texture()
   },
@@ -2939,7 +2939,7 @@ void main() {
 '''
 };
 
-final Map toneMapShader = {
+final Map toneMap = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'averageLuminance': new Uniform.float(1.0),
@@ -2995,7 +2995,7 @@ void main() {
 '''
 };
 
-final Map triangleBlurShader = {
+final Map triangleBlur = {
   'uniforms': {
     'texture': new Uniform.texture(),
     'delta': new Uniform.vector2(1.0, 1.0)
@@ -3044,7 +3044,7 @@ void main() {
 '''
 };
 
-final Map unpackDepthRGBAShader = {
+final Map unpackDepthRGBA = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'opacity': new Uniform.float(1.0)
@@ -3078,7 +3078,7 @@ void main() {
 '''
 };
 
-final Map verticalBlurShader = {
+final Map verticalBlur = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'v': new Uniform.float(1.0 / 512.0)
@@ -3114,7 +3114,7 @@ void main() {
 '''
 };
 
-final Map verticalTiltShiftShader = {
+final Map verticalTiltShift = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'v': new Uniform.float(1.0 / 512.0),
@@ -3154,7 +3154,7 @@ void main() {
 '''
 };
 
-final Map vignetteShader = {
+final Map vignette = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'offset': new Uniform.float(1.0),
