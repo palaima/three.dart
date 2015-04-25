@@ -12,10 +12,17 @@ class BufferAttribute {
   int numItems;
 
   bool needsUpdate = false;
-  BufferAttribute(this.array, this.itemSize, [this.bytesPerElement]) {
-    if (bytesPerElement == null) {
-      reflectClass(array.runtimeType).getField(#BYTES_PER_ELEMENT).reflectee;
-    }
+  BufferAttribute(TypedData array, this.itemSize) {
+    this.array = array as List;
+
+    if (array is Float32List) bytesPerElement = Float32List.BYTES_PER_ELEMENT;
+    else if (array is Int16List) bytesPerElement = Int16List.BYTES_PER_ELEMENT;
+    else if (array is Int8List) bytesPerElement = Int8List.BYTES_PER_ELEMENT;
+    else if (array is Uint8List) bytesPerElement = Uint8List.BYTES_PER_ELEMENT;
+    else if (array is Uint16List) bytesPerElement = Uint16List.BYTES_PER_ELEMENT;
+    else if (array is Int32List) bytesPerElement = Int32List.BYTES_PER_ELEMENT;
+    else if (array is Uint32List) bytesPerElement = Uint32List.BYTES_PER_ELEMENT;
+    else if (array is Float64List) bytesPerElement = Float64List.BYTES_PER_ELEMENT;
   }
 
   // Used in WebGL Renderer
@@ -25,28 +32,28 @@ class BufferAttribute {
   var updateRange;
 
   factory BufferAttribute.int8(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Int8List(length), itemSize, Int8List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Int8List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.uint8(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Uint8List(length), itemSize, Uint8List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Uint8List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.int16(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Int16List(length), itemSize, Int16List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Int16List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.uint16(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Uint16List(length), itemSize, Uint16List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Uint16List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.int32(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Int32List(length), itemSize, Int32List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Int32List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.uint32(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Uint32List(length), itemSize, Uint32List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Uint32List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.float32(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Float32List(length), itemSize, Float32List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Float32List(length), itemSize)..numItems = length;
 
   factory BufferAttribute.float64(int length, [int itemSize = 1]) =>
-      new BufferAttribute(new Float64List(length), itemSize, Float64List.BYTES_PER_ELEMENT)..numItems = length;
+      new BufferAttribute(new Float64List(length), itemSize)..numItems = length;
 
   int get length => array.length;
 
