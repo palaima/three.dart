@@ -1,48 +1,53 @@
-part of three_postprocessing;
-
-/**
+/*
  * @author alteredq / http://alteredqualia.com/
  *
- * Ported to Dart from JS by:
- * @author Christopher Grabowski / https://github.com/cgrabowski
+ * based on r71
  */
 
+part of three.postprocessing;
+
 class ShaderPass implements Pass {
-  ShaderProgram program;
+  String textureID;
+
   Map<String, Uniform> uniforms;
   ShaderMaterial material;
-  String textureID;
-  Scene scene;
-  Camera camera;
-  Mesh quad;
+
   bool renderToScreen = false;
+
   bool enabled = true;
   bool needsSwap = true;
   bool clear = false;
 
-  ShaderPass(this.program, [this.textureID = 'tDiffuse']) {
-    uniforms = program.uniforms;
-    material =
-        new ShaderMaterial(uniforms: uniforms, vertexShader: program.vertexShader, fragmentShader: program.fragmentShader);
+  OrthographicCamera camera = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0.0, 1.0);
+  Scene scene = new Scene();
 
-    scene = new Scene();
-    camera = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0.0, 1.0);
-    quad = new Mesh(new PlaneGeometry(2.0, 2.0), material);
+  Mesh quad;
+
+  ShaderPass(Map shader, {this.textureID: 'tDiffuse'}) {
+    uniforms = UniformsUtils.clone(shader['uniforms']);
+
+    material = new ShaderMaterial(
+        defines: shader['defines'] != null ? shader['defines'] : {},
+        uniforms: uniforms,
+        vertexShader: shader['vertexShader'],
+        fragmentShader: shader['fragmentShader']);
+
+    quad = new Mesh(new PlaneBufferGeometry(2.0, 2.0), material);
     scene.add(quad);
   }
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeTarget, WebGLRenderTarget readTarget, double delta,
-      bool maskActive) {
-
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, [bool maskActive]) {
     if (uniforms[textureID] != null) {
-      uniforms[textureID].value = readTarget;
+      uniforms[textureID].value = readBuffer;
     }
+
+    quad.material = material;
 
     if (renderToScreen) {
       renderer.render(scene, camera);
-
     } else {
-      renderer.renderToTarget(scene, camera, writeTarget, clear);
+      renderer.render(scene, camera, renderTarget: writeBuffer, forceClear: clear);
     }
   }
 }
