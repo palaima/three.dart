@@ -1,15 +1,26 @@
 part of three;
 
 class WebGLRenderTarget extends Texture {
+  int width, height;
 
-  num width, height;
+  int wrapS;
+  int wrapT;
 
-  Vector2 offset;
-  Vector2 repeat;
+  int magFilter;
+  int minFilter;
 
-  bool depthBuffer, stencilBuffer;
+  int anisotropy;
 
-  bool generateMipmaps;
+  Vector2 offset = new Vector2.zero();
+  Vector2 repeat = new Vector2(1.0, 1.0);
+
+  int format;
+  int type;
+
+  bool depthBuffer;
+  bool stencilBuffer;
+
+  bool generateMipmaps = true;
 
   var shareDepthFrom;
 
@@ -18,34 +29,47 @@ class WebGLRenderTarget extends Texture {
 
   var activeCubeFace;
 
-  WebGLRenderTarget(this.width, this.height, {int wrapS: ClampToEdgeWrapping, int wrapT: ClampToEdgeWrapping,
-      int magFilter: LinearFilter, int minFilter: LinearMipMapLinearFilter, int anisotropy: 1, int format: RGBAFormat,
-      int type: UnsignedByteType, this.depthBuffer: true, this.stencilBuffer: true, this.offset: null, //new Vector2( 0, 0 ),
-  this.repeat: null, //new Vector2( 1, 1 ),
-  this.generateMipmaps: true, this.shareDepthFrom: null})
-      : super(null, null, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy) {
-    if (offset == null) offset = new Vector2.zero();
-    if (repeat == null) repeat = new Vector2(1.0, 1.0);
-  }
-
   gl.Texture __webglTexture;
 
-  WebGLRenderTarget clone() =>
-      new WebGLRenderTarget(
-          width,
-          height,
-          wrapS: this.wrapS,
-          wrapT: this.wrapT,
-          magFilter: this.magFilter,
-          anisotropy: this.anisotropy,
-          minFilter: this.minFilter,
-          offset: offset.clone(),
-          repeat: repeat.clone(),
-          format: this.format,
-          type: this.type,
-          depthBuffer: this.depthBuffer,
-          stencilBuffer: this.stencilBuffer,
-          generateMipmaps: this.generateMipmaps,
-          shareDepthFrom: this.shareDepthFrom);
+  WebGLRenderTarget(this.width, this.height, {this.wrapS: ClampToEdgeWrapping, this.wrapT: ClampToEdgeWrapping,
+    this.magFilter: LinearFilter, this.minFilter: LinearMipMapLinearFilter, this.anisotropy: 1,
+    this.format: RGBAFormat, this.type: UnsignedByteType, this.depthBuffer: true, this.stencilBuffer: true,
+    this.shareDepthFrom});
 
+  void setSize(int width, int height) {
+    if (this.width != width || this.height != height) {
+      this.width = width;
+      this.height = height;
+      dispose();
+    }
+  }
+
+  WebGLRenderTarget clone() {
+    var tmp = new WebGLRenderTarget(width, height)
+      ..wrapS = wrapS
+      ..wrapT = wrapT
+
+      ..magFilter = magFilter
+      ..minFilter = minFilter
+
+      ..anisotropy = anisotropy
+
+      ..offset.setFrom(offset)
+      ..repeat.setFrom(repeat)
+
+      ..format = format
+      ..type = type
+
+      ..depthBuffer = depthBuffer
+      ..stencilBuffer = stencilBuffer
+
+      ..generateMipmaps = generateMipmaps
+
+      ..shareDepthFrom = shareDepthFrom;
+    return tmp;
+  }
+
+  void dispose() {
+    _onDisposeController.add(null);
+  }
 }
