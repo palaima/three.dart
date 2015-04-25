@@ -6,7 +6,7 @@ library shaders;
 
 import 'dart:math' show exp;
 import 'package:three/three.dart' show Uniform, ShaderChunk, UniformsLib;
-import 'package:three/src/renderers/shaders/uniforms_utils.dart' as UniformsUtils;
+import 'package:three/extras/uniforms_utils.dart' as UniformsUtils;
 
 final Map basic = {
   'uniforms': {},
@@ -672,8 +672,8 @@ void main() {
   gl_FragColor = sum;
 }
 ''',
-  'buildKernel': (sigma) {
-    double gauss(x, sigma) => exp(-(x * x) / (2.0 * sigma * sigma));
+  'buildKernel': (double sigma) {
+    double gauss(num x, double sigma) => exp(-(x * x) / (2.0 * sigma * sigma));
 
     var kMaxKernelSize = 25, kernelSize = 2 * (sigma * 3.0).ceil() + 1;
 
