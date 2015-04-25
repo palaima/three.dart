@@ -1,77 +1,88 @@
-part of three_postprocessing;
-/**
+/*
  * Depth-of-field post-process with bokeh shader
  *
- *  * Ported to Dart from JS by:
- * @author Christopher Grabowski / https://github.com/cgrabowski
-  */
+ * based on r71
+ */
+
+part of three.postprocessing;
 
 class BokehPass implements Pass {
-  WebGLRenderTarget renderTargetColor, renderTargetDepth;
-  Scene scene1, scene2;
-  PerspectiveCamera camera1;
-  OrthographicCamera camera2;
-  ShaderProgram program;
-  Map<String, Uniform> uniforms;
+  Scene scene;
+  Camera camera;
+
+  WebGLRenderTarget renderTargetColor;
+  WebGLRenderTarget renderTargetDepth;
+
   MeshDepthMaterial materialDepth;
+
   ShaderMaterial materialBokeh;
-  Mesh quad;
+
+  Map<String, Uniform> uniforms;
+
   bool enabled = true;
   bool needsSwap = false;
   bool renderToScreen = false;
   bool clear = false;
 
-  BokehPass(this.scene1, this.camera1, {double focus: 1.0, double aspect, double aperture: 0.025, double maxblur: 1.0,
-      int width, int height}) {
+  OrthographicCamera camera2 = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0, 1);
+  Scene scene2  = new Scene();
 
-    if (width == null) {
-      width = window.innerWidth;
-    }
-    if (height == null) {
-      height = window.innerHeight;
-    }
+  Mesh quad2;
 
-    if (aspect == null) aspect = camera1.aspect;
-    renderTargetColor =
-        new WebGLRenderTarget(width, height, minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat);
+  BokehPass(this.scene, this.camera, {double focus: 1.0, double aspect,
+    double aperture: 0.025, double maxblur: 1.0, int width: 1,
+    int height: 1}) {
+    renderTargetColor = new WebGLRenderTarget(width, height,
+      minFilter: LinearFilter,
+      magFilter: LinearFilter,
+      format: RGBFormat);
 
     renderTargetDepth = renderTargetColor.clone();
+
     materialDepth = new MeshDepthMaterial();
 
-    program = new ShaderProgram.fromThreeish(BokehShader);
-    uniforms = program.uniforms;
-    uniforms['tDepth'].value = renderTargetDepth;
-    uniforms['focus'].value = focus;
-    uniforms['aspect'].value = aspect;
-    uniforms['aperture'].value = aperture;
-    uniforms['maxblur'].value = maxblur;
+    // bokeh material
 
-    materialBokeh =
-        new ShaderMaterial(uniforms: uniforms, vertexShader: program.vertexShader, fragmentShader: program.fragmentShader);
+    var bokehShader = Shaders.bokeh;
+    var bokehUniforms = UniformsUtils.clone(bokehShader['uniforms']);
 
-    scene2 = new Scene();
-    camera2 = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0.0, 1.0);
-    scene2.add(camera2);
-    quad = new Mesh(new PlaneGeometry(2.0, 2.0), materialBokeh);
-    scene2.add(quad);
+    bokehUniforms['tDepth'].value = this.renderTargetDepth;
+
+    bokehUniforms['focus'].value = focus;
+    bokehUniforms['aspect'].value = aspect;
+    bokehUniforms['aperture'].value = aperture;
+    bokehUniforms['maxblur'].value = maxblur;
+
+    materialBokeh = new ShaderMaterial(
+        uniforms: bokehUniforms,
+        vertexShader: bokehShader['vertexShader'],
+        fragmentShader: bokehShader['fragmentShader']);
+
+    uniforms = bokehUniforms;
+
+    quad2 = new Mesh(new PlaneBufferGeometry(2.0, 2.0), null);
+    scene2.add(quad2);
   }
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, double delta,
-      bool maskActive) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, delta, maskActive) {
+    quad2.material = materialBokeh;
 
-    quad.material = materialBokeh;
-    scene1.overrideMaterial = materialDepth;
+    // Render depth into texture
 
-    renderer.renderToTarget(scene1, camera1, renderTargetDepth, true);
+    scene.overrideMaterial = this.materialDepth;
+
+    renderer.render(scene, camera, renderTarget: renderTargetDepth, forceClear: true);
+
+    // Render bokeh composite
 
     uniforms['tColor'].value = readBuffer;
 
     if (renderToScreen) {
       renderer.render(scene2, camera2);
     } else {
-      renderer.renderToTarget(scene2, camera2, writeBuffer, clear);
+      renderer.render(scene2, camera2, renderTarget: writeBuffer, forceClear: clear);
     }
 
-    scene1.overrideMaterial = null;
+    scene.overrideMaterial = null;
   }
 }
