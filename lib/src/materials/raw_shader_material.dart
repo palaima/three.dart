@@ -10,9 +10,9 @@ class RawShaderMaterial extends ShaderMaterial {
   String type = 'RawShaderMaterial';
 
   RawShaderMaterial({Map defines, Map<String, Uniform> uniforms, Map<String, Attribute> attributes,
-    String vertexShader: "void main() {}", String fragmentShader: "void main() {}", int shading: SmoothShading,
-    double lineWidth: 1.0, bool wireframe: false, double wireframeLinewidth: 1.0, bool fog: true,
-    bool lights: false, int vertexColors: NoColors, bool skinning: false, bool morphTargets: false,
+    String vertexShader: ShaderMaterial.defaultVertexShader, String fragmentShader: ShaderMaterial.defaultFragmentShader,
+    int shading: SmoothShading, double lineWidth: 1.0, bool wireframe: false, double wireframeLinewidth: 1.0,
+    bool fog: true, bool lights: false, int vertexColors: NoColors, bool skinning: false, bool morphTargets: false,
     bool morphNormals: false,
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
