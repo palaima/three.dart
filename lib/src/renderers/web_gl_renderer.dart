@@ -4,7 +4,7 @@
  * @author alteredq / http://alteredqualia.com/
  * @author szimek / https://github.com/szimek/
  *
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ * based on https://github.com/mrdoob/three.js/blob/46b78bbd17865dd7cefca76b10bd6d2cde5ad331/src/renderers/WebGLRenderer.js
  */
 
 part of three;
@@ -208,8 +208,7 @@ class WebGLRenderer implements Renderer {
 
     // shadow map
 
-    // TODO
-    //shadowMap = new WebGLShadowMap(this, lights, objects);
+    shadowMap = new WebGLShadowMap(this, lights, objects);
 
     setDefaultGLState();
 
@@ -698,10 +697,12 @@ class WebGLRenderer implements Renderer {
             }
           }
         } else if (mat is ShaderMaterial && mat.defaultAttributeValues != null) {
-          if (mat.defaultAttributeValues[key].length == 2) {
-            _gl.vertexAttrib2fv(programAttribute, mat.defaultAttributeValues[key]);
-          } else if (mat.defaultAttributeValues[key].length == 3) {
-            _gl.vertexAttrib3fv(programAttribute, mat.defaultAttributeValues[key]);
+          if (mat.defaultAttributeValues[key] != null) {
+            if (mat.defaultAttributeValues[key].length == 2) {
+              _gl.vertexAttrib2fv(programAttribute, mat.defaultAttributeValues[key]);
+            } else if (mat.defaultAttributeValues[key].length == 3) {
+              _gl.vertexAttrib3fv(programAttribute, mat.defaultAttributeValues[key]);
+            }
           }
         }
       }
@@ -714,8 +715,6 @@ class WebGLRenderer implements Renderer {
                           BufferGeometry geometry, Object3D object) {
     var mat = material;
     if (material.visible == false) return;
-
-    objects.update(object);
 
     var program = setProgram(camera, lights, fog, material, object);
 
@@ -1168,17 +1167,9 @@ class WebGLRenderer implements Renderer {
 
     if (camera.parent == null) camera.updateMatrixWorld();
 
-    // update Skeleton objects
-
-    scene.traverse((object) {
-      if (object is SkinnedMesh) {
-        object.skeleton.update();
-      }
-    });
-
     camera.matrixWorldInverse.copyInverse(camera.matrixWorld);
 
-    _projScreenMatrix = camera.projectionMatrix * camera.matrixWorldInverse;
+    _projScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
     _frustum.setFromMatrix(_projScreenMatrix);
 
     lights.length = 0;
@@ -1195,9 +1186,11 @@ class WebGLRenderer implements Renderer {
       _transparentObjects.sort(reversePainterSortStable);
     }
 
+    objects.update(_opaqueObjects);
+    objects.update(_transparentObjects);
     //
 
-    //shadowMap.render(scene, camera); TODO
+    shadowMap.render(scene, camera);
 
     //
 
@@ -1272,7 +1265,12 @@ class WebGLRenderer implements Renderer {
     if (object is Scene || object is Group) {
       // skip
     } else {
+      if (object is SkinnedMesh) {
+        object.skeleton.update();
+      }
+
       objects.init(object);
+
       if (object is Light) {
         lights.add(object);
       } else if (object is Sprite) {
@@ -1461,12 +1459,12 @@ class WebGLRenderer implements Renderer {
       'maxPointLights': maxLightCount['point'],
       'maxSpotLights': maxLightCount['spot'],
       'maxHemiLights': maxLightCount['hemi'],
-//TODO
+
       'maxShadows': maxShadows,
-      'shadowMapEnabled': false, // shadowMap.enabled && object.receiveShadow && maxShadows > 0,
-      'shadowMapType': 1, // shadowMap.type, 1
-      'shadowMapDebug': false, // shadowMap.debug,
-      'shadowMapCascade': false, // shadowMap.cascade,
+      'shadowMapEnabled': shadowMap.enabled && object.receiveShadow && maxShadows > 0,
+      'shadowMapType': shadowMap.type,
+      'shadowMapDebug': shadowMap.debug,
+      'shadowMapCascade': shadowMap.cascade,
 
       'alphaTest': material.alphaTest,
       'metal': (material is MeshPhongMaterial) && material.metal,
@@ -1520,10 +1518,11 @@ class WebGLRenderer implements Renderer {
         'fragmentShader': shader['fragmentShader']
       };
     } else {
+      var mat = material as ShaderMaterial;
       material.__webglShader = {
-        'uniforms': (material as ShaderMaterial).uniforms,
-        'vertexShader': (material as ShaderMaterial).vertexShader,
-        'fragmentShader': (material as ShaderMaterial).fragmentShader
+        'uniforms': mat.uniforms,
+        'vertexShader': mat.vertexShader,
+        'fragmentShader': mat.fragmentShader
       };
     }
 
@@ -1609,7 +1608,7 @@ class WebGLRenderer implements Renderer {
     state.setPolygonOffset(material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits);
   }
 
-  setProgram(Camera camera, List<Light> lights, Fog fog, Material material, Object3D object) {
+  WebGLProgram setProgram(Camera camera, List<Light> lights, Fog fog, Material material, Object3D object) {
     _usedTextureUnits = 0;
 
     if (material.needsUpdate) {
@@ -1846,18 +1845,18 @@ class WebGLRenderer implements Renderer {
 
   }
 
-  void refreshUniformsLine(Map uniforms, material) {
+  void refreshUniformsLine(Map<String, Uniform> uniforms, material) {
     uniforms['diffuse'].value = material.color;
     uniforms['opacity'].value = material.opacity;
   }
 
-  void refreshUniformsDash(Map uniforms, LineDashedMaterial material) {
+  void refreshUniformsDash(Map<String, Uniform> uniforms, LineDashedMaterial material) {
     uniforms['dashSize'].value = material.dashSize;
     uniforms['totalSize'].value = material.dashSize + material.gapSize;
     uniforms['scale'].value = material.scale;
   }
 
-  void refreshUniformsParticle(Map uniforms, PointCloudMaterial material) {
+  void refreshUniformsParticle(Map<String, Uniform> uniforms, PointCloudMaterial material) {
     uniforms['psColor'].value = material.color;
     uniforms['opacity'].value = material.opacity;
     uniforms['size'].value = material.size;
@@ -1873,7 +1872,7 @@ class WebGLRenderer implements Renderer {
     }
   }
 
-  void refreshUniformsFog(Map uniforms, Fog fog) {
+  void refreshUniformsFog(Map<String, Uniform> uniforms, Fog fog) {
     uniforms['fogColor'].value = fog.color;
 
     if (fog is FogLinear) {
@@ -1884,7 +1883,7 @@ class WebGLRenderer implements Renderer {
     }
   }
 
-  void refreshUniformsPhong(Map uniforms, MeshPhongMaterial material) {
+  void refreshUniformsPhong(Map<String, Uniform> uniforms, MeshPhongMaterial material) {
     uniforms['shininess'].value = material.shininess;
 
     uniforms['emissive'].value = material.emissive;
@@ -1897,11 +1896,11 @@ class WebGLRenderer implements Renderer {
     uniforms['aoMapIntensity'].value = material.aoMapIntensity;
   }
 
-  void refreshUniformsLambert(Map uniforms, MeshLambertMaterial material) {
+  void refreshUniformsLambert(Map<String, Uniform> uniforms, MeshLambertMaterial material) {
     uniforms['emissive'].value = material.emissive;
   }
 
-  void refreshUniformsLights(Map uniforms, Map lights) {
+  void refreshUniformsLights(Map<String, Uniform> uniforms, Map lights) {
     uniforms['ambientLightColor'].value = lights['ambient'];
 
     uniforms['directionalLightColor'].value = lights['directional']['colors'];
@@ -1927,7 +1926,7 @@ class WebGLRenderer implements Renderer {
 
   // If uniforms are marked as clean, they don't need to be loaded to the GPU.
 
-  void markUniformsLightsNeedsUpdate(Map uniforms, bool value) {
+  void markUniformsLightsNeedsUpdate(Map<String, Uniform> uniforms, bool value) {
     uniforms['ambientLightColor'].needsUpdate = value;
 
     uniforms['directionalLightColor'].needsUpdate = value;
@@ -1951,15 +1950,11 @@ class WebGLRenderer implements Renderer {
     uniforms['hemisphereLightDirection'].needsUpdate = value;
   }
 
-  void refreshUniformsShadow(Map uniforms, List<ShadowCaster>lights) {
-    if (uniforms['shadowMatrix']) {
+  void refreshUniformsShadow(Map<String, Uniform> uniforms, List<ShadowCaster> lights) {
+    if (uniforms['shadowMatrix'] != null) {
       var j = 0;
 
-      for (var i = 0; i < lights.length; i++) {
-        var light = lights[i];
-
-        if (!light.castShadow) continue;
-
+      lights.where((l) => l.castShadow).forEach((light) {
         if (light is SpotLight || (light is DirectionalLight && !light.shadowCascade)) {
           uniforms['shadowMap'].value[j] = light.shadowMap;
           uniforms['shadowMapSize'].value[j] = light.shadowMapSize;
@@ -1971,13 +1966,13 @@ class WebGLRenderer implements Renderer {
 
           j++;
         }
-      }
+      });
     }
   }
 
   // Uniforms (load to GPU)
 
-  void loadUniformsMatrices(Map uniforms, object) {
+  void loadUniformsMatrices(Map<String, gl.UniformLocation> uniforms, Object3D object) {
     _gl.uniformMatrix4fv(uniforms['modelViewMatrix'], false, object._modelViewMatrix.storage);
 
     if (uniforms['normalMatrix'] != null) {
@@ -1999,10 +1994,10 @@ class WebGLRenderer implements Renderer {
 
   void loadUniformsGeneric(List<List> uniforms) {
     for (var j = 0; j < uniforms.length; j++) {
-      var uniform = uniforms[j][0];
+      Uniform uniform = uniforms[j][0];
 
       // needsUpdate property is not added to all uniforms.
-      //if (!uniform.needsUpdate) continue;
+      if (uniform.needsUpdate != null && !uniform.needsUpdate) continue;
 
       String type = uniform.type;
       var value = uniform.typedValue;
@@ -2056,14 +2051,13 @@ class WebGLRenderer implements Renderer {
           }
           _gl.uniform2fv(location, uniform._array);
           break;
+        // array of Vector3
         case 'v3v':
-          // array of Vector3
-
           if (uniform._array == null) {
             uniform._array = new Float32List(3 * value.length);
           }
 
-          for (var i = 0, il = value.length; i < il; i ++) {
+          for (var i = 0; i < value.length; i++) {
             var offset = i * 3;
 
             uniform._array[offset]   = value[i].x;
@@ -2072,13 +2066,13 @@ class WebGLRenderer implements Renderer {
           }
           _gl.uniform3fv(location, uniform._array);
           break;
+        // array of Vector4
         case 'v4v':
-          // array of Vector4
           if (uniform._array == null) {
             uniform._array = new Float32List(4 * value.length);
           }
 
-          for (var i = 0, il = value.length; i < il; i ++) {
+          for (var i = 0; i < value.length; i++) {
             var offset = i * 4;
 
             uniform._array[offset]   = value[i].x;
@@ -2090,13 +2084,13 @@ class WebGLRenderer implements Renderer {
           break;
         // single Matrix3
         case 'm3': _gl.uniformMatrix3fv(location, false, value.elements); break;
+        // array of Matrix3
         case 'm3v':
-          // array of Matrix3
           if (uniform._array == null) {
             uniform._array = new Float32List(9 * value.length);
           }
 
-          for (var i = 0, il = value.length; i < il; i ++) {
+          for (var i = 0; i < value.length; i++) {
             value[i].flattenToArrayOffset(uniform._array, i * 9);
           }
 
@@ -2104,20 +2098,20 @@ class WebGLRenderer implements Renderer {
           break;
         // single Matrix4
         case 'm4': _gl.uniformMatrix4fv(location, false, value.elements); break;
+        // array of Matrix4
         case 'm4v':
-          // array of Matrix4
           if (uniform._array == null) {
             uniform._array = new Float32List(16 * value.length);
           }
 
-          for (var i = 0, il = value.length; i < il; i ++) {
+          for (var i = 0; i < value.length; i ++) {
             value[i].flattenToArrayOffset(uniform._array, i * 16);
           }
 
           _gl.uniformMatrix4fv(location, false, uniform._array);
           break;
+        // single Texture (2d or cube)
         case 't':
-          // single Texture (2d or cube)
           var texture = value;
           var textureUnit = getTextureUnit();
 
@@ -2140,13 +2134,13 @@ class WebGLRenderer implements Renderer {
             uniform._array = [];
           }
 
-          for (var i = 0, il = uniform.value.length; i < il; i ++) {
+          for (var i = 0; i < uniform.value.length; i ++) {
             uniform._array[i] = getTextureUnit();
           }
 
           _gl.uniform1iv(location, uniform._array);
 
-          for (var i = 0, il = uniform.value.length; i < il; i ++) {
+          for (var i = 0; i < uniform.value.length; i++) {
             var texture = uniform.value[i];
             var textureUnit = uniform._array[i];
 
@@ -2162,7 +2156,7 @@ class WebGLRenderer implements Renderer {
   }
 
   void setupMatrices(Object3D object, Camera camera) {
-    object._modelViewMatrix = camera.matrixWorldInverse * object.matrixWorld;
+    object._modelViewMatrix.multiplyMatrices(camera.matrixWorldInverse, object.matrixWorld);
     object._normalMatrix.copyNormalMatrix(object._modelViewMatrix);
   }
 
@@ -2731,7 +2725,7 @@ class WebGLRenderer implements Renderer {
       } else {
         renderTarget.__webglFramebuffer = _gl.createFramebuffer();
 
-        if (renderTarget.shareDepthFrom) {
+        if (renderTarget.shareDepthFrom != null) {
           renderTarget.__webglRenderbuffer = renderTarget.shareDepthFrom.__webglRenderbuffer;
         } else {
           renderTarget.__webglRenderbuffer = _gl.createRenderbuffer();
@@ -2745,7 +2739,7 @@ class WebGLRenderer implements Renderer {
 
         setupFrameBuffer(renderTarget.__webglFramebuffer, renderTarget, gl.TEXTURE_2D);
 
-        if (renderTarget.shareDepthFrom) {
+        if (renderTarget.shareDepthFrom != null) {
           if (renderTarget.depthBuffer && !renderTarget.stencilBuffer) {
             _gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER,
                 renderTarget.__webglRenderbuffer);

@@ -208,7 +208,7 @@ class WebGLShadowMap {
 
       // update camera matrices and frustum
 
-      _projScreenMatrix = shadowCamera.projectionMatrix * shadowCamera.matrixWorldInverse;
+      _projScreenMatrix.multiplyMatrices(shadowCamera.projectionMatrix, shadowCamera.matrixWorldInverse);
       _frustum.setFromMatrix(_projScreenMatrix);
 
       // render shadow map

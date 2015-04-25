@@ -326,7 +326,7 @@ class Object3D {
       if (parent == null) {
         matrixWorld.setFrom(matrix);
       } else {
-        matrixWorld = parent.matrixWorld * matrix;
+        matrixWorld.multiplyMatrices(parent.matrixWorld, matrix);
       }
 
       matrixWorldNeedsUpdate = false;

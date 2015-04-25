@@ -2002,4 +2002,39 @@ class Matrix4 {
     return this;
   }
 
+  /// Sets this as [arg1] multiplied by [arg2].
+  Matrix4 multiplyMatrices(Matrix4 arg1, Matrix4 arg2) {
+    var a11 = arg1.storage[0], a12 = arg1.storage[4], a13 = arg1.storage[8], a14 = arg1.storage[12];
+    var a21 = arg1.storage[1], a22 = arg1.storage[5], a23 = arg1.storage[9], a24 = arg1.storage[13];
+    var a31 = arg1.storage[2], a32 = arg1.storage[6], a33 = arg1.storage[10], a34 = arg1.storage[14];
+    var a41 = arg1.storage[3], a42 = arg1.storage[7], a43 = arg1.storage[11], a44 = arg1.storage[15];
+
+    var b11 = arg2.storage[0], b12 = arg2.storage[4], b13 = arg2.storage[8], b14 = arg2.storage[12];
+    var b21 = arg2.storage[1], b22 = arg2.storage[5], b23 = arg2.storage[9], b24 = arg2.storage[13];
+    var b31 = arg2.storage[2], b32 = arg2.storage[6], b33 = arg2.storage[10], b34 = arg2.storage[14];
+    var b41 = arg2.storage[3], b42 = arg2.storage[7], b43 = arg2.storage[11], b44 = arg2.storage[15];
+
+    storage[0] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
+    storage[4] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
+    storage[8] = a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43;
+    storage[12] = a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44;
+
+    storage[1] = a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41;
+    storage[5] = a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42;
+    storage[9] = a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43;
+    storage[13] = a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44;
+
+    storage[2] = a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41;
+    storage[6] = a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42;
+    storage[10] = a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43;
+    storage[14] = a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44;
+
+    storage[3] = a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41;
+    storage[7] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
+    storage[11] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
+    storage[15] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
+
+    return this;
+  }
+
 }
