@@ -27,7 +27,7 @@ import 'extras/shader_utils.dart' as ShaderUtils;
 import 'extras/core/curve_utils.dart' as CurveUtils;
 import 'extras/core/shape_utils.dart' as ShapeUtils;
 
-import 'src/renderers/shaders/uniforms_utils.dart' as UniformsUtils;
+import 'extras/uniforms_utils.dart' as UniformsUtils;
 
 part 'src/cameras/camera.dart';
 part 'src/cameras/perspective_camera.dart';
