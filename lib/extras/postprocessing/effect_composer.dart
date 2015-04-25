@@ -107,7 +107,7 @@ class EffectComposer {
     readBuffer = renderTarget2;
   }
 
-  void setSize(width, height) {
+  void setSize(int width, int height) {
     var renderTarget = renderTarget1.clone();
 
     renderTarget.width = width;

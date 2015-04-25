@@ -64,7 +64,8 @@ class BokehPass implements Pass {
     scene2.add(quad2);
   }
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, delta, maskActive) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     quad2.material = materialBokeh;
 
     // Render depth into texture

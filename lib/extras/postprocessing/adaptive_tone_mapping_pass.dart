@@ -11,14 +11,14 @@
 
 part of three.postprocessing;
 
-class AdaptiveToneMappingPass {
+class AdaptiveToneMappingPass implements Pass {
   int resolution;
   bool needsInit = true;
   bool adaptive;
 
-  var luminanceRT;
-  var previousLuminanceRT;
-  var currentLuminanceRT;
+  WebGLRenderTarget luminanceRT;
+  WebGLRenderTarget previousLuminanceRT;
+  WebGLRenderTarget currentLuminanceRT;
 
   Map<String, Uniform> copyUniforms;
 
@@ -120,7 +120,8 @@ class AdaptiveToneMappingPass {
     scene.add(quad);
   }
 
-  void render(renderer, writeBuffer, readBuffer, delta, maskActive) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     if (needsInit) {
       reset(renderer);
       luminanceRT.type = readBuffer.type;
@@ -133,7 +134,7 @@ class AdaptiveToneMappingPass {
       //Render the luminance of the current scene into a render target with mipmapping enabled
       quad.material = materialLuminance;
       materialLuminance.uniforms['tDiffuse'].value = readBuffer;
-      renderer.render(scene, camera, currentLuminanceRT);
+      renderer.render(scene, camera, renderTarget: currentLuminanceRT);
 
       //Use the new luminance values, the previous luminance and the frame delta to
       //adapt the luminance over time.
@@ -141,35 +142,37 @@ class AdaptiveToneMappingPass {
       materialAdaptiveLum.uniforms['delta'].value = delta;
       materialAdaptiveLum.uniforms['lastLum'].value = previousLuminanceRT;
       materialAdaptiveLum.uniforms['currentLum'].value = currentLuminanceRT;
-      renderer.render(scene, camera, luminanceRT);
+      renderer.render(scene, camera, renderTarget: luminanceRT);
 
       //Copy the new adapted luminance value so that it can be used by the next frame.
       quad.material = materialCopy;
       copyUniforms['tDiffuse'].value = luminanceRT;
-      renderer.render(scene, camera, previousLuminanceRT);
+      renderer.render(scene, camera, renderTarget: previousLuminanceRT);
     }
 
     quad.material = materialToneMap;
     materialToneMap.uniforms['tDiffuse'].value = readBuffer;
-    renderer.render(scene, camera, writeBuffer, clear);
+    renderer.render(scene, camera, renderTarget: writeBuffer, forceClear: clear);
   }
 
   void reset(WebGLRenderer renderer) {
     // render targets
-    if (luminanceRT) {
+    if (luminanceRT != null) {
       luminanceRT.dispose();
     }
-    if (currentLuminanceRT) {
+    if (currentLuminanceRT != null) {
       currentLuminanceRT.dispose();
     }
-    if (previousLuminanceRT) {
+    if (previousLuminanceRT != null) {
       previousLuminanceRT.dispose();
     }
 
-    luminanceRT = new WebGLRenderTarget(resolution, resolution, minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat);
-    luminanceRT.generateMipmaps = false;
-    previousLuminanceRT = new WebGLRenderTarget(resolution, resolution, minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat);
-    previousLuminanceRT.generateMipmaps = false;
+    luminanceRT = new WebGLRenderTarget(resolution, resolution, minFilter: LinearFilter,
+        magFilter: LinearFilter, format: RGBFormat)
+      ..generateMipmaps = false;
+    previousLuminanceRT = new WebGLRenderTarget(resolution, resolution, minFilter: LinearFilter,
+        magFilter: LinearFilter, format: RGBFormat)
+      ..generateMipmaps = false;
 
     //We only need mipmapping for the current luminosity because we want a down-sampled version to sample in our adaptive shader
     currentLuminanceRT = new WebGLRenderTarget(resolution, resolution, minFilter: LinearMipMapLinearFilter, magFilter: LinearFilter, format: RGBFormat);
@@ -224,13 +227,13 @@ class AdaptiveToneMappingPass {
   }
 
   void dispose() {
-    if (luminanceRT) {
+    if (luminanceRT != null) {
       luminanceRT.dispose();
     }
-    if (previousLuminanceRT) {
+    if (previousLuminanceRT != null) {
       previousLuminanceRT.dispose();
     }
-    if (currentLuminanceRT) {
+    if (currentLuminanceRT != null) {
       currentLuminanceRT.dispose();
     }
     if (materialLuminance != null) {

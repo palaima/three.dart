@@ -1,6 +1,10 @@
+/*
+ * Based on r71
+ */
+
 part of three.postprocessing;
 
-class GlitchMap {
+class GlitchPass implements Pass {
   Map<String, Uniform> uniforms;
 
   ShaderMaterial material;
@@ -20,7 +24,7 @@ class GlitchMap {
   int _randX;
   Math.Random _rnd = new Math.Random();
 
-  GlitchMap({int dtSize: 64}) {
+  GlitchPass({int dtSize: 64}) {
     var shader = Shaders.digitalGlitch;
     uniforms = UniformsUtils.clone(shader['uniforms']);
 
@@ -38,7 +42,8 @@ class GlitchMap {
     generateTrigger();
   }
 
-  render(renderer, writeBuffer, readBuffer, delta) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     uniforms["tDiffuse"].value = readBuffer;
     uniforms['seed'].value = _rnd.nextDouble();//default seeding
     uniforms['byp'].value=0;
@@ -60,7 +65,7 @@ class GlitchMap {
       uniforms['seed_x'].value = ThreeMath.randFloat(-0.3, 0.3);
       uniforms['seed_y'].value = ThreeMath.randFloat(-0.3, 0.3);
     } else if (!goWild){
-      uniforms['byp'].value=1;
+      uniforms['byp'].value = 1;
     }
 
     curF++;
@@ -69,7 +74,7 @@ class GlitchMap {
     if (renderToScreen) {
       renderer.render(scene, camera);
     } else {
-      renderer.render(scene, camera, writeBuffer, false);
+      renderer.render(scene, camera, renderTarget: writeBuffer, forceClear: false);
     }
   }
 
@@ -77,7 +82,7 @@ class GlitchMap {
     _randX = ThreeMath.randInt(120, 240);
   }
 
-  DataTexture generateHeightmap(dtSize) {
+  DataTexture generateHeightmap(int dtSize) {
     var dataArr = new Float32List(dtSize * dtSize * 3);
 
     var length = dtSize * dtSize;

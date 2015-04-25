@@ -6,7 +6,7 @@
 
 part of three.postprocessing;
 
-class FilmPass {
+class FilmPass implements Pass {
   Map<String, Uniform> uniforms;
 
   ShaderMaterial material;
@@ -20,7 +20,7 @@ class FilmPass {
 
   Mesh quad;
 
-  FilmPass(noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale) {
+  FilmPass(double noiseIntensity, double scanlinesIntensity, double scanlinesCount, int grayscale) {
     var shader = Shaders.film;
 
     uniforms = UniformsUtils.clone(shader['uniforms']);
@@ -39,7 +39,8 @@ class FilmPass {
     scene.add(quad);
   }
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, delta, maskActive) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     uniforms['tDiffuse'].value = readBuffer;
     uniforms['time'].value += delta;
 

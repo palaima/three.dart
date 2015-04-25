@@ -6,8 +6,8 @@
 
 part of three.postprocessing;
 
-class DotScreenPass {
-  Map uniforms;
+class DotScreenPass implements Pass {
+  Map<String, Uniform> uniforms;
   ShaderMaterial material;
 
   bool enabled = true;
@@ -19,12 +19,12 @@ class DotScreenPass {
 
   Mesh quad;
 
-  DotScreenPass(center, double angle, double scale) {
+  DotScreenPass(Vector2 center, double angle, double scale) {
     var shader = Shaders.dotScreen;
 
     uniforms = UniformsUtils.clone(shader['uniforms']);
 
-    if (center != null) uniforms['center'].value.copy(center);
+    if (center != null) uniforms['center'].value.setFrom(center);
     if (angle != null) uniforms['angle'].value = angle;
     if (scale != null) uniforms['scale'].value = scale;
 
@@ -37,7 +37,8 @@ class DotScreenPass {
     scene.add(quad);
   }
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, delta, maskActive) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     uniforms['tDiffuse'].value = readBuffer;
     uniforms['tSize'].value.set(readBuffer.width, readBuffer.height);
 

@@ -25,6 +25,6 @@ part 'postprocessing/texture_pass.dart';
 abstract class Pass {
   bool enabled;
   bool needsSwap;
-  void render(renderer, writeBuffer, readBuffer, delta, maskActive);
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, double delta, bool maskActive);
 }
 

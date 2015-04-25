@@ -6,18 +6,18 @@
 
 part of three.postprocessing;
 
-class BloomPass {
+class BloomPass implements Pass {
   static final blurX = new Vector2(0.001953125, 0.0);
   static final blurY = new Vector2(0.0, 0.001953125);
 
   WebGLRenderTarget renderTargetX;
   WebGLRenderTarget renderTargetY;
 
-  Map copyUniforms;
+  Map<String, Uniform> copyUniforms;
 
   ShaderMaterial materialCopy;
 
-  Map convolutionUniforms;
+  Map<String, Uniform> convolutionUniforms;
 
   ShaderMaterial materialConvolution;
 
@@ -71,7 +71,8 @@ class BloomPass {
     scene.add(quad);
   }
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, readBuffer, delta, bool maskActive) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     if (maskActive) renderer.context.disable(gl.STENCIL_TEST);
 
     // Render quad with blured scene into texture (convolution pass 1)

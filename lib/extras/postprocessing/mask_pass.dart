@@ -6,7 +6,7 @@
 
 part of three.postprocessing;
 
-class MaskPass {
+class MaskPass implements Pass {
   Scene scene;
   Camera camera;
 
@@ -18,7 +18,8 @@ class MaskPass {
 
   MaskPass(this.scene, this.camera);
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, delta, maskActive) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     var context = renderer.context;
 
     // don't update color or depth
@@ -60,10 +61,12 @@ class MaskPass {
   }
 }
 
-class ClearMaskPass {
+class ClearMaskPass implements Pass {
   bool enabled = true;
+  bool needsSwap = false;
 
-  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer, delta) {
+  void render(WebGLRenderer renderer, WebGLRenderTarget writeBuffer, WebGLRenderTarget readBuffer,
+              double delta, bool maskActive) {
     renderer.context.disable(gl.STENCIL_TEST);
   }
 }
