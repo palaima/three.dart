@@ -1,18 +1,25 @@
-part of three;
-
-/**
+/*
  * @author mr.doob / http://mrdoob.com/
  * @author greggman / http://games.greggman.com/
  * @author zz85 / http://www.lab4games.net/zz85/blog
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
+ *
+ * based on r71
  */
+
+part of three;
 
 /// Camera with perspective projection.
 class PerspectiveCamera extends Camera {
+  String type = 'PerspectiveCamera';
+
+  double zoom = 1.0;
+
   /// Camera frustum vertical field of view, from bottom to top of view, in degrees.
   double fov;
+
   /// Camera frustum aspect ratio, window width divided by window height.
   double aspect;
 
@@ -22,7 +29,6 @@ class PerspectiveCamera extends Camera {
   double _y;
   double _width;
   double _height;
-
 
   PerspectiveCamera([this.fov = 50.0, this.aspect = 1.0, double near = 0.1, double far = 2000.0])
       : super(near, far) {
@@ -34,12 +40,8 @@ class PerspectiveCamera extends Camera {
   /// 35mm (fullframe) camera is used if frame size is not specified.
   ///
   /// Formula based on http://www.bobatkins.com/photography/technical/field_of_view.html
-  void setLens(double focalLength, double frameSize) {
-    frameSize = frameSize != null ? frameSize : 43.25; // 36x24mm
-
-    fov = 2.0 * Math.atan(frameSize / (focalLength * 2.0));
-    fov = 180.0 / Math.PI * fov;
-
+  void setLens(double focalLength, [double frameHeight = 24.0]) {
+    fov = 2 * ThreeMath.radToDeg(Math.atan(frameHeight / (focalLength * 2)));
     updateProjectionMatrix();
   }
 
@@ -93,14 +95,16 @@ class PerspectiveCamera extends Camera {
   ///
   /// Must be called after change of parameters.
   void updateProjectionMatrix() {
+    var _fov = 2 * Math.atan(Math.tan(ThreeMath.degToRad(fov) * 0.5) / zoom);
+
     if (_fullWidth != null) {
-      double aspect = _fullWidth / _fullHeight;
-      double top = Math.tan(fov * Math.PI / 360.0) * near;
-      double bottom = -top;
-      double left = aspect * bottom;
-      double right = aspect * top;
-      double width = (right - left).abs();
-      double height = (top - bottom).abs();
+      var aspect = _fullWidth / _fullHeight;
+      var top = Math.tan(ThreeMath.degToRad(_fov * 0.5)) * near;
+      var bottom = -top;
+      var left = aspect * bottom;
+      var right = aspect * top;
+      var width = (right - left).abs();
+      var height = (top - bottom).abs();
 
       setFrustumMatrix(
           projectionMatrix,
@@ -111,7 +115,27 @@ class PerspectiveCamera extends Camera {
           near,
           far);
     } else {
-      projectionMatrix = makePerspectiveMatrix(fov * (Math.PI / 180), aspect, near, far);
+      projectionMatrix = makePerspectiveMatrix(_fov, aspect, near, far);
     }
+  }
+
+  /// Returns clone of [this].
+  PerspectiveCamera clone([PerspectiveCamera camera, bool recursive = true]) {
+    camera = new PerspectiveCamera();
+
+    super.clone(camera);
+
+    camera.zoom = zoom;
+
+    camera.fov = fov;
+    camera.aspect = aspect;
+    camera.near = near;
+    camera.far = far;
+
+    return camera;
+  }
+
+  toJSON() {
+    throw new UnimplementedError();
   }
 }
