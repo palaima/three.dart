@@ -1085,7 +1085,7 @@ final Map film = {
     'time': new Uniform.float(0.0),
     'nIntensity': new Uniform.float(0.5),
     'sIntensity': new Uniform.float(0.05),
-    'sCount': new Uniform.float(4096),
+    'sCount': new Uniform.float(4096.0),
     'grayscale': new Uniform.int(1),
   },
   'vertexShader': '''

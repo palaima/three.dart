@@ -90,7 +90,7 @@ class EffectComposer {
     });
   }
 
-  void reset(WebGLRenderTarget renderTarget) {
+  void reset([WebGLRenderTarget renderTarget]) {
     if (renderTarget == null) {
       renderTarget = renderTarget1.clone();
 

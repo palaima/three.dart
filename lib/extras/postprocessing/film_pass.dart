@@ -20,7 +20,7 @@ class FilmPass implements Pass {
 
   Mesh quad;
 
-  FilmPass(double noiseIntensity, double scanlinesIntensity, double scanlinesCount, int grayscale) {
+  FilmPass(double noiseIntensity, double scanlinesIntensity, double scanlinesCount, bool grayscale) {
     var shader = Shaders.film;
 
     uniforms = UniformsUtils.clone(shader['uniforms']);
@@ -30,7 +30,7 @@ class FilmPass implements Pass {
       vertexShader: shader['vertexShader'],
       fragmentShader: shader['fragmentShader']);
 
-    if (grayscale != null) uniforms['grayscale'].value = grayscale;
+    if (grayscale != null) uniforms['grayscale'].value = grayscale ? 1 : 0;
     if (noiseIntensity != null) uniforms['nIntensity'].value = noiseIntensity;
     if (scanlinesIntensity != null) uniforms['sIntensity'].value = scanlinesIntensity;
     if (scanlinesCount != null) uniforms['sCount'].value = scanlinesCount;
