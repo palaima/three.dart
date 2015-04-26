@@ -14,7 +14,7 @@ class TexturePass implements Pass {
   bool enabled = true;
   bool needsSwap = false;
 
-  OrthographicCamera camera = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0, 1);
+  OrthographicCamera camera = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0.0, 1.0);
   Scene scene  = new Scene();
 
   Mesh quad;

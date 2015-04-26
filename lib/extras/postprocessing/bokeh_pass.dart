@@ -8,7 +8,7 @@ part of three.postprocessing;
 
 class BokehPass implements Pass {
   Scene scene;
-  Camera camera;
+  PerspectiveCamera camera;
 
   WebGLRenderTarget renderTargetColor;
   WebGLRenderTarget renderTargetDepth;
@@ -24,7 +24,7 @@ class BokehPass implements Pass {
   bool renderToScreen = false;
   bool clear = false;
 
-  OrthographicCamera camera2 = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0, 1);
+  OrthographicCamera camera2 = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0.0, 1.0);
   Scene scene2  = new Scene();
 
   Mesh quad2;
@@ -32,6 +32,8 @@ class BokehPass implements Pass {
   BokehPass(this.scene, this.camera, {double focus: 1.0, double aspect,
     double aperture: 0.025, double maxblur: 1.0, int width: 1,
     int height: 1}) {
+    if (aspect == null) aspect = camera.aspect;
+
     renderTargetColor = new WebGLRenderTarget(width, height,
       minFilter: LinearFilter,
       magFilter: LinearFilter,
