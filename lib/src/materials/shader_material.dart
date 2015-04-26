@@ -34,9 +34,9 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
   // When rendered geometry doesn't include these attributes but the material does,
   // use these default values in WebGL. This avoids errors when buffer data is missing.
   final Map<String, List<num>> defaultAttributeValues = {
-    'color': [1, 1, 1],
-    'uv': [0, 0],
-    'uv2': [0, 0]
+    'color': new Float32List.fromList([1.0, 1.0, 1.0]),
+    'uv': new Float32List.fromList([0.0, 0.0]),
+    'uv2': new Float32List.fromList([0.0, 0.0])
   };
 
   String index0AttributeName;
