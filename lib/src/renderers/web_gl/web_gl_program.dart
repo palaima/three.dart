@@ -12,7 +12,7 @@ class WebGLProgram {
 
   int id = WebGLProgram.programIdCount++;
   String code;
-  int  usedTimes = 1;
+  int usedTimes = 1;
   gl.Program program;
   gl.Shader vertexShader;
   gl.Shader fragmentShader;
@@ -183,11 +183,11 @@ class WebGLProgram {
         morphNormals ? '#define USE_MORPHNORMALS' : '',
         doubleSided ? '#define DOUBLE_SIDED' : '',
         flipSided ? '#define FLIP_SIDED' : '',
-// TODO
-//        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
-//        shadowMapEnabled ? '#define $shadowMapTypeDefine' : '',
-//        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
-//        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
+
+        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
+        shadowMapEnabled ? '#define $shadowMapTypeDefine' : '',
+        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
+        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
 
         sizeAttenuation ? '#define USE_SIZEATTENUATION' : '',
 
@@ -287,11 +287,11 @@ class WebGLProgram {
         metal ? '#define METAL' : '',
         doubleSided ? '#define DOUBLE_SIDED' : '',
         flipSided ? '#define FLIP_SIDED' : '',
-// TODO
-//        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
-//        shadowMapEnabled ? '#define $shadowMapTypeDefine' : '',
-//        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
-//        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
+
+        shadowMapEnabled ? '#define USE_SHADOWMAP' : '',
+        shadowMapEnabled ? '#define $shadowMapTypeDefine' : '',
+        shadowMapDebug ? '#define SHADOWMAP_DEBUG' : '',
+        shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
 
         logarithmicDepthBuffer ? '#define USE_LOGDEPTHBUF' : '',
 

@@ -3,7 +3,7 @@ part of three;
 class Uniform<T> {
   String type;
   T _value;
-  bool needsUpdate = false;
+  bool needsUpdate;
 
   // cache the typed value
   bool _dirty = true;
