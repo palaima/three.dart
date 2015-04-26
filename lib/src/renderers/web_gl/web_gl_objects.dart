@@ -1,7 +1,7 @@
 /*
  * @author mrdoob / http://mrdoob.com/
  *
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ * based on https://github.com/mrdoob/three.js/blob/01ccd8df7916ad4883044621fd091d06057682db/src/renderers/webgl/WebGLObjects.js
  */
 
 part of three;
@@ -43,7 +43,7 @@ class WebGLObjects {
     object.__webglActive = false;
   }
 
-  void removeInstances(List objlist, object) {
+  void removeInstances(List<WebGLObject> objlist, Object3D object) {
     for (var o = objlist.length - 1; o >= 0; o--) {
       if (objlist[o].object == object){
         objlist.removeAt(o);
@@ -74,7 +74,7 @@ class WebGLObjects {
     }
   }
 
-  void update(Object3D object) {
+  void _update(Object3D object) {
     var obj = object;
     var geometry = geometries.get(object);
 
@@ -91,7 +91,7 @@ class WebGLObjects {
         var attribute = geometry.attributes[key];
         var bufferType = (key == 'index') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
 
-        BufferAttribute data = (attribute is InterleavedBufferAttribute) ? attribute.data : attribute;
+        var data = (attribute is InterleavedBufferAttribute) ? attribute.data : attribute;
 
         if (data.buffer == null) {
           data.buffer = new Buffer(_gl);
@@ -108,7 +108,6 @@ class WebGLObjects {
           _gl.bufferDataTyped(bufferType, data.array as TypedData, usage);
 
           data.needsUpdate = false;
-
         } else if (data.needsUpdate) {
           data.buffer.bind(bufferType);
 
@@ -128,6 +127,13 @@ class WebGLObjects {
           data.needsUpdate = false;
         }
       }
+    }
+  }
+
+  void update(List<WebGLObject> renderList) {
+    for (var i = 0; i < renderList.length; i++) {
+      var object = renderList[i].object;
+      if (object.material.visible) _update(object);
     }
   }
 }
