@@ -17,7 +17,7 @@ class Camera extends Object3D {
   double near;
   double far;
 
-  Camera(this.near, this.far) : super();
+  Camera([this.near, this.far]) : super();
 
   Vector3 getWorldDirection() =>
       new Vector3(0.0, 0.0, -1.0)..applyQuaternion(getWorldQuaternion());
