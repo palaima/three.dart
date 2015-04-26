@@ -83,6 +83,14 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     setFromGeometry(geometry, material);
   }
 
+  void addAttribute(String name, attribute) {
+    attributes[name] = attribute;
+  }
+
+  void addDrawCall({int start, int count, int indexOffset: 0}) {
+    drawcalls.add(new DrawCall(start: start, count: count, index: indexOffset));
+  }
+
   void applyMatrix(Matrix4 matrix) {
     if (aPosition != null) {
       matrix.applyToVector3Array(aPosition.array);
@@ -196,6 +204,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 
       for (var name in attributes.keys) {
         var attribute = attributes[name];
+        if (attribute is! Attribute) continue;
 
         var type = attribute.type;
         var array = attribute.value;
@@ -862,7 +871,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 }
 
 class DrawCall {
-  int start, count, index;
-  DrawCall({this.start, this.count, this.index});
+  int start, count, index, instances;
+  DrawCall({this.start, this.count, this.index, this.instances});
 }
 
