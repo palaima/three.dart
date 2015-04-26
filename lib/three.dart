@@ -30,6 +30,7 @@ import 'extras/core/shape_utils.dart' as ShapeUtils;
 import 'extras/uniforms_utils.dart' as UniformsUtils;
 
 part 'src/cameras/camera.dart';
+part 'src/cameras/cube_camera.dart';
 part 'src/cameras/perspective_camera.dart';
 part 'src/cameras/orthographic_camera.dart';
 
