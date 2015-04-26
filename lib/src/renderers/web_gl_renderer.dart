@@ -465,7 +465,7 @@ class WebGLRenderer implements Renderer {
   // Buffer deallocation
 
   void deallocateTexture(Texture texture) {
-    if (texture.image && texture.image.__webglTextureCube) {
+    if (texture.image && texture.image.__webglTextureCube != null) {
       // cube texture
       _gl.deleteTexture(texture.image.__webglTextureCube);
 
@@ -2587,9 +2587,9 @@ class WebGLRenderer implements Renderer {
 
         for (var i = 0; i < 6; i ++) {
           if (autoScaleCubemaps && ! isCompressed && ! isDataTexture) {
-            cubeImage[i] = clampToMaxSize(texture.image[i], _maxCubemapSize);
+            cubeImage.add(clampToMaxSize(texture.image[i], _maxCubemapSize));
           } else {
-            cubeImage[i] = isDataTexture ? texture.image[i].image : texture.image[i];
+            cubeImage.add(isDataTexture ? texture.image[i].image : texture.image[i]);
           }
         }
 
