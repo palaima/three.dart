@@ -504,4 +504,27 @@ class Quaternion {
 
     return this;
   }
+
+  /// Multiply [this] with [other].
+  Quaternion multiply(Quaternion other) {
+    multiplyQuaternions(this, other);
+    return this;
+  }
+
+  /// Sets [this] as [arg1] multiplied by [arg2].
+  Quaternion multiplyQuaternions(Quaternion arg1, Quaternion arg2) {
+    var arg1Storage = arg1._storage;
+    var arg2Storage = arg2._storage;
+
+    var qax = arg1Storage[0], qay = arg1Storage[1], qaz = arg1Storage[2], qaw = arg1Storage[3];
+    var qbx = arg2Storage[0], qby = arg2Storage[1], qbz = arg2Storage[2], qbw = arg2Storage[3];
+
+    storage[0] = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
+    storage[1] = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
+    storage[2] = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
+    storage[3] = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+
+    _onChangeController.add(null);
+    return this;
+  }
 }
