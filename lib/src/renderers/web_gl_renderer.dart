@@ -348,21 +348,21 @@ class WebGLRenderer implements Renderer {
     (extensions.get('WEBGL_lose_context') as gl.LoseContext).loseContext();
   }
 
-  bool supportsVertexTextures() => _supportsVertexTextures;
+  bool get supportsVertexTextures => _supportsVertexTextures;
 
-  bool supportsInstancedArrays() => _supportsVertexTextures;
+  bool get supportsInstancedArrays => _supportsVertexTextures;
 
-  bool supportsFloatTextures() => extensions.get('OES_texture_float') != null;
+  bool get supportsFloatTextures => extensions.get('OES_texture_float') != null;
 
-  bool supportsHalfFloatTextures() => extensions.get('OES_texture_half_float') != null;
+  bool get supportsHalfFloatTextures => extensions.get('OES_texture_half_float') != null;
 
-  bool supportsStandardDerivatives() => extensions.get('OES_standard_derivatives') != null;
+  bool get supportsStandardDerivatives => extensions.get('OES_standard_derivatives') != null;
 
-  bool supportsCompressedTextureS3TC() =>  extensions.get('WEBGL_compressed_texture_s3tc') != null;
+  bool get supportsCompressedTextureS3TC =>  extensions.get('WEBGL_compressed_texture_s3tc') != null;
 
-  bool supportsCompressedTexturePVRTC() => extensions.get('WEBGL_compressed_texture_pvrtc') != null;
+  bool get supportsCompressedTexturePVRTC => extensions.get('WEBGL_compressed_texture_pvrtc') != null;
 
-  bool supportsBlendMinMax() => extensions.get('EXT_blend_minmax') != null;
+  bool get supportsBlendMinMax => extensions.get('EXT_blend_minmax') != null;
 
   int getMaxAnisotropy() => extensions.get('EXT_texture_filter_anisotropic') != null
       ? _gl.getParameter(gl.ExtTextureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
