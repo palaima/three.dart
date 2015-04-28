@@ -131,11 +131,31 @@ class WebGLRenderer implements Renderer {
    bool _lightsNeedUpdate = true;
 
    Map _lights = {
-     'ambient': [0, 0, 0],
-     'directional': { 'length': 0, 'colors': [], 'positions': [] },
-     'point': { 'length': 0, 'colors': [], 'positions': [], 'distances': [], 'decays': [] },
-     'spot': { 'length': 0, 'colors': [], 'positions': [], 'distances': [], 'directions': [], 'anglesCos': [], 'exponents': [], 'decays': [] },
-     'hemi': { 'length': 0, 'skyColors': [], 'groundColors': [], 'positions': [] }
+     'ambient': new Float32List.fromList([0.0, 0.0, 0.0]),
+     'directional': {
+       'length': 0,
+       'colors': new Float32List(0),
+       'positions': new Float32List(0)},
+     'point': {
+       'length': 0,
+       'colors': new Float32List(0),
+       'positions': new Float32List(0),
+       'distances': new Float32List(0),
+       'decays': new Float32List(0)},
+     'spot': {
+       'length': 0,
+       'colors': new Float32List(0),
+       'positions': new Float32List(0),
+       'distances': new Float32List(0),
+       'directions': new Float32List(0),
+       'anglesCos': new Float32List(0),
+       'exponents': new Float32List(0),
+       'decays': new Float32List(0)},
+     'hemi': {
+       'length': 0,
+       'skyColors': new Float32List(0),
+       'groundColors': new Float32List(0),
+       'positions': new Float32List(0)}
    };
 
   WebGLRenderer({CanvasElement canvas, gl.RenderingContext context, String precision: 'highp',
@@ -1950,11 +1970,24 @@ class WebGLRenderer implements Renderer {
     uniforms['hemisphereLightDirection'].needsUpdate = value;
   }
 
+  // TODO Review this method.
   void refreshUniformsShadow(Map<String, Uniform> uniforms, List<ShadowCaster> lights) {
     if (uniforms['shadowMatrix'] != null) {
+      var maxShadows = allocateShadows(lights);
+
+      // Grow typed arrays if neccesary
+      if (maxShadows > uniforms['shadowMap'].value.length) {
+        uniforms['shadowBias'].value = new Float32List(maxShadows);
+        uniforms['shadowDarkness'].value = new Float32List(maxShadows);
+      }
+
       var j = 0;
 
-      lights.where((l) => l.castShadow).forEach((light) {
+      for (var i = 0; i < lights.length; i++) {
+        var light = lights[i];
+
+        if (!light.castShadow) continue;
+
         if (light is SpotLight || (light is DirectionalLight && !light.shadowCascade)) {
           uniforms['shadowMap'].value[j] = light.shadowMap;
           uniforms['shadowMapSize'].value[j] = light.shadowMapSize;
@@ -1966,7 +1999,7 @@ class WebGLRenderer implements Renderer {
 
           j++;
         }
-      });
+      }
     }
   }
 
@@ -2000,7 +2033,7 @@ class WebGLRenderer implements Renderer {
       if (uniform.needsUpdate != null && !uniform.needsUpdate) continue;
 
       String type = uniform.type;
-      var value = uniform.typedValue;
+      var value = uniform.value;
       gl.UniformLocation location = uniforms[j][1];
 
       switch (type) {
@@ -2049,6 +2082,7 @@ class WebGLRenderer implements Renderer {
             uniform._array[offset]   = value[i].x;
             uniform._array[offset + 1] = value[i].y;
           }
+
           _gl.uniform2fv(location, uniform._array);
           break;
         // array of Vector3
@@ -2064,6 +2098,7 @@ class WebGLRenderer implements Renderer {
             uniform._array[offset + 1] = value[i].y;
             uniform._array[offset + 2] = value[i].z;
           }
+
           _gl.uniform3fv(location, uniform._array);
           break;
         // array of Vector4
@@ -2080,6 +2115,7 @@ class WebGLRenderer implements Renderer {
             uniform._array[offset + 2] = value[i].z;
             uniform._array[offset + 3] = value[i].w;
           }
+
           _gl.uniform4fv(location, uniform._array);
           break;
         // single Matrix3
@@ -2091,7 +2127,7 @@ class WebGLRenderer implements Renderer {
           }
 
           for (var i = 0; i < value.length; i++) {
-            value[i].flattenToArrayOffset(uniform._array, i * 9);
+            value[i].copyIntoArray(uniform._array, i * 9);
           }
 
           _gl.uniformMatrix3fv(location, false, uniform._array);
@@ -2105,7 +2141,7 @@ class WebGLRenderer implements Renderer {
           }
 
           for (var i = 0; i < value.length; i ++) {
-            value[i].flattenToArrayOffset(uniform._array, i * 16);
+            value[i].copyIntoArray(uniform._array, i * 16);
           }
 
           _gl.uniformMatrix4fv(location, false, uniform._array);
@@ -2131,7 +2167,7 @@ class WebGLRenderer implements Renderer {
         case 'tv':
           // array of Texture (2d)
           if (uniform._array == null) {
-            uniform._array = [];
+            uniform._array = new Int32List(value.length);
           }
 
           for (var i = 0; i < uniform.value.length; i ++) {
@@ -2140,8 +2176,8 @@ class WebGLRenderer implements Renderer {
 
           _gl.uniform1iv(location, uniform._array);
 
-          for (var i = 0; i < uniform.value.length; i++) {
-            var texture = uniform.value[i];
+          for (var i = 0; i < value.length; i++) {
+            var texture = value[i];
             var textureUnit = uniform._array[i];
 
             if (texture == null) continue;
@@ -2166,12 +2202,20 @@ class WebGLRenderer implements Renderer {
     array[offset + 2] = color.b * intensity;
   }
 
-  void setupLights(lights) {
-    var r = 0, g = 0, b = 0,
+  void setupLights(List<Light> lights) {
+    var zlights = _lights;
 
-        zlights = _lights,
+    var maxLightCount = allocateLights(lights);
+    // Grow typed arrays if necessary.
+    ['directional', 'point', 'spot', 'hemi'].forEach((name) {
+      if (zlights[name]['length'] < maxLightCount[name]) {
+        zlights[name].keys.forEach((k) => zlights[name][k] = new Float32List(maxLightCount[name] * 3));
+      }
+    });
 
-        dirColors = zlights['directional']['colors'],
+    var r = 0.0, g = 0.0, b = 0.0;
+
+    var dirColors = zlights['directional']['colors'],
         dirPositions = zlights['directional']['positions'],
 
         pointColors = zlights['point']['colors'],
@@ -2234,10 +2278,6 @@ class WebGLRenderer implements Renderer {
 
         dirOffset = dirLength * 3;
 
-        // Grow the lists
-        dirColors.length = dirOffset + 3;
-        dirPositions.length = dirOffset + 3;
-
         dirPositions[dirOffset]     = _direction.x;
         dirPositions[dirOffset + 1] = _direction.y;
         dirPositions[dirOffset + 2] = _direction.z;
@@ -2255,12 +2295,6 @@ class WebGLRenderer implements Renderer {
         if (!light.visible) continue;
 
         pointOffset = pointLength * 3;
-
-        // Grow the lists
-        pointColors.length = pointOffset + 3;
-        pointPositions.length = pointOffset + 3;
-        pointDistances.length = pointOffset + 1;
-        pointDecays.length = pointOffset + 1;
 
         setColorLinear(pointColors, pointOffset, color, intensity);
 
@@ -2285,12 +2319,6 @@ class WebGLRenderer implements Renderer {
         if (!light.visible) continue;
 
         spotOffset = spotLength * 3;
-
-        // Grow the lists
-        spotColors.length = spotOffset + 3;
-        spotPositions.length = spotOffset + 3;
-        spotDirections.length = spotOffset + 3;
-        spotDistances.length = spotLength + 1;
 
         setColorLinear(spotColors, spotOffset, color, intensity);
 
@@ -2320,7 +2348,7 @@ class WebGLRenderer implements Renderer {
 
         hemiCount += 1;
 
-        if (! light.visible) continue;
+        if (!light.visible) continue;
 
         _direction.setFromMatrixTranslation(light.matrixWorld);
         _direction.normalize();
@@ -2362,6 +2390,7 @@ class WebGLRenderer implements Renderer {
     for (var l = hemiLength * 3; l < Math.max(hemiSkyColors.length, hemiCount * 3); l++) {
       hemiSkyColors[l] = 0.0;
     }
+
     for (var l = hemiLength * 3; l < Math.max(hemiGroundColors.length, hemiCount * 3);  l++) {
       hemiGroundColors[l] = 0.0;
     }
@@ -2989,7 +3018,7 @@ class WebGLRenderer implements Renderer {
     return {'directional': dirLights, 'point': pointLights, 'spot': spotLights, 'hemi': hemiLights};
   }
 
-  int allocateShadows(List<Light> lights) {
+  int allocateShadows(List<ShadowCaster> lights) {
     var maxShadows = 0;
 
     lights.where((l) => l.castShadow).forEach((light) {
@@ -3030,6 +3059,36 @@ class WebGLRendererRenderInfo {
 //
 // Wrapper classes for WebGL stuff by nelsonsilva
 //
+
+
+// Growable list
+class GList<E> extends Object with ListMixin<E> {
+  final List<E> _l;
+
+  GList() : _l = [];
+
+  GList.from(List list) : _l = new List.from(list);
+
+  int get length => _l.length;
+
+  void set length(int length) {
+    _l.length = length;
+  }
+
+  void operator[]=(int index, E value) {
+    if (index >= _l.length) _l.length = index + 1;
+    _l[index] = value;
+  }
+
+  E operator [](int index) => _l[index];
+
+  void add(E value) => _l.add(value);
+
+  void addAll(Iterable<E> all) => _l.addAll(all);
+
+  GList toList({bool growable: true}) => new GList.from(_l);
+}
+
 
 class Buffer {
   gl.RenderingContext context;

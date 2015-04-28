@@ -5,6 +5,7 @@
 library shaders;
 
 import 'dart:math' show exp;
+import 'dart:typed_data' show Float32List;
 import 'package:three/three.dart' show Uniform, ShaderChunk, UniformsLib;
 import 'package:three/extras/uniforms_utils.dart' as UniformsUtils;
 
@@ -642,7 +643,7 @@ final Map convolution = {
   'uniforms': {
     'tDiffuse': new Uniform.texture(),
     'uImageIncrement': new Uniform.vector2(0.001953125, 0.0),
-    'cKernel': new Uniform.floatv1([])
+    'cKernel': new Uniform.floatv1()
   },
   'vertexShader': '''
 uniform vec2 uImageIncrement;
@@ -683,7 +684,7 @@ void main() {
 
     var halfWidth = (kernelSize - 1) * 0.5;
 
-    var values = new List(kernelSize);
+    var values = new Float32List(kernelSize);
     var sum = 0.0;
     for (var i = 0; i < kernelSize; ++i) {
       values[i] = gauss(i - halfWidth, sigma);

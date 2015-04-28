@@ -43,23 +43,23 @@ final Map<String, Map<String, Uniform>> UniformsLib = {
     'fogColor': new Uniform.color(0xffffff)
   },
   'lights': {
-    'ambientLightColor': new Uniform.floatv([]),
-    'directionalLightDirection': new Uniform.floatv([]),
-    'directionalLightColor': new Uniform.floatv([]),
-    'hemisphereLightDirection': new Uniform.floatv([]),
-    'hemisphereLightSkyColor': new Uniform.floatv([]),
-    'hemisphereLightGroundColor': new Uniform.floatv([]),
-    'pointLightColor' : new Uniform.floatv([]),
-    'pointLightPosition' : new Uniform.floatv([]) ,
-    'pointLightDistance' : new Uniform.floatv1([]),
-    'pointLightDecay' : new Uniform.floatv1([]),
-    'spotLightColor' : new Uniform.floatv([]),
-    'spotLightPosition' : new Uniform.floatv([]),
-    'spotLightDirection' : new Uniform.floatv([]),
-    'spotLightDistance' : new Uniform.floatv1([]),
-    'spotLightAngleCos' : new Uniform.floatv1([]),
-    'spotLightExponent' : new Uniform.floatv1([]),
-    'spotLightDecay' : new Uniform.floatv1([])
+    'ambientLightColor': new Uniform.floatv(),
+    'directionalLightDirection': new Uniform.floatv(),
+    'directionalLightColor': new Uniform.floatv(),
+    'hemisphereLightDirection': new Uniform.floatv(),
+    'hemisphereLightSkyColor': new Uniform.floatv(),
+    'hemisphereLightGroundColor': new Uniform.floatv(),
+    'pointLightColor' : new Uniform.floatv(),
+    'pointLightPosition' : new Uniform.floatv() ,
+    'pointLightDistance' : new Uniform.floatv1(),
+    'pointLightDecay' : new Uniform.floatv1(),
+    'spotLightColor' : new Uniform.floatv(),
+    'spotLightPosition' : new Uniform.floatv(),
+    'spotLightDirection' : new Uniform.floatv(),
+    'spotLightDistance' : new Uniform.floatv1(),
+    'spotLightAngleCos' : new Uniform.floatv1(),
+    'spotLightExponent' : new Uniform.floatv1(),
+    'spotLightDecay' : new Uniform.floatv1(),
   },
   'particle': {
     'psColor' : new Uniform.color(0xeeeeee),
@@ -75,10 +75,10 @@ final Map<String, Map<String, Uniform>> UniformsLib = {
     'fogColor' : new Uniform.color(0xffffff)
   },
   'shadowmap': {
-    'shadowMap': new Uniform.texturev([]),
-    'shadowMapSize': new Uniform.vector2v([]),
-    'shadowBias' : new Uniform.floatv1([]),
-    'shadowDarkness': new Uniform.floatv1([]),
-    'shadowMatrix' : new Uniform.matrix4v([])
+    'shadowMap': new Uniform.texturev(new GList()),
+    'shadowMapSize': new Uniform.vector2v(new GList()),
+    'shadowBias' : new Uniform.floatv1(),
+    'shadowDarkness': new Uniform.floatv1(),
+    'shadowMatrix' : new Uniform.matrix4v(new GList())
   }
 };
