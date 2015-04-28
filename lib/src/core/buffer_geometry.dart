@@ -35,6 +35,8 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
   List morphTargets = [];
   List morphNormals = [];
 
+  int maxInstancedCount;
+
   // WebGL
   bool verticesNeedUpdate = true,
       colorsNeedUpdate = true,

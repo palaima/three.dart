@@ -675,14 +675,14 @@ class WebGLRenderer implements Renderer {
           var size = geometryAttribute.itemSize;
           state.enableAttribute(programAttribute);
 
-          if (geometryAttribute is InterleavedBufferAttribute && geometry is InstancedBufferGeometry) {
+          if (geometryAttribute is InterleavedBufferAttribute) {
             var data = geometryAttribute.data;
             var stride = data.stride;
             var offset = geometryAttribute.offset;
 
-            _gl.bindBuffer(gl.ARRAY_BUFFER, geometryAttribute.data.buffer);
-            _gl.vertexAttribPointer(programAttribute, size, gl.FLOAT, false, stride * data.array.bytesPerElement,
-                (startIndex * stride + offset) * data.array.BYTES_PER_ELEMENT);
+            _gl.bindBuffer(gl.ARRAY_BUFFER, geometryAttribute.data.buffer._glbuffer);
+            _gl.vertexAttribPointer(programAttribute, size, gl.FLOAT, false, stride * data.bytesPerElement,
+                (startIndex * stride + offset) * data.bytesPerElement);
 
             if (data is InstancedInterleavedBuffer) {
               if (extension == null) {
@@ -712,7 +712,7 @@ class WebGLRenderer implements Renderer {
 
               if (geometry.maxInstancedCount == null) {
                 geometry.maxInstancedCount =
-                    geometryAttribute.meshPerAttribute * (geometryAttribute.array.length / geometryAttribute.itemSize);
+                    geometryAttribute.meshPerAttribute * (geometryAttribute.array.length ~/ geometryAttribute.itemSize);
               }
             }
           }

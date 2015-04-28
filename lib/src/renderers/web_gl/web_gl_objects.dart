@@ -111,9 +111,9 @@ class WebGLObjects {
         } else if (data.needsUpdate) {
           data.buffer.bind(bufferType);
 
-          if (data.updateRange == null || (data.updateRange != null && data.updateRange.count == -1)) { // Not using update ranges
+          if (data.updateRange == null || (data.updateRange != null && data.updateRange['count'] == -1)) { // Not using update ranges
             _gl.bufferSubDataTyped(bufferType, 0, data.array as TypedData);
-          } else if (data.updateRange.count == 0) {
+          } else if (data.updateRange['count'] == 0) {
             error('WebGLRenderer.updateObject: using updateRange for DynamicBufferAttribute and marked' +
                   'as needsUpdate but count is 0, ensure you are using set methods or updating manually.');
           } else {
