@@ -90,6 +90,7 @@ part 'extras/geometries/plane_buffer_geometry.dart';
 part 'extras/geometries/polyhedron_geometry.dart';
 part 'extras/geometries/shape_geometry.dart';
 part 'extras/geometries/sphere_geometry.dart';
+part 'extras/geometries/sphere_buffer_geometry.dart';
 part 'extras/geometries/tetrahedron_geometry.dart';
 part 'extras/geometries/text_geometry.dart';
 part 'extras/geometries/torus_geometry.dart';
