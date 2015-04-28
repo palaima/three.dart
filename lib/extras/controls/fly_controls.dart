@@ -163,7 +163,7 @@ class FlyControls {
         _rotationVector.y * rotMult,
         _rotationVector.z * rotMult, 1.0)..normalize();
 
-    object.quaternion *= q;
+    object.quaternion.multiply(q);
 
     // expose the rotation vector for convenience
     object.rotation.setFromQuaternion(object.quaternion, order: object.rotation.order);

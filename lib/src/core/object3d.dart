@@ -167,7 +167,7 @@ class Object3D {
 
   /// Rotates object around normalized [axis] in object space by [radians].
   Object3D rotateOnAxis(Vector3 axis, double radians) {
-    quaternion *= new Quaternion.axisAngle(axis, radians);
+    quaternion.multiply(new Quaternion.axisAngle(axis, radians));
     return this;
   }
 
