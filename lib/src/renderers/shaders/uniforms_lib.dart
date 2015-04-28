@@ -75,10 +75,10 @@ final Map<String, Map<String, Uniform>> UniformsLib = {
     'fogColor' : new Uniform.color(0xffffff)
   },
   'shadowmap': {
-    'shadowMap': new Uniform.texturev(new GList()),
-    'shadowMapSize': new Uniform.vector2v(new GList()),
+    'shadowMap': new Uniform.texturev([]),
+    'shadowMapSize': new Uniform.vector2v([]),
     'shadowBias' : new Uniform.floatv1(),
     'shadowDarkness': new Uniform.floatv1(),
-    'shadowMatrix' : new Uniform.matrix4v(new GList())
+    'shadowMatrix' : new Uniform.matrix4v([])
   }
 };

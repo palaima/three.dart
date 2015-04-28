@@ -1970,13 +1970,17 @@ class WebGLRenderer implements Renderer {
     uniforms['hemisphereLightDirection'].needsUpdate = value;
   }
 
-  // TODO Review this method.
   void refreshUniformsShadow(Map<String, Uniform> uniforms, List<ShadowCaster> lights) {
     if (uniforms['shadowMatrix'] != null) {
       var maxShadows = allocateShadows(lights);
 
       // Grow typed arrays if neccesary
       if (maxShadows > uniforms['shadowMap'].value.length) {
+        uniforms['shadowMap'].value.length = maxShadows;
+        uniforms['shadowMapSize'].value.length = maxShadows;
+
+        uniforms['shadowMatrix'].value.length = maxShadows;
+
         uniforms['shadowBias'].value = new Float32List(maxShadows);
         uniforms['shadowDarkness'].value = new Float32List(maxShadows);
       }
@@ -3059,36 +3063,6 @@ class WebGLRendererRenderInfo {
 //
 // Wrapper classes for WebGL stuff by nelsonsilva
 //
-
-
-// Growable list
-class GList<E> extends Object with ListMixin<E> {
-  final List<E> _l;
-
-  GList() : _l = [];
-
-  GList.from(List list) : _l = new List.from(list);
-
-  int get length => _l.length;
-
-  void set length(int length) {
-    _l.length = length;
-  }
-
-  void operator[]=(int index, E value) {
-    if (index >= _l.length) _l.length = index + 1;
-    _l[index] = value;
-  }
-
-  E operator [](int index) => _l[index];
-
-  void add(E value) => _l.add(value);
-
-  void addAll(Iterable<E> all) => _l.addAll(all);
-
-  GList toList({bool growable: true}) => new GList.from(_l);
-}
-
 
 class Buffer {
   gl.RenderingContext context;

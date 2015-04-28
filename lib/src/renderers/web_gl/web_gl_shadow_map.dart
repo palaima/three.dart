@@ -92,9 +92,7 @@ class WebGLShadowMap {
     //  - skip lights that are not casting shadows
     //  - create virtual lights for cascaded shadow maps
 
-    List<VirtualLight> lights = new List(_lights.length);
-    var virtualLight;
-    var k = 0;
+    List<VirtualLight> lights = [];
 
     for (var i = 0; i < _lights.length; i++) {
       var light = _lights[i];
@@ -102,6 +100,8 @@ class WebGLShadowMap {
       if (!light.castShadow) continue;
 
       if (light is DirectionalLight && light.shadowCascade) {
+        var virtualLight;
+
         for (var n = 0; n < light.shadowCascadeCount; n++) {
           if (!light.shadowCascadeArray[n]) {
             virtualLight = createVirtualLight(light, n);
@@ -122,12 +122,10 @@ class WebGLShadowMap {
 
           updateVirtualLight(light, n);
 
-          lights[k] = virtualLight;
-          k++;
+          lights.add(virtualLight);
         }
       } else {
-        lights[k] = light;
-        k++;
+        lights.add(light);
       }
     }
 
