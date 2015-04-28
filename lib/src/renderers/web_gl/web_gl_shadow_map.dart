@@ -146,7 +146,7 @@ class WebGLShadowMap {
         light.shadowMap = new WebGLRenderTarget(light.shadowMapWidth, light.shadowMapHeight,
             minFilter: shadowFilter, magFilter: shadowFilter, format: RGBAFormat);
 
-        light.shadowMapSize = new Vector2(light.shadowMapWidth, light.shadowMapHeight);
+        light.shadowMapSize = new Vector2(light.shadowMapWidth.toDouble(), light.shadowMapHeight.toDouble());
 
         light.shadowMatrix = new Matrix4.identity();
       }
@@ -168,14 +168,15 @@ class WebGLShadowMap {
         if (scene.autoUpdate) scene.updateMatrixWorld();
       }
 
-      if (light.shadowCameraVisible && !light.cameraHelper) {
-        light.cameraHelper = new CameraHelper(light.shadowCamera);
+      if (light.shadowCameraVisible && light._cameraHelper == null) {
+        light._cameraHelper = new CameraHelper(light.shadowCamera);
         scene.add(light.cameraHelper);
       }
 
-      if (light.isVirtual && virtualLight.originalCamera == camera) {
+      if (light is VirtualLight && light.originalCamera == camera) {
         updateShadowCamera(camera, light);
       }
+
 
       var shadowMap = light.shadowMap;
       var shadowMatrix = light.shadowMatrix;
@@ -192,7 +193,7 @@ class WebGLShadowMap {
 
       //
 
-      if (light.cameraHelper) light.cameraHelper.visible = light.shadowCameraVisible;
+      if (light._cameraHelper != null) light.cameraHelper.visible = light.shadowCameraVisible;
       if (light.shadowCameraVisible) light.cameraHelper.update();
 
       // compute shadow matrix
@@ -296,7 +297,7 @@ class WebGLShadowMap {
     if (object.visible) {
       var webglObject = _objects.objects[object.id];
 
-      if (webglObject && object.castShadow && (!object.frustumCulled || _frustum.intersectsWithObject(object))) {
+      if (webglObject != null && object.castShadow && (!object.frustumCulled || _frustum.intersectsWithObject(object))) {
         object._modelViewMatrix = shadowCamera.matrixWorldInverse * object.matrixWorld;
         _renderList.add(webglObject);
       }
@@ -358,7 +359,7 @@ class WebGLShadowMap {
 
     virtualLight.position.setFrom(light.position);
     virtualLight.target.position.setFrom(light.target.position);
-    virtualLight.lookAt(virtualLight.target);
+    virtualLight.lookAt(virtualLight.target.position);
 
     virtualLight.shadowCameraVisible = light.shadowCameraVisible;
     virtualLight.shadowDarkness = light.shadowDarkness;
@@ -420,7 +421,7 @@ class WebGLShadowMap {
 
 
 class VirtualLight extends DirectionalLight {
-  bool isVirtual = true;
+  //bool isVirtual = true;
   List<Vector3> pointsWorld = [];
   List<Vector3> pointsFrustum = [];
   Camera originalCamera;

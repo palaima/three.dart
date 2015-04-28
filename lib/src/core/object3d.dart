@@ -93,6 +93,8 @@ class Object3D {
 
   Function immediateRenderCallback;
 
+  ShaderMaterial customDepthMaterial;
+
   // Streams
 
   StreamController _onObjectAddedController = new StreamController.broadcast();

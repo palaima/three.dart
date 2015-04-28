@@ -34,8 +34,8 @@ class SpotLight extends Light implements ShadowCaster {
   double shadowBias = 0.0;
   double shadowDarkness = 0.5;
 
-  double shadowMapWidth = 512.0;
-  double shadowMapHeight = 512.0;
+  int shadowMapWidth = 512;
+  int shadowMapHeight = 512;
 
   //
 
@@ -57,6 +57,4 @@ class SpotLight extends Light implements ShadowCaster {
   toJSON() {
     throw new UnimplementedError();
   }
-
-  noSuchMethod(Invocation invocation) {}
 }

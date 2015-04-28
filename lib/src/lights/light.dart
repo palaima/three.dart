@@ -14,6 +14,8 @@ class Light extends Object3D {
   /// Color of the light.
   Color color;
 
+  CameraHelper _cameraHelper;
+
   /// This creates a light with color.
   Light(num hex)
       : color = new Color(hex),
@@ -45,8 +47,8 @@ abstract class ShadowCaster {
   double shadowBias;
   double shadowDarkness;
 
-  double shadowMapWidth;
-  double shadowMapHeight;
+  int shadowMapWidth;
+  int shadowMapHeight;
 
   //
 
