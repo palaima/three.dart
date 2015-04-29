@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.js webgl - cameras - logarithmic depth buffer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        color: #808080;
+        font-family:Monospace;
+        font-size:13px;
+        text-align:center;
+
+        background-color: #000;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      #info {
+        position: absolute;
+        top: 0px; width: 100%;
+        padding: 5px;
+        z-index: 100;
+        color: #ddd;
+        text-shadow: 0 0 1px rgba(0,0,0,1);
+      }
+
+      a {
+
+        color: #0080ff;
+      }
+
+      b { color: lightgreen }
+
+      #stats { position: absolute; top:0; left: 0 }
+
+      .renderer_label {
+        position: absolute;
+        bottom: 1em;
+        width: 100%;
+        color: white;
+        z-index: 10;
+        display: block;
+        text-align: center;
+      }
+      .renderer_label.renderer_label_normal {
+      }
+      .renderer_label.renderer_label_logzbuf {
+      }
+      #container {
+        white-space: nowrap;
+      }
+      #container_normal {
+        width: 50%;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+      #container_logzbuf {
+        width: 50%;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+      }
+      #renderer_border {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        z-index: 10;
+        opacity: .8;
+        background: #ccc;
+        border: 1px inset #ccc;
+        cursor: col-resize;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="container_normal"><h2 class="renderer_label renderer_label_normal">normal z-buffer</h2></div>
+      <div id="container_logzbuf"><h2 class="renderer_label renderer_label_logzbuf">logarithmic z-buffer</h2></div>
+      <div id="renderer_border"></div>
+    </div>
+    <div id="info">
+      <a href="http://threejs.org" target="_blank">three.js</a> - cameras - logarithmic depth buffer<br/>
+      Zoom through scene with objects ranging in size from 1µm to 100,000,000 light years using the mousewheel<br/>
+      Linear z-buffer handles close-up objects well, but fails spectacularly at distant objects<br/>
+      Logarithmic handles all but the smallest objects with ease
+    </div>
+    <script type="application/dart" src="dart/webgl_camera_logarithmicdepthbuffer.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+  </body>
+</html>
