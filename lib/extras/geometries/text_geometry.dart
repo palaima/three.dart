@@ -1,47 +1,26 @@
+/*
+ * @author zz85 / http://www.lab4games.net/zz85/blog
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * based on r71
+ */
+
 part of three;
 
 class TextGeometry extends ExtrudeGeometry {
-  factory TextGeometry(String text, [num height = 50, // height <=> amount,
-  bool bend = false, // ExtrudeGeometry parameters
-  double bevelThickness = 10.0, num bevelSize = 8, int bevelSegments = 3, bool bevelEnabled = false, int curveSegments = 12,
-      int steps = 1, extrudePath, // FontUtils.generateShapes parameters
-  int size = 100, String font = "helvetiker", String weight = "normal", String style = "normal"]) {
-
+  String type = 'TextGeometry';
+  factory TextGeometry(String text, {int size: 100, int height: 50, int curveSegments: 12,
+    String font: 'helvetiker', String weight: 'normal', String style: 'normal',
+    bool bevelEnabled: false, double bevelThickness: 10.0, double bevelSize: 8.0, int bevelSegments: 3,
+    int steps: 1, Curve extrudePath}) {
     var textShapes = FontUtils.generateShapes(text, size, curveSegments, font, weight, style);
 
-    var amount = height;
-    var bendPath = null;
-
-    if (bend) {
-      var b = textShapes[textShapes.length - 1].getBoundingBox();
-      var max = b.maxX;
-
-      bendPath = new QuadraticBezierCurve(new Vector2.zero(), new Vector2(max / 2, 120.0), new Vector2(max, 0.0));
-    }
-
-    return new TextGeometry._internal(
-        textShapes,
-        amount,
-        bevelThickness,
-        bevelSize,
-        bevelSegments,
-        bevelEnabled,
-        curveSegments,
-        steps,
-        bendPath,
-        extrudePath);
+    return new TextGeometry._internal(textShapes, height, bevelThickness, bevelSize, bevelSegments, bevelEnabled,
+        curveSegments, steps, extrudePath);
   }
 
-  TextGeometry._internal(shapes, amount, bevelThickness, bevelSize, bevelSegments, bevelEnabled, curveSegments, steps,
-      bendPath, extrudePath)
-      : super(
-          shapes,
-          amount: amount,
-          bevelThickness: bevelThickness,
-          bevelSize: bevelSize,
-          bevelSegments: bevelSegments,
-          bevelEnabled: bevelEnabled,
-          curveSegments: curveSegments,
-          steps: steps,
-          extrudePath: extrudePath);
+  TextGeometry._internal(List<Shape> shapes, int height, double bevelThickness, double bevelSize, int bevelSegments,
+      bool bevelEnabled, int curveSegments, int steps, Curve extrudePath)
+      : super(shapes, amount: height, bevelThickness: bevelThickness, bevelSize: bevelSize, bevelSegments: bevelSegments,
+          bevelEnabled: bevelEnabled, curveSegments: curveSegments, steps: steps, extrudePath: extrudePath);
 }
