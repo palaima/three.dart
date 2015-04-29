@@ -1,169 +1,169 @@
 import 'dart:html';
-import 'dart:async';
 import 'dart:math' as Math;
 import 'dart:convert' show JSON;
 import 'package:three/three.dart';
-import 'package:three/extras/geometry_utils.dart' as GeometryUtils;
 import 'package:three/extras/font_utils.dart' as FontUtils;
 
-var container, camera, scene, renderer, object;
-var uniforms, amplitude, opacity, color;
-var attributes, displacement, customColor;
+final String vertexShader = '''
+uniform float amplitude;
 
-var text = "three.dart",
-    height = 15,
-    size = 50,
+attribute vec3 displacement;
+attribute vec3 customColor;
 
-    curveSegments = 10,
-    steps = 40,
+varying vec3 vColor;
 
-    bevelThickness = 5.0,
-    bevelSize = 1.5,
-    bevelSegments = 10,
-    bevelEnabled = true,
+void main() {
+  vec3 newPosition = position + amplitude * displacement;
 
-    font = "helvetiker", // helvetiker, optimer, gentilis, droid sans, droid serif
-    weight = "normal", // normal bold
-    style = "normal"; // normal italic
+  vColor = customColor;
 
-var rnd = new Math.Random();
-
-Future loadFonts() async {
-  var face = JSON.decode(await HttpRequest.getString("fonts/helvetiker_regular.typeface.json"));
-  FontUtils.loadFace(face);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
+''';
+
+final String fragmentShader = '''
+uniform vec3 color;
+uniform float opacity;
+
+varying vec3 vColor;
+
+void main() {
+  gl_FragColor = vec4(vColor * color, opacity);
+}
+''';
+
+PerspectiveCamera camera;
+Scene scene;
+WebGLRenderer renderer;
+
+Line object;
+Map<String, Attribute> attributes;
+Map<String, Uniform> uniforms;
+
+String text = 'three.dart';
+int height = 15;
+int size = 50;
+
+int curveSegments = 10;
+int steps = 40;
+
+double bevelThickness = 5.0;
+double bevelSize = 1.5;
+int bevelSegments = 10;
+bool bevelEnabled = true;
+
+String font = 'helvetiker'; // helvetiker, optimer, gentilis, droid sans, droid serif
+String weight = 'bold'; // normal bold
+String style = 'normal'; // normal italic
+
+Math.Random rnd = new Math.Random();
 
 main() async {
-  await loadFonts();
+  FontUtils.loadFace(JSON.decode(await HttpRequest.getString('fonts/helvetiker_bold.typeface.json')));
   init();
   animate(0);
 }
 
 void init() {
-
-  container = new Element.tag('div');
-  document.body.nodes.add(container);
-
-  camera = new PerspectiveCamera(30.0, window.innerWidth / window.innerHeight, 1.0, 10000.00)..position.z = 400.0;
+  camera = new PerspectiveCamera(30.0, window.innerWidth / window.innerHeight, 1.0, 10000.00)
+    ..position.z = 400.0;
 
   scene = new Scene();
 
-  displacement = new Attribute.vector3();
-  customColor = new Attribute.color();
-
   attributes = {
-    "displacement": displacement,
-    "customColor": customColor
+    'displacement': new Attribute.vector3(),
+    'customColor': new Attribute.color()
   };
 
-  amplitude = new Uniform.float(5.0);
-  opacity = new Uniform.float(0.3);
-  color = new Uniform.color(0xff0000);
-
   uniforms = {
-    "amplitude": amplitude,
-    "opacity": opacity,
-    "color": color
+    'amplitude': new Uniform.float(5.0),
+    'opacity': new Uniform.float(0.3),
+    'color': new Uniform.color(0xff0000)
   };
 
   var shaderMaterial = new ShaderMaterial(
       uniforms: uniforms,
       attributes: attributes,
-      vertexShader: querySelector('#vertexshader').text,
-      fragmentShader: querySelector('#fragmentshader').text,
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
       blending: AdditiveBlending,
       depthTest: false,
       transparent: true);
 
-  var geometry = new TextGeometry(
-      text,
-      height,
-      false,
-      bevelThickness,
-      bevelSize,
-      3,
-      bevelEnabled,
-      curveSegments,
-      1,
-      null,
-      size,
-      font,
-      weight,
-      style);
-  geometry.isDynamic = true;
+  var geometry = new TextGeometry(text,
+    size: size,
+    height: height,
+    curveSegments: curveSegments,
 
-  GeometryUtils.center(geometry);
+    font: font,
+    weight: weight,
+    style: style,
+
+    bevelThickness: bevelThickness,
+    bevelSize: bevelSize,
+    bevelEnabled: bevelEnabled,
+    bevelSegments: bevelSegments,
+
+    steps: steps)
+    ..isDynamic = true
+    ..center();
 
   object = new Line(geometry, shaderMaterial, LineStrip);
 
   var vertices = object.geometry.vertices;
 
-  for (var v = 0; v < vertices.length; v++) {
+  var displacement = attributes['displacement'].value;
+  var color = attributes['customColor'].value;
 
-    displacement.value.add(new Vector3.zero());
+  for(var v = 0; v < vertices.length; v++) {
+    displacement.add(new Vector3.zero());
 
-    customColor.value.add(new Color(0xffffff));
-    customColor.value[v].setHSL(v / vertices.length, 0.5, 0.5);
+    color.add(new Color.white()..setHSL(v / vertices.length, 0.5, 0.5));
   }
 
   object.rotation.x = 0.2;
 
   scene.add(object);
 
-  renderer = new WebGLRenderer(antialias: true, alpha: false)
-      ..setSize(window.innerWidth, window.innerHeight)
-      ..setClearColor(0x050505);
+  renderer = new WebGLRenderer(antialias: true)
+    ..setClearColor(0x050505)
+    ..setPixelRatio(window.devicePixelRatio)
+    ..setSize(window.innerWidth, window.innerHeight);
 
-  container.nodes.add(renderer.domElement);
+  document.body.append(renderer.domElement);
 
-  window.onResize.listen(onWindowResize);
+  window.onResize.listen((_) {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 }
 
-onWindowResize(event) {
-
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-animate(num time) {
+void animate(num time) {
   window.requestAnimationFrame(animate);
   render();
 }
 
-var start_time = null;
+void render() {
+  var time = new DateTime.now().millisecondsSinceEpoch * 0.001;
 
-render() {
-  if (start_time == null) {
-    start_time = new DateTime.now().millisecondsSinceEpoch;
-  }
-  var delta = new DateTime.now().millisecondsSinceEpoch - start_time,
-      delta_in_sec = delta * 0.001;
+  object.rotation.y = 0.25 * time;
 
-  object.rotation.y = 0.25 * delta_in_sec;
+  uniforms['amplitude'].value = 0.5 * Math.sin(0.5 * time);
+  uniforms['color'].value.offsetHSL(0.0005, 0.0, 0.0);
 
-  amplitude.value = 0.5 * Math.sin(0.5 * delta_in_sec);
-  color.value.offsetHSL(0.0005, 0.0, 0.0);
-
-  var nx, ny, nz, value;
-
-  var il = displacement.value.length;
-  for (var i = 0; i < il; i++) {
-
-    nx = 0.3 * (0.5 - rnd.nextDouble());
-    ny = 0.3 * (0.5 - rnd.nextDouble());
-    nz = 0.3 * (0.5 - rnd.nextDouble());
-
-    value = displacement.value[i];
+  attributes['displacement'].value.forEach((value) {
+    var nx = 0.3 * (0.5 - rnd.nextDouble());
+    var ny = 0.3 * (0.5 - rnd.nextDouble());
+    var nz = 0.3 * (0.5 - rnd.nextDouble());
 
     value.x += nx;
     value.y += ny;
     value.z += nz;
+  });
 
-  }
-
-  displacement.needsUpdate = true;
+  attributes['displacement'].needsUpdate = true;
 
   renderer.render(scene, camera);
 }

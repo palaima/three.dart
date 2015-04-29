@@ -24,42 +24,6 @@
   </head>
   <body>
     <div id="info"><a href="http://threedart.github.io/three.dart/" target="_blank">three.dart</a> - custom attributes example</div>
-    <div id="container"></div>
-    <script type="x-shader/x-vertex" id="vertexshader">
-
-      uniform float amplitude;
-
-      attribute vec3 displacement;
-      attribute vec3 customColor;
-
-      varying vec3 vColor;
-
-      void main() {
-
-        vec3 newPosition = position + amplitude * displacement;
-
-        vColor = customColor;
-
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
-
-      }
-
-    </script>
-
-    <script type="x-shader/x-fragment" id="fragmentshader">
-
-      uniform vec3 color;
-      uniform float opacity;
-
-      varying vec3 vColor;
-
-      void main() {
-
-        gl_FragColor = vec4( vColor * color, opacity );
-
-      }
-
-    </script>
     <script type="application/dart" src="dart/webgl_custom_attributes_lines.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>
