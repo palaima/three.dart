@@ -3,7 +3,7 @@
  *
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
- * 
+ *
  * based on r70.
  */
 
@@ -12,88 +12,100 @@ part of three;
 /// Represents a color.
 class Color {
   Float32List storage = new Float32List(3);
-  
+
   /// Red channel value represented as a double between 0.0 and 1.0.
   double get r => storage[0];
-  set r(double v) { 
+  set r(double v) {
     storage[0] = v;
   }
-  
-  /// Green channel value represented as a double between 0.0 and 1.0. 
+
+  /// Green channel value represented as a double between 0.0 and 1.0.
   double get g => storage[1];
-  set g(double v) { 
+  set g(double v) {
     storage[1] = v;
   }
-  
+
   /// Blue channel value represented as a double between 0.0 and 1.0.
   double get b => storage[2];
-  set b(double v) { 
+  set b(double v) {
     storage[2] = v;
   }
- 
-  /// Red channel value represented as an integer between 0 and 255. 
+
+  /// Red channel value represented as an integer between 0 and 255.
   int get rr => (storage[0] * 255).floor();
-  set rr(int v) { 
-    storage[0] = (1 / 255) * v; 
+  set rr(int v) {
+    storage[0] = (1 / 255) * v;
   }
-  
+
   /// Green channel value represented as an integer between 0 and 255.
   int get gg => (storage[1] * 255).floor();
-  set gg(int v) { 
-    storage[1] = (1 / 255) * v; 
+  set gg(int v) {
+    storage[1] = (1 / 255) * v;
   }
-  
-  /// Blue channel value represented as an integer between 0 and 255. 
+
+  /// Blue channel value represented as an integer between 0 and 255.
   int get bb => (storage[2] * 255).floor();
-  set bb(int v) { 
-    storage[2] = (1 / 255) * v; 
+  set bb(int v) {
+    storage[2] = (1 / 255) * v;
   }
 
   /// Constructs a new color with hex value #000000.
   Color.black() : this.fromRGB(0.0, 0.0, 0.0);
-  
+
   /// Constructs a new color with hex value #ffffff.
   Color.white() : this.fromRGB(1.0, 1.0, 1.0);
-  
+
   /// Constructs a new color with specified hex value.
   Color(num color) {
     setHex(color);
   }
-  
+
   /// Construct a new color with specified RGB values.
   Color.fromRGB(double r, double g, double b) {
     setRGB(r, g, b);
   }
-  
+
   /// Construct a new color with specified HSL values.
   Color.fromHSL(double h, double s, double l) {
     setHSL(h, s, l);
   }
-  
+
   // Copy of [other].
   Color.copy(Color other) {
     setRGB(other.r, other.g, other.b);
   }
-  
+
   /// Constructs a new color from a CSS-style string,
   /// e.g. "rgb(250, 0,0)", "rgb(100%,0%,0%)", "#ff0000", "#f00", or "red".
   Color.fromStyle(String style) {
     setStyle(style);
   }
-  
+
   /// Initialized with values from [list]
-  Color.fromList(List<double> list, [int offset = 0]) { 
+  Color.fromList(List<double> list, [int offset = 0]) {
     storage[0] = list[offset + 0];
     storage[1] = list[offset + 1];
     storage[2] = list[offset + 2];
   }
-  
+
+  /// Random color. If [useNamed] is set, it picks a random color from [Colors].
+  Color.random({bool useNamed: false}) {
+    if (useNamed) {
+      var colors = Colors.toList();
+      setHex(colors[ThreeMath.randInt(0, colors.length)]);
+    } else {
+      storage[0] = ThreeMath.randFloat(0.0, 1.0);
+      storage[1] = ThreeMath.randFloat(0.0, 1.0);
+      storage[2] = ThreeMath.randFloat(0.0, 1.0);
+    }
+  }
+
   /// Sets [this] from [other].
   Color setFrom(Color other) {
     setRGB(other.storage[0], other.storage[1], other.storage[2]);
     return this;
   }
-  
+
   /// Sets [this] from specified RGB values, ranging from 0.0 to 1.0.
   Color setRGB(double r, double g, double b) {
     storage[0] = r;
@@ -101,7 +113,7 @@ class Color {
     storage[2] = b;
     return this;
   }
-  
+
   /// Sets [this] from specified HSL values, ranging from 0.0 to 1.0.
   Color setHSL(double h, double s, double l) {
     if (s == 0) {
@@ -123,14 +135,14 @@ class Color {
       storage[1] = hue2rgb(q, p, h);
       storage[2] = hue2rgb(q, p, h - 1 / 3);
     }
-    
+
     return this;
   }
-  
+
   /// Sets [this] from a CSS-style string, e.g. "rgb(250, 0,0)", "rgb(100%,0%,0%)", "#ff0000", "#f00", or "red".
   Color setStyle(String style) {
     var color;
-    
+
     // rgb(255,0,0)
     color = new RegExp(r'^rgb\((\d+), ?(\d+), ?(\d+)\)$', caseSensitive: true).firstMatch(style);
     if (color != null) {
@@ -162,10 +174,10 @@ class Color {
       setHex(int.parse('${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}'));
       return this;
     }
-    
+
     return this;
   }
-  
+
   /// Copies [color] making conversion from gamma to linear space.
   Color copyGammaToLinear(Color color, [double gammaFactor = 2.0]) {
     storage[0] = Math.pow(color.storage[0], gammaFactor);
@@ -198,10 +210,10 @@ class Color {
     storage[2] = Math.sqrt(storage[2]);
     return this;
   }
-  
+
   /// The hexadecimal value of this color.
   int getHex() => (rr << 16) ^ (gg << 8) ^ (bb);
-  
+
   /// Sets this color from a hexadecimal value.
   Color setHex(num hex) {
     var h = hex.toInt().floor();
@@ -210,23 +222,23 @@ class Color {
     storage[2] = (h & 255) / 255;
     return this;
   }
-  
+
   /// The string formated hexadecimal value of this color.
   String getHexString() => '${getHex().toRadixString(16)}';
-  
+
   /// HSL representation of this color
   HSL getHSL() => new HSL.fromRGB(storage[0], storage[1], storage[2]);
-  
+
   /// The value of this color as a CSS-style string, e.g. "rgb(255,0,0)"
   String getStyle() => 'rgb($rr,$gg, $bb)';
-  
+
   /// Adds given h, s, and l to this color's existing h, s, and l values.
   Color offsetHSL(double h, double s, double l) {
     var hsl = getHSL();
     setHSL(hsl.h + h, hsl.s + s, hsl.l + l);
     return this;
   }
-  
+
   /// Adds rgb values of [color] to RGB values of this color
   Color add(Color color) {
     storage[0] += color.storage[0];
@@ -234,7 +246,7 @@ class Color {
     storage[2] += color.storage[2];
     return this;
   }
-  
+
   /// Adds [s] to the RGB values of this color
   Color addScalar(double s) {
     storage[0] += s;
@@ -242,7 +254,7 @@ class Color {
     storage[2] += s;
     return this;
   }
-  
+
   /// Multiplies this color's RGB values by [color].
   Color multiply(Color color) {
     storage[0] *= color.storage[0];
@@ -250,7 +262,7 @@ class Color {
     storage[2] *= color.storage[2];
     return this;
   }
-  
+
   /// Multiplies this color's RGB values by [s]
   Color multiplyScalar(double s) {
     storage[0] = storage[0] * s;
@@ -258,9 +270,9 @@ class Color {
     storage[2] = storage[2] * s;
     return this;
   }
-  
-  /// Linear interpolation of this colors rgb values and the rgb values of the first argument. 
-  /// The alpha argument can be thought of as the percent between the two colors, 
+
+  /// Linear interpolation of this colors rgb values and the rgb values of the first argument.
+  /// The alpha argument can be thought of as the percent between the two colors,
   /// where 0 is this color and 1 is the first argument.
   Color lerp(Color color, double alpha) {
     storage[0] += (color.storage[0] - storage[0]) * alpha;
@@ -271,19 +283,19 @@ class Color {
 
   /// Returns an list [r, g, b]
   List<double> toList() => [storage[0], storage[1], storage[2]];
-  
+
   /// Clones color.
   Color clone() => new Color.fromRGB(storage[0], storage[1], storage[2]);
-  
+
   /// Compares [this] and [other] and returns true if they are the same, false otherwise.
   bool operator ==(Color other) => (other.storage[0] == storage[0]) && (other.storage[1] == storage[1]) && (other.storage[2] == storage[2]);
-  
+
   Color operator +(v) {
     if (v is Color) return add(v);
     if (v is double) return addScalar(v);
     throw new ArgumentError(v);
   }
-  
+
   Color operator *(v) {
     if (v is Color) return multiply(v);
     if (v is double) return multiplyScalar(v);
@@ -295,15 +307,15 @@ class HSL {
   /// Hue.
   double get h => _h;
   double _h;
-  
+
   /// Saturation.
   double get s => _s;
   double _s;
-  
+
   /// Lightness
   double get l => _l;
   double _l;
-  
+
   HSL.fromRGB(double r, double g, double b) {
     // h,s,l ranges are in 0.0 - 1.0
     var max = Math.max(Math.max(r, g), b);
@@ -315,9 +327,9 @@ class HSL {
       _h = _s = 0.0;
     } else {
       var delta = max - min;
-      
+
       _s = _l <= 0.5 ? delta / (max + min) : delta / (2 - max - min);
-      
+
       if (max == r) {
         _h = (g - b) / delta + (g < b ? 6 : 0);
       } else if (max == g) {
@@ -369,13 +381,11 @@ abstract class Colors {
   static const int darkSeaGreen = 0x8fbc8f;
   static const int darkSlateBlue = 0x483d8b;
   static const int darkSlateGray = 0x2f4f4f;
-  static const int darkSlateGrey = 0x2f4f4f;
   static const int darkTurquoise = 0xced1;
   static const int darkViolet = 0x9400d3;
   static const int deepPink = 0xff1493;
   static const int deepSkyBlue = 0xbfff;
   static const int dimGray = 0x696969;
-  static const int dimGrey = 0x696969;
   static const int dodgerBlue = 0x1e90ff;
   static const int firebrick = 0xb22222;
   static const int floralWhite = 0xfffaf0;
@@ -388,7 +398,6 @@ abstract class Colors {
   static const int gray = 0x808080;
   static const int green = 0x8000;
   static const int greenYellow = 0xadff2f;
-  static const int grey = 0x808080;
   static const int honeyDew = 0xf0fff0;
   static const int hotPink = 0xff69b4;
   static const int indianRed = 0xcd5c5c;
@@ -405,13 +414,11 @@ abstract class Colors {
   static const int lightGoldenRodYellow = 0xfafad2;
   static const int lightGray = 0xd3d3d3;
   static const int lightGreen = 0x90ee90;
-  static const int lightGrey = 0xd3d3d3;
   static const int lightPink = 0xffb6c1;
   static const int lightSalmon = 0xffa07a;
   static const int lightSeaGreen = 0x20b2aa;
   static const int lightSkyBlue = 0x87cefa;
   static const int lightSlateGray = 0x778899;
-  static const int lightSlateGrey = 0x778899;
   static const int lightSteelBlue = 0xb0c4de;
   static const int lightYellow = 0xffffe0;
   static const int lime = 0xff00;
@@ -464,7 +471,6 @@ abstract class Colors {
   static const int skyBlue = 0x87ceeb;
   static const int slateBlue = 0x6a5acd;
   static const int slateGray = 0x708090;
-  static const int slateGrey = 0x708090;
   static const int snow = 0xfffafa;
   static const int springGreen = 0xff7f;
   static const int steelBlue = 0x4682b4;
@@ -479,4 +485,22 @@ abstract class Colors {
   static const int whiteSmoke = 0xf5f5f5;
   static const int yellow = 0xffff00;
   static const int yellowGreen = 0x9acd32;
+
+  // TODO Use set instead?
+  static final UnmodifiableListView<int> _colors = new UnmodifiableListView([
+    aliceBlue, antiqueWhite, aqua, aquamarine, azure, beige, bisque, black, blanchedAlmond, blue, blueViolet,
+    brown, burlywood, cadetBlue, chartreuse, chocolate, coral, cornflowerBlue, cornsilk, crimson, cyan, darkBlue, darkCyan,
+    darkGoldenRod, darkGray, darkGreen, darkGrey, darkKhaki, darkMagenta, darkOliveGreen, darkOrange, darkOrchid, darkRed,
+    darkSalmon, darkSeaGreen, darkSlateBlue, darkSlateGray, darkTurquoise, darkViolet, deepPink, deepSkyBlue, dimGray,
+    dodgerBlue, firebrick, floralWhite, forestGreen, fuchsia, gainsboro, ghostWhite, gold, goldenRod, gray, green, greenYellow,
+    honeyDew, hotPink, indianRed, indigo, ivory, khaki, lavender, lavenderBlush, lawnGreen, lemonChiffon, lightBlue, lightCoral,
+    lightCyan, lightGoldenRodYellow, lightGray, lightGreen, lightPink, lightSalmon, lightSeaGreen, lightSkyBlue,
+    lightSlateGray, lightSteelBlue, lightYellow, lime, limeGreen, linen, magenta, maroon, mediumAquamarine,
+    mediumBlue, mediumOrchid, mediumPurple, mediumSeaGreen, mediumSlateBlue, mediumSpringGreen, mediumTurquoise, mediumVioletRed,
+    midnightBlue, mintCream, mistyRose, moccasin, navajoWhite, navy, oldLace, olive, oliveDrab, orange, orangeRed, orchid,
+    paleGoldenRod, paleGreen, paleTurquoise, paleVioletRed, papayaWhip, peachPuff, peru, pink, plum, powderBlue, purple, red,
+    rosyBrown, royalBlue, saddleBrown, salmon, sandyBrown, seaGreen, seaShell, sienna, silver, skyBlue, slateBlue, slateGray,
+    snow, springGreen, steelBlue, tan, teal, thistle, tomato, turquoise, violet, wheat, white, whiteSmoke, yellow, yellowGreen]);
+
+  static UnmodifiableListView<int> toList() => _colors;
 }
