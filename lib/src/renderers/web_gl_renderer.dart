@@ -762,7 +762,7 @@ class WebGLRenderer implements Renderer {
         // indexed triangles
         var type, size;
 
-        if (index.array is Uint32List && extensions.get('OES_element_index_uint')) {
+        if (index.array is Uint32List && extensions.get('OES_element_index_uint') != null) {
           type = gl.UNSIGNED_INT;
           size = 4;
         } else {
