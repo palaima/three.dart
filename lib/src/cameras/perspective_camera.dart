@@ -99,7 +99,7 @@ class PerspectiveCamera extends Camera {
 
     if (_fullWidth != null) {
       var aspect = _fullWidth / _fullHeight;
-      var top = Math.tan(ThreeMath.degToRad(_fov * 0.5)) * near;
+      var top = Math.tan(_fov * 0.5) * near;
       var bottom = -top;
       var left = aspect * bottom;
       var right = aspect * top;
@@ -109,8 +109,8 @@ class PerspectiveCamera extends Camera {
       setFrustumMatrix(
           projectionMatrix,
           left + _x * width / _fullWidth,
-          left + (_x + width) * width / _fullWidth,
-          top - (_y + height) * height / _fullHeight,
+          left + (_x + _width) * width / _fullWidth,
+          top - (_y + _height) * height / _fullHeight,
           top - _y * height / _fullHeight,
           near,
           far);
