@@ -55,7 +55,7 @@ class BufferAttribute {
   factory BufferAttribute.float64(int length, [int itemSize = 1]) =>
       new BufferAttribute(new Float64List(length), itemSize)..numItems = length;
 
-  int get length => array.length;
+  int get length => array.length ~/ itemSize;
 
   void copyAt(int index1, BufferAttribute attribute, int index2) {
     index1 *= itemSize;
