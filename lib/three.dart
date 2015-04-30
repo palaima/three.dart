@@ -62,6 +62,7 @@ part 'src/math/opengl.dart';
 part 'src/math/plane.dart';
 part 'src/math/quaternion.dart';
 part 'src/math/sphere.dart';
+part 'src/math/spline.dart';
 part 'src/math/triangle.dart';
 part 'src/math/vector.dart';
 part 'src/math/vector2.dart';
