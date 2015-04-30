@@ -81,6 +81,7 @@ part 'extras/geometries/convex_geometry.dart';
 part 'extras/geometries/box_geometry.dart';
 part 'extras/geometries/cylinder_geometry.dart';
 part 'extras/geometries/extrude_geometry.dart';
+part 'extras/geometries/hilbert_geometry.dart';
 part 'extras/geometries/icosahedron_geometry.dart';
 part 'extras/geometries/lathe_geometry.dart';
 part 'extras/geometries/octahedron_geometry.dart';
