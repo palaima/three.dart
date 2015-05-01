@@ -73,53 +73,53 @@ class Ray {
   static final _e1 = new Vector3.zero();
   static final _e2 = new Vector3.zero();
   static final _s = new Vector3.zero();
-  static final _q = new Vector3.zero();
-  static final _r = new Vector3.zero();
 
-  /// Return the distance from the origin of [this] to the intersection with
-  /// [other] if [this] intersects with [other], or null if the don't intersect.
-  double intersectsWithTriangle(Triangle other) {
-    const double EPSILON = 10e-6;
+// This doesn't support backface culling check
 
-    final point0 = other._point0;
-    final point1 = other._point1;
-    final point2 = other._point2;
-
-    _e1
-      ..setFrom(point1)
-      ..sub(point0);
-    _e2
-      ..setFrom(point2)
-      ..sub(point0);
-
-    _direction.crossInto(_e2, _q);
-    final a = _e1.dot(_q);
-
-    if (a > -EPSILON && a < EPSILON) {
-      return null;
-    }
-
-    final f = 1 / a;
-    _s
-      ..setFrom(_origin)
-      ..sub(point0);
-    final u = f * (_s.dot(_q));
-
-    if (u < 0.0) {
-      return null;
-    }
-
-    _s.crossInto(_e1, _r);
-    final v = f * (_direction.dot(_r));
-
-    if (v < -EPSILON || u + v > 1.0 + EPSILON) {
-      return null;
-    }
-
-    final t = f * (_e2.dot(_r));
-
-    return t;
-  }
+//  /// Return the distance from the origin of [this] to the intersection with
+//  /// [other] if [this] intersects with [other], or null if the don't intersect.
+//  double intersectsWithTriangle(Triangle other) {
+//    const double EPSILON = 10e-6;
+//
+//    final point0 = other._point0;
+//    final point1 = other._point1;
+//    final point2 = other._point2;
+//
+//    _e1
+//      ..setFrom(point1)
+//      ..sub(point0);
+//    _e2
+//      ..setFrom(point2)
+//      ..sub(point0);
+//
+//    _direction.crossInto(_e2, _q);
+//    final a = _e1.dot(_q);
+//
+//    if (a > -EPSILON && a < EPSILON) {
+//      return null;
+//    }
+//
+//    final f = 1 / a;
+//    _s
+//      ..setFrom(_origin)
+//      ..sub(point0);
+//    final u = f * (_s.dot(_q));
+//
+//    if (u < 0.0) {
+//      return null;
+//    }
+//
+//    _s.crossInto(_e1, _r);
+//    final v = f * (_direction.dot(_r));
+//
+//    if (v < -EPSILON || u + v > 1.0 + EPSILON) {
+//      return null;
+//    }
+//
+//    final t = f * (_e2.dot(_r));
+//
+//    return t;
+//  }
 
   /// Return the distance from the origin of [this] to the intersection with
   /// [other] if [this] intersects with [other], or null if the don't intersect.
@@ -160,5 +160,70 @@ class Ray {
     }
 
     return tNear;
+  }
+
+  /*
+   * Additions from three.js
+   */
+
+  Ray setOriginDirection(Vector3 origin, Vector3 direction) {
+    this.origin.setFrom(origin);
+    this.direction.setFrom(direction);
+    return this;
+  }
+
+  Ray applyMatrix4(Matrix4 arg) {
+    direction.add(origin);
+    direction.applyMatrix4(arg);
+    origin.applyMatrix4(arg);
+    direction.sub(origin);
+    direction.normalize();
+    return this;
+  }
+
+  static final _normal = new Vector3.zero();
+  static final _diff = new Vector3.zero();
+
+  Vector3 intersectsWithTriangle(Vector3 a, Vector3 b, Vector3 c, {bool backfaceCulling: false}) {
+    _e1.subVectors(b, a);
+    _e2.subVectors(c, a);
+    _normal.crossVectors(_e1, _e2);
+
+    var DdN = direction.dot(_normal);
+    var sign;
+
+    if (DdN > 0) {
+      if (backfaceCulling) return null;
+      sign = 1;
+    } else if (DdN < 0) {
+      sign = -1;
+      DdN = -DdN;
+    } else {
+      return null;
+    }
+
+    _diff.subVectors(origin, a);
+    var DdQxE2 = sign * direction.dot(_e2.crossVectors(_diff, _e2));
+
+    // b1 < 0, no intersection
+    if (DdQxE2 < 0) {
+      return null;
+    }
+
+    var DdE1xQ = sign * direction.dot(_e1.cross(_diff));
+
+    // b2 < 0, no intersection
+    if (DdE1xQ < 0) return null;
+
+    // b1+b2 > 1, no intersection
+    if (DdQxE2 + DdE1xQ > DdN) return null;
+
+    // Line intersects triangle, check if ray does.
+    var QdN = -sign * _diff.dot(_normal);
+
+    // t < 0, no intersection
+    if (QdN < 0) return null;
+
+    return at(QdN / DdN);
   }
 }
