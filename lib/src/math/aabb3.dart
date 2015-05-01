@@ -86,7 +86,7 @@ class Aabb3 {
         triangle._point0.z, Math.max(triangle._point1.z, triangle._point2.z)));
   }
 
-  /// Set the AABB to enclose a [quad].
+//  /// Set the AABB to enclose a [quad].
 //  void setQuad(Quad quad) {
 //    _min.setValues(Math.min(quad._point0.x,
 //            Math.min(quad._point1.x, Math.min(quad._point2.x, quad._point3.x))),
@@ -102,8 +102,8 @@ class Aabb3 {
 //            quad._point1.z, Math.max(quad._point2.z, quad._point3.z))));
 //  }
 
-  /// Set the AABB to enclose a limited [ray] (or line segment) that is limited
-  /// by [limitMin] and [limitMax].
+//  /// Set the AABB to enclose a limited [ray] (or line segment) that is limited
+//  /// by [limitMin] and [limitMax].
 //  void setRay(Ray ray, double limitMin, double limitMax) {
 //    ray.copyAt(_min, limitMin);
 //    ray.copyAt(_max, limitMax);
@@ -323,7 +323,7 @@ class Aabb3 {
         (_max.z >= other.z);
   }
 
-  // Avoid allocating these instance on every call to intersectsWithTriangle
+//  // Avoid allocating these instance on every call to intersectsWithTriangle
 //  static final _aabbCenter = new Vector3.zero();
 //  static final _aabbHalfExtents = new Vector3.zero();
 //  static final _v0 = new Vector3.zero();
@@ -338,11 +338,11 @@ class Aabb3 {
 //  static final _u1 = new Vector3(0.0, 1.0, 0.0);
 //  static final _u2 = new Vector3(0.0, 0.0, 1.0);
 
-  /// Return if [this] intersects with [other].
-  /// [epsilon] allows the caller to specify a custum eplsilon value that should
-  /// be used for the test. If [result] is specified and an intersection is
-  /// found, result is modified to contain more details about the type of
-  /// intersection.
+//  /// Return if [this] intersects with [other].
+//  /// [epsilon] allows the caller to specify a custum eplsilon value that should
+//  /// be used for the test. If [result] is specified and an intersection is
+//  /// found, result is modified to contain more details about the type of
+//  /// intersection.
 //  bool intersectsWithTriangle(Triangle other,
 //      {double epsilon: 1e-3, IntersectionResult result}) {
 //    double p0, p1, p2, r, len;
@@ -578,7 +578,7 @@ class Aabb3 {
 //    _trianglePlane.constant = _trianglePlane.normal.dot(_v0);
 //    return intersectsWithPlane(_trianglePlane, result: result);
 //  }
-
+//
 //  /// Return if [this] intersects with [other]
 //  bool intersectsWithPlane(Plane other, {IntersectionResult result}) {
 //    // This line is not necessary with a (center, extents) AABB representation
@@ -613,14 +613,41 @@ class Aabb3 {
     setFromPoints(points);
   }
 
-  factory Aabb3.fromCenterAndSize(Vector3 center, Vector3 size) {
-    var halfSize = size * 0.5;
-    return new Aabb3.minMax(center - halfSize, center + halfSize);
+  Aabb3.fromCenterAndSize(Vector3 center, Vector3 size)
+    : _min = new Vector3.zero(),
+      _max = new Vector3.zero() {
+    setFromCenterAndSize(center, size);
   }
 
   Aabb3.fromObject(Object3D object)
       : _min = new Vector3.zero(),
         _max = new Vector3.zero() {
+    setFromObject(object);
+  }
+
+  bool get isEmpty => _max.x < _min.x || _max.y < _min.y || _max.z < _min.z;
+
+  Vector3 get size => _max - _min;
+
+  Aabb3 setFromPoints(List<Vector3> points) {
+    makeEmpty();
+    points.forEach((point) => hullPoint(point));
+    return this;
+  }
+
+  Aabb3 setFromCenterAndSize(Vector3 center, Vector3 size) {
+    var halfSize = new Vector3.copy(size)..scale(0.5);
+    _min.setFrom(center).sub(halfSize);
+    _max.setFrom(center).add(halfSize);
+    return this;
+  }
+
+  Aabb3 setFromObject(Object3D object) {
+    // Computes the world-axis-aligned bounding box of an object (including its children),
+    // accounting for both the object's, and childrens', world transforms
+
+    var v1 = new Vector3.zero();
+
     object.updateMatrixWorld(force: true);
 
     makeEmpty();
@@ -636,21 +663,12 @@ class Aabb3 {
           var positions = geometry.aPosition.array;
 
           for (var i = 0; i < positions.length; i += 3) {
-            hullPoint(new Vector3(positions[i], positions[i + 1], positions[i + 2])
-              ..applyMatrix4(node.matrixWorld));
+            hullPoint(v1..copyFromArray(positions, i)..applyMatrix4(node.matrixWorld));
           }
         }
       }
     });
-  }
 
-  bool get isEmpty => _max.x < _min.x || _max.y < _min.y || _max.z < _min.z;
-
-  Vector3 get size => _max - _min;
-
-  Aabb3 setFromPoints(List<Vector3> points) {
-    makeEmpty();
-    points.forEach((point) => hullPoint(point));
     return this;
   }
 
