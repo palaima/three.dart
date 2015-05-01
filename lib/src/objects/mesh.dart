@@ -19,10 +19,10 @@ class Mesh extends Object3D implements GeometryMaterialObject {
   /// Default is a MeshBasicMaterial with wireframe mode enabled and randomised colour.
   Material material;
 
-  int  morphTargetBase = 0;
+  int morphTargetBase = 0;
   List morphTargetForcedOrder;
   List morphTargetInfluences;
-  Map  morphTargetDictionary;
+  Map morphTargetDictionary;
 
   Mesh([IGeometry geometry, Material material]) : super() {
     this.geometry = geometry != null ? geometry : new Geometry();
@@ -57,8 +57,192 @@ class Mesh extends Object3D implements GeometryMaterialObject {
     return 0;
   }
 
-  raycast(raycaster, intersects) {
-    throw new UnimplementedError();
+  static final _inverseMatrix = new Matrix4.identity();
+  static final _ray = new Ray();
+  static final _sphere = new Sphere();
+
+  static final _vA = new Vector3.zero();
+  static final _vB = new Vector3.zero();
+  static final _vC = new Vector3.zero();
+
+  void raycast(Raycaster raycaster, List<RayIntersection> intersects) {
+    // Checking boundingSphere distance to ray
+
+    if (geometry.boundingSphere == null) geometry.computeBoundingSphere();
+
+    _sphere.copyFrom(geometry.boundingSphere);
+    _sphere.applyMatrix4(matrixWorld);
+
+    if (raycaster.ray.intersectsWithSphere(_sphere) == null) {
+      return;
+    }
+
+    // Check boundingBox before continuing
+
+    _inverseMatrix.copyInverse(matrixWorld);
+    _ray.copyFrom(raycaster.ray);
+    _ray.applyMatrix4(_inverseMatrix);
+
+    if (geometry.boundingBox != null) {
+      if (_ray.intersectsWithAabb3(geometry.boundingBox) == null) {
+        return;
+      }
+    }
+
+    var geo = geometry;
+
+    if (geo is BufferGeometry) {
+      if (material == null) return;
+
+      var attributes = geo.attributes;
+
+      var a, b, c;
+      var precision = raycaster.precision;
+
+      if (attributes['index'] != null) {
+        var indices = attributes['index'].array;
+        var positions = attributes['position'].array;
+        var offsets = attributes['offsets'];
+
+        if (offsets.length == 0) {
+          offsets = [new DrawCall(start: 0, count: indices.length, index: 0)];
+        }
+
+        for (var oi = 0, ol = offsets.length; oi < ol; ++oi) {
+          var start = offsets[oi].start;
+          var count = offsets[oi].count;
+          var index = offsets[oi].index;
+
+          for (var i = start, il = start + count; i < il; i += 3) {
+            a = index + indices[i];
+            b = index + indices[i + 1];
+            c = index + indices[i + 2];
+
+            _vA.copyFromArray(positions, a * 3);
+            _vB.copyFromArray(positions, b * 3);
+            _vC.copyFromArray(positions, c * 3);
+
+            var intersectionPoint = material.side == BackSide
+                ? _ray.intersectsWithTriangle(_vC, _vB, _vA, backfaceCulling: true)
+                : _ray.intersectsWithTriangle(_vA, _vB, _vC, backfaceCulling: material.side != DoubleSide);
+
+            if (intersectionPoint == null) continue;
+
+            intersectionPoint.applyMatrix4(this.matrixWorld);
+
+            var distance = raycaster.ray.origin.distanceTo(intersectionPoint);
+
+            if (distance < precision || distance < raycaster.near || distance > raycaster.far) continue;
+
+            intersects.add(new RayIntersection(
+                distance: distance,
+                point: intersectionPoint,
+                face: new Face3(a, b, c, normal: Triangle.normal(_vA, _vB, _vC)),
+                faceIndex: null,
+                object: this));
+          }
+        }
+      } else {
+        var positions = attributes['position'].array;
+
+        for (var i = 0, j = 0; i < positions.length; i += 3, j += 9) {
+          a = i;
+          b = i + 1;
+          c = i + 2;
+
+          _vA.copyFromArray(positions, j);
+          _vB.copyFromArray(positions, j + 3);
+          _vC.copyFromArray(positions, j + 6);
+
+          var intersectionPoint = material.side == BackSide
+              ? _ray.intersectsWithTriangle(_vC, _vB, _vA, backfaceCulling: true)
+              : _ray.intersectsWithTriangle(_vA, _vB, _vC, backfaceCulling: material.side != DoubleSide);
+
+          if (intersectionPoint == null) continue;
+
+          intersectionPoint.applyMatrix4(this.matrixWorld);
+
+          var distance = raycaster.ray.origin.distanceTo(intersectionPoint);
+
+          if (distance < precision || distance < raycaster.near || distance > raycaster.far) continue;
+
+          intersects.add(new RayIntersection(
+              distance: distance,
+              point: intersectionPoint,
+              face: new Face3(a, b, c, normal: Triangle.normal(_vA, _vB, _vC)),
+              faceIndex: null,
+              object: this));
+        }
+      }
+    } else if (geometry is Geometry) {
+      var precision = raycaster.precision;
+
+      var vertices = geometry.vertices;
+
+      for (var f = 0; f < geometry.faces.length; f++) {
+        var face = geometry.faces[f];
+
+        if (material == null) continue;
+
+        var a = vertices[face.a];
+        var b = vertices[face.b];
+        var c = vertices[face.c];
+
+        var m = material;
+
+        if (m is Morphing && m.morphTargets) {
+          var morphTargets = geometry.morphTargets;
+          var morphInfluences = morphTargetInfluences;
+
+          _vA.setZero();
+          _vB.setZero();
+          _vC.setZero();
+
+          for (var t = 0, tl = morphTargets.length; t < tl; t++) {
+            var influence = morphInfluences[t];
+
+            if (influence == 0) continue;
+
+            var targets = morphTargets[t].vertices;
+
+            _vA.x += (targets[face.a].x - a.x) * influence;
+            _vA.y += (targets[face.a].y - a.y) * influence;
+            _vA.z += (targets[face.a].z - a.z) * influence;
+
+            _vB.x += (targets[face.b].x - b.x) * influence;
+            _vB.y += (targets[face.b].y - b.y) * influence;
+            _vB.z += (targets[face.b].z - b.z) * influence;
+
+            _vC.x += (targets[face.c].x - c.x) * influence;
+            _vC.y += (targets[face.c].y - c.y) * influence;
+            _vC.z += (targets[face.c].z - c.z) * influence;
+          }
+
+          _vA.add(a);
+          _vB.add(b);
+          _vC.add(c);
+
+          a = _vA;
+          b = _vB;
+          c = _vC;
+        }
+
+        var intersectionPoint = material.side == BackSide
+            ? _ray.intersectsWithTriangle(c, b, a, backfaceCulling: true)
+            : _ray.intersectsWithTriangle(a, b, c, backfaceCulling: material.side != DoubleSide);
+
+        if (intersectionPoint == null) continue;
+
+        intersectionPoint.applyMatrix4(matrixWorld);
+
+        var distance = raycaster.ray.origin.distanceTo(intersectionPoint);
+
+        if (distance < precision || distance < raycaster.near || distance > raycaster.far) continue;
+
+        intersects.add(new RayIntersection(
+            distance: distance, point: intersectionPoint, face: face, faceIndex: f, object: this));
+      }
+    }
   }
 
   /// Returns clone of [this].

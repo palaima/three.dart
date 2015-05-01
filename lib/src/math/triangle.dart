@@ -68,7 +68,7 @@ class Triangle {
 
   static final _v0 = new Vector3.zero();
   /// Returns the calculated normal of the triangle [a][b][c].
-  static normal(Vector3 a, Vector3 b, Vector3 c, Vector3 optionalTarget) {
+  static normal(Vector3 a, Vector3 b, Vector3 c, [Vector3 optionalTarget]) {
     var result = optionalTarget != null ? optionalTarget : new Vector3.zero();
 
     result.subVectors(c, b);
