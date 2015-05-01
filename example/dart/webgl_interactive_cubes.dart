@@ -1,19 +1,25 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
+import 'package:three/extras/three_math.dart' as three_math;
 
 Element container;
 
 PerspectiveCamera camera;
 Scene scene;
 WebGLRenderer renderer;
-Projector projector;
+Raycaster raycaster;
 
-double mouseX = 0.0,
-    mouseY = 0.0;
+Vector2 mouse = new Vector2.zero();
 
-Mesh INTERSECTED;
-num currentHex;
+Mesh intersected;
+
+var currentHex;
+
+var radius = 100,
+    theta = 0;
+
+Function random = new math.Random().nextDouble;
 
 void main() {
   init();
@@ -21,133 +27,87 @@ void main() {
 }
 
 void init() {
-
-  container = new Element.tag('div');
-
-  document.body.nodes.add(container);
-
-  camera = new PerspectiveCamera(70.0, window.innerWidth / window.innerHeight, 1.0, 1000.0);
-  camera.position.setValues(0.0, 300.0, 500.0);
-
+  camera = new PerspectiveCamera(70.0, window.innerWidth / window.innerHeight, 1.0, 10000.0);
   scene = new Scene();
-  scene.add(camera);
 
-  var light;
-
-  light = new DirectionalLight(0xffffff, 2.0);
+  var light = new DirectionalLight(0xffffff, 1.0);
   light.position.setValues(1.0, 1.0, 1.0).normalize();
   scene.add(light);
 
-  light = new DirectionalLight(0xffffff);
-  light.position.setValues(-1.0, -1.0, -1.0).normalize();
-  scene.add(light);
-
-
   var geometry = new BoxGeometry(20.0, 20.0, 20.0);
-
-  var rnd = new Math.Random();
-
-  for (var i = 0; i < 500; i++) {
-
-    var object = new Mesh(geometry, new MeshLambertMaterial(color: rnd.nextInt(0xffffff)));
-
-    object.position.x = rnd.nextInt(800) - 400.0;
-    object.position.y = rnd.nextInt(800) - 400.0;
-    object.position.z = rnd.nextInt(800) - 400.0;
-
-    object.rotation.x = (rnd.nextDouble() * 360) * Math.PI / 180;
-    object.rotation.y = (rnd.nextDouble() * 360) * Math.PI / 180;
-    object.rotation.z = (rnd.nextDouble() * 360) * Math.PI / 180;
-
-    object.scale.x = rnd.nextDouble() * 2 + 1;
-    object.scale.y = rnd.nextDouble() * 2 + 1;
-    object.scale.z = rnd.nextDouble() * 2 + 1;
-
-    scene.add(object);
-
+  for (var i = 0; i < 2000; i++) {
+    scene.add(new Mesh(geometry, new MeshLambertMaterial(color: random() * 0xffffff))
+      ..position.x = random() * 800 - 400
+      ..position.y = random() * 800 - 400
+      ..position.z = random() * 800 - 400
+      ..rotation.x = random() * 2 * math.PI
+      ..rotation.y = random() * 2 * math.PI
+      ..rotation.z = random() * 2 * math.PI
+      ..scale.x = random() + 0.5
+      ..scale.y = random() + 0.5
+      ..scale.z = random() + 0.5);
   }
 
-  projector = new Projector();
+  raycaster = new Raycaster();
+  renderer = new WebGLRenderer()
+    ..setClearColor(0xf0f0f0)
+    ..setPixelRatio(window.devicePixelRatio)
+    ..setSize(window.innerWidth, window.innerHeight)
+    ..sortObjects = false;
+  document.body.append(renderer.domElement);
 
-  renderer = new WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.onMouseMove.listen((event) {
+    event.preventDefault();
 
-  container.nodes.add(renderer.domElement);
+    mouse.x = (event.client.x / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.client.y / window.innerHeight) * 2 + 1;
+  });
 
-  document.onMouseMove.listen(onDocumentMouseMove);
+  window.onResize.listen((_) {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 
-  window.onResize.listen(onWindowResize);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 }
 
-onWindowResize(_) {
-
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-}
-
-onDocumentMouseMove(event) {
-
-  event.preventDefault();
-
-  mouseX = (event.client.x / window.innerWidth) * 2 - 1;
-  mouseY = -(event.client.y / window.innerHeight) * 2 + 1;
-
-}
-
-animate(num time) {
-
+void animate(num time) {
   window.requestAnimationFrame(animate);
-
   render();
-
 }
 
-var radius = 100;
-num theta = 0;
+void render() {
+  theta += 0.1;
 
-render() {
-
-  theta += 0.2;
-
-  camera.position.x = radius * Math.sin(theta * Math.PI / 360);
-  camera.position.y = radius * Math.sin(theta * Math.PI / 360);
-  camera.position.z = radius * Math.cos(theta * Math.PI / 360);
-
+  camera.position.x = radius * math.sin(three_math.degToRad(theta));
+  camera.position.y = radius * math.sin(three_math.degToRad(theta));
+  camera.position.z = radius * math.cos(three_math.degToRad(theta));
   camera.lookAt(scene.position);
 
+  camera.updateMatrixWorld();
+
   // find intersections
+  raycaster.setFromCamera(mouse, camera);
 
-  var vector = new Vector3(mouseX, mouseY, 1.0);
-  vector.unproject(camera);
-
-  var ray = new Ray(camera.position, vector.sub(camera.position).normalize());
-
-  var intersects = ray.intersectObjects(scene.children);
+  var intersects = raycaster.intersectObjects(scene.children);
 
   if (intersects.length > 0) {
+    if (intersected != intersects[0].object) {
+      if (intersected != null) {
+        (intersected.material as MeshLambertMaterial).emissive.setHex(currentHex);
+      }
 
-    if (INTERSECTED != intersects[0].object) {
-
-      if (INTERSECTED != null) (INTERSECTED.material as MeshLambertMaterial).emissive.setHex(currentHex);
-
-      INTERSECTED = intersects[0].object;
-      MeshLambertMaterial material = INTERSECTED.material;
-      currentHex = material.emissive.getHex();
-      material.emissive.setHex(0xff0000);
-
+      intersected = intersects[0].object;
+      currentHex = (intersected.material as MeshLambertMaterial).emissive.getHex();
+      (intersected.material as MeshLambertMaterial).emissive.setHex(0xff0000);
+    }
+  } else {
+    if (intersected != null) {
+      (intersected.material as MeshLambertMaterial).emissive.setHex(currentHex);
     }
 
-  } else {
-
-    if (INTERSECTED != null) (INTERSECTED.material as MeshLambertMaterial).emissive.setHex(currentHex);
-
-    INTERSECTED = null;
-
+    intersected = null;
   }
 
   renderer.render(scene, camera);
-
 }
