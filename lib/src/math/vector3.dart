@@ -1104,4 +1104,50 @@ class Vector3 implements Vector {
     _storage[2] = matrix._storage[14];
     return this;
   }
+
+  /// Transforms the direction of this vector by a matrix (a 3x3 subset of a Matrix4)
+  /// and then normalizes the result.
+  Vector3 transformDirection(Matrix4 arg) {
+    var argStorage = arg.storage;
+    var v0 = _storage[0];
+    var v1 = _storage[1];
+    var v2 = _storage[2];
+    _storage[0] = argStorage[0] * v0 + argStorage[4] * v1 + argStorage[8]  * v2;
+    _storage[1] = argStorage[1] * v0 + argStorage[5] * v1 + argStorage[9]  * v2;
+    _storage[2] = argStorage[2] * v0 + argStorage[6] * v1 + argStorage[10] * v2;
+    normalize();
+    return this;
+  }
+
+  /// Set this as [arg1] - [arg2].
+  Vector3 subVectors(Vector3 arg1, Vector3 arg2) {
+    var arg1Storage = arg1._storage;
+    var arg2Storage = arg2._storage;
+    _storage[0] = arg1Storage[0] - arg2Storage[0];
+    _storage[1] = arg1Storage[1] - arg2Storage[1];
+    _storage[2] = arg1Storage[2] - arg2Storage[2];
+    return this;
+  }
+
+  /// Set this as [arg1] * [arg2].
+  Vector3 multiplyVectors(Vector3 arg1, Vector3 arg2) {
+    var arg1Storage = arg1._storage;
+    var arg2Storage = arg2._storage;
+    _storage[0] = arg1Storage[0] * arg2Storage[0];
+    _storage[1] = arg1Storage[1] * arg2Storage[1];
+    _storage[2] = arg1Storage[2] * arg2Storage[2];
+    return this;
+  }
+
+  /// Set this as the cross product of [arg1] and [arg2].
+  Vector3 crossVectors(Vector3 arg1, Vector3 arg2) {
+    var arg1Storage = arg1._storage;
+    var arg2Storage = arg2._storage;
+    var ax = arg1Storage[0], ay = arg1Storage[1], az = arg1Storage[2];
+    var bx = arg2Storage[0], by = arg2Storage[1], bz = arg2Storage[2];
+    _storage[0] = ay * bz - az * by;
+    _storage[1] = az * bx - ax * bz;
+    _storage[2] = ax * by - ay * bx;
+    return this;
+  }
 }
