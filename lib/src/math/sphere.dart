@@ -57,9 +57,26 @@ class Sphere {
    * Additions from three.js
    */
 
+  factory Sphere.fromPoints(List<Vector3> points) =>
+      new Sphere()..setFromPoints(points);
+
   Sphere applyMatrix4(Matrix4 matrix) {
     center.applyMatrix4(matrix);
     radius *= matrix.getMaxScaleOnAxis();
+    return this;
+  }
+
+  Sphere setFromPoints(List<Vector3> points) {
+    center.setFrom(new Aabb3.fromPoints( points ).center);
+
+    var maxRadiusSq = 0;
+
+    points.forEach((point) {
+      maxRadiusSq = Math.max( maxRadiusSq, center.distanceToSquared( point) );
+    });
+
+    radius = Math.sqrt(maxRadiusSq);
+
     return this;
   }
 
