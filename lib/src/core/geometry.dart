@@ -20,13 +20,17 @@ abstract class IGeometry {
   List<MorphTarget> morphTargets;
   List<MorphColor> morphColors;
   List<MorphNormal> morphNormals;
+
+  Aabb3 boundingBox;
   Sphere boundingSphere;
 
   bool verticesNeedUpdate;
 
   List<Vector3> vertices;
+  List<Face3> faces;
 
   void computeBoundingSphere();
+  void computeBoundingBox();
 }
 
 /// Base class for geometries.
@@ -377,8 +381,10 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   /// Computes bounding box of the geometry, updating Geometry.boundingBox.
   void computeBoundingBox() {
     if (boundingBox == null) {
-      boundingBox = new Aabb3.fromPoints(vertices);
+      boundingBox = new Aabb3();
     }
+
+    boundingBox.setFromPoints(vertices);
   }
 
   /// Computes bounding sphere of the geometry, updating Geometry.boundingSphere.
@@ -386,14 +392,11 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   /// Neither bounding boxes or bounding spheres are computed by default.
   /// They need to be explicitly computed, otherwise they are null.
   void computeBoundingSphere() {
-    num radiusSq;
+    if (boundingSphere == null ) {
+      boundingSphere = new Sphere();
+    }
 
-    var maxRadiusSq = vertices.fold(0, (num curMaxRadiusSq, Vector3 vertex) {
-      radiusSq = vertex.length2;
-      return (radiusSq > curMaxRadiusSq) ? radiusSq : curMaxRadiusSq;
-    });
-
-    boundingSphere = new Sphere.centerRadius(new Vector3.zero(), Math.sqrt(maxRadiusSq));
+    boundingSphere.setFromPoints(vertices);
   }
 
   /// Merge two geometries or geometry and geometry from object (using object's transform).
