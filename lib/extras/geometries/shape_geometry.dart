@@ -34,6 +34,7 @@ class ShapeGeometry extends Geometry {
     addShapeList(this.shapes, curveSegments: curveSegments, uvGenerator: uvGenerator);
 
     computeFaceNormals();
+    computeCentroids();
   }
 
   void addShapeList(List<Shape> shapes, {int curveSegments, WorldUVGenerator uvGenerator}) {

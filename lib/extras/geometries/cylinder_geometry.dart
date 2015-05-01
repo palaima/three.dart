@@ -143,5 +143,6 @@ class CylinderGeometry extends Geometry {
     }
 
     computeFaceNormals();
+    computeCentroids();
   }
 }

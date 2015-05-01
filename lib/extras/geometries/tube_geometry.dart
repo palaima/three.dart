@@ -4,7 +4,7 @@
  * @author miningold / https://github.com/miningold
  *
  * Modified from the TorusKnotGeometry by @oosmoxiecode
- * 
+ *
  * based on r63
  */
 
@@ -14,13 +14,13 @@ class TubeGeometry extends Geometry {
   List<Vector3> tangents;
   List<Vector3> normals;
   List<Vector3> binormals;
-  
+
   List<List> grid = [];
-  
-  TubeGeometry(Curve path, 
-              [int segments = 64, 
-               double radius = 1.0, 
-               int radialSegments = 8, 
+
+  TubeGeometry(Curve path,
+              [int segments = 64,
+               double radius = 1.0,
+               int radialSegments = 8,
                bool closed = false]) : super() {
     var numpoints = segments + 1;
 
@@ -29,7 +29,7 @@ class TubeGeometry extends Geometry {
     tangents = frames.tangents;
     normals = frames.normals;
     binormals = frames.binormals;
-    
+
     for (var i = 0; i < numpoints; i++) {
       grid.add(new List(radialSegments));
 
@@ -62,7 +62,7 @@ class TubeGeometry extends Geometry {
         var ip = closed ? (i + 1) % segments : i + 1;
         var jp = (j + 1) % radialSegments;
 
-        var a = grid[i][j]; 
+        var a = grid[i][j];
         var b = grid[ip][j];
         var c = grid[ip][jp];
         var d = grid[i][jp];
@@ -82,9 +82,10 @@ class TubeGeometry extends Geometry {
 
     computeFaceNormals();
     computeVertexNormals();
+    computeCentroids();
   }
 
-  _vert(x, y, z) { 
+  _vert(x, y, z) {
     vertices.add(new Vector3(x, y, z));
     return vertices.length - 1;
   }
@@ -94,12 +95,12 @@ class TubeGeometryFrenetFrames {
   List<Vector3> tangents;
   List<Vector3> normals;
   List<Vector3> binormals;
-  
+
   int nSegments;
-  
+
   TubeGeometryFrenetFrames(path, int segments, bool closed) {
     var EPSILON = 0.0000000001;
-    
+
     var numpoints = segments + 1;
 
     normals = new List(numpoints);
@@ -116,7 +117,7 @@ class TubeGeometryFrenetFrames {
       var ty = tangents[0].y.abs();
       var tz = tangents[0].z.abs();
       var normal = new Vector3.zero();
-      
+
       if (tx <= smallest) { normal = new Vector3(1.0, 0.0, 0.0); smallest = tx; }
       if (ty <= smallest) { normal = new Vector3(0.0, 1.0, 0.0); smallest = ty; }
       if (tz <= smallest) { normal = new Vector3(0.0, 0.0, 1.0); }

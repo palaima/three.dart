@@ -17,5 +17,6 @@ class PlaneGeometry extends Geometry {
   PlaneGeometry(double width, double height, [int widthSegments = 1, int heightSegments = 1]) : super() {
     log('PlaneGeometry: Consider using PlaneBufferGeometry for lower memory footprint.');
     fromBufferGeometry(new PlaneBufferGeometry(width, height, widthSegments, heightSegments));
+    computeCentroids();
   }
 }

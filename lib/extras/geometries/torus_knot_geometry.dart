@@ -1,26 +1,26 @@
 /*
  * @author oosmoxiecode
  * based on http://code.google.com/p/away3d/source/browse/trunk/fp10/Away3D/src/away3d/primitives/TorusKnot.as?spec=svn2473&r=2473
- * 
+ *
  * based on r66
  */
 
 part of three;
 
-/** 
- * Class for generating torus knot geometries, the particular shape 
- * of which is defined by a pair of coprime integers, p and q. 
+/**
+ * Class for generating torus knot geometries, the particular shape
+ * of which is defined by a pair of coprime integers, p and q.
  * If p and q are not coprime, the result will be a torus link.
- * 
+ *
  *     var geometry = new TorusKnotGeometry(10.0, 3.0, 100, 16);
  *     var material = new MeshBasicMaterial(color: 0xffff00);
  *     var torusKnot = new Mesh(geometry, material);
  *     scene.add(torusKnot);
- * 
+ *
  */
 class TorusKnotGeometry extends Geometry {
   List<List> _grid;
-  
+
   /// Creates a new torus knot geometry.
   TorusKnotGeometry([double radius = 100.0,
                      double tube = 40.0,
@@ -51,7 +51,7 @@ class TorusKnotGeometry extends Geometry {
           ..x = p1.x + cx * n.x + cy * bitan.x
           ..y = p1.y + cx * n.y + cy * bitan.y
           ..z = p1.z + cx * n.z + cy * bitan.z;
-        
+
         vertices.add(pos);
         _grid[i][j] = vertices.length - 1;
       }
@@ -79,11 +79,12 @@ class TorusKnotGeometry extends Geometry {
         faceVertexUvs[0].add([uvb.clone(), uvc, uvd.clone()]);
       }
     }
-    
+
     computeFaceNormals();
-    computeVertexNormals();  
+    computeVertexNormals();
+    computeCentroids();
   }
-  
+
   Vector3 _getPos(double u, double in_q, double in_p, double radius, double heightScale) {
     var cu = Math.cos(u);
     var su = Math.sin(u);

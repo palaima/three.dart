@@ -124,6 +124,9 @@ class Object3D {
 
   var __webglMorphTargetInfluences;
 
+  var renderDepth;
+  var matrixRotationWorld = new Matrix4.identity();
+
   /// The constructor takes no arguments.
   Object3D() {
     rotation.onChange.listen(_onRotationChange);

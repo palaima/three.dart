@@ -170,7 +170,7 @@ class Projector {
     // find direction from vector to end
     end.sub(vector).normalize();
 
-    return new Ray(vector, end);
+    return new Ray.originDirection(vector, end);
   }
 
   _projectObject(Object3D parent) {

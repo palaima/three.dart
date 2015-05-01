@@ -50,6 +50,7 @@ class PolyhedronGeometry extends Geometry {
     mergeVertices();
 
     computeFaceNormals();
+    computeCentroids();
 
     boundingSphere = new Sphere.centerRadius(new Vector3.zero(), radius);
   }

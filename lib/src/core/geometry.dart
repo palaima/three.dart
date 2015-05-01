@@ -590,6 +590,21 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     });
     return maxIndex + 1;
   }
+
+  @Deprecated('')
+  void computeCentroids() {
+    faces.forEach((face) {
+
+      face.centroid.setValues(0.0, 0.0, 0.0);
+
+      face.indices.forEach((idx) {
+        face.centroid.add(vertices[idx]);
+      });
+
+      face.centroid /= face.indices.length.toDouble();
+
+    });
+  }
 }
 
 class MorphTarget {

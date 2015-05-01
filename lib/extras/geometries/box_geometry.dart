@@ -25,6 +25,7 @@ class BoxGeometry extends Geometry {
     _buildPlane('x', 'y',  1, -1, width, height, depth_half); // pz
     _buildPlane('x', 'y', -1, -1, width, height, - depth_half); // nz
 
+    computeCentroids();
     mergeVertices();
   }
 

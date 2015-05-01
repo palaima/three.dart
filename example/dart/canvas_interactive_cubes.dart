@@ -16,6 +16,9 @@ List<Mesh> objects;
 final num radius = 600;
 num theta = 0;
 
+Vector2 mouse = new Vector2.zero();
+Raycaster raycaster = new Raycaster();
+
 void main() {
   init();
   animate(0);
@@ -100,34 +103,23 @@ void init() {
 void onDocumentMouseDown(event) {
   event.preventDefault();
 
-  Vector3 vector =
-      new Vector3((event.client.x / window.innerWidth) * 2 - 1, -(event.client.y / window.innerHeight) * 2 + 1, 0.5);
-  vector.unproject(camera);
+  mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+  mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 
-  Ray ray = new Ray(camera.position, vector.sub(camera.position).normalize());
+  raycaster.setFromCamera( mouse, camera );
 
-  List<Intersect> intersects = ray.intersectObjects(objects);
+  var intersects = raycaster.intersectObjects( objects );
 
-  if (intersects.length > 0) {
-    Intersect intersect = intersects[0];
-    Mesh mesh = intersect.object;
-    MeshBasicMaterial material = mesh.material;
-    material.color.setHex(new Math.Random().nextDouble() * 0xffffff);
+  if ( intersects.length > 0 ) {
 
-    Particle particle = new Particle(particleMaterial);
-    particle.position = intersect.point;
-    particle.scale.x = particle.scale.y = 8.0;
-    scene.add(particle);
+    intersects[ 0 ].object.material.color.setHex( new Math.Random().nextDouble() * 0xffffff );
+
+    var particle = new Particle( particleMaterial );
+    particle.position.setFrom( intersects[ 0 ].point );
+    particle.scale.x = particle.scale.y = 16.0;
+    scene.add( particle );
+
   }
-
-  /*
-  // Parse all the faces
-  for ( var i in intersects ) {
-    Intersect intersect = intersects[ i ];
-    //intersects[ i ].
-    intersects[ i ].face.material[ 0 ].color.setHex( Math.random() * 0xffffff | 0x80000000 );
-  }
-  */
 }
 
 //

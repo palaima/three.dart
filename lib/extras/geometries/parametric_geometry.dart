@@ -1,7 +1,7 @@
 /*
  * @author zz85 / https://github.com/zz85
  * Parametric Surfaces Geometry based on the brilliant article by @prideout http://prideout.net/blog/?p=44
- * 
+ *
  * based on r66
  */
 
@@ -46,8 +46,9 @@ class ParametricGeometry extends Geometry {
 
     computeFaceNormals();
     computeVertexNormals();
+    computeCentroids();
   }
-  
+
   factory ParametricGeometry.klein(int slices, int stacks) {
     var func = (v, u) {
       u *= Math.PI;
@@ -67,7 +68,7 @@ class ParametricGeometry extends Geometry {
 
       return new Vector3(x, y, z);
     };
-    
+
     return new ParametricGeometry(func, slices, stacks);
   }
 
@@ -75,7 +76,7 @@ class ParametricGeometry extends Geometry {
   factory ParametricGeometry.plane(double width, double height, int slices, int stacks) {
     return new ParametricGeometry((u, v) => new Vector3(u * width, 0.0, v * height), slices, stacks);
   }
-  
+
   factory ParametricGeometry.mobius(int slices, int stacks) {
     var func = (u, t) {
       u = u - 0.5;
@@ -89,10 +90,10 @@ class ParametricGeometry extends Geometry {
       z = u * Math.sin(v/2);
       return new Vector3(x, y, z);
     };
-    
+
     return new ParametricGeometry(func, slices, stacks);
   }
-  
+
   factory ParametricGeometry.mobius3d(int slices, int stacks) {
     var func = (u, t) {
       u *= Math.PI;
@@ -108,10 +109,10 @@ class ParametricGeometry extends Geometry {
       x = (major + x) * Math.cos(u);
       return new Vector3(x, y, z);
     };
-    
+
     return new ParametricGeometry(func, slices, stacks);
   }
-  
+
   /// Parametric Replacement for SphereGeometry
   factory ParametricGeometry.sphere(double size, int u, int v) {
       var sphere = (u, v) {
@@ -125,19 +126,19 @@ class ParametricGeometry extends Geometry {
 
         return new Vector3(x, y, z);
       };
-      
+
       return new ParametricGeometry(sphere, u, v);
   }
-  
+
   /// Parametric Replacement for TubeGeometry.
-  factory ParametricGeometry.tube(path, 
-                                {int segments: 64, 
-                                 double radius: 1.0, 
-                                 int segmentsRadius: 8, 
-                                 bool closed: false, 
+  factory ParametricGeometry.tube(path,
+                                {int segments: 64,
+                                 double radius: 1.0,
+                                 int segmentsRadius: 8,
+                                 bool closed: false,
                                  bool debug: false}) {
     var frames = new TubeGeometryFrenetFrames(path, segments, closed);
-        
+
     var func = (u, v) {
       v *= 2 * Math.PI;
 
@@ -165,28 +166,28 @@ class ParametricGeometry extends Geometry {
 
       return pos2.clone();
     };
-    
+
     return new ParametricGeometry(func, segments, segmentsRadius);
   }
-  
+
   /// Parametric Replacement for TorusKnotGeometry.
-  factory ParametricGeometry.torusKnot({double radius: 200.0, 
-                                 double tube: 40.0, 
-                                 int segmentsR: 64, 
-                                 int segmentsT: 8, 
-                                 double p: 2.0, 
-                                 double q: 3.0, 
+  factory ParametricGeometry.torusKnot({double radius: 200.0,
+                                 double tube: 40.0,
+                                 int segmentsR: 64,
+                                 int segmentsT: 8,
+                                 double p: 2.0,
+                                 double q: 3.0,
                                  double heightScale: 1.0}) {
-    var path = new Curve.create((double t) { 
+    var path = new Curve.create((double t) {
       t *= Math.PI * 2;
       var r = 0.5;
       var tx = (1 + r * Math.cos(q * t)) * Math.cos(p * t),
         ty = (1 + r * Math.cos(q * t)) * Math.sin(p * t),
         tz = r * Math.sin(q * t);
-    
+
       return new Vector3(tx, ty * heightScale, tz)..scale(radius);
     });
-    
+
     return new ParametricGeometry.tube(path, segments: segmentsR, radius: tube, segmentsRadius: segmentsT, closed: true);
   }
 }

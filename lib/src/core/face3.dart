@@ -14,6 +14,10 @@ class Face3 {
 
   List vertexTangents = [];
 
+  // backwards compatibility
+  var materialIndex;
+  var centroid = new Vector3.zero();
+
   /// Vertex A index.
   int get a => indices[0];
 

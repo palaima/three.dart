@@ -64,5 +64,6 @@ class TorusGeometry extends Geometry {
     }
 
     computeFaceNormals();
+    computeCentroids();
   }
 }

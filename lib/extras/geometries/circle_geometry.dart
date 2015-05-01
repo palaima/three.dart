@@ -54,6 +54,7 @@ class CircleGeometry extends Geometry {
     }
 
     computeFaceNormals();
+    computeCentroids();
 
     boundingSphere = new Sphere.centerRadius(new Vector3.zero(), radius);
   }
