@@ -49,6 +49,7 @@ part 'src/core/instanced_interleaved_buffer.dart';
 part 'src/core/interleaved_buffer.dart';
 part 'src/core/interleaved_buffer_attribute.dart';
 part 'src/core/projector.dart';
+part 'src/core/raycaster.dart';
 part 'src/core/rectangle.dart';
 
 part 'src/math/aabb2.dart';
