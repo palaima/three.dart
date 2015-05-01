@@ -1,85 +1,81 @@
 import 'dart:html';
-import "dart:async";
-import 'dart:math' as Math;
+import 'dart:async';
+import 'dart:math' as math;
 import 'dart:convert' show JSON;
 import 'package:three/three.dart';
-import 'package:three/extras/font_utils.dart' as FontUtils;
-import 'package:three/extras/geometry_utils.dart' as GeometryUtils;
+import 'package:three/extras/postprocessing.dart';
+import 'package:three/extras/shaders.dart' as shaders;
+import 'package:three/extras/font_utils.dart' as font_utils;
 
-var container, stats, permalink, hex, color;
+PerspectiveCamera camera;
+Vector3 cameraTarget;
+Scene scene;
+WebGLRenderer renderer;
 
-var camera, cameraTarget, scene, renderer;
+EffectComposer composer;
+ShaderPass effectFXAA;
 
-var composer;
-var effectFXAA;
+Group group;
+Mesh textMesh1, textMesh2;
+TextGeometry textGeo;
 
-var textMesh1, textMesh2, textGeo, material, parent;
+MeshPhongMaterial material;
 
-var firstLetter = true,
-    text = "three.dart",
-    height = 20.0,
-    size = 70,
-    hover = 30.0,
+bool firstLetter = true;
 
-    curveSegments = 4,
+String text = 'three.dart';
+int height = 20;
+int size = 70;
+double hover = 30.0;
 
-    bevelThickness = 2.0,
-    bevelSize = 1.5,
-    bevelSegments = 3,
-    bevelEnabled = true,
+int curveSegments = 4;
 
-    font = "helvetiker", // helvetiker, optimer, gentilis, droid sans, droid serif
-    weight = "normal", // normal bold
-    style = "normal", // normal italic
+double bevelThickness = 2.0;
+double bevelSize = 1.5;
+int bevelSegments = 3;
+bool bevelEnabled = true;
 
-    mirror = true,
+String font = 'helvetiker'; // helvetiker, optimer, gentilis, droid sans, droid serif
+String weight = 'normal'; // normal bold
+String style = 'normal'; // normal italic
 
-    targetRotation = 0,
-    targetRotationOnMouseDown = 0,
+bool mirror = true;
 
-    mouseX = 0,
-    mouseXOnMouseDown = 0,
+double targetRotation = 0.0;
+double targetRotationOnMouseDown = 0.0;
 
-    glow = 0.9;
+double mouseX = 0.0;
+double mouseXOnMouseDown = 0.0;
 
-var windowHalfX;
-var windowHalfY;
+double windowHalfX = window.innerWidth / 2;
+double windowHalfY = window.innerHeight / 2;
 
-List<StreamSubscription> _mouseSubscriptions = [];
+Map postprocessing = {'enabled': false};
 
-Future loadFonts() =>
-    Future.wait(["fonts/helvetiker_regular.json"].map((path) => HttpRequest.getString(path).then((data) {
-  FontUtils.loadFace(JSON.decode(data));
-})));
+double glow = 0.9;
 
-void main() {
-  windowHalfX = window.innerWidth / 2;
-  windowHalfY = window.innerHeight / 2;
+List<StreamSubscription> mouseSubs;
 
-  loadFonts().then((_) {
-    init();
-    animate(0);
-  });
+main() async {
+  await loadFace();
+  init();
+  animate(0);
 }
 
-capitalize(txt) {
+String capitalize(String txt) => txt.substring(0, 1).toUpperCase() + txt.substring(1);
 
-  return txt.substring(0, 1).toUpperCase() + txt.substring(1);
+Future loadFace() async {
+  var f = font.contains('droid') ? 'droid/${font.split(' ').join('_')}' : font;
+  var w = weight == 'normal' ? 'regular' : weight;
+
+  var fontUrl = 'fonts/${f}_$w.typeface.json';
+  font_utils.loadFace(JSON.decode(await HttpRequest.getString(fontUrl)));
 }
 
 void init() {
-
-  container = new Element.tag('div');
-
-  document.body.nodes.add(container);
-
   // CAMERA
-
-  camera = new PerspectiveCamera(
-      30.0,
-      window.innerWidth / window.innerHeight,
-      1.0,
-      1500.0)..position.setValues(0.0, 400.0, 700.0);
+  camera = new PerspectiveCamera(30.0, window.innerWidth / window.innerHeight, 1.0, 1500.0)
+    ..position.setValues(0.0, 400.0, 700.0);
 
   cameraTarget = new Vector3(0.0, 150.0, 0.0);
 
@@ -89,57 +85,115 @@ void init() {
 
   // LIGHTS
 
-  var dirLight = new DirectionalLight(0xffffff, 0.125)..position.setValues(0.0, 0.0, 1.0).normalize();
+  var dirLight = new DirectionalLight(0xffffff, 0.125);
+  dirLight.position
+    ..setValues(0.0, 0.0, 1.0)
+    ..normalize();
   scene.add(dirLight);
 
-  var pointLight = new PointLight(0xffffff, intensity: 1.5)..position.setValues(0.0, 100.0, 90.0);
+  var pointLight = new PointLight(0xffffff, intensity: 1.5);
+  pointLight.position.setValues(0.0, 100.0, 90.0);
   scene.add(pointLight);
 
-  //text = capitalize( font ) + " " + capitalize( weight );
-  //text = "abcdefghijklmnopqrstuvwxyz0123456789";
-  //text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  //text = capitalize( font ) + ' ' + capitalize( weight );
+  //text = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  //text = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-  pointLight.color.setHSL(new Math.Random().nextDouble(), 1.0, 0.5);
+  pointLight.color.setHSL(new math.Random().nextDouble(), 1.0, 0.5);
 
-  material = new MeshFaceMaterial([new MeshPhongMaterial(color: 0xffffff, shading: FlatShading), // front
-    new MeshPhongMaterial(color: 0xffffff, shading: SmoothShading) // side
-  ]);
+  material = new MeshPhongMaterial(color: 0xffffff, shading: FlatShading);
 
-  parent = new Object3D()..position.y = 100.0;
+  group = new Group()..position.y = 100.0;
 
-  scene.add(parent);
+  scene.add(group);
 
   createText();
 
-  var plane =
-      new Mesh(new PlaneGeometry(10000.0, 10000.0), new MeshBasicMaterial(color: 0xffffff, opacity: 0.5, transparent: true))
-      ..position.y = 100.0
-      ..rotation.x = -Math.PI / 2.0;
+  var plane = new Mesh(new PlaneBufferGeometry(10000.0, 10000.0),
+      new MeshBasicMaterial(color: 0xffffff, opacity: 0.5, transparent: true))
+    ..position.y = 100.0
+    ..rotation.x = -math.PI / 2;
   scene.add(plane);
 
   // RENDERER
 
   renderer = new WebGLRenderer(antialias: true)
-      ..setSize(window.innerWidth, window.innerHeight)
-      ..setClearColor(new Color(0x000000), 1.0);
-
-  container.nodes.add(renderer.domElement);
-
-  // EVENTS
+    ..setClearColor(scene.fog.color)
+    ..setPixelRatio(window.devicePixelRatio)
+    ..setSize(window.innerWidth, window.innerHeight);
+  document.body.append(renderer.domElement);
 
   document
-      ..onMouseDown.listen(onDocumentMouseDown)
-      ..onTouchStart.listen(onDocumentTouchStart)
-      ..onTouchMove.listen(onDocumentTouchMove)
-      ..onKeyPress.listen(onDocumentKeyPress)
-      ..onKeyDown.listen(onDocumentKeyDown);
+    ..onMouseDown.listen(onDocumentMouseDown)
+    ..onKeyPress.listen(onDocumentKeyPress)
+    ..onKeyDown.listen(onDocumentKeyDown)
+    ..onTouchStart.listen(onDocumentTouchStart)
+    ..onTouchMove.listen(onDocumentTouchMove);
+
+  querySelector('#color').onClick
+      .listen((_) => pointLight.color.setHSL(new math.Random().nextDouble(), 1.0, 0.5));
+
+  querySelector('#font').onClick.listen((_) async {
+    if (font == 'helvetiker') {
+      font = 'optimer';
+    } else if (font == 'optimer') {
+      font = 'gentilis';
+    } else if (font == 'gentilis') {
+      font = 'droid sans';
+    } else if (font == 'droid sans') {
+      font = 'droid serif';
+    } else {
+      font = 'helvetiker';
+    }
+
+    await loadFace();
+    refreshText();
+  });
+
+  querySelector('#weight').onClick.listen((_) async {
+    if (weight == 'bold') {
+      weight = 'normal';
+    } else {
+      weight = 'bold';
+    }
+
+    await loadFace();
+    refreshText();
+  });
+
+  querySelector('#bevel').onClick.listen((_) {
+    bevelEnabled = !bevelEnabled;
+    refreshText();
+  });
+
+  querySelector('#postprocessing').onClick.listen((_) =>
+      postprocessing['enabled'] = !postprocessing['enabled']);
+
+  // POSTPROCESSING
+
+  renderer.autoClear = false;
+
+  var renderModel = new RenderPass(scene, camera);
+  var effectBloom = new BloomPass(strength: 0.25);
+  var effectFilm = new FilmPass(0.5, 0.125, 2048.0, false);
+
+  effectFXAA = new ShaderPass(shaders.fxaa);
+
+  effectFXAA.uniforms['resolution'].value.setValues(1 / window.innerWidth, 1 / window.innerHeight);
+
+  effectFilm.renderToScreen = true;
+
+  composer = new EffectComposer(renderer);
+
+  composer.addPass(renderModel);
+  composer.addPass(effectFXAA);
+  composer.addPass(effectBloom);
+  composer.addPass(effectFilm);
 
   window.onResize.listen(onWindowResize);
-
 }
 
-onWindowResize(e) {
-
+void onWindowResize(_) {
   windowHalfX = window.innerWidth / 2;
   windowHalfY = window.innerHeight / 2;
 
@@ -147,244 +201,141 @@ onWindowResize(e) {
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
-
 }
 
-onDocumentKeyDown(event) {
+void onDocumentMouseDown(MouseEvent event) {
+  event.preventDefault();
 
-  if (firstLetter) {
+  mouseSubs = [
+    document.onMouseMove.listen(onDocumentMouseMove),
+    document.onMouseUp.listen(onDocumentMouseUp),
+    document.onMouseOut.listen(onDocumentMouseOut)
+  ];
 
-    firstLetter = false;
-    text = "";
+  mouseXOnMouseDown = event.client.x - windowHalfX;
+  targetRotationOnMouseDown = targetRotation;
+}
 
-  }
-
+void onDocumentKeyPress(KeyEvent event) {
   var keyCode = event.keyCode;
 
-  // backspace
+  if (keyCode == KeyCode.BACKSPACE) {
+    event.preventDefault();
+  } else {
+    text += new String.fromCharCode(keyCode);
+    refreshText();
+  }
+}
 
-  if (keyCode == 8) {
+void onDocumentKeyDown(KeyEvent event) {
+  if (firstLetter) {
+    firstLetter = false;
+    text = '';
+  }
 
+  if (event.keyCode == KeyCode.BACKSPACE) {
     event.preventDefault();
 
     text = text.substring(0, text.length - 1);
     refreshText();
-
-    return false;
-
+    return;
   }
-
 }
 
-onDocumentKeyPress(event) {
-
-  var keyCode = event.which;
-
-  // backspace
-
-  if (keyCode == 8) {
-
+void onDocumentTouchStart(TouchEvent event) {
+  if (event.touches.length == 1) {
     event.preventDefault();
 
-  } else {
-
-    var ch = new String.fromCharCode(keyCode);
-    text += ch;
-
-    refreshText();
-
+    mouseXOnMouseDown = event.touches[0].page.x - windowHalfX;
+    targetRotationOnMouseDown = targetRotation;
   }
-
 }
 
-createText() {
+void onDocumentTouchMove(TouchEvent event) {
+  if (event.touches.length == 1) {
+    event.preventDefault();
 
-  textGeo = new TextGeometry(
-      text,
-      height.toInt(),
-      false,
-      bevelThickness,
-      bevelSize,
-      3,
-      bevelEnabled,
-      curveSegments,
-      1,
-      null,
-      0,
-      1,
-      size,
-      font,
-      weight,
-      style);
-
-  textGeo.materials = material.materials;
-
-  textGeo.computeBoundingBox();
-  textGeo.computeVertexNormals();
-
-  // "fix" side normals by removing z-component of normals for side faces
-  // (this doesn't work well for beveled geometry as then we lose nice curvature around z-axis)
-
-  if (!bevelEnabled) {
-
-    var triangleAreaHeuristics = 0.1 * (height * size);
-
-    textGeo.faces.forEach((face) {
-
-      if (face.materialIndex == 1) {
-
-        face.vertexNormals.forEach((normal) {
-
-          normal
-              ..z = 0.0
-              ..normalize();
-
-        });
-
-        var va = textGeo.vertices[face.a],
-            vb = textGeo.vertices[face.b],
-            vc = textGeo.vertices[face.c];
-
-        var s = GeometryUtils.triangleArea(va, vb, vc);
-
-        if (s > triangleAreaHeuristics) {
-
-          for (var j = 0; j < face.vertexNormals.length; j++) {
-
-            face.vertexNormals[j].setFrom(face.normal);
-
-          }
-
-        }
-
-      }
-
-    });
-
+    mouseX = event.touches[0].page.x - windowHalfX;
+    targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.05;
   }
+}
+
+void onDocumentMouseMove(MouseEvent event) {
+  mouseX = event.client.x - windowHalfX;
+  targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
+}
+
+void onDocumentMouseUp(_) {
+  mouseSubs.forEach((s) => s.cancel());
+}
+
+void onDocumentMouseOut(_) {
+  mouseSubs.forEach((s) => s.cancel());
+}
+
+void createText() {
+  textGeo = new TextGeometry(text,
+      size: size,
+      height: height,
+      curveSegments: curveSegments,
+      font: font,
+      weight: weight,
+      style: style,
+      bevelThickness: bevelThickness,
+      bevelSize: bevelSize,
+      bevelEnabled: bevelEnabled)
+    ..computeBoundingBox()
+    ..computeVertexNormals();
 
   var centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
   textMesh1 = new Mesh(textGeo, material)
+    ..position.x = centerOffset
+    ..position.y = hover
+    ..position.z = 0.0
 
-      ..position.x = centerOffset
-      ..position.y = hover
-      ..position.z = 0.0
+    ..rotation.x = 0.0
+    ..rotation.y = math.PI * 2;
 
-      ..rotation.x = 0.0
-      ..rotation.y = Math.PI * 2.0;
-
-  parent.add(textMesh1);
+  group.add(textMesh1);
 
   if (mirror) {
-
     textMesh2 = new Mesh(textGeo, material)
+      ..position.x = centerOffset
+      ..position.y = -hover
+      ..position.z = height.toDouble()
 
-        ..position.x = centerOffset
-        ..position.y = -hover
-        ..position.z = height
+      ..rotation.x = math.PI
+      ..rotation.y = math.PI * 2;
 
-        ..rotation.x = Math.PI
-        ..rotation.y = Math.PI * 2.0;
-
-    parent.add(textMesh2);
-
+    group.add(textMesh2);
   }
-
 }
 
-refreshText() {
+void refreshText() {
+  group.remove(textMesh1);
+  if (mirror) group.remove(textMesh2);
 
-  // updatePermalink();
-
-  parent.remove(textMesh1);
-  if (mirror) parent.remove(textMesh2);
-
-  if (!text) return;
+  if (text == null) return;
 
   createText();
-
 }
 
-onDocumentMouseDown(event) {
-
-  event.preventDefault();
-
-  _mouseSubscriptions = [
-      document.onMouseMove.listen(onDocumentMouseMove),
-      document.onMouseUp.listen(onDocumentMouseUp),
-      document.onMouseOut.listen(onDocumentMouseOut)];
-
-  mouseXOnMouseDown = event.client.x - windowHalfX;
-  targetRotationOnMouseDown = targetRotation;
-
-}
-
-onDocumentMouseMove(event) {
-
-  mouseX = event.client.x - windowHalfX;
-
-  targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
-
-}
-
-onDocumentMouseUp(event) {
-  _mouseSubscriptions.forEach((s) {
-    s.cancel();
-  });
-
-}
-
-onDocumentMouseOut(event) {
-  _mouseSubscriptions.forEach((s) {
-    s.cancel();
-  });
-}
-
-onDocumentTouchStart(event) {
-
-  if (event.touches.length == 1) {
-
-    event.preventDefault();
-
-    mouseXOnMouseDown = event.touches[0].pageX - windowHalfX;
-    targetRotationOnMouseDown = targetRotation;
-
-  }
-
-}
-
-onDocumentTouchMove(event) {
-
-  if (event.touches.length == 1) {
-
-    event.preventDefault();
-
-    mouseX = event.touches[0].pageX - windowHalfX;
-    targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.05;
-
-  }
-
-}
-
-//
-
-animate(num time) {
-
-  window.requestAnimationFrame(animate);
-
+void animate(num time) {
+  window.animationFrame.then(animate);
   render();
-
 }
 
-render() {
-
-  parent.rotation.y += (targetRotation - parent.rotation.y) * 0.05;
+void render() {
+  group.rotation.y += (targetRotation - group.rotation.y) * 0.05;
 
   camera.lookAt(cameraTarget);
 
   renderer.clear();
 
-  renderer.render(scene, camera);
-
+  if (postprocessing['enabled']) {
+    composer.render(0.05);
+  } else {
+    renderer.render(scene, camera);
+  }
 }
