@@ -289,9 +289,7 @@ class Object3D {
 
   Vector3 getWorldDirection() => new Vector3(0.0, 0.0, 1.0)..applyQuaternion(getWorldQuaternion());
 
-  raycast(raycaster, intersects) {
-    throw new UnimplementedError();
-  }
+  void raycast(Raycaster raycaster, List<RayIntersection> intersects) {}
 
   /// Executes [callback] on this object and all descendants.
   void traverse(void callback(Object3D obj)) {
