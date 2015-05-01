@@ -49,7 +49,6 @@ part 'src/core/instanced_interleaved_buffer.dart';
 part 'src/core/interleaved_buffer.dart';
 part 'src/core/interleaved_buffer_attribute.dart';
 part 'src/core/projector.dart';
-part 'src/core/ray.dart';
 part 'src/core/rectangle.dart';
 
 part 'src/math/aabb2.dart';
@@ -61,6 +60,7 @@ part 'src/math/matrix4.dart';
 part 'src/math/opengl.dart';
 part 'src/math/plane.dart';
 part 'src/math/quaternion.dart';
+part 'src/math/ray.dart';
 part 'src/math/sphere.dart';
 part 'src/math/spline.dart';
 part 'src/math/triangle.dart';
