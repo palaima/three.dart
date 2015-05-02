@@ -150,7 +150,7 @@ void init() {
 
   var vector = new Vector4.zero();
 
-  for (var i = 0; i < offsets.length / 3; i++) {
+  for (var i = 0; i < offsets.length; i++) {
       var x = rnd.nextDouble() * 100 - 50;
       var y = rnd.nextDouble() * 100 - 50;
       var z = rnd.nextDouble() * 100 - 50;
@@ -166,7 +166,7 @@ void init() {
 
   orientations = new InstancedBufferAttribute(new Float32List(instances * 4), 4, dynamic: true);
 
-  for (var i = 0, ul = orientations.length / 4; i < ul; i++) {
+  for (var i = 0, ul = orientations.length; i < ul; i++) {
     vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
     vector.normalize();
     orientations.setXYZW(i, vector.x, vector.y, vector.z, vector.w);
@@ -238,7 +238,7 @@ void render() {
   tmpQ.setValues(moveQ.x * delta, moveQ.y * delta, moveQ.z * delta, 1.0);
   tmpQ.normalize();
 
-  for (var i = 0; i < orientations.length / 4; i++) {
+  for (var i = 0; i < orientations.length; i++) {
     var index = i * 4;
     currentQ.setValues(orientations.array[index], orientations.array[index + 1], orientations.array[index + 2], orientations.array[index + 3]);
     currentQ.multiply(tmpQ);

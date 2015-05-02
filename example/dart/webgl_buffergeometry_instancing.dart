@@ -87,7 +87,7 @@ void init() {
 
   var offsets = new InstancedBufferAttribute(new Float32List(instances * 3), 3);
 
-  for (var i = 0; i < offsets.length / 3; i++) {
+  for (var i = 0; i < offsets.length; i++) {
     offsets.setXYZ(i, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5);
   }
 
@@ -95,7 +95,7 @@ void init() {
 
   var colors = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
-  for (var i = 0; i <  colors.length / 4; i++) {
+  for (var i = 0; i <  colors.length; i++) {
     colors.setXYZW(i, rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble());
   }
 
@@ -105,7 +105,7 @@ void init() {
 
   var orientationsStart = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
-  for (var i = 0; i < orientationsStart.length / 4; i++) {
+  for (var i = 0; i < orientationsStart.length; i++) {
     vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1,
         rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
     vector.normalize();
@@ -117,7 +117,7 @@ void init() {
 
   var orientationsEnd = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
-  for (var i = 0; i < orientationsEnd.length / 4; i++) {
+  for (var i = 0; i < orientationsEnd.length; i++) {
     vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
     vector.normalize();
 
