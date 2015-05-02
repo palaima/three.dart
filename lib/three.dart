@@ -79,6 +79,7 @@ part 'src/loaders/mtl_loader.dart';
 part 'src/loaders/obj_loader.dart';
 
 part 'extras/geometries/circle_geometry.dart';
+part 'extras/geometries/circle_buffer_geometry.dart';
 part 'extras/geometries/convex_geometry.dart';
 part 'extras/geometries/box_geometry.dart';
 part 'extras/geometries/cylinder_geometry.dart';
