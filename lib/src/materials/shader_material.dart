@@ -1,7 +1,7 @@
 /*
  * @author alteredq / http://alteredqualia.com/
  *
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ * based on https://github.com/mrdoob/three.js/blob/59aebeda0837e7ef1e2ad874c4d2dc486b8d3a45/src/materials/ShaderMaterial.js
  */
 
 part of three;
@@ -31,6 +31,8 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
   bool morphTargets; // set to use morph targets
   bool morphNormals; // set to use morph normals
 
+  bool derivatives;
+
   // When rendered geometry doesn't include these attributes but the material does,
   // use these default values in WebGL. This avoids errors when buffer data is missing.
   final Map<String, List<num>> defaultAttributeValues = {
@@ -47,7 +49,7 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
   ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, this.vertexShader: defaultVertexShader,
     this.fragmentShader: defaultFragmentShader, int shading: SmoothShading, this.linewidth: 1.0, this.wireframe: false,
     this.wireframeLinewidth: 1.0, bool fog: true, this.lights: false, int vertexColors: NoColors, this.skinning: false,
-    this.morphTargets: false, this.morphNormals: false,
+    this.morphTargets: false, this.morphNormals: false, this.derivatives: false,
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
     int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,

@@ -1,7 +1,7 @@
 /*
  * @author mrdoob / http://mrdoob.com/
  *
- * based on https://github.com/mrdoob/three.js/blob/01ccd8df7916ad4883044621fd091d06057682db/src/renderers/webgl/WebGLObjects.js
+ * based on https://github.com/mrdoob/three.js/blob/f36b11a4b0c64d0775b4fb75db3935939eec6812/src/renderers/webgl/WebGLObjects.js
  */
 
 part of three;
@@ -11,9 +11,6 @@ class WebGLObjects {
   List<WebGLObject> objectsImmediate = [];
 
   WebGLGeometries geometries;
-
-  Map geometryGroups = {};
-  int geometryGroupCounter = 0;
 
   gl.RenderingContext _gl;
   WebGLRendererInfo _info;
@@ -65,7 +62,7 @@ class WebGLObjects {
 
       if (object is Mesh || object is Line || object is PointCloud) {
         objects[object.id] =
-            new WebGLObject(id: object.id, object: object, material: null, z: 0);
+            new WebGLObject(id: object.id, object: object, z: 0);
 
       } else if (object is ImmediateRenderObject || object.immediateRenderCallback != null) {
         objectsImmediate.add(
@@ -74,15 +71,14 @@ class WebGLObjects {
     }
   }
 
-  void _update(Object3D object) {
+  void updateObject(Object3D object) {
     var obj = object;
     var geometry = geometries.get(object);
 
     if (obj is GeometryObject && obj.geometry is DynamicGeometry) {
-      geometry.updateFromObject(object);
-    }
-
-    if (obj is MaterialObject && obj.material is ShaderMaterial) {
+        geometry.updateFromObject(object);
+        geometry.updateFromMaterial(obj.material);
+    } else if (obj is GeometryObject && obj.geometry is Geometry) {
       geometry.updateFromMaterial(obj.material);
     }
 
@@ -133,7 +129,7 @@ class WebGLObjects {
   void update(List<WebGLObject> renderList) {
     for (var i = 0; i < renderList.length; i++) {
       var object = renderList[i].object;
-      if (object.material.visible) _update(object);
+      if (object.material.visible) updateObject(object);
     }
   }
 }

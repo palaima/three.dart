@@ -1,5 +1,5 @@
 /*
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ * based on https://github.com/mrdoob/three.js/blob/0f945f290b5d4eda71663bb73befd299f2664bb8/src/renderers/webgl/WebGLShader.js
  */
 
 part of three;

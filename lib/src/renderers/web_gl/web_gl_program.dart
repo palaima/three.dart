@@ -1,5 +1,5 @@
 /*
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ * based on https://github.com/mrdoob/three.js/blob/59aebeda0837e7ef1e2ad874c4d2dc486b8d3a45/src/renderers/webgl/WebGLProgram.js
  */
 
 part of three;
@@ -192,6 +192,8 @@ class WebGLProgram {
         sizeAttenuation ? '#define USE_SIZEATTENUATION' : '',
 
         logarithmicDepthBuffer ? '#define USE_LOGDEPTHBUF' : '',
+        logarithmicDepthBuffer && renderer.extensions.get('EXT_frag_depth') != null
+          ? '#define USE_LOGDEPTHBUF_EXT' : '',
 
         'uniform mat4 modelMatrix;',
         'uniform mat4 modelViewMatrix;',
@@ -246,10 +248,11 @@ class WebGLProgram {
      ].reduce(programArrayToString);
 
       prefix_fragment = [
+        (bumpMap || normalMap || flatShading || (material is ShaderMaterial) && material.derivatives)
+          ? '#extension GL_OES_standard_derivatives : enable' : '',
+
         'precision $precision float;\n',
         'precision $precision int;',
-
-        (bumpMap || normalMap || flatShading) ? '#extension GL_OES_standard_derivatives : enable' : '',
 
         customDefines,
 
@@ -294,6 +297,8 @@ class WebGLProgram {
         shadowMapCascade ? '#define SHADOWMAP_CASCADE' : '',
 
         logarithmicDepthBuffer ? '#define USE_LOGDEPTHBUF' : '',
+        logarithmicDepthBuffer && renderer.extensions.get('EXT_frag_depth') != null
+          ? '#define USE_LOGDEPTHBUF_EXT' : '',
 
         'uniform mat4 viewMatrix;',
         'uniform vec3 cameraPosition;',

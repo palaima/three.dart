@@ -4,7 +4,7 @@
  * @author alteredq / http://alteredqualia.com/
  * @author szimek / https://github.com/szimek/
  *
- * based on https://github.com/mrdoob/three.js/blob/46b78bbd17865dd7cefca76b10bd6d2cde5ad331/src/renderers/WebGLRenderer.js
+ * based on https://github.com/mrdoob/three.js/blob/ba36e1d75f470f63812a260994a564bca2e4c574/src/renderers/WebGLRenderer.js
  */
 
 part of three;
@@ -731,16 +731,15 @@ class WebGLRenderer implements Renderer {
     state.disableUnusedAttributes();
   }
 
-  void renderBufferDirect(Camera camera, List lights, Fog fog, Material material,
-                          BufferGeometry geometry, Object3D object) {
-    var mat = material;
+  void renderBufferDirect(Camera camera, List lights, Fog fog, Material material, Object3D object) {
     if (material.visible == false) return;
 
+    var geometry = objects.geometries.get(object);
     var program = setProgram(camera, lights, fog, material, object);
 
     var updateBuffers = false,
-        wireframeBit = (mat is Wireframe) && mat.wireframe ? 1 : 0,
-        geometryProgram = 'direct_${geometry.id}_${program.id}_$wireframeBit';
+        wireframeBit = (material is Wireframe) && (material as Wireframe).wireframe ? 1 : 0,
+        geometryProgram = '${geometry.id}_${program.id}_$wireframeBit';
 
     if (geometryProgram != _currentGeometryProgram) {
       _currentGeometryProgram = geometryProgram;
@@ -751,90 +750,103 @@ class WebGLRenderer implements Renderer {
       state.initAttributes();
     }
 
+    if (object is Mesh) {
+      renderMesh(material, geometry, object, program, updateBuffers);
+    } else if (object is Line) {
+      renderLine(material, geometry, object, program, updateBuffers);
+    } else if (object is PointCloud) {
+      renderPointCloud(material, geometry, object, program, updateBuffers);
+    }
+  }
+
     // render mesh
 
-    if (object is Mesh) {
-      var mode = (material as Wireframe).wireframe ? gl.LINES : gl.TRIANGLES;
+  void renderMesh(Material material, BufferGeometry geometry, Object3D object, WebGLProgram program, bool updateBuffers) {
+    var mode = (material as Wireframe).wireframe ? gl.LINES : gl.TRIANGLES;
 
-      var index = geometry.attributes['index'];
+    var index = geometry.attributes['index'];
 
-      if (index != null) {
-        // indexed triangles
-        var type, size;
+    if (index != null) {
+      // indexed triangles
+      var type, size;
 
-        if (index.array is Uint32List && extensions.get('OES_element_index_uint') != null) {
-          type = gl.UNSIGNED_INT;
-          size = 4;
-        } else {
-          type = gl.UNSIGNED_SHORT;
-          size = 2;
+      if (index.array is Uint32List && extensions.get('OES_element_index_uint') != null) {
+        type = gl.UNSIGNED_INT;
+        size = 4;
+      } else {
+        type = gl.UNSIGNED_SHORT;
+        size = 2;
+      }
+
+      var offsets = geometry.offsets;
+
+      if (offsets.length == 0) {
+        if (updateBuffers) {
+          setupVertexAttributes(material, program, geometry, 0);
+          index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
         }
 
-        var offsets = geometry.offsets;
+        if (geometry is InstancedBufferGeometry && geometry.maxInstancedCount > 0) {
+          gl.AngleInstancedArrays extension = extensions.get('ANGLE_instanced_arrays');
 
-        if (offsets.length == 0) {
-          if (updateBuffers) {
-            setupVertexAttributes(material, program, geometry, 0);
-            index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
+          if (extension == null) {
+            error('THREE.WebGLRenderer.renderMesh: using InstancedBufferGeometry' +
+                  'but hardware does not support extension ANGLE_instanced_arrays.');
+            return;
           }
 
-          if (geometry is InstancedBufferGeometry && geometry.maxInstancedCount > 0) {
+          extension.drawElementsInstancedAngle(mode, index.array.length, type, 0, geometry.maxInstancedCount); // Draw the instanced meshes
+
+        } else {
+          _gl.drawElements(mode, index.array.length, type, 0);
+        }
+
+        info.render.calls++;
+        info.render.vertices += index.array.length; // not really true, here vertices can be shared
+        info.render.faces += index.array.length ~/ 3;
+      } else {
+        // if there is more than 1 chunk
+        // must set attribute pointers to use new offsets for each chunk
+        // even if geometry and materials didn't change
+
+        updateBuffers = true;
+
+        for (var i = 0; i < offsets.length; i++) {
+          var startIndex = offsets[i].index;
+
+          if (updateBuffers) {
+            setupVertexAttributes(material, program, geometry, startIndex);
+            _gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index.buffer._glbuffer);
+          }
+
+          // render indexed triangles
+
+          if (geometry is InstancedBufferGeometry && offsets[i].instances > 0) {
             gl.AngleInstancedArrays extension = extensions.get('ANGLE_instanced_arrays');
 
             if (extension == null) {
-              error('THREE.WebGLRenderer.setupVertexAttributes: using InstancedBufferGeometry' +
+              error('WebGLRenderer.renderMesh: using InstancedBufferGeometry' +
                     'but hardware does not support extension ANGLE_instanced_arrays.');
               return;
             }
 
-            extension.drawElementsInstancedAngle(mode, index.array.length, type, 0, geometry.maxInstancedCount); // Draw the instanced meshes
+            extension.drawElementsInstancedAngle(mode, offsets[i].count, type, offsets[i].start * size, offsets[i].instances); // Draw the instanced meshes
 
           } else {
-            _gl.drawElements(mode, index.array.length, type, 0);
+            _gl.drawElements(mode, offsets[i].count, type, offsets[i].start * size);
           }
 
           info.render.calls++;
-          info.render.vertices += index.array.length; // not really true, here vertices can be shared
-          info.render.faces += index.array.length ~/ 3;
-        } else {
-          // if there is more than 1 chunk
-          // must set attribute pointers to use new offsets for each chunk
-          // even if geometry and materials didn't change
-
-          updateBuffers = true;
-
-          for (var i = 0; i < offsets.length; i++) {
-            var startIndex = offsets[i].index;
-
-            if (updateBuffers) {
-              setupVertexAttributes(material, program, geometry, startIndex);
-              _gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index.buffer._glbuffer);
-            }
-
-            // render indexed triangles
-
-            if (geometry is InstancedBufferGeometry && offsets[i].instances > 0) {
-              gl.AngleInstancedArrays extension = extensions.get('ANGLE_instanced_arrays');
-
-              if (extension == null) {
-                error('WebGLRenderer.setupVertexAttributes: using InstancedBufferGeometry' +
-                      'but hardware does not support extension ANGLE_instanced_arrays.');
-                return;
-              }
-
-              extension.drawElementsInstancedAngle(mode, offsets[i].count, type, offsets[i].start * size, offsets[i].instances); // Draw the instanced meshes
-
-            } else {
-              _gl.drawElements(mode, offsets[i].count, type, offsets[i].start * size);
-            }
-
-            info.render.calls++;
-            info.render.vertices += offsets[i].count; // not really true, here vertices can be shared
-            info.render.faces += offsets[i].count ~/ 3;
-          }
+          info.render.vertices += offsets[i].count; // not really true, here vertices can be shared
+          info.render.faces += offsets[i].count ~/ 3;
         }
-      } else {
-        // non-indexed triangles
+      }
+    } else {
+      // non-indexed triangles
+
+      var offsets = geometry.offsets;
+
+      if (offsets.length == 0) {
         if (updateBuffers) {
           setupVertexAttributes(material, program, geometry, 0);
         }
@@ -847,7 +859,7 @@ class WebGLRenderer implements Renderer {
           gl.AngleInstancedArrays extension = extensions.get('ANGLE_instanced_arrays');
 
           if (extension == null) {
-            error('THREE.WebGLRenderer.setupVertexAttributes: using THREE.InstancedBufferGeometry' +
+            error('THREE.WebGLRenderer.renderMesh: using THREE.InstancedBufferGeometry' +
                   'but hardware does not support extension ANGLE_instanced_arrays.');
             return;
           }
@@ -868,164 +880,199 @@ class WebGLRenderer implements Renderer {
         info.render.calls++;
         info.render.vertices += position.array.length ~/ position.itemSize;
         info.render.faces += position.array.length ~/ (3 * position.itemSize);
-      }
-    } else if (object is PointCloud) {
-      // render particles
-      var mode = gl.POINTS;
-
-      var index = geometry.attributes['index'];
-
-      if (index != null) {
-        // indexed points
-        var type, size;
-
-        if (index.array is Uint32List && extensions.get('OES_element_index_uint') != null) {
-          type = gl.UNSIGNED_INT;
-          size = 4;
-        } else {
-          type = gl.UNSIGNED_SHORT;
-          size = 2;
-        }
-
-        var offsets = geometry.offsets;
-
-        if (offsets.length == 0) {
-          if (updateBuffers) {
-            setupVertexAttributes(material, program, geometry, 0);
-            index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
-          }
-
-          _gl.drawElements(mode, index.array.length, type, 0);
-
-          info.render.calls++;
-          info.render.points += index.array.length;
-        } else {
-          // if there is more than 1 chunk
-          // must set attribute pointers to use new offsets for each chunk
-          // even if geometry and materials didn't change
-
-          if (offsets.length > 1) updateBuffers = true;
-
-          offsets.forEach((offset) {
-            var startIndex = offset.index;
-
-            if (updateBuffers) {
-              setupVertexAttributes(material, program, geometry, startIndex);
-              index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
-            }
-
-            // render indexed points
-
-            _gl.drawElements(mode, offset.count, type, offset.start * size);
-
-            info.render.calls++;
-            info.render.points += offset.count;
-          });
-        }
       } else {
-        // non-indexed points
+        // if there is more than 1 chunk
+        // must set attribute pointers to use new offsets for each chunk
+        // even if geometry and materials didn't change
+
         if (updateBuffers) {
           setupVertexAttributes(material, program, geometry, 0);
         }
 
-        var position = geometry.attributes['position'];
-        var offsets = geometry.offsets;
+        for (var i = 0, il = offsets.length; i < il; i++) {
 
-        if (offsets.length == 0) {
-          _gl.drawArrays(mode, 0, position.array.length ~/ 3);
+          // render non-indexed triangles
+
+          if (geometry is InstancedBufferGeometry) {
+            error('THREE.WebGLRenderer.renderMesh: cannot use drawCalls with THREE.InstancedBufferGeometry.');
+            return;
+
+          } else {
+            _gl.drawArrays(mode, offsets[ i ].start, offsets[ i ].count);
+          }
 
           info.render.calls++;
-          info.render.points += position.array.length ~/ 3;
-        } else {
-          for (var i = 0; i < offsets.length; i++) {
-            _gl.drawArrays(mode, offsets[i].index, offsets[i].count);
+          info.render.vertices += offsets[ i ].count;
+          info.render.faces += (offsets[ i ].count) ~/ 3;
 
-            info.render.calls++;
-            info.render.points += offsets[i].count;
-          }
         }
       }
-    } else if (object is Line) {
-      var mode = (object.mode == LineStrip) ? gl.LINE_STRIP : gl.LINES;
+    }
+  }
 
-      var mat = material as LineMaterial;
+  void renderLine(LineBasicMaterial material, BufferGeometry geometry, Line object, WebGLProgram program, bool updateBuffers) {
+    // var mode = object is LineSegments ? gl.LINES : gl.LINE_STRIP; TODO
+    var mode = object.mode == LinePieces ? gl.LINES : gl.LINE_STRIP;
 
-      // In case user is not using Line*Material by mistake
-      var lineWidth = mat.linewidth != null ? mat.linewidth : 1.0;
+    // In case user is not using Line*Material by mistake
+    var lineWidth = material.linewidth != null ? material.linewidth : 1.0;
 
-      state.setLineWidth(lineWidth * _pixelRatio);
+    state.setLineWidth(lineWidth * _pixelRatio);
 
-      var index = geometry.attributes['index'];
+    var index = geometry.attributes['index'];
 
-      if (index != null) {
-        // indexed lines
-        var type, size;
+    if (index != null) {
+      // indexed points
+      var type, size;
 
-        if (index.array is Uint32List) {
-          type = gl.UNSIGNED_INT;
-          size = 4;
-        } else {
-          type = gl.UNSIGNED_SHORT;
-          size = 2;
+      if (index.array is Uint32List) {
+        type = gl.UNSIGNED_INT;
+        size = 4;
+      } else {
+        type = gl.UNSIGNED_SHORT;
+        size = 2;
+      }
+
+      var offsets = geometry.offsets;
+
+      if (offsets.length == 0) {
+        if (updateBuffers) {
+          setupVertexAttributes(material, program, geometry, 0);
+          index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
         }
 
-        var offsets = geometry.offsets;
+        _gl.drawElements(mode, index.array.length, type, 0);
 
-        if (offsets.length == 0) {
+        info.render.calls++;
+        info.render.points += index.array.length;
+      } else {
+        // if there is more than 1 chunk
+        // must set attribute pointers to use new offsets for each chunk
+        // even if geometry and materials didn't change
+
+        if (offsets.length > 1) updateBuffers = true;
+
+        offsets.forEach((offset) {
+          var startIndex = offset.index;
+
           if (updateBuffers) {
-            setupVertexAttributes(material, program, geometry, 0);
+            setupVertexAttributes(material, program, geometry, startIndex);
             index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
           }
 
-          _gl.drawElements(mode, index.array.length, type, 0); // 2 bytes per Uint16Array
+          // render indexed points
+
+          _gl.drawElements(mode, offset.count, type, offset.start * size);
 
           info.render.calls++;
-          info.render.vertices += index.array.length; // not really true, here vertices can be shared
-        } else {
+          info.render.points += offset.count;
+        });
+      }
+    } else {
+      // non-indexed points
+      if (updateBuffers) {
+        setupVertexAttributes(material, program, geometry, 0);
+      }
 
-          // if there is more than 1 chunk
-          // must set attribute pointers to use new offsets for each chunk
-          // even if geometry and materials didn't change
+      var position = geometry.attributes['position'];
+      var offsets = geometry.offsets;
 
-          if (offsets.length > 1) updateBuffers = true;
+      if (offsets.length == 0) {
+        _gl.drawArrays(mode, 0, position.array.length ~/ 3);
 
-          for (var i = 0; i < offsets.length; i++) {
-            var startIndex = offsets[i].index;
-
-            if (updateBuffers) {
-              setupVertexAttributes(material, program, geometry, startIndex);
-              index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
-            }
-
-            // render indexed lines
-
-            _gl.drawElements(mode, offsets[i].count, type, offsets[i].start * size); // 2 bytes per Uint16Array
-
-            info.render.calls++;
-            info.render.vertices += offsets[i].count; // not really true, here vertices can be shared
-          }
-        }
+        info.render.calls++;
+        info.render.points += position.array.length ~/ 3;
       } else {
-        // non-indexed lines
+        for (var i = 0; i < offsets.length; i++) {
+          _gl.drawArrays(mode, offsets[i].index, offsets[i].count);
+
+          info.render.calls++;
+          info.render.points += offsets[i].count;
+        }
+      }
+    }
+  }
+
+  void renderPointCloud(Material material, BufferGeometry geometry, Object3D object, WebGLProgram program, bool updateBuffers) {
+    var mode = gl.POINTS;
+
+    var mat = material as LineMaterial;
+
+    // In case user is not using Line*Material by mistake
+    var lineWidth = mat.linewidth != null ? mat.linewidth : 1.0;
+
+    state.setLineWidth(lineWidth * _pixelRatio);
+
+    var index = geometry.attributes['index'];
+
+    if (index != null) {
+      // indexed points
+      var type, size;
+
+      if (index.array is Uint32List && extensions.get('OES_element_index_uint') != null) {
+        type = gl.UNSIGNED_INT;
+        size = 4;
+      } else {
+        type = gl.UNSIGNED_SHORT;
+        size = 2;
+      }
+
+      var offsets = geometry.offsets;
+
+      if (offsets.length == 0) {
         if (updateBuffers) {
           setupVertexAttributes(material, program, geometry, 0);
+          index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
         }
 
-        var position = geometry.attributes['position'];
-        var offsets = geometry.offsets;
+        _gl.drawElements(mode, index.array.length, type, 0);
 
-        if (offsets.length == 0) {
-          _gl.drawArrays(mode, 0, position.array.length ~/ 3);
+        info.render.calls++;
+        info.render.points += index.array.length;
+      } else {
+
+        // if there is more than 1 chunk
+        // must set attribute pointers to use new offsets for each chunk
+        // even if geometry and materials didn't change
+
+        if (offsets.length > 1) updateBuffers = true;
+
+        for (var i = 0; i < offsets.length; i++) {
+          var startIndex = offsets[i].index;
+
+          if (updateBuffers) {
+            setupVertexAttributes(material, program, geometry, startIndex);
+            index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
+          }
+
+          // render indexed points
+
+          _gl.drawElements(mode, offsets[i].count, type, offsets[i].start * size); // 2 bytes per Uint16Array
 
           info.render.calls++;
-          info.render.vertices += position.array.length ~/ 3;
-        } else {
-          for (var i = 0; i < offsets.length; i++) {
-            _gl.drawArrays(mode, offsets[i].index, offsets[i].count);
+          info.render.points += offsets[i].count; // not really true, here vertices can be shared
+        }
+      }
+    } else {
+      // non-indexed points
+      if (updateBuffers) {
+        setupVertexAttributes(material, program, geometry, 0);
+      }
 
-            info.render.calls++;
-            info.render.vertices += offsets[i].count;
-          }
+      var position = geometry.attributes['position'];
+      var offsets = geometry.offsets;
+
+      if (offsets.length == 0) {
+        _gl.drawArrays(mode, 0, position.array.length ~/ 3);
+
+        info.render.calls++;
+        info.render.points += position.array.length ~/ 3;
+      } else {
+        for (var i = 0; i < offsets.length; i++) {
+          _gl.drawArrays(mode, offsets[i].index, offsets[i].count);
+
+          info.render.calls++;
+          info.render.points += offsets[i].count;
         }
       }
     }
@@ -1146,8 +1193,8 @@ class WebGLRenderer implements Renderer {
   int painterSortStable(a, b) {
     if (a.object.renderOrder != b.object.renderOrder) {
       return a.object.renderOrder - b.object.renderOrder;
-    } else if (a.material.id != b.material.id) {
-      return a.material.id - b.material.id;
+    } else if (a.object.material.id != b.object.material.id) {
+      return a.object.material.id - b.object.material.id;
     } else if (a.z != b.z) {
       return (a.z - b.z).toInt();
     } else {
@@ -1208,6 +1255,7 @@ class WebGLRenderer implements Renderer {
 
     objects.update(_opaqueObjects);
     objects.update(_transparentObjects);
+
     //
 
     shadowMap.render(scene, camera);
@@ -1233,7 +1281,15 @@ class WebGLRenderer implements Renderer {
 
       if (object.visible) {
         setupMatrices(object, camera);
-        unrollImmediateBufferMaterial(webglObject);
+        var material = (object as MaterialObject).material;
+
+        if (material.transparent) {
+          webglObject.transparent = material;
+          webglObject.opaque = null;
+        } else {
+          webglObject.opaque = material;
+          webglObject.transparent = null;
+        }
       }
     }
 
@@ -1300,12 +1356,15 @@ class WebGLRenderer implements Renderer {
       } else {
         var webglObject = objects.objects[object.id];
 
-        var test = !object.frustumCulled || (object is GeometryObject && _frustum.intersectsWithObject(object));
+        if (webglObject != null && !object.frustumCulled ||
+            (object is GeometryObject && _frustum.intersectsWithObject(object))) {
+          var material = (object as MaterialObject).material;
 
-        if (webglObject != null && test) {
-          unrollBufferMaterial(webglObject);
-
-          webglObject.render = true;
+          if (material.transparent) {
+            _transparentObjects.add(webglObject);
+          } else {
+            _opaqueObjects.add(webglObject);
+          }
 
           if (sortObjects) {
             _vector3.setFromMatrixTranslation(object.matrixWorld);
@@ -1326,14 +1385,13 @@ class WebGLRenderer implements Renderer {
       var webglObject = renderList[i];
 
       var object = webglObject.object;
-      var buffer = objects.geometries.get(object);
 
       setupMatrices(object, camera);
 
       if (overrideMaterial != null) {
         material = overrideMaterial;
       } else {
-        material = webglObject.material;
+        material = object.material;
 
         if (material == null) continue;
 
@@ -1341,7 +1399,7 @@ class WebGLRenderer implements Renderer {
       }
 
       setMaterialFaces(material);
-      renderBufferDirect(camera, lights, fog, material, buffer, object);
+      renderBufferDirect(camera, lights, fog, material, object);
     }
   }
 
@@ -1380,34 +1438,6 @@ class WebGLRenderer implements Renderer {
       object.immediateRenderCallback(program, _gl, _frustum);
     } else {
       object.render((object) => renderBufferImmediate(object, program, material));
-    }
-  }
-
-  void unrollImmediateBufferMaterial(WebGLObject globject) {
-    var object = globject.object,
-        material = object.material;
-
-    if (material.transparent) {
-      globject.transparent = material;
-      globject.opaque = null;
-    } else {
-      globject.opaque = material;
-      globject.transparent = null;
-    }
-  }
-
-  void unrollBufferMaterial(WebGLObject globject) {
-    var object = globject.object;
-    var material = (object as MaterialObject).material;
-
-    if (material != null) {
-      globject.material = material;
-
-      if (material.transparent) {
-        _transparentObjects.add(globject);
-      } else {
-        _opaqueObjects.add(globject);
-      }
     }
   }
 
