@@ -37,6 +37,21 @@ class DynamicGeometry extends Object with DisposeStream implements IGeometry {
   bool colorsNeedUpdate = false;
   bool uvsNeedUpdate = false;
 
+  /// List of [MorphTarget].
+  List<MorphTarget> morphTargets;
+
+  /// List of [MorphColor].
+  List<MorphColor> morphColors;
+
+  /// List of [MorphNormal]
+  List<MorphNormal> morphNormals;
+
+  /// List of skinning weights, matching number and order of vertices.
+  List<Vector4> skinWeights;
+
+  /// List of skinning indices, matching number and order of vertices.
+  List<Vector4> skinIndices;
+
   DynamicGeometry();
 
   DynamicGeometry.fromGeometry(Geometry geometry) {
@@ -46,8 +61,10 @@ class DynamicGeometry extends Object with DisposeStream implements IGeometry {
   /// Computes bounding box of the geometry, updating Geometry.boundingBox.
   void computeBoundingBox() {
     if (boundingBox == null) {
-      boundingBox = new Aabb3.fromPoints(vertices);
+      boundingBox = new Aabb3();
     }
+
+    boundingBox.setFromPoints(vertices);
   }
 
   /// Computes bounding sphere of the geometry, updating Geometry.boundingSphere.
@@ -55,14 +72,11 @@ class DynamicGeometry extends Object with DisposeStream implements IGeometry {
   /// Neither bounding boxes or bounding spheres are computed by default.
   /// They need to be explicitly computed, otherwise they are null.
   void computeBoundingSphere() {
-    num radiusSq;
+    if (boundingSphere == null ) {
+      boundingSphere = new Sphere();
+    }
 
-    var maxRadiusSq = vertices.fold(0, (num curMaxRadiusSq, Vector3 vertex) {
-      radiusSq = vertex.length2;
-      return (radiusSq > curMaxRadiusSq) ? radiusSq : curMaxRadiusSq;
-    });
-
-    boundingSphere = new Sphere.centerRadius(new Vector3.zero(), Math.sqrt(maxRadiusSq));
+    boundingSphere.setFromPoints(vertices);
   }
 
   void computeFaceNormals() {
