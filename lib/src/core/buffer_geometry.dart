@@ -85,7 +85,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     setFromGeometry(geometry, material);
   }
 
-  void addAttribute(String name, attribute) {
+  void addAttribute(String name, BufferAttribute attribute) {
     attributes[name] = attribute;
   }
 
@@ -112,6 +112,27 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     if (boundingSphere != null) {
       computeBoundingSphere();
     }
+  }
+
+  BufferGeometry setFrom(BufferGeometry geometry) {
+    var attributes = geometry.attributes;
+    var offsets = geometry.offsets;
+
+    for (var name in attributes.keys) {
+      var attribute = attributes[name];
+      addAttribute(name, attribute.clone());
+    }
+
+    for (var i = 0; i < offsets.length; i++) {
+      var offset = offsets[i];
+
+      offsets.add(new DrawCall(
+        start: offset.start,
+        index: offset.index,
+        count: offset.count));
+    }
+
+    return this;
   }
 
   Vector3 center() {
