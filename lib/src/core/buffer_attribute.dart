@@ -174,6 +174,15 @@ class BufferAttribute {
   }
 
   BufferAttribute clone() {
-    //return new BufferAttribute(new array.constructor(array), itemSize);
+    var array;
+    if (this.array is Float32List) array = new Float32List.fromList(this.array);
+    else if (this.array is Int16List) array = new Int16List.fromList(this.array);
+    else if (this.array is Int8List) array = new Int8List.fromList(this.array);
+    else if (this.array is Uint8List) array = new Uint8List.fromList(this.array);
+    else if (this.array is Uint16List) array = new Uint16List.fromList(this.array);
+    else if (this.array is Int32List) array = new Int32List.fromList(this.array);
+    else if (this.array is Uint32List) array = new Uint32List.fromList(this.array);
+    else if (this.array is Float64List) array = new Float64List.fromList(this.array);
+    return new BufferAttribute(array, itemSize);
   }
 }
