@@ -996,13 +996,6 @@ class WebGLRenderer implements Renderer {
   void renderPointCloud(Material material, BufferGeometry geometry, Object3D object, WebGLProgram program, bool updateBuffers) {
     var mode = gl.POINTS;
 
-    var mat = material as LineMaterial;
-
-    // In case user is not using Line*Material by mistake
-    var lineWidth = mat.linewidth != null ? mat.linewidth : 1.0;
-
-    state.setLineWidth(lineWidth * _pixelRatio);
-
     var index = geometry.attributes['index'];
 
     if (index != null) {
