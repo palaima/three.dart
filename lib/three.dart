@@ -156,6 +156,7 @@ part 'src/objects/bone.dart';
 part 'src/objects/group.dart';
 part 'src/objects/mesh.dart';
 part 'src/objects/line.dart';
+part 'src/objects/line_segments.dart';
 part 'src/objects/particle.dart';
 part 'src/objects/point_cloud.dart';
 part 'src/objects/sprite.dart';

@@ -28,14 +28,8 @@ class Line extends Object3D implements GeometryMaterialObject {
   IGeometry geometry;
   Material material;
 
-  /// GL immediate mode ([LinePiece] or [LineStrip]).
-  /// * LinePiece (GL_LINES): Draws lines on screen. Every two vertices specified compose a line.
-  /// * LineStrip (GL_LINE_STRIP): Draws connected lines on screen. Every vertex specified
-  /// after first two are connected.
-  int mode;
-
   /// Creates a new [Line].
-  Line([IGeometry geometry, Material material, this.mode = LineStrip]) : super() {
+  Line([IGeometry geometry, Material material]) : super() {
     this.geometry = geometry != null ? geometry : new Geometry();
     this.material = material != null ? material : new LineBasicMaterial(color: new Math.Random().nextInt(0xffffff));
   }
@@ -48,7 +42,7 @@ class Line extends Object3D implements GeometryMaterialObject {
 
   /// Returns a clone of [this].
   Line clone([Object3D object, bool recursive = true]) {
-    if (object == null) object = new Line(geometry, material, mode);
+    if (object == null) object = new Line(geometry, material);
 
     super.clone(object, recursive);
 

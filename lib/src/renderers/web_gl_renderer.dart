@@ -911,8 +911,7 @@ class WebGLRenderer implements Renderer {
   }
 
   void renderLine(LineBasicMaterial material, BufferGeometry geometry, Line object, WebGLProgram program, bool updateBuffers) {
-    // var mode = object is LineSegments ? gl.LINES : gl.LINE_STRIP; TODO
-    var mode = object.mode == LinePieces ? gl.LINES : gl.LINE_STRIP;
+    var mode = object is LineSegments ? gl.LINES : gl.LINE_STRIP;
 
     // In case user is not using Line*Material by mistake
     var lineWidth = material.linewidth != null ? material.linewidth : 1.0;
