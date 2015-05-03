@@ -2865,7 +2865,7 @@ class WebGLRenderer implements Renderer {
   }
 
   void readRenderTargetPixels(WebGLRenderTarget renderTarget, int x, int y, int width, int height, TypedData buffer) {
-    if (renderTarget.__webglFramebuffer) {
+    if (renderTarget.__webglFramebuffer != null) {
       if (renderTarget.format != RGBAFormat) {
         error('WebGLRenderer.readRenderTargetPixels: renderTarget is not in RGBA format. readPixels can read only RGBA format.');
         return;

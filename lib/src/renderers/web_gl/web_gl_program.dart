@@ -143,7 +143,7 @@ class WebGLProgram {
       prefix_fragment = '';
     } else {
       prefix_vertex = [
-        'precision $precision float;\n',
+        'precision $precision float;',
         'precision $precision int;',
 
         customDefines,
@@ -245,13 +245,13 @@ class WebGLProgram {
         '#endif',
 
         ''
-     ].reduce(programArrayToString);
+     ].fold('', programArrayToString);
 
       prefix_fragment = [
         (bumpMap || normalMap || flatShading || (material is ShaderMaterial) && material.derivatives)
           ? '#extension GL_OES_standard_derivatives : enable' : '',
 
-        'precision $precision float;\n',
+        'precision $precision float;',
         'precision $precision int;',
 
         customDefines,
@@ -304,7 +304,7 @@ class WebGLProgram {
         'uniform vec3 cameraPosition;',
 
         ''
-      ].reduce(programArrayToString);
+      ].fold('', programArrayToString);
     }
 
     var glVertexShader = new WebGLShader(_gl, gl.VERTEX_SHADER, prefix_vertex + vertexShader)();
