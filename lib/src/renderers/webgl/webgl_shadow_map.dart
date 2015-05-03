@@ -260,7 +260,7 @@ class WebGLShadowMap {
 
         _renderer.setMaterialFaces(objectMaterial);
 
-        _renderer.renderBufferDirect(shadowCamera, _lights, null, material, buffer, object);
+        _renderer.renderBufferDirect(shadowCamera, lights, null, material, object);
       });
 
       // set matrices and render immediate objects

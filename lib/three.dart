@@ -171,19 +171,19 @@ part 'src/renderers/shaders/shader_lib.dart';
 part 'src/renderers/shaders/uniform.dart';
 part 'src/renderers/shaders/uniforms_lib.dart';
 
-part 'src/renderers/web_gl/web_gl_extensions.dart';
-part 'src/renderers/web_gl/web_gl_geometries.dart';
-part 'src/renderers/web_gl/web_gl_objects.dart';
-part 'src/renderers/web_gl/web_gl_program.dart';
-part 'src/renderers/web_gl/web_gl_shader.dart';
-part 'src/renderers/web_gl/web_gl_shadow_map.dart';
-part 'src/renderers/web_gl/web_gl_state.dart';
-part 'src/renderers/web_gl/web_gl_textures.dart';
+part 'src/renderers/webgl/webgl_extensions.dart';
+part 'src/renderers/webgl/webgl_geometries.dart';
+part 'src/renderers/webgl/webgl_objects.dart';
+part 'src/renderers/webgl/webgl_program.dart';
+part 'src/renderers/webgl/webgl_shader.dart';
+part 'src/renderers/webgl/webgl_shadow_map.dart';
+part 'src/renderers/webgl/webgl_state.dart';
+part 'src/renderers/webgl/webgl_textures.dart';
 
 part 'src/renderers/renderer.dart';
-part 'src/renderers/web_gl_renderer.dart';
-part 'src/renderers/web_gl_render_target.dart';
-part 'src/renderers/web_gl_render_target_cube.dart';
+part 'src/renderers/webgl_renderer.dart';
+part 'src/renderers/webgl_render_target.dart';
+part 'src/renderers/webgl_render_target_cube.dart';
 
 part 'src/scenes/scene.dart';
 part 'src/scenes/fog.dart';
