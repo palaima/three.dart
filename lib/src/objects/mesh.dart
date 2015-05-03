@@ -174,13 +174,13 @@ class Mesh extends Object3D implements GeometryMaterialObject {
               object: this));
         }
       }
-    } else if (geometry is Geometry) {
+    } else if (geo is Geometry) {
       var precision = raycaster.precision;
 
-      var vertices = geometry.vertices;
+      var vertices = geo.vertices;
 
-      for (var f = 0; f < geometry.faces.length; f++) {
-        var face = geometry.faces[f];
+      for (var f = 0; f < geo.faces.length; f++) {
+        var face = geo.faces[f];
 
         if (material == null) continue;
 
@@ -191,7 +191,7 @@ class Mesh extends Object3D implements GeometryMaterialObject {
         var m = material;
 
         if (m is Morphing && m.morphTargets) {
-          var morphTargets = geometry.morphTargets;
+          var morphTargets = geo.morphTargets;
           var morphInfluences = morphTargetInfluences;
 
           _vA.setZero();
