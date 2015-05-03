@@ -9,24 +9,16 @@ part of three;
  *    http://evanw.github.com/lightgl.js/tests/shadowmap.html
  */
 
-class CameraHelper extends Line {
-
-  static Projector __projector = new Projector();
-  static Vector3 __v = new Vector3.zero();
-  static Camera __c = new Camera(0.0, 0.0);
-
+class CameraHelper extends LineSegments {
   Camera camera;
 
-  Matrix4 matrixWorld;
-  bool matrixAutoUpdate;
-  Map<String, List> pointMap;
+  Map<String, List> pointMap = {};
 
   CameraHelper(this.camera)
-      : matrixAutoUpdate = false,
-        pointMap = {},
-        super(new Geometry(), new LineBasicMaterial(color: 0xffffff, vertexColors: FaceColors), LinePieces) {
+      : super(new Geometry(), new LineBasicMaterial(color: 0xffffff, vertexColors: FaceColors)) {
+    matrix = camera.matrixWorld;
+    matrixAutoUpdate = false;
 
-    matrixWorld = camera.matrixWorld;
     // colors
 
     var hexFrustum = 0xffaa00;
@@ -37,147 +29,132 @@ class CameraHelper extends Line {
 
     // near
 
-    addLine("n1", "n2", hexFrustum);
-    addLine("n2", "n4", hexFrustum);
-    addLine("n4", "n3", hexFrustum);
-    addLine("n3", "n1", hexFrustum);
+    _addLine('n1', 'n2', hexFrustum);
+    _addLine('n2', 'n4', hexFrustum);
+    _addLine('n4', 'n3', hexFrustum);
+    _addLine('n3', 'n1', hexFrustum);
 
     // far
 
-    addLine("f1", "f2", hexFrustum);
-    addLine("f2", "f4", hexFrustum);
-    addLine("f4", "f3", hexFrustum);
-    addLine("f3", "f1", hexFrustum);
+    _addLine('f1', 'f2', hexFrustum);
+    _addLine('f2', 'f4', hexFrustum);
+    _addLine('f4', 'f3', hexFrustum);
+    _addLine('f3', 'f1', hexFrustum);
 
     // sides
 
-    addLine("n1", "f1", hexFrustum);
-    addLine("n2", "f2", hexFrustum);
-    addLine("n3", "f3", hexFrustum);
-    addLine("n4", "f4", hexFrustum);
+    _addLine('n1', 'f1', hexFrustum);
+    _addLine('n2', 'f2', hexFrustum);
+    _addLine('n3', 'f3', hexFrustum);
+    _addLine('n4', 'f4', hexFrustum);
 
     // cone
 
-    addLine("p", "n1", hexCone);
-    addLine("p", "n2", hexCone);
-    addLine("p", "n3", hexCone);
-    addLine("p", "n4", hexCone);
+    _addLine('p', 'n1', hexCone);
+    _addLine('p', 'n2', hexCone);
+    _addLine('p', 'n3', hexCone);
+    _addLine('p', 'n4', hexCone);
 
     // up
 
-    addLine("u1", "u2", hexUp);
-    addLine("u2", "u3", hexUp);
-    addLine("u3", "u1", hexUp);
+    _addLine('u1', 'u2', hexUp);
+    _addLine('u2', 'u3', hexUp);
+    _addLine('u3', 'u1', hexUp);
 
     // target
 
-    addLine("c", "t", hexTarget);
-    addLine("p", "c", hexCross);
+    _addLine('c', 't', hexTarget);
+    _addLine('p', 'c', hexCross);
 
     // cross
 
-    addLine("cn1", "cn2", hexCross);
-    addLine("cn3", "cn4", hexCross);
+    _addLine('cn1', 'cn2', hexCross);
+    _addLine('cn3', 'cn4', hexCross);
 
-    addLine("cf1", "cf2", hexCross);
-    addLine("cf3", "cf4", hexCross);
+    _addLine('cf1', 'cf2', hexCross);
+    _addLine('cf3', 'cf4', hexCross);
 
     update();
   }
 
-  void addLine(String a, String b, int hex) {
-
-    addPoint(a, hex);
-    addPoint(b, hex);
-
+  void _addLine(String a, String b, int hex) {
+    _addPoint(a, hex);
+    _addPoint(b, hex);
   }
 
-  void addPoint(String id, int hex) {
-
-    geometry.vertices.add(new Vector3.zero());
-    geometry.colors.add(new Color(hex));
+  void _addPoint(String id, int hex) {
+    var geo = geometry as Geometry;
+    geo.vertices.add(new Vector3.zero());
+    geo.colors.add(new Color(hex));
 
     if (!pointMap.containsKey(id)) {
       pointMap[id] = [];
     }
 
-    pointMap[id].add(geometry.vertices.length - 1);
-
+    pointMap[id].add(geo.vertices.length - 1);
   }
 
-  void setPoint(String point, double x, double y, double z) {
+  Vector3 _vector = new Vector3.zero();
+  Camera _camera = new Camera();
 
-    __v.setValues(x, y, z);
-    __v.unproject(__c);
+  void _setPoint(String point, double x, double y, double z) {
+    _vector.setValues(x, y, z).unproject(_camera);
 
     var points = pointMap[point];
 
     if (points != null) {
-
-      var il = points.length;
-      for (var i = 0; i < il; i++) {
-
-        geometry.vertices[points[i]].setFrom(__v);
-
+      for (var i = 0; i < points.length; i++) {
+        (geometry as Geometry).vertices[points[i]].setFrom(_vector);
       }
-
     }
-
   }
 
   void update() {
-
     var w = 1.0,
         h = 1.0;
 
     // we need just camera projection matrix
     // world matrix must be identity
 
-    __c.projectionMatrix.setFrom(camera.projectionMatrix);
+    _camera.projectionMatrix.setFrom(camera.projectionMatrix);
 
     // center / target
 
-    setPoint("c", 0.0, 0.0, -1.0);
-    setPoint("t", 0.0, 0.0, 1.0);
+    _setPoint('c', 0.0, 0.0, -1.0);
+    _setPoint('t', 0.0, 0.0, 1.0);
 
     // near
 
-    setPoint("n1", -w, -h, -1.0);
-    setPoint("n2", w, -h, -1.0);
-    setPoint("n3", -w, h, -1.0);
-    setPoint("n4", w, h, -1.0);
+    _setPoint('n1', -w, -h, -1.0);
+    _setPoint('n2', w, -h, -1.0);
+    _setPoint('n3', -w, h, -1.0);
+    _setPoint('n4', w, h, -1.0);
 
     // far
 
-    setPoint("f1", -w, -h, 1.0);
-    setPoint("f2", w, -h, 1.0);
-    setPoint("f3", -w, h, 1.0);
-    setPoint("f4", w, h, 1.0);
+    _setPoint('f1', -w, -h, 1.0);
+    _setPoint('f2', w, -h, 1.0);
+    _setPoint('f3', -w, h, 1.0);
+    _setPoint('f4', w, h, 1.0);
 
     // up
 
-    setPoint("u1", w * 0.7, h * 1.1, -1.0);
-    setPoint("u2", -w * 0.7, h * 1.1, -1.0);
-    setPoint("u3", 0.0, h * 2.0, -1.0);
+    _setPoint('u1', w * 0.7, h * 1.1, -1.0);
+    _setPoint('u2', -w * 0.7, h * 1.1, -1.0);
+    _setPoint('u3', 0.0, h * 2.0, -1.0);
 
     // cross
 
-    setPoint("cf1", -w, 0.0, 1.0);
-    setPoint("cf2", w, 0.0, 1.0);
-    setPoint("cf3", 0.0, -h, 1.0);
-    setPoint("cf4", 0.0, h, 1.0);
+    _setPoint('cf1', -w, 0.0, 1.0);
+    _setPoint('cf2', w, 0.0, 1.0);
+    _setPoint('cf3', 0.0, -h, 1.0);
+    _setPoint('cf4', 0.0, h, 1.0);
 
-    setPoint("cn1", -w, 0.0, -1.0);
-    setPoint("cn2", w, 0.0, -1.0);
-    setPoint("cn3", 0.0, -h, -1.0);
-    setPoint("cn4", 0.0, h, -1.0);
+    _setPoint('cn1', -w, 0.0, -1.0);
+    _setPoint('cn2', w, 0.0, -1.0);
+    _setPoint('cn3', 0.0, -h, -1.0);
+    _setPoint('cn4', 0.0, h, -1.0);
 
-
-
-    geometry["verticesNeedUpdate"] = true;
-
+    geometry.verticesNeedUpdate = true;
   }
-
 }
-
-
