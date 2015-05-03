@@ -29,6 +29,8 @@ abstract class IGeometry {
   List<Vector3> vertices;
   List<Face3> faces;
 
+  void applyMatrix(Matrix4 matrix);
+
   void computeBoundingSphere();
   void computeBoundingBox();
 }

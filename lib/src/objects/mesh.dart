@@ -145,7 +145,7 @@ class Mesh extends Object3D implements GeometryMaterialObject {
       } else {
         var positions = attributes['position'].array;
 
-        for (var i = 0, j = 0; i < positions.length; i += 3, j += 9) {
+        for (var i = 0, j = 0; i < positions.length / 3; i += 3, j += 9) {
           a = i;
           b = i + 1;
           c = i + 2;
