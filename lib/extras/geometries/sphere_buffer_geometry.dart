@@ -13,24 +13,28 @@ class SphereBufferGeometry extends BufferGeometry {
       double phiLength = Math.PI * 2.0, double thetaStart = 0.0, double thetaLength = Math.PI]) {
     widthSegments = widthSegments != null ? Math.max(3, widthSegments) : 8;
     heightSegments = heightSegments != null ? Math.max(2, heightSegments) : 6;
-    var stride = (3 + 3 + 2);
-    var vertexBuffer = new InterleavedBuffer(new Float32List(((widthSegments + 1) * (heightSegments + 1)) * stride), stride);
+    var vertexCount = ((widthSegments + 1) * (heightSegments + 1));
 
-    aPosition = new InterleavedBufferAttribute(vertexBuffer, 3, 0);
-    aNormal = new InterleavedBufferAttribute(vertexBuffer, 3, 3);
-    aUV = new InterleavedBufferAttribute(vertexBuffer, 2, 6);
+    var positions = new BufferAttribute.float32(vertexCount * 3, 3);
+    var normals = new BufferAttribute.float32(vertexCount * 3, 3);
+    var uvs = new BufferAttribute.float32(vertexCount * 2, 2);
 
-    var index = 0, vertices = [];
+    aPosition = positions;
+    aNormal = normals;
+    aUV = uvs;
 
-    for (var y = 0; y <= heightSegments; y ++) {
+    var index = 0,
+        vertices = [];
+
+    for (var y = 0; y <= heightSegments; y++) {
       var verticesRow = [];
 
       var v = y / heightSegments;
 
-      for (var x = 0; x <= widthSegments; x ++) {
+      for (var x = 0; x <= widthSegments; x++) {
         var u = x / widthSegments;
 
-        var px = - radius * Math.cos(phiStart + u * phiLength) * Math.sin(thetaStart + v * thetaLength);
+        var px = -radius * Math.cos(phiStart + u * phiLength) * Math.sin(thetaStart + v * thetaLength);
         var py = radius * Math.cos(thetaStart + v * thetaLength);
         var pz = radius * Math.sin(phiStart + u * phiLength) * Math.sin(thetaStart + v * thetaLength);
 
