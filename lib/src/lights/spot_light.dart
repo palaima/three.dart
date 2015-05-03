@@ -17,7 +17,7 @@ class SpotLight extends Light implements ShadowCaster {
   double intensity;
   double distance;
   double angle;
-  int exponent;
+  double exponent;
   double decay;
 
   bool castShadow = false;
@@ -45,7 +45,7 @@ class SpotLight extends Light implements ShadowCaster {
   Matrix4 shadowMatrix;
 
   SpotLight(num color, {this.intensity: 1.0, this.distance: 0.0, this.angle: Math.PI / 3,
-    this.exponent: 10, this.decay: 1.0})
+    this.exponent: 10.0, this.decay: 1.0})
       : super(color) {
     position.setValues(0.0, 1.0, 0.0);
   }
