@@ -64,7 +64,7 @@ class MeshLambertMaterial extends Material implements Lighting, Mapping, Morphin
     this.envMap, this.combine: MultiplyOperation, this.reflectivity: 1.0, this.refractionRatio: 0.98, bool fog: true,
     int shading: SmoothShading, this.wireframe: false, this.wireframeLinewidth: 1.0, this.wireframeLinecap: 'round',
     this.wireframeLinejoin: 'round', int vertexColors: NoColors, this.skinning: false, this.morphTargets: false,
-    this.morphNormals: false, ambient: 0xffffff,
+    this.morphNormals: false,
     // Material
     String name: '', int side: FrontSide, double opacity: 1.0, bool transparent: false,
     int blending: NormalBlending, blendSrc: SrcAlphaFactor, blendDst: OneMinusSrcAlphaFactor,
