@@ -37,7 +37,7 @@ void init() {
   var material = new MeshNormalMaterial();
 
   var loader = new JSONLoader();
-  loader.load('obj/Suzanne.js', (geometry) {
+  loader.load('obj/Suzanne.js').then((geometry) {
 
     geometry.computeVertexNormals();
 
