@@ -350,7 +350,7 @@ class WebGLRenderer implements Renderer {
 
   bool get supportsVertexTextures => _supportsVertexTextures;
 
-  bool get supportsInstancedArrays => _supportsVertexTextures;
+  bool get supportsInstancedArrays => _supportsInstancedArrays;
 
   bool get supportsFloatTextures => extensions.get('OES_texture_float') != null;
 
@@ -910,7 +910,7 @@ class WebGLRenderer implements Renderer {
     }
   }
 
-  void renderLine(LineBasicMaterial material, BufferGeometry geometry, Line object, WebGLProgram program, bool updateBuffers) {
+  void renderLine(Material material, BufferGeometry geometry, Line object, WebGLProgram program, bool updateBuffers) {
     var mode = object is LineSegments ? gl.LINES : gl.LINE_STRIP;
 
     // In case user is not using Line*Material by mistake
@@ -2608,7 +2608,7 @@ class WebGLRenderer implements Renderer {
       var canvas = new CanvasElement(width: (image.width * scale).floor(), height: (image.height * scale).floor());
       var context = canvas.context2D;
 
-      context.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+      context.drawImageScaledFromSource(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
 
       warn('WebGLRenderer: image is too big (${image.width}x${image.height}). ' +
            'Resized to ${canvas.width}x${canvas.height} $image');
