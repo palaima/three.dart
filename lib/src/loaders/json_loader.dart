@@ -1,77 +1,89 @@
-part of three;
-
-/**
+/*
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  *
  * Ported to Dart from JS by:
  * @author nelson silva / http://www.inevo.pt/
  *
- * based on r51
+ * based on r71
  */
+
+part of three;
+
 class JSONLoader extends Loader {
+  bool withCredentials = false;
 
-  JSONLoader({bool showStatus: false}) : super(showStatus);
+  JSONLoader({bool showStatus: false}) : super(showStatus: showStatus);
 
-  void load(url, LoadedCallback callback, {texturePath: null}) {
-    if (texturePath == null) {
-      texturePath = Loader._extractUrlBase(url);
-    }
+  Future load(String url, {texturePath}) {
+    texturePath = texturePath != null && (texturePath is String) ? texturePath : _extractUrlBase(url);
 
-    onLoadStart();
+    _onLoadStartController.add(null);
 
-    _loadAjaxJSON(url, callback, texturePath);
+    return _loadAjaxJSON(url, texturePath);
   }
 
-  void _loadAjaxJSON(String url, LoadedCallback callback, String texturePath, {LoadProgressCallback callbackProgress}) {
+  Future _loadAjaxJSON(String url, String texturePath) {
+    var completer = new Completer();
+
     var xhr = new HttpRequest();
 
     var length = 0;
 
-    xhr.onReadyStateChange.listen((Event e) {
+    xhr.onReadyStateChange.listen((onData) {
       if (xhr.readyState == HttpRequest.DONE) {
         if (xhr.status == 200 || xhr.status == 0) {
-          if (!xhr.responseText.isEmpty) {
+          if (xhr.responseText != null) {
             var json = JSON.decode(xhr.responseText);
-            _createModel(json, callback, texturePath);
+            var metadata = json['metadata'];
+
+            if (metadata != null) {
+              if (metadata['type'] == 'object') {
+                error('JSONLoader: $url should be loaded with ObjectLoader instead.');
+                return;
+              }
+
+              if (metadata['type'] == 'scene') {
+                error('JSONLoader: $url seems to be a Scene. Use SceneLoader instead.');
+                return;
+              }
+            }
+
+            var result = _parse(json, texturePath);
+            completer.complete(result['geometry']); // , result['materials']);
           } else {
-            print("JSONLoader: [$url] seems to be unreachable or file there is empty");
+            error('JSONLoader: $url seems to be unreachable or the file is empty.');
           }
 
           // in context of more complex asset initialization
           // do not block on single failed file
           // maybe should go even one more level up
-          onLoadComplete();
+
+          //completer.complete(); TODO
         } else {
-          print("JSONLoader: Couldn't load [$url] [${xhr.status}]");
+          error('JSONLoader: Couldn\'t load $url (${xhr.status})');
         }
       } else if (xhr.readyState == HttpRequest.LOADING) {
-        if (callbackProgress != null) {
           if (length == 0) {
-            length = xhr.getResponseHeader("Content-Length");
+            length = xhr.getResponseHeader('Content-Length');
           }
 
-          callbackProgress({
-            "total": length,
-            "loaded": xhr.responseText.length
-          });
-        }
+          _onLoadProgressController.add({'total': length, 'loaded': xhr.responseText.length});
       } else if (xhr.readyState == HttpRequest.HEADERS_RECEIVED) {
-        length = xhr.getResponseHeader("Content-Length");
+        length = xhr.getResponseHeader('Content-Length');
       }
     });
 
-    xhr.open("GET", url);
+    xhr.open('GET', url, async: true);
+    xhr.withCredentials = withCredentials;
     xhr.send(null);
+
+    return completer.future;
   }
 
-  bool _isBitSet(value, position) => (value & (1 << position)) > 0;
-
-  void _createModel(Map json, LoadedCallback callback, String texturePath) {
-    var geometry = new Geometry(),
-        scale = (json.containsKey("scale")) ? 1.0 / json["scale"] : 1.0;
-
-    _initMaterials(geometry, json["materials"], texturePath);
+  Map _parse(Map json, texturePath) {
+    var geometry = new Geometry();
+    var scale = json['scale'] != null ? 1.0 / json['scale'] : 1.0;
 
     _parseModel(json, geometry, scale);
 
@@ -79,43 +91,50 @@ class JSONLoader extends Loader {
     _parseMorphing(json, geometry, scale);
 
     geometry.computeFaceNormals();
+    geometry.computeBoundingSphere();
 
-    if (_hasNormals(geometry)) geometry.computeTangents();
+    if (json['materials'] == null || json['materials'].length == 0) {
+      return {'geometry': geometry};
+    } else {
+      var materials = _initMaterials(json['materials'], texturePath);
 
-    callback(geometry);
+      if (_needsTangents(materials)) {
+        geometry.computeTangents();
+      }
+
+      return {'geometry': geometry, 'materials': materials};
+    }
   }
 
-  void _parseModel(Map json, Geometry geometry, num scale) {
-    var faces = json["faces"],
-        vertices = json["vertices"],
-        normals = json["normals"],
-        colors = json["colors"],
+  void _parseModel(Map json, Geometry geometry, double scale) {
+    bool isBitSet(value, position) => value & (1 << position) > 0;
 
+    var faces = json['faces'],
+        vertices = json['vertices'],
+        normals = json['normals'],
+        colors = json['colors'],
         nUvLayers = 0;
 
-    // disregard empty arrays
+    if (json['uvs'] != null) {
+      // disregard empty arrays
 
-    for (var i = 0; i < json["uvs"].length; i++) {
-      if (!json["uvs"][i].isEmpty) nUvLayers++;
-    }
+      for (var i = 0; i < json['uvs'].length; i++) {
+        if (json['uvs'][i].isNotEmpty) nUvLayers++;
+      }
 
-    geometry.faceUvs = new List(nUvLayers);
-    geometry.faceVertexUvs = new List(nUvLayers);
-
-    for (var i = 0; i < nUvLayers; i++) {
-      geometry.faceUvs[i] = new List(faces.length);
-      geometry.faceVertexUvs[i] = new List(faces.length);
+      for (var i = 0; i < nUvLayers; i++) {
+        geometry.faceVertexUvs[i] = [];
+      }
     }
 
     var offset = 0;
     var zLength = vertices.length;
 
     while (offset < zLength) {
-      var vertex = new Vector3.zero();
-
-      vertex.x = vertices[offset++] * scale;
-      vertex.y = vertices[offset++] * scale;
-      vertex.z = vertices[offset++] * scale;
+      var vertex = new Vector3.zero()
+        ..x = vertices[offset++] * scale
+        ..y = vertices[offset++] * scale
+        ..z = vertices[offset++] * scale;
 
       geometry.vertices.add(vertex);
     }
@@ -126,42 +145,42 @@ class JSONLoader extends Loader {
     while (offset < zLength) {
       var type = faces[offset++];
 
-      var isQuad = _isBitSet(type, 0);
-      var hasMaterial = _isBitSet(type, 1);
-      var hasFaceUv = _isBitSet(type, 2);
-      var hasFaceVertexUv = _isBitSet(type, 3);
-      var hasFaceNormal = _isBitSet(type, 4);
-      var hasFaceVertexNormal = _isBitSet(type, 5);
-      var hasFaceColor = _isBitSet(type, 6);
-      var hasFaceVertexColor = _isBitSet(type, 7);
+      var isQuad = isBitSet(type, 0);
+      var hasMaterial = isBitSet(type, 1);
+      var hasFaceVertexUv = isBitSet(type, 3);
+      var hasFaceNormal = isBitSet(type, 4);
+      var hasFaceVertexNormal = isBitSet(type, 5);
+      var hasFaceColor = isBitSet(type, 6);
+      var hasFaceVertexColor = isBitSet(type, 7);
+
+      // log("type", type, "bits", isQuad, hasMaterial, hasFaceVertexUv, hasFaceNormal, hasFaceVertexNormal, hasFaceColor, hasFaceVertexColor);
 
       if (isQuad) {
         var faceA = new Face3(faces[offset], faces[offset + 1], faces[offset + 3]);
-
         var faceB = new Face3(faces[offset + 1], faces[offset + 2], faces[offset + 3]);
 
         offset += 4;
 
         if (hasMaterial) {
-          var materialIndex = faces[offset ++];
-          //faceA.materialIndex = materialIndex;
-          //faceB.materialIndex = materialIndex;
+          offset++;
         }
 
         // to get face <=> uv index correspondence
 
         var fi = geometry.faces.length;
+        geometry.faceVertexUvs.length = nUvLayers;
 
         if (hasFaceVertexUv) {
-          for (var  i = 0; i < nUvLayers; i ++) {
+          for (var i = 0; i < nUvLayers; i++) {
             var uvLayer = json['uvs'][i];
+
+            geometry.faceVertexUvs[i].length = fi + 2;
 
             geometry.faceVertexUvs[i][fi] = [];
             geometry.faceVertexUvs[i][fi + 1] = [];
 
-            for (var j = 0; j < 4; j ++) {
-
-              var uvIndex = faces[offset ++];
+            for (var j = 0; j < 4; j++) {
+              var uvIndex = faces[offset++];
 
               var u = uvLayer[uvIndex * 2];
               var v = uvLayer[uvIndex * 2 + 1];
@@ -175,77 +194,65 @@ class JSONLoader extends Loader {
         }
 
         if (hasFaceNormal) {
-          var normalIndex = faces[offset ++] * 3;
+          var normalIndex = faces[offset++] * 3;
 
-          faceA.normal.setValues(
-            normals[normalIndex++].toDouble(),
-            normals[normalIndex++].toDouble(),
-            normals[normalIndex].toDouble()
-         );
+          faceA.normal.setValues(normals[normalIndex++], normals[normalIndex++], normals[normalIndex]);
 
           faceB.normal.setFrom(faceA.normal);
         }
 
         if (hasFaceVertexNormal) {
-          for (var i = 0; i < 4; i ++) {
-            var normalIndex = faces[offset ++] * 3;
+          for (var i = 0; i < 4; i++) {
+            var normalIndex = faces[offset++] * 3;
 
-            var normal = new Vector3(
-              normals[normalIndex++].toDouble(),
-              normals[normalIndex++].toDouble(),
-              normals[normalIndex].toDouble()
-           );
-
+            var normal = new Vector3(normals[normalIndex++], normals[normalIndex++], normals[normalIndex]);
 
             if (i != 2) faceA.vertexNormals.add(normal);
             if (i != 0) faceB.vertexNormals.add(normal);
           }
         }
 
-
         if (hasFaceColor) {
-          var colorIndex = faces[offset ++];
+          var colorIndex = faces[offset++];
           var hex = colors[colorIndex];
 
           faceA.color.setHex(hex);
           faceB.color.setHex(hex);
         }
 
-
         if (hasFaceVertexColor) {
-          for (var i = 0; i < 4; i ++) {
-            var colorIndex = faces[offset ++];
+          for (var i = 0; i < 4; i++) {
+            var colorIndex = faces[offset++];
             var hex = colors[colorIndex];
 
             if (i != 2) faceA.vertexColors.add(new Color(hex));
             if (i != 0) faceB.vertexColors.add(new Color(hex));
-
           }
         }
 
         geometry.faces.add(faceA);
         geometry.faces.add(faceB);
-
       } else {
-        var face = new Face3(faces[offset ++], faces[offset ++], faces[offset ++]);
+        var face = new Face3(faces[offset++], faces[offset++], faces[offset++]);
 
         if (hasMaterial) {
-          var materialIndex = faces[offset ++];
-          //face.materialIndex = materialIndex;
+          offset++;
         }
 
         // to get face <=> uv index correspondence
 
         var fi = geometry.faces.length;
+        geometry.faceVertexUvs.length = nUvLayers;
 
         if (hasFaceVertexUv) {
-          for (var i = 0; i < nUvLayers; i ++) {
+          for (var i = 0; i < nUvLayers; i++) {
             var uvLayer = json['uvs'][i];
 
+            geometry.faceVertexUvs[i].length = fi + 1;
             geometry.faceVertexUvs[i][fi] = [];
 
-            for (var j = 0; j < 3; j ++) {
-              var uvIndex = faces[offset ++];
+            for (var j = 0; j < 3; j++) {
+              var uvIndex = faces[offset++];
 
               var u = uvLayer[uvIndex * 2];
               var v = uvLayer[uvIndex * 2 + 1];
@@ -258,38 +265,29 @@ class JSONLoader extends Loader {
         }
 
         if (hasFaceNormal) {
-          var normalIndex = faces[offset ++] * 3;
+          var normalIndex = faces[offset++] * 3;
 
-          face.normal.setValues(
-            normals[normalIndex ++],
-            normals[normalIndex ++],
-            normals[normalIndex]
-         );
+          face.normal.setValues(normals[normalIndex++], normals[normalIndex++], normals[normalIndex]);
         }
 
         if (hasFaceVertexNormal) {
-          for (var i = 0; i < 3; i ++) {
-            var normalIndex = faces[offset ++] * 3;
+          for (var i = 0; i < 3; i++) {
+            var normalIndex = faces[offset++] * 3;
 
-            var normal = new Vector3(
-              normals[normalIndex ++],
-              normals[normalIndex ++],
-              normals[normalIndex]
-           );
+            var normal = new Vector3(normals[normalIndex++], normals[normalIndex++], normals[normalIndex]);
 
             face.vertexNormals.add(normal);
           }
         }
 
-
         if (hasFaceColor) {
-          var colorIndex = faces[offset ++];
+          var colorIndex = faces[offset++];
           face.color.setHex(colors[colorIndex]);
         }
 
         if (hasFaceVertexColor) {
-          for (var i = 0; i < 3; i ++) {
-            var colorIndex = faces[offset ++];
+          for (var i = 0; i < 3; i++) {
+            var colorIndex = faces[offset++];
             face.vertexColors.add(new Color(colors[colorIndex]));
           }
         }
@@ -300,46 +298,60 @@ class JSONLoader extends Loader {
   }
 
   void _parseSkin(Map json, Geometry geometry) {
-    if (json.containsKey("skinWeights")) {
-      var l = json["skinWeights"].length;
-      for (var i = 0; i < l; i += 2) {
-        var x = json["skinWeights"][i];
-        var y = json["skinWeights"][i + 1];
-        var z = 0.0;
-        var w = 0.0;
+    var influencesPerVertex = (json['influencesPerVertex'] != null) ? json['influencesPerVertex'] : 2;
 
-        geometry.skinWeights.add(new Vector4(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble()));
+    if (json['skinWeights'] != null) {
+      for (var i = 0; i < json['skinWeights'].length; i += influencesPerVertex) {
+        var x = json['skinWeights'][i];
+        var y = (influencesPerVertex > 1) ? json['skinWeights'][i + 1] : 0;
+        var z = (influencesPerVertex > 2) ? json['skinWeights'][i + 2] : 0;
+        var w = (influencesPerVertex > 3) ? json['skinWeights'][i + 3] : 0;
+
+        geometry.skinWeights.add(new Vector4(x, y, z, w));
       }
     }
 
-    if (json.containsKey("skinIndices")) {
-      var l = json["skinIndices"].length;
-      for (var i = 0; i < l; i += 2) {
-        var a = json["skinIndices"][i];
-        var b = json["skinIndices"][i + 1];
-        var c = 0.0;
-        var d = 0.0;
+    if (json['skinIndices'] != null) {
+      for (var i = 0; i < json['skinIndices'].length; i += influencesPerVertex) {
+        var a = json['skinIndices'][i];
+        var b = (influencesPerVertex > 1) ? json['skinIndices'][i + 1] : 0;
+        var c = (influencesPerVertex > 2) ? json['skinIndices'][i + 2] : 0;
+        var d = (influencesPerVertex > 3) ? json['skinIndices'][i + 3] : 0;
 
-        geometry.skinIndices.add(new Vector4(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble()));
+        geometry.skinIndices.add(new Vector4(a, b, c, d));
       }
     }
 
-    geometry.bones = json["bones"];
-    geometry.animation = json["animation"];
+    geometry.bones = json['bones'];
+
+    if (geometry.bones != null &&
+        geometry.bones.length > 0 &&
+        (geometry.skinWeights.length != geometry.skinIndices.length ||
+            geometry.skinIndices.length != geometry.vertices.length)) {
+      warn('JSONLoader: When skinning, number of vertices (' +
+          geometry.vertices.length.toString() +
+          '), skinIndices (' +
+          geometry.skinIndices.length.toString() +
+          '), and skinWeights (' +
+          geometry.skinWeights.length.toString() +
+          ') should match.');
+    }
+
+    // could change this to json.animations[0] or remove completely
+
+    geometry.animation = json['animation'];
+    geometry.animations = json['animations'];
   }
 
-  void _parseMorphing(Map json, Geometry geometry, num scale) {
-    if (json.containsKey("morphTargets")) {
-      geometry.morphTargets = new List(json["morphTargets"].length);
-
-      for (var i = 0; i < geometry.morphTargets.length; i++) {
-        geometry.morphTargets[i] = new MorphTarget(name: json["morphTargets"][i]["name"], vertices: []);
+  void _parseMorphing(Map json, Geometry geometry, double scale) {
+    if (json['morphTargets'] != null) {
+      for (var i = 0, l = json['morphTargets'].length; i < l; i++) {
+        geometry.morphTargets.add(new MorphTarget(name: json['morphTargets'][i]['name'], vertices: []));
 
         var dstVertices = geometry.morphTargets[i].vertices;
-        var srcVertices = json["morphTargets"][i]["vertices"];
+        var srcVertices = json['morphTargets'][i]['vertices'];
 
-        var vl = srcVertices.length;
-        for (var v = 0; v < vl; v += 3) {
+        for (var v = 0; v < srcVertices.length; v += 3) {
           var vertex = new Vector3.zero();
           vertex.x = srcVertices[v] * scale;
           vertex.y = srcVertices[v + 1] * scale;
@@ -350,23 +362,19 @@ class JSONLoader extends Loader {
       }
     }
 
-    if (json.containsKey("morphColors")) {
-      geometry.morphColors = new List(json["morphColors"].length);
+    if (json['morphColors'] != null) {
+      for (var i = 0, l = json['morphColors'].length; i < l; i++) {
+        geometry.morphColors.add(new MorphColor(name: json['morphColors'][i]['name'], colors: []));
 
-      for (var i = 0; i < geometry.morphColors.length; i++) {
-        var dstColors = [];
-        var srcColors = json["morphColors"][i]["colors"];
+        var dstColors = geometry.morphColors[i].colors;
+        var srcColors = json['morphColors'][i]['colors'];
 
-        var cl = srcColors.length;
-        for (var c = 0; c < cl; c += 3) {
+        for (var c = 0; c < srcColors.length; c += 3) {
           var color = new Color(0xffaa00);
           color.setRGB(srcColors[c], srcColors[c + 1], srcColors[c + 2]);
           dstColors.add(color);
         }
-
-        geometry.morphColors[i] = new MorphColor(name: json["morphColors"][i]["name"], colors: dstColors);
       }
     }
   }
-
 }
