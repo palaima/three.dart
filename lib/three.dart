@@ -71,6 +71,7 @@ part 'src/math/vector3.dart';
 part 'src/math/vector4.dart';
 part 'src/math/euler.dart';
 
+part 'src/loaders/cache.dart';
 part 'src/loaders/loader.dart';
 part 'src/loaders/json_loader.dart';
 part 'src/loaders/image_loader.dart';
@@ -194,6 +195,8 @@ part 'src/textures/texture.dart';
 part 'src/textures/cube_texture.dart';
 part 'src/textures/data_texture.dart';
 part 'src/textures/compressed_texture.dart';
+
+Cache _cache = new Cache();
 
 // from _geometry
 int GeometryIdCount = 0;
