@@ -9,32 +9,27 @@ import "package:three/three.dart";
 var crossOrigin = 'anonymous';
 
 Texture loadTexture(String url, {mapping, Function onLoad(Texture texture), Function onError(String message)}) {
-
-  var image = new ImageElement();
-  var texture = new Texture(image, mapping);
-
   var loader = new ImageLoader();
+  loader.crossOrigin = crossOrigin;
+
+  var texture = new Texture(null, mapping);
 
   loader.onLoad.listen((image) {
-
     texture.image = image;
     texture.needsUpdate = true;
 
     if (onLoad != null) onLoad(texture);
-
   });
 
-  loader.onError.listen((msg) {
-
-    if (onError != null) onError(msg);
-
+  loader.onError.listen((event) {
+    if (onError != null) onError(event);
   });
 
-  loader.crossOrigin = crossOrigin;
-  loader.load(url, image);
+  loader.load(url);
+
+  texture.sourceFile = url;
 
   return texture;
-
 }
 
 Texture loadCompressedTexture(String url, {mapping, Function onLoad(Texture texture), Function
