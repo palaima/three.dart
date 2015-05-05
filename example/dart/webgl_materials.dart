@@ -41,7 +41,7 @@ init() {
 
   }
 
-  var line = new Line( geometry, line_material, LinePieces );
+  var line = new LineSegments( geometry, line_material );
   scene.add( line );
 
   // Materials

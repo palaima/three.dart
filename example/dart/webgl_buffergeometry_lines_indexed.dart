@@ -134,7 +134,7 @@ void init() {
   geometry.aColor = new BufferAttribute(new Float32List.fromList(colors), 3);
   geometry.computeBoundingSphere();
 
-  mesh = new Line(geometry, material, LinePieces)
+  mesh = new LineSegments(geometry, material)
     ..position.x -= 1200.0
     ..position.y -= 1200.0;
 

@@ -108,7 +108,7 @@ void init() {
     ..isDynamic = true
     ..center();
 
-  object = new Line(geometry, shaderMaterial, LineStrip);
+  object = new Line(geometry, shaderMaterial);
 
   var vertices = object.geometry.vertices;
 

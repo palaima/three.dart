@@ -58,7 +58,7 @@ void init() {
   parameters.forEach((p) {
     var material = new LineBasicMaterial(color: p[1], opacity: p[2].toDouble(), linewidth: p[3].toDouble());
 
-    var line = new Line(geometry, material, LinePieces)
+    var line = new LineSegments(geometry, material)
       ..scale.splat(p[0].toDouble())
       ..rotation.y = random() * math.PI
       ..updateMatrix();
