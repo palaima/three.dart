@@ -7,7 +7,7 @@ class InterleavedBufferAttribute implements BufferAttribute {
 
   InterleavedBufferAttribute(this.data, this.itemSize, this.offset);
 
-  int get length => itemSize * data.array.length ~/ data.stride;
+  int get length => data.array.length ~/ data.stride;
 
   void setX(int index, num x) {
     data.array[index * data.stride + offset] = x;
