@@ -552,11 +552,13 @@ class WebGLRenderer implements Renderer {
     if (deleteProgram) {
       var newPrograms = [];
 
-      _programs.forEach((programInfo) {
+      for (var i = 0; i < _programs.length; i++) {
+        var programInfo = _programs[i];
+
         if (programInfo.program != program) {
           newPrograms.add(programInfo);
         }
-      });
+      }
 
       _programs = newPrograms;
       _gl.deleteProgram(program);
@@ -951,8 +953,8 @@ class WebGLRenderer implements Renderer {
 
         if (offsets.length > 1) updateBuffers = true;
 
-        offsets.forEach((offset) {
-          var startIndex = offset.index;
+        for (var i = 0; i < offsets.length; i++) {
+          var startIndex = offsets[i].index;
 
           if (updateBuffers) {
             setupVertexAttributes(material, program, geometry, startIndex);
@@ -961,11 +963,11 @@ class WebGLRenderer implements Renderer {
 
           // render indexed points
 
-          _gl.drawElements(mode, offset.count, type, offset.start * size);
+          _gl.drawElements(mode, offsets[i].count, type, offsets[i].start * size);
 
           info.render.calls++;
-          info.render.points += offset.count;
-        });
+          info.render.points += offsets[i].count;
+        }
       }
     } else {
       // non-indexed points
@@ -1367,7 +1369,9 @@ class WebGLRenderer implements Renderer {
       }
     }
 
-    object.children.forEach((child) => projectObject(child));
+    for (var i = 0; i < object.children.length; i++) {
+      projectObject(object.children[i]);
+    }
   }
 
   void renderObjects(List renderList, camera, lights, fog, overrideMaterial) {
