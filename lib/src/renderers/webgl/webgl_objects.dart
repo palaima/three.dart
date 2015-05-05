@@ -72,13 +72,14 @@ class WebGLObjects {
   }
 
   void updateObject(Object3D object) {
-    var obj = object;
     var geometry = geometries.get(object);
 
-    if (obj is GeometryObject && obj.geometry is DynamicGeometry) {
+    var obj = object as GeometryMaterialObject;
+
+    if (obj.geometry is DynamicGeometry) {
         geometry.updateFromObject(object);
         geometry.updateFromMaterial(obj.material);
-    } else if (obj is GeometryObject && obj.geometry is Geometry) {
+    } else if (obj.geometry is Geometry) {
       geometry.updateFromMaterial(obj.material);
     }
 
