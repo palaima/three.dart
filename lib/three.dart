@@ -75,6 +75,7 @@ part 'src/loaders/cache.dart';
 part 'src/loaders/loader.dart';
 part 'src/loaders/loading_manager.dart';
 part 'src/loaders/json_loader.dart';
+part 'src/loaders/binary_loader.dart';
 part 'src/loaders/image_loader.dart';
 part 'src/loaders/stl_loader.dart';
 part 'src/loaders/mtl_loader.dart';

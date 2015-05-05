@@ -70,7 +70,7 @@ class Loader {
     return e;
   }
 
-  void _updateProgress(LoadingManager progress) {
+  void _updateProgress(ProgressEvent progress) {
     var message = 'Loaded ';
 
     if (progress.total != null) {
