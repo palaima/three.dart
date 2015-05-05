@@ -38,7 +38,7 @@ void init() {
   map.anisotropy = 16;
 
   var materials = [
-    new MeshLambertMaterial(ambient: 0xbbbbbb, map: map, side: DoubleSide),
+    new MeshLambertMaterial(map: map, side: DoubleSide),
     new MeshBasicMaterial(color: 0xffffff, wireframe: true, transparent: true,
         opacity: 0.1, side: DoubleSide)
   ];

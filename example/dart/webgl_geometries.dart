@@ -34,7 +34,7 @@ void init() {
   map.wrapS = map.wrapT = RepeatWrapping;
   map.anisotropy = 16;
 
-  var material = new MeshLambertMaterial(ambient: 0xbbbbbb, map: map, side: DoubleSide);
+  var material = new MeshLambertMaterial(map: map, side: DoubleSide);
 
   //
 
