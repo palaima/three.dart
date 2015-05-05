@@ -517,7 +517,22 @@ class Matrix3 {
 
   /// Set this matrix to be the normal matrix of [arg].
   Matrix3 copyNormalMatrix(Matrix4 arg) {
-    copyInverse(arg.getRotation());
+    var argStorage = arg._storage;
+    _storage[0] = argStorage[10] * argStorage[5] - argStorage[6] * argStorage[9];
+    _storage[1] = -argStorage[10] * argStorage[1] + argStorage[2] * argStorage[9];
+    _storage[2] = argStorage[6] * argStorage[1] - argStorage[2] * argStorage[5];
+    _storage[3] = -argStorage[10] * argStorage[4] + argStorage[6] * argStorage[8];
+    _storage[4] = argStorage[10] * argStorage[0] - argStorage[2] * argStorage[8];
+    _storage[5] = -argStorage[6] * argStorage[0] + argStorage[2] * argStorage[4];
+    _storage[6] = argStorage[9] * argStorage[4] - argStorage[5] * argStorage[8];
+    _storage[7] = -argStorage[9] * argStorage[0] + argStorage[1] * argStorage[8];
+    _storage[8] = argStorage[5] * argStorage[0] - argStorage[1] * argStorage[4];
+    var det = argStorage[0] * _storage[0]  + argStorage[1] * _storage[3] + argStorage[2] * _storage[6];
+    if (det == 0) {
+      setIdentity();
+      return this;
+    }
+    scale(1.0 / det);
     transpose();
     return this;
   }
