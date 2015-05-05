@@ -20,7 +20,7 @@ class MeshLambertMaterial extends Material implements Lighting, Mapping, Morphin
 
   Texture alphaMap;
 
-  CubeTexture envMap;
+  Texture envMap;
   int combine;
   double reflectivity;
   double refractionRatio;
