@@ -79,7 +79,7 @@ Texture loadTextureCube(List<String> array, [mapping, Function onLoad()]) {
   var i, l;
   l = array.length;
   ImageList images = new ImageList(l);
-  var texture = new Texture(images);
+  var texture = new Texture(images, mapping);
   mapping = (mapping == null) ? texture.mapping : mapping;
 
   texture.flipY = false;
