@@ -231,19 +231,24 @@ class Geometry extends Object with DisposeStream implements IGeometry {
 
   /// Computes face normals.
   void computeFaceNormals() {
-    faces.forEach((face) {
-      var vA = vertices[face.a],
-          vB = vertices[face.b],
-          vC = vertices[face.c];
+    var cb = new Vector3.zero(),
+        ab = new Vector3.zero();
 
-      var cb = vC - vB;
-      var ab = vA - vB;
-      cb = cb.cross(ab);
+    for (var f = 0; f < faces.length; f++) {
+      var face = faces[f];
+
+      var vA = vertices[face.a];
+      var vB = vertices[face.b];
+      var vC = vertices[face.c];
+
+      cb.subVectors(vC, vB);
+      ab.subVectors(vA, vB);
+      cb.crossVectors(cb, ab);
 
       cb.normalize();
 
       face.normal.setFrom(cb);
-    });
+    }
   }
 
   /// Computes vertex normals by averaging face normals.
@@ -253,35 +258,50 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     var vertices = new List.generate(this.vertices.length, (_) => new Vector3.zero());
 
     if (areaWeighted) {
+
       // vertex normals weighted by triangle areas
       // http://www.iquilezles.org/www/articles/normals/normals.htm
 
-      faces.forEach((face) {
+      var cb = new Vector3.zero(), ab = new Vector3.zero();
+
+      for (var f = 0; f < faces.length; f++) {
+        var face = faces[f];
+
         var vA = this.vertices[face.a];
         var vB = this.vertices[face.b];
         var vC = this.vertices[face.c];
 
-        var cb = vC - vB;
-        var ab = vA - vB;
-        cb = cb.cross(ab);
+        cb.subVectors(vC, vB);
+        ab.subVectors(vA, vB);
+        cb.crossVectors(cb, ab);
 
         vertices[face.a].add(cb);
         vertices[face.b].add(cb);
         vertices[face.c].add(cb);
-      });
+
+      }
+
     } else {
-      faces.forEach((face) {
+      for (var f = 0; f < faces.length; f++) {
+        var face = faces[f];
+
         vertices[face.a].add(face.normal);
         vertices[face.b].add(face.normal);
         vertices[face.c].add(face.normal);
-      });
+      }
     }
 
-    vertices.forEach((v) => v.normalize());
+    for (var v = 0; v < this.vertices.length; v++) {
+      vertices[v].normalize();
+    }
 
-    faces.forEach((face) {
-      face.vertexNormals = [vertices[face.a].clone(), vertices[face.b].clone(), vertices[face.c].clone()];
-    });
+    for (var f = 0; f < faces.length; f++) {
+      var face = faces[f];
+
+      face.vertexNormals.add(vertices[face.a].clone());
+      face.vertexNormals.add(vertices[face.b].clone());
+      face.vertexNormals.add(vertices[face.c].clone());
+    }
   }
 
   // TODO implement computeMorphNormals
@@ -296,13 +316,27 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   void computeTangents() {
     // based on http://www.terathon.com/code/tangent.html
     // tangents go to vertices
-    var tan1 = new List.generate(this.vertices.length, (_) => new Vector3.zero()),
-        tan2 = new List.generate(this.vertices.length, (_) => new Vector3.zero());
 
-    handleTriangle(context, a, b, c, ua, ub, uc, uv) {
-      var vA = context.vertices[a];
-      var vB = context.vertices[b];
-      var vC = context.vertices[c];
+    var uv;
+
+    var tan1 = new List(vertices.length);
+    var tan2 = new List(vertices.length);
+
+    var sdir = new Vector3.zero(),
+        tdir = new Vector3.zero(),
+        tmp = new Vector3.zero(),
+        tmp2 = new Vector3.zero(),
+        n = new Vector3.zero();
+
+    for (var v = 0; v < vertices.length; v++) {
+      tan1[v] = new Vector3.zero();
+      tan2[v] = new Vector3.zero();
+    }
+
+    handleTriangle(a, b, c, ua, ub, uc) {
+      var vA = vertices[a];
+      var vB = vertices[b];
+      var vC = vertices[c];
 
       var uvA = uv[ua];
       var uvB = uv[ub];
@@ -321,8 +355,8 @@ class Geometry extends Object with DisposeStream implements IGeometry {
       var t2 = uvC.y - uvA.y;
 
       var r = 1.0 / (s1 * t2 - s2 * t1);
-      var sdir = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-      var tdir = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+      sdir.setValues((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+      tdir.setValues((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
 
       tan1[a].add(sdir);
       tan1[b].add(sdir);
@@ -335,14 +369,16 @@ class Geometry extends Object with DisposeStream implements IGeometry {
 
     for (var f = 0; f < faces.length; f++) {
       var face = faces[f];
-      var uv = faceVertexUvs[0][f]; // use UV layer 0 for tangents
+      uv = faceVertexUvs[0][f]; // use UV layer 0 for tangents
 
-      handleTriangle(this, face.a, face.b, face.c, 0, 1, 2, uv);
+      handleTriangle(face.a, face.b, face.c, 0, 1, 2);
     }
 
-    faces.forEach((face) {
-      for (var i = 0; i < Math.min(face.vertexNormals.length, 3); i ++) {
-        var n = new Vector3.copy(face.vertexNormals[i]);
+    for (var f = 0; f < faces.length; f++) {
+      var face = faces[f];
+
+      for (var i = 0; i < Math.min(face.vertexNormals.length, 3); i++) {
+        n.setFrom(face.vertexNormals[i]);
 
         var vertexIndex = face.indices[i];
 
@@ -350,18 +386,19 @@ class Geometry extends Object with DisposeStream implements IGeometry {
 
         // Gram-Schmidt orthogonalize
 
-        var tmp = new Vector3.copy(t);
+        tmp.setFrom(t);
         tmp.sub(n.scale(n.dot(t))).normalize();
 
         // Calculate handedness
 
-        var tmp2 = face.vertexNormals[i].cross(t);
+        tmp2.crossVectors(face.vertexNormals[i], t);
         var test = tmp2.dot(tan2[vertexIndex]);
         var w = (test < 0.0) ? - 1.0 : 1.0;
 
         face.vertexTangents[i] = new Vector4(tmp.x, tmp.y, tmp.z, w);
       }
-    });
+    }
+
 
     hasTangents = true;
   }
@@ -459,8 +496,6 @@ class Geometry extends Object with DisposeStream implements IGeometry {
         faceCopy.vertexColors.add(color.clone());
       }
 
-      //faceCopy.materialIndex = face.materialIndex + materialIndexOffset;
-
       faces1.add(faceCopy);
     }
 
@@ -471,7 +506,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
 
       if (uv == null) continue;
 
-      for (var j = 0, jl = uv.length; j < jl; j ++) {
+      for (var j = 0; j < uv.length; j++) {
         uvCopy.add(uv[j].clone());
       }
 
@@ -586,10 +621,10 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   // Used in DynamicGeometry
   int get _maxFaceIndex {
     var maxIndex = 0;
-    faces.forEach((face) {
-      var max = face.indices.reduce(Math.max);
+    for (var f = 0; f < faces.length; f++) {
+      var max = faces[f].indices.reduce(Math.max);
       if (max > maxIndex) maxIndex = max;
-    });
+    }
     return maxIndex + 1;
   }
 
