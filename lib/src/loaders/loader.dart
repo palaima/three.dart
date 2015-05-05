@@ -127,7 +127,6 @@ class Loader {
 
         loader = imageLoader;
         loader.crossOrigin = crossOrigin;
-        loader.load(fullPath);
         loader.onLoad.listen((image) {
           if (!ThreeMath.isPowerOfTwo(image.width) || !ThreeMath.isPowerOfTwo(image.height)) {
             var width = nearest_pow2(image.width);
@@ -146,6 +145,8 @@ class Loader {
 
           texture.needsUpdate = true;
         });
+
+        loader.load(fullPath);
       }
 
       texture.sourceFile = sourceFile;
