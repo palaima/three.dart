@@ -236,15 +236,17 @@ class Frustum {
     return d1 < 0 && d2 < 0;
   }
 
+  static final _sphere = new Sphere();
+
   bool intersectsWithObject(Object3D object) {
     var geometry = (object as GeometryObject).geometry;
 
     if (geometry.boundingSphere == null) geometry.computeBoundingSphere();
 
-    var sphere = new Sphere.copy(geometry.boundingSphere)
-      ..applyMatrix4(object.matrixWorld);
+    _sphere.copyFrom(geometry.boundingSphere);
+    _sphere.applyMatrix4(object.matrixWorld);
 
-    return intersectsWithSphere(sphere);
+    return intersectsWithSphere(_sphere);
   }
 
   Frustum clone() => new Frustum.copy(this);
