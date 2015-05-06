@@ -97,15 +97,15 @@ class WebGLRenderer implements Renderer {
 
    // internal properties
 
-   var _programs = [];
+   List<WebGLProgram> _programs = [];
 
    // internal state cache
 
-   var _currentProgram;
-   var _currentFramebuffer;
+   int _currentProgram;
+   gl.Framebuffer _currentFramebuffer;
    int _currentMaterialId = -1;
-   String _currentGeometryProgram = '';
-   var _currentCamera;
+   GeometryProgram _currentGeometryProgram = new GeometryProgram();
+   Camera _currentCamera;
 
    int _usedTextureUnits = 0;
 
@@ -311,7 +311,7 @@ class WebGLRenderer implements Renderer {
     _currentProgram = null;
     _currentCamera = null;
 
-    _currentGeometryProgram = '';
+    _currentGeometryProgram.reset();
     _currentMaterialId = -1;
 
     _lightsNeedUpdate = true;
@@ -733,6 +733,8 @@ class WebGLRenderer implements Renderer {
     state.disableUnusedAttributes();
   }
 
+  static final GeometryProgram _geometryProgram = new GeometryProgram();
+
   void renderBufferDirect(Camera camera, List lights, Fog fog, Material material, Object3D object) {
     if (material.visible == false) return;
 
@@ -740,11 +742,13 @@ class WebGLRenderer implements Renderer {
     var program = setProgram(camera, lights, fog, material, object);
 
     var updateBuffers = false,
-        wireframeBit = (material is Wireframe) && (material as Wireframe).wireframe ? 1 : 0,
-        geometryProgram = '${geometry.id}_${program.id}_$wireframeBit';
+        wireframeBit = (material is Wireframe) && (material as Wireframe).wireframe ? 1 : 0;
 
-    if (geometryProgram != _currentGeometryProgram) {
-      _currentGeometryProgram = geometryProgram;
+    _geometryProgram.set(geometry.id, program.id, wireframeBit);
+
+    if (_geometryProgram != _currentGeometryProgram) {
+      _currentGeometryProgram.set(_geometryProgram.geometryId, _geometryProgram.programId,
+          _geometryProgram.wireframeBit);
       updateBuffers = true;
     }
 
@@ -1215,7 +1219,7 @@ class WebGLRenderer implements Renderer {
 
     // reset caching for this frame
 
-    _currentGeometryProgram = '';
+    _currentGeometryProgram.reset();
     _currentMaterialId = -1;
     _currentCamera = null;
     _lightsNeedUpdate = true;
@@ -1426,7 +1430,7 @@ class WebGLRenderer implements Renderer {
   void renderImmediateObject(Camera camera, List<Light> lights, Fog fog, Material material, Object3D object) {
     var program = setProgram(camera, lights, fog, material, object);
 
-    _currentGeometryProgram = '';
+    _currentGeometryProgram.reset();
 
     setMaterialFaces(material);
 
@@ -3114,4 +3118,19 @@ class WebGLObject {
 
   WebGLObject({this.id, this.material, this.object, this.opaque, this.transparent,
     this.render: true, this.z: 0});
+}
+
+class GeometryProgram {
+  int geometryId, programId, wireframeBit;
+  void set(int geometryId, int programId, int wireframeBit) {
+    this.geometryId = geometryId;
+    this.programId = programId;
+    this.wireframeBit = wireframeBit;
+  }
+  void reset() {
+    geometryId = programId = wireframeBit = null;
+  }
+  bool operator ==(GeometryProgram other) =>
+      geometryId == other.geometryId && programId == other.programId && wireframeBit == other.wireframeBit;
+
 }
