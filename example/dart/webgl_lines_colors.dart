@@ -2,7 +2,6 @@ import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/postprocessing.dart';
-import 'package:three/extras/shaders.dart' show copyShader, fxaaShader;
 
 ShaderPass effectFXAA;
 

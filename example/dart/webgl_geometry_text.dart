@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'dart:convert' show JSON;
 import 'package:three/three.dart';
 import 'package:three/extras/postprocessing.dart';
-import 'package:three/extras/shaders.dart' show fxaaShader;
 import 'package:three/extras/font_utils.dart' as font_utils;
 
 PerspectiveCamera camera;

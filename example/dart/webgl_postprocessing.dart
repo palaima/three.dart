@@ -1,7 +1,6 @@
 import 'dart:math' show Random;
 import 'dart:html' show window, document;
 import 'package:three/three.dart';
-import 'package:three/extras/shaders.dart' show dotScreenShader, rgbShiftShader;
 import 'package:three/extras/postprocessing.dart';
 
 PerspectiveCamera camera;
