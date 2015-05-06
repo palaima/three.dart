@@ -81,9 +81,9 @@ void init() {
   scene.add(new Mesh(new TorusKnotGeometry(50.0, 10.0, 50, 20), material)
     ..position.setValues(0.0, 0.0, -200.0));
 
-// TODO
-//  scene.add(new AxisHelper(50.0)..position.setValues(200.0, 0.0, -200.0));
-//
+
+  scene.add(new AxisHelper(50.0)..position.setValues(200.0, 0.0, -200.0));
+
 //  scene.add(new ArrowHelper(new Vector3(0.0, 1.0, 0.0), new Vector3.zero(), 50.0)
 //    ..position.setValues(400.0, 0.0, -200.0));
 

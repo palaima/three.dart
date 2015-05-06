@@ -68,8 +68,8 @@ void init() {
   scene.add(SceneUtils.createMultiMaterialObject(tube2, materials)
     ..position.setValues(100.0, 0.0, 0.0));
 
-//  scene.add(new AxisHelper(50.0)..position.setValues(200.0, 0.0, -200.0));
-//
+  scene.add(new AxisHelper(50.0)..position.setValues(200.0, 0.0, -200.0));
+
 //  scene.add(new ArrowHelper(new Vector3(0.0, 1.0, 0.0), new Vector3.zero(), 50.0)
 //    ..position.setValues(200.0, 0.0, 400.0));
 

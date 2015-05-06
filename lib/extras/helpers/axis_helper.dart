@@ -1,14 +1,13 @@
 /*
  * @author sroucheray / http://sroucheray.org/
  * @author mrdoob / http://mrdoob.com/
- * 
+ *
  * based on r63
  */
 
-
 part of three;
 
-class AxisHelper extends Line {
+class AxisHelper extends LineSegments {
   factory AxisHelper([double size = 1.0]) {
     var geometry = new Geometry()
       ..vertices.addAll(
@@ -21,9 +20,9 @@ class AxisHelper extends Line {
            new Color(0x0000ff), new Color(0x00aaff)]);
 
     var material = new LineBasicMaterial(vertexColors: VertexColors);
-    
-    return new AxisHelper._internal(geometry, material, LinePieces);
+
+    return new AxisHelper._(geometry, material);
   }
-  
-  AxisHelper._internal(Geometry geometry, LineBasicMaterial material, int type) : super(geometry, material, type);
+
+  AxisHelper._(Geometry geometry, LineBasicMaterial material) : super(geometry, material);
 }
