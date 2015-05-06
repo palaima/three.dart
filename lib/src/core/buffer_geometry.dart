@@ -424,6 +424,9 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     computeBoundingSphere();
   }
 
+  static final _box = new Aabb3();
+  static final _vector = new Vector3.zero();
+
   void computeBoundingBox() {
     if (boundingBox == null) {
       boundingBox = new Aabb3();
@@ -435,20 +438,21 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
       var bb = boundingBox..makeEmpty();
 
       for (var i = 0; i < positions.length; i += 3) {
-        var vector = new Vector3.array(positions, i);
-        bb.hullPoint(vector);
+        _vector.copyFromArray(positions, i);
+        bb.hullPoint(_vector);
       }
     }
 
     if (positions == null || positions.length == 0) {
-      boundingBox.min.setZero();
-      boundingBox.max.setZero();
+      boundingBox._min.setZero();
+      boundingBox._max.setZero();
     }
 
-    if (boundingBox.min.x.isNaN || boundingBox.min.y.isNaN || boundingBox.min.z.isNaN) {
+    if (boundingBox._min.x.isNaN || boundingBox._min.y.isNaN || boundingBox._min.z.isNaN) {
       error('BufferGeometry.computeBoundingBox: Computed min/max have NaN values. The "position" attribute is likely to have NaN values.');
     }
   }
+
 
   void computeBoundingSphere() {
     if (boundingSphere == null) {
@@ -458,16 +462,14 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     var positions = aPosition.array;
 
     if (positions != null) {
-      var box = new Aabb3();
-
-      var center = boundingSphere.center;
+      var center = boundingSphere._center;
 
       for (var i = 0; i < positions.length; i += 3) {
-        var vector = new Vector3.array(positions, i);
-        box.hullPoint(vector);
+        _vector.copyFromArray(positions, i);
+        _box.hullPoint(_vector);
       }
 
-      center.setFrom(box.center);
+      _box.copyCenter(center);
 
       // hoping to find a boundingSphere with a radius smaller than the
       // boundingSphere of the boundingBox:  sqrt(3) smaller in the best case
@@ -475,13 +477,13 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
       var maxRadiusSq = 0;
 
       for (var i = 0; i < positions.length; i += 3) {
-        var vector = new Vector3.array(positions, i);
-        maxRadiusSq = Math.max(maxRadiusSq, center.distanceToSquared(vector));
+        _vector.copyFromArray(positions, i);
+        maxRadiusSq = Math.max(maxRadiusSq, center.distanceToSquared(_vector));
       }
 
-      boundingSphere.radius = Math.sqrt(maxRadiusSq);
+      boundingSphere._radius = Math.sqrt(maxRadiusSq);
 
-      if (boundingSphere.radius.isNaN) {
+      if (boundingSphere._radius.isNaN) {
         error('BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values.');
       }
     }
