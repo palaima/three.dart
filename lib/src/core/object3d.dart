@@ -170,45 +170,47 @@ class Object3D {
 
   /// Rotates object around normalized [axis] in object space by [radians].
   Object3D rotateOnAxis(Vector3 axis, double radians) {
-    quaternion.multiply(new Quaternion.axisAngle(axis, radians));
+    _q.setAxisAngle(axis, radians);
+    quaternion.multiply(_q);
     return this;
   }
 
   /// Rotates object around x axis in object space by [radians].
-  Object3D rotateX(double radians) => rotateOnAxis(new Vector3(1.0, 0.0, 0.0), radians);
+  Object3D rotateX(double radians) => rotateOnAxis(_v..setValues(1.0, 0.0, 0.0), radians);
 
   /// Rotates object around y axis in object space by [radians].
-  Object3D rotateY(double radians) => rotateOnAxis(new Vector3(0.0, 1.0, 0.0), radians);
+  Object3D rotateY(double radians) => rotateOnAxis(_v..setValues(0.0, 1.0, 0.0), radians);
 
   /// Rotates object around z axis in object space by [radians].
-  Object3D rotateZ(double radians) => rotateOnAxis(new Vector3(0.0, 0.0, 1.0), radians);
+  Object3D rotateZ(double radians) => rotateOnAxis(_v..setValues(0.0, 0.0, 1.0), radians);
 
   /// Translate an object by [distance] along a normalized [axis] in object space.
   Object3D translateOnAxis(Vector3 axis, double distance) {
-    position.add(new Vector3.copy(axis)..applyQuaternion(quaternion)..scale(distance));
+    position.add(_v.setFrom(axis)..applyQuaternion(quaternion)..scale(distance));
     return this;
   }
 
   /// Translates object along x axis by [distance].
-  Object3D translateX(double distance) => translateOnAxis(new Vector3(1.0, 0.0, 0.0), distance);
+  Object3D translateX(double distance) => translateOnAxis(_v..setValues(1.0, 0.0, 0.0), distance);
 
   /// Translates object along y axis by [distance].
-  Object3D translateY(double distance) => translateOnAxis(new Vector3(0.0, 1.0, 0.0), distance);
+  Object3D translateY(double distance) => translateOnAxis(_v..setValues(0.0, 1.0, 0.0), distance);
 
   /// Translates object along z axis by [distance].
-  Object3D translateZ(double distance) => translateOnAxis(new Vector3(0.0, 0.0, 1.0), distance);
+  Object3D translateZ(double distance) => translateOnAxis(_v..setValues(0.0, 0.0, 1.0), distance);
 
   /// Transforms [vector] from local space to world space.
   Vector3 localToWorld(Vector3 vector) => vector..applyMatrix4(matrixWorld);
 
   /// Transforms [vector] from world space to local space.
-  Vector3 worldToLocal(Vector3 vector) => vector..applyMatrix4(matrixWorld.clone()..invert());
+  Vector3 worldToLocal(Vector3 vector) => vector..applyMatrix4(_m..copyInverse(matrixWorld));
 
   /// Rotates object to face [position].
   /// This routine does not support objects with rotated and/or translated parent(s
   void lookAt(Vector3 vector) {
-    var lookAt = makeViewMatrix(vector, position, up)..invert();
-    quaternion.setFromRotation(lookAt.getRotation());
+    setViewMatrix(_m, vector, position, up);
+    _m.invert();
+    quaternion.setFromRotation4(_m);
   }
 
   /// Adds [object] as child of this object.
@@ -258,53 +260,55 @@ class Object3D {
     return null;
   }
 
-  Vector3 getWorldPosition() {
+  Vector3 getWorldPosition([Vector3 optionalTarget]) {
+    var result = optionalTarget != null ? optionalTarget : new Vector3.zero();
     updateMatrixWorld(force: true);
-    return matrixWorld.getTranslation();
+    return result..setFromMatrixTranslation(matrixWorld);
   }
 
-  Quaternion getWorldQuaternion() {
-    var position = new Vector3.zero();
-    var scale = new Vector3.zero();
-    var result = new Quaternion.identity();
-
+  Quaternion getWorldQuaternion([Quaternion optionalTarget]) {
+    var result = optionalTarget != null ? optionalTarget : new Quaternion.identity();
     updateMatrixWorld(force: true);
-
-    matrixWorld.decompose(position, result, scale);
-
+    matrixWorld.decompose(_v, result, _v);
     return result;
   }
 
-  Euler getWorldRotation() =>
-      new Euler.fromQuaternion(getWorldQuaternion(), order: rotation.order, update: false);
+  Euler getWorldRotation([Euler optionalTarget]) {
+    var result = optionalTarget != null ? optionalTarget : new Euler();
+    getWorldQuaternion(_q);
+    return result..setFromQuaternion(_q, order: rotation.order, update: false);
+  }
 
-  Vector3 getWorldScale() {
-    var position = new Vector3.zero();
-    var quaternion = new Quaternion.identity();
-    var result = new Vector3.zero();
-
+  Vector3 getWorldScale([Vector3 optionalTarget]) {
+    var result = optionalTarget != null ? optionalTarget : new Vector3.zero();
     updateMatrixWorld(force: true);
-
-    matrixWorld.decompose(position, quaternion, result);
-
+    matrixWorld.decompose(_v, _q, result);
     return result;
   }
 
-  Vector3 getWorldDirection() => new Vector3(0.0, 0.0, 1.0)..applyQuaternion(getWorldQuaternion());
+  Vector3 getWorldDirection([Vector3 optionalTarget]) {
+    var result = optionalTarget != null ? optionalTarget: new Vector3.zero();
+    getWorldQuaternion(_q);
+    return result..setValues(0.0, 0.0, 1.0)..applyQuaternion(_q);
+  }
 
   void raycast(Raycaster raycaster, List<RayIntersection> intersects) {}
 
   /// Executes [callback] on this object and all descendants.
   void traverse(void callback(Object3D obj)) {
     callback(this);
-    children.forEach((child) => child.traverse(callback));
+    for (var i = 0; i < children.length; i++) {
+      children[i].traverse(callback);
+    }
   }
 
   /// Like [traverse], except that [callback] is only executed on visible objects.
   void traverseVisible(void callback(Object3D obj)) {
     if (!visible) return;
     callback(this);
-    children.forEach((child) => child.traverseVisible(callback));
+    for (var i = 0; i < children.length; i++) {
+      children[i].traverseVisible(callback);
+    }
   }
 
   void traverseAncestors(void callback(Object3D obj)) {
@@ -313,7 +317,6 @@ class Object3D {
       parent.traverseAncestors(callback);
     }
   }
-
 
   /// Updates local transform.
   void updateMatrix() {
@@ -338,7 +341,9 @@ class Object3D {
     }
 
     // update children
-    children.forEach((child) => child.updateMatrixWorld(force: force));
+    for (var i = 0; i < children.length; i++) {
+      children[i].updateMatrixWorld(force: force);
+    }
   }
 
   toJSON() {
@@ -381,4 +386,8 @@ class Object3D {
 
     return object;
   }
+
+  static final Vector3 _v = new Vector3.zero();
+  static final Quaternion _q = new Quaternion.identity();
+  static final Matrix4 _m = new Matrix4.zero();
 }
