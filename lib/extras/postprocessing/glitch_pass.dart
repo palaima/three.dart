@@ -25,7 +25,8 @@ class GlitchPass implements Pass {
   Math.Random _rnd = new Math.Random();
 
   GlitchPass({int dtSize: 64}) {
-    var shader = Shaders.digitalGlitch;
+    var shader = digitalGlitchShader;
+
     uniforms = UniformsUtils.clone(shader['uniforms']);
 
     uniforms["tDisp"].value = generateHeightmap(dtSize);

@@ -36,32 +36,32 @@ class BloomPass implements Pass {
 
     // copy material
 
-    var copyShader = Shaders.copy;
+    var shader = copyShader;
 
-    copyUniforms = UniformsUtils.clone(copyShader['uniforms']);
+    copyUniforms = UniformsUtils.clone(shader['uniforms']);
 
     copyUniforms['opacity'].value = strength;
 
     materialCopy = new ShaderMaterial(
         uniforms: this.copyUniforms,
-        vertexShader: copyShader['vertexShader'],
-        fragmentShader: copyShader['fragmentShader'],
+        vertexShader: shader['vertexShader'],
+        fragmentShader: shader['fragmentShader'],
         blending: AdditiveBlending,
         transparent: true);
 
     // convolution material
 
-    var convolutionShader = Shaders.convolution;
+    var shader2 = convolutionShader;
 
-    convolutionUniforms = UniformsUtils.clone(convolutionShader['uniforms']);
+    convolutionUniforms = UniformsUtils.clone(shader2['uniforms']);
 
     convolutionUniforms['uImageIncrement'].value = BloomPass.blurX;
-    convolutionUniforms['cKernel'].value = convolutionShader['buildKernel'](sigma);
+    convolutionUniforms['cKernel'].value = shader2['buildKernel'](sigma);
 
     materialConvolution = new ShaderMaterial(
         uniforms: this.convolutionUniforms,
-        vertexShader:  convolutionShader['vertexShader'],
-        fragmentShader: convolutionShader['fragmentShader'],
+        vertexShader:  shader2['vertexShader'],
+        fragmentShader: shader2['fragmentShader'],
         defines: {
           'KERNEL_SIZE_FLOAT': kernelSize.toStringAsFixed(1),
           'KERNEL_SIZE_INT': kernelSize.toStringAsFixed(0)

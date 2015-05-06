@@ -20,7 +20,7 @@ class DotScreenPass implements Pass {
   Mesh quad;
 
   DotScreenPass(Vector2 center, double angle, double scale) {
-    var shader = Shaders.dotScreen;
+    var shader = dotScreenShader;
 
     uniforms = UniformsUtils.clone(shader['uniforms']);
 

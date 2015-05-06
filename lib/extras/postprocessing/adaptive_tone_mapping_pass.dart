@@ -42,21 +42,23 @@ class AdaptiveToneMappingPass implements Pass {
   Mesh quad;
 
   AdaptiveToneMappingPass({this.adaptive: true, this.resolution: 256}) {
-    var copyShader = Shaders.copy;
+    var shader = copyShader;
 
-    copyUniforms = UniformsUtils.clone(copyShader['uniforms']);
+    copyUniforms = UniformsUtils.clone(shader['uniforms']);
 
     materialCopy = new ShaderMaterial(
         uniforms: copyUniforms,
-        vertexShader: copyShader['vertexShader'],
-        fragmentShader: copyShader['fragmentShader'],
+        vertexShader: shader['vertexShader'],
+        fragmentShader: shader['fragmentShader'],
         blending: NoBlending,
         depthTest: false);
 
+    var shader2 = luminosityShader;
+
     materialLuminance = new ShaderMaterial(
-        uniforms:UniformsUtils.clone(Shaders.luminosity['uniforms']),
-        vertexShader: Shaders.luminosity['vertexShader'],
-        fragmentShader: Shaders.luminosity['fragmentShader'],
+        uniforms:UniformsUtils.clone(shader2['uniforms']),
+        vertexShader: shader2['vertexShader'],
+        fragmentShader: shader2['fragmentShader'],
         blending: NoBlending);
 
     adaptLuminanceShader = {
@@ -103,17 +105,21 @@ class AdaptiveToneMappingPass implements Pass {
     '''
     };
 
+    var shader3 = adaptLuminanceShader;
+
     materialAdaptiveLum = new ShaderMaterial(
-      uniforms: UniformsUtils.clone(adaptLuminanceShader['uniforms']),
-      vertexShader: adaptLuminanceShader['vertexShader'],
-      fragmentShader: adaptLuminanceShader['fragmentShader'],
-      defines: adaptLuminanceShader['defines'],
+      uniforms: UniformsUtils.clone(shader3['uniforms']),
+      vertexShader: shader3['vertexShader'],
+      fragmentShader: shader3['fragmentShader'],
+      defines: shader3['defines'],
       blending: NoBlending);
 
+    var shader4 = toneMapShader;
+
     materialToneMap = new ShaderMaterial(
-      uniforms: UniformsUtils.clone(Shaders.toneMap['uniforms']),
-      vertexShader: Shaders.toneMap['vertexShader'],
-      fragmentShader: Shaders.toneMap['fragmentShader'],
+      uniforms: UniformsUtils.clone(shader4['uniforms']),
+      vertexShader: shader4['vertexShader'],
+      fragmentShader: shader4['fragmentShader'],
       blending: NoBlending);
 
     quad = new Mesh(new PlaneBufferGeometry(2.0, 2.0), null);

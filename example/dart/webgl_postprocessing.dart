@@ -1,7 +1,7 @@
 import 'dart:math' show Random;
 import 'dart:html' show window, document;
 import 'package:three/three.dart';
-import 'package:three/extras/shaders.dart' as Shaders;
+import 'package:three/extras/shaders.dart' show dotScreenShader, rgbShiftShader;
 import 'package:three/extras/postprocessing.dart';
 
 PerspectiveCamera camera;
@@ -57,10 +57,10 @@ void init() {
   composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
-  composer.addPass(new ShaderPass(Shaders.dotScreen)
+  composer.addPass(new ShaderPass(dotScreenShader)
     ..uniforms['scale'].value = 4);
 
-  composer.addPass(new ShaderPass(Shaders.rgbShift)
+  composer.addPass(new ShaderPass(rgbShiftShader)
     ..uniforms['amount'].value = 0.0015
     ..renderToScreen = true);
 

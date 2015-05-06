@@ -25,7 +25,7 @@ class SavePass implements Pass {
   Mesh quad;
 
   SavePass(this.renderTarget) {
-    var shader = Shaders.copy;
+    var shader = copyShader;
 
     uniforms = UniformsUtils.clone(shader['uniforms']);
 

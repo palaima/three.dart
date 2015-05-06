@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/postprocessing.dart';
-import 'package:three/extras/shaders.dart' as shaders;
+import 'package:three/extras/shaders.dart' show copyShader, fxaaShader;
 
 ShaderPass effectFXAA;
 
@@ -74,9 +74,9 @@ void init() {
 
   var renderModel = new RenderPass(scene, camera);
   var effectBloom = new BloomPass(strength: 1.3);
-  var effectCopy = new ShaderPass(shaders.copy);
+  var effectCopy = new ShaderPass(copyShader);
 
-  effectFXAA = new ShaderPass(shaders.fxaa);
+  effectFXAA = new ShaderPass(fxaaShader);
 
   var width = window.innerWidth; // || 2
   var height = window.innerHeight; // || 2

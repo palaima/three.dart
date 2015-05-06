@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'dart:convert' show JSON;
 import 'package:three/three.dart';
 import 'package:three/extras/postprocessing.dart';
-import 'package:three/extras/shaders.dart' as shaders;
+import 'package:three/extras/shaders.dart' show fxaaShader;
 import 'package:three/extras/font_utils.dart' as font_utils;
 
 PerspectiveCamera camera;
@@ -177,7 +177,7 @@ void init() {
   var effectBloom = new BloomPass(strength: 0.25);
   var effectFilm = new FilmPass(0.5, 0.125, 2048.0, false);
 
-  effectFXAA = new ShaderPass(shaders.fxaa);
+  effectFXAA = new ShaderPass(fxaaShader);
 
   effectFXAA.uniforms['resolution'].value.setValues(1 / window.innerWidth, 1 / window.innerHeight);
 

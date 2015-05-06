@@ -42,7 +42,7 @@ class EffectComposer {
     writeBuffer = renderTarget1;
     readBuffer = renderTarget2;
 
-    copyPass = new ShaderPass(Shaders.copy);
+    copyPass = new ShaderPass(copyShader);
   }
 
   void swapBuffers() {

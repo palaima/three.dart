@@ -21,7 +21,7 @@ class FilmPass implements Pass {
   Mesh quad;
 
   FilmPass(double noiseIntensity, double scanlinesIntensity, double scanlinesCount, bool grayscale) {
-    var shader = Shaders.film;
+    var shader = filmShader;
 
     uniforms = UniformsUtils.clone(shader['uniforms']);
 

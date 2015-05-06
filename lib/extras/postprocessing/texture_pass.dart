@@ -20,7 +20,7 @@ class TexturePass implements Pass {
   Mesh quad;
 
   TexturePass(Texture texture, {double opacity: 1.0}) {
-    var shader = Shaders.copy;
+    var shader = copyShader;
 
     uniforms = UniformsUtils.clone(shader['uniforms']);
 

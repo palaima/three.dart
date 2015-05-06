@@ -45,8 +45,9 @@ class BokehPass implements Pass {
 
     // bokeh material
 
-    var bokehShader = Shaders.bokeh;
-    var bokehUniforms = UniformsUtils.clone(bokehShader['uniforms']);
+    var shader = bokehShader;
+
+    var bokehUniforms = UniformsUtils.clone(shader['uniforms']);
 
     bokehUniforms['tDepth'].value = this.renderTargetDepth;
 
@@ -57,8 +58,8 @@ class BokehPass implements Pass {
 
     materialBokeh = new ShaderMaterial(
         uniforms: bokehUniforms,
-        vertexShader: bokehShader['vertexShader'],
-        fragmentShader: bokehShader['fragmentShader']);
+        vertexShader: shader['vertexShader'],
+        fragmentShader: shader['fragmentShader']);
 
     uniforms = bokehUniforms;
 

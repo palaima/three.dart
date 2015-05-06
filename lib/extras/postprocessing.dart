@@ -5,7 +5,8 @@ import 'dart:math' as Math;
 import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'package:three/three.dart';
-import 'package:three/extras/shaders.dart' as Shaders;
+import 'package:three/extras/shaders.dart' show copyShader, luminosityShader, digitalGlitchShader,
+toneMapShader, convolutionShader, bokehShader, dotScreenShader, filmShader;
 import 'package:three/extras/uniforms_utils.dart' as UniformsUtils;
 import 'package:three/extras/three_math.dart' as ThreeMath;
 
