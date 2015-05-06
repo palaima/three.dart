@@ -1600,39 +1600,43 @@ class Matrix4 {
         (m33 * argStorage[15]);
     return this;
   }
+
+  static final Vector3 _v = new Vector3.zero();
+  static final Matrix4 _m = new Matrix4.zero();
+  static final Quaternion _q = new Quaternion.identity();
+
   /// Decomposes [this] into [translation], [rotation] and [scale] components.
   void decompose(Vector3 translation, Quaternion rotation, Vector3 scale) {
-    final v = new Vector3.zero();
-    var sx = v.setValues(_storage[0], _storage[1], _storage[2]).length;
-    var sy = v.setValues(_storage[4], _storage[5], _storage[6]).length;
-    var sz = v.setValues(_storage[8], _storage[9], _storage[10]).length;
+    var sx = _v.setValues(_storage[0], _storage[1], _storage[2]).length;
+    var sy = _v.setValues(_storage[4], _storage[5], _storage[6]).length;
+    var sz = _v.setValues(_storage[8], _storage[9], _storage[10]).length;
 
     if (determinant() < 0) sx = -sx;
 
-    translation.storage[0] = _storage[12];
-    translation.storage[1] = _storage[13];
-    translation.storage[2] = _storage[14];
+    translation._storage[0] = _storage[12];
+    translation._storage[1] = _storage[13];
+    translation._storage[2] = _storage[14];
 
     final invSX = 1.0 / sx;
     final invSY = 1.0 / sy;
     final invSZ = 1.0 / sz;
 
-    final m = new Matrix4.copy(this);
-    m._storage[0] *= invSX;
-    m._storage[1] *= invSX;
-    m._storage[2] *= invSX;
-    m._storage[4] *= invSY;
-    m._storage[5] *= invSY;
-    m._storage[6] *= invSY;
-    m._storage[8] *= invSZ;
-    m._storage[9] *= invSZ;
-    m._storage[10] *= invSZ;
+    _m.setFrom(this)
+      .._storage[0] *= invSX
+      .._storage[1] *= invSX
+      .._storage[2] *= invSX
+      .._storage[4] *= invSY
+      .._storage[5] *= invSY
+      .._storage[6] *= invSY
+      .._storage[8] *= invSZ
+      .._storage[9] *= invSZ
+      .._storage[10] *= invSZ;
 
-    rotation.setFromRotation(m.getRotation());
+    rotation.setFromRotation4(_m);
 
-    scale.storage[0] = sx;
-    scale.storage[1] = sy;
-    scale.storage[2] = sz;
+    scale._storage[0] = sx;
+    scale._storage[1] = sy;
+    scale._storage[2] = sz;
   }
 
   /// Rotate [arg] of type [Vector3] using the rotation defined by [this].
