@@ -84,8 +84,12 @@ class WebGLObjects {
     }
 
     if (geometry is BufferGeometry) {
-      for (var key in geometry.attributes.keys) {
-        var attribute = geometry.attributes[key];
+      var attributes = geometry.attributes;
+      var attributesKeys = geometry.attributesKeys;
+
+      for (var i = 0; i < attributesKeys.length; i++) {
+        var key = attributesKeys[i];
+        var attribute = attributes[key];
         var bufferType = (key == 'index') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
 
         var data = (attribute is InterleavedBufferAttribute) ? attribute.data : attribute;

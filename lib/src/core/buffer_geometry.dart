@@ -18,6 +18,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
   String type = 'BufferGeometry';
 
   Map<String, BufferAttribute> attributes = {};
+  List<String> attributesKeys = [];
 
   List<DrawCall> drawcalls = [];
   List<DrawCall> offsets;
@@ -57,25 +58,25 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 
   // default attributes
   BufferAttribute get aPosition => attributes['position'];
-  set aPosition(BufferAttribute a) => attributes['position'] = a;
+  set aPosition(BufferAttribute a) => addAttribute('position', a);
 
   BufferAttribute get aNormal => attributes['normal'];
-  set aNormal(BufferAttribute a) => attributes['normal'] = a;
+  set aNormal(BufferAttribute a) => addAttribute('normal', a);
 
   BufferAttribute get aIndex => attributes['index'];
-  set aIndex(BufferAttribute a) => attributes['index'] = a;
+  set aIndex(BufferAttribute a) => addAttribute('index', a);
 
   BufferAttribute get aUV => attributes['uv'];
-  set aUV(BufferAttribute a) => attributes['uv'] = a;
+  set aUV(BufferAttribute a) => addAttribute('uv', a);
 
   BufferAttribute get aUV2 => attributes['uv2'];
-  set aUV2(BufferAttribute a) => attributes['uv2'] = a;
+  set aUV2(BufferAttribute a) => addAttribute('uv2', a);
 
   BufferAttribute get aTangent => attributes['tangent'];
-  set aTangent(BufferAttribute a) => attributes['tangent'] = a;
+  set aTangent(BufferAttribute a) => addAttribute('tangent', a);
 
   BufferAttribute get aColor => attributes['color'];
-  set aColor(BufferAttribute a) => attributes['color'] = a;
+  set aColor(BufferAttribute a) => addAttribute('color', a);
 
   BufferGeometry() {
     offsets = drawcalls; // backwards compatibility.
@@ -87,7 +88,10 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 
   void addAttribute(String name, BufferAttribute attribute) {
     attributes[name] = attribute;
+    attributesKeys = attributes.keys.toList();
   }
+
+  BufferAttribute getAttribute(String name) => attributes[name];
 
   void addDrawCall({int start, int count, int indexOffset: 0}) {
     drawcalls.add(new DrawCall(start: start, count: count, index: indexOffset));

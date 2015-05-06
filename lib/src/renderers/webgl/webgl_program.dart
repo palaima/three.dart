@@ -9,6 +9,7 @@ class WebGLProgram {
 
   Map<String, gl.UniformLocation> uniforms;
   Map<String, int> attributes;
+  List<String> attributesKeys;
 
   int id = WebGLProgram.programIdCount++;
   String code;
@@ -399,6 +400,7 @@ class WebGLProgram {
     }
 
     this.attributes = cacheAttributeLocations(_gl, program, identifiers);
+    this.attributesKeys = this.attributes.keys.toList();
 
     //
 

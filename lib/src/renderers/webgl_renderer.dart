@@ -666,8 +666,12 @@ class WebGLRenderer implements Renderer {
 
     var geometryAttributes = geometry.attributes;
 
-    for (var key in program.attributes.keys) {
-      var programAttribute = program.attributes[key];
+    var programAttributes = program.attributes;
+    var programAttributesKeys = program.attributesKeys;
+
+    for (var i = 0; i < programAttributesKeys.length; i++) {
+      var key = programAttributesKeys[i];
+      var programAttribute = programAttributes[key];
 
       if (programAttribute >= 0) {
 
