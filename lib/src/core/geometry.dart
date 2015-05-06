@@ -106,7 +106,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   var normals = [];
 
   // Used in JSONLoader
-  var bones, animation;
+  var bones, animation, animations;
 
   /// Set to true if attribute buffers will need to change in runtime (using "dirty" flags).
   /// Unless set to true internal typed arrays corresponding to buffers will be deleted once sent to GPU.
