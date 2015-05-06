@@ -201,7 +201,5 @@ void render() {
     }
   }
 
-  attributes['size'].needsUpdate = true;
-
   renderer.render(scene, camera);
 }

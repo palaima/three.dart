@@ -146,7 +146,5 @@ void render() {
     size.value[i] = 14 + 13 * Math.sin(0.1 * i + time);
   }
 
-  size.needsUpdate = true;
-
   renderer.render(scene, camera);
 }

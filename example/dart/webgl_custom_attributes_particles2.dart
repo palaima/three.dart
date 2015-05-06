@@ -2,7 +2,6 @@ import 'dart:html';
 import 'dart:math' as Math;
 import 'package:three/three.dart';
 import 'package:three/extras/image_utils.dart' as ImageUtils;
-import 'package:three/extras/geometry_utils.dart' as GeometryUtils;
 
 final String vertexShader= """
 attribute float size;
@@ -144,8 +143,6 @@ void render() {
       attributes['size'].value[i] = 16 + 12 * Math.sin(0.1 * i + time);
     }
   }
-
-  attributes['size'].needsUpdate = true;
 
   renderer.render(scene, camera);
 }

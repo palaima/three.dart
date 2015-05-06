@@ -163,7 +163,5 @@ void render() {
     value.z += nz;
   });
 
-  attributes['displacement'].needsUpdate = true;
-
   renderer.render(scene, camera);
 }
