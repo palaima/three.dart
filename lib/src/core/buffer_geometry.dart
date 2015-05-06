@@ -180,18 +180,15 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 
         switch (type) {
           case "f":
-            this.attributes[name] = new BufferAttribute.float32(array.length, 1)
-              ..copyArray(array);
+            addAttribute(name, new BufferAttribute.float32(array.length, 1)..copyArray(array));
             break;
 
           case "c":
-            this.attributes[name] = new BufferAttribute.float32(array.length * 3, 3)
-              ..copyColorsArray(array);
+            addAttribute(name, new BufferAttribute.float32(array.length * 3, 3)..copyColorsArray(array));
             break;
 
           case "v3":
-            this.attributes[name] = new BufferAttribute.float32(array.length * 3, 3)
-              ..copyVector3sArray(array);
+            addAttribute(name, new BufferAttribute.float32(array.length * 3, 3)..copyVector3sArray(array));
             break;
 
           default:
@@ -786,7 +783,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
   }
 
   BufferGeometry merge(BufferGeometry geometry, {int offset: 0, matrix, materialIndexOffset: 0}) {
-    var keys = this.attributes.keys;
+    var keys = attributes.keys;
 
     for (var key in keys) {
       if (geometry.attributes[key] == null) continue;
