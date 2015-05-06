@@ -527,4 +527,42 @@ class Quaternion {
     _onChangeController.add(null);
     return this;
   }
+
+  /// Set the quaternion with rotation from a [Matrix4] whose upper 3x3 is pure
+  /// rotation matrix (i.e., unscaled).
+  Quaternion setFromRotation4(Matrix4 arg) {
+    var argStorage = arg._storage;
+    var m11 = argStorage[0], m12 = argStorage[4], m13 = argStorage[8],
+        m21 = argStorage[1], m22 = argStorage[5], m23 = argStorage[9],
+        m31 = argStorage[2], m32 = argStorage[6], m33 = argStorage[10];
+    var trace = m11 + m22 + m33;
+    var s;
+    if (trace > 0) {
+      s = 0.5 / Math.sqrt(trace + 1.0);
+      _storage[3] = 0.25 / s;
+      _storage[0] = (m32 - m23) * s;
+      _storage[1] = (m13 - m31) * s;
+      _storage[2] = (m21 - m12) * s;
+    } else if (m11 > m22 && m11 > m33) {
+      s = 2.0 * Math.sqrt(1.0 + m11 - m22 - m33);
+      _storage[3] = (m32 - m23) / s;
+      _storage[0] = 0.25 * s;
+      _storage[1] = (m12 + m21) / s;
+      _storage[2] = (m13 + m31) / s;
+    } else if (m22 > m33) {
+      s = 2.0 * Math.sqrt(1.0 + m22 - m11 - m33);
+      _storage[3] = (m13 - m31) / s;
+      _storage[0] = (m12 + m21) / s;
+      _storage[1] = 0.25 * s;
+      _storage[2] = (m23 + m32) / s;
+    } else {
+      s = 2.0 * Math.sqrt(1.0 + m33 - m11 - m22);
+      _storage[3] = (m21 - m12) / s;
+      _storage[0]= (m13 + m31) / s;
+      _storage[1] = (m23 + m32) / s;
+      _storage[2] = 0.25 * s;
+    }
+    _onChangeController.add(null);
+    return this;
+  }
 }
