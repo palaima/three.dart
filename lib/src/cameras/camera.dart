@@ -19,12 +19,16 @@ class Camera extends Object3D {
 
   Camera([this.near, this.far]) : super();
 
-  Vector3 getWorldDirection() =>
-      new Vector3(0.0, 0.0, -1.0)..applyQuaternion(getWorldQuaternion());
+  Vector3 getWorldDirection([Vector3 optionalTarget]) {
+    var result = optionalTarget != null ? optionalTarget : new Vector3.zero();
+    getWorldQuaternion(_q);
+    return result.setValues(0.0, 0.0, -1.0)..applyQuaternion(_q);
+  }
 
   void lookAt(Vector3 vector) {
-    var lookAt = makeViewMatrix(position, vector, up)..invert();
-    quaternion.setFromRotation(lookAt.getRotation());
+    setViewMatrix(_m, position, vector, up);
+    _m.invert();
+    quaternion.setFromRotation4(_m);
   }
 
   /// Returns clone of [this].
@@ -38,4 +42,7 @@ class Camera extends Object3D {
 
     return camera;
   }
+
+  static final Matrix4 _m = new Matrix4.zero();
+  static final Quaternion _q = new Quaternion.identity();
 }
