@@ -19,7 +19,7 @@ class SavePass implements Pass {
   bool needsSwap = false;
   bool clear = false;
 
-  OrthographicCamera camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  OrthographicCamera camera = new OrthographicCamera(-1.0, 1.0, 1.0, -1.0, 0.0, 1.0);
   Scene scene  = new Scene();
 
   Mesh quad;
