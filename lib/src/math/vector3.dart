@@ -1119,6 +1119,16 @@ class Vector3 implements Vector {
     return this;
   }
 
+  /// Set this as [arg1] + [arg2].
+  Vector3 addVectors(Vector3 arg1, Vector3 arg2) {
+    var arg1Storage = arg1._storage;
+    var arg2Storage = arg2._storage;
+    _storage[0] = arg1Storage[0] + arg2Storage[0];
+    _storage[1] = arg1Storage[1] + arg2Storage[1];
+    _storage[2] = arg1Storage[2] + arg2Storage[2];
+    return this;
+  }
+
   /// Set this as [arg1] - [arg2].
   Vector3 subVectors(Vector3 arg1, Vector3 arg2) {
     var arg1Storage = arg1._storage;
