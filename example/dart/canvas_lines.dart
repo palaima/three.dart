@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:three/three.dart';
 import 'package:three/extras/renderers/canvas_renderer.dart';
@@ -40,7 +40,7 @@ init() {
   // Not sure why yet... Need to know whether this messes things up on a Mac.
 
   // particles
-  final num Tau = Math.PI * 2;
+  final num Tau = math.PI * 2;
   material = new ParticleCanvasMaterial(color: 0xffffff, program: (CanvasRenderingContext2D context) {
     context.beginPath();
     context.arc(0, 0, 1, 0, Tau, false);
@@ -50,7 +50,7 @@ init() {
 
   geometry = new Geometry();
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
   for (int i = 0; i < 100; i++) {
     particle = new Particle(material);
     particle.position.x = rnd.nextDouble() * 2.0 - 1.0;

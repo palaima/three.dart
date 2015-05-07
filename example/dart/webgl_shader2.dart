@@ -1,6 +1,6 @@
 import 'dart:html' show window, document;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 final vertexShader = '''
 varying vec2 vUv;
@@ -146,7 +146,7 @@ void init() {
   uniforms2 = {
     'time': new Uniform.float(1.0),
     'resolution': new Uniform.vector2(0.0, 0.0),
-    'texture': new Uniform.texture(ImageUtils.loadTexture("textures/disturb.jpg"))
+    'texture': new Uniform.texture(image_utils.loadTexture("textures/disturb.jpg"))
   };
 
   uniforms2['texture'].value.wrapS = uniforms2['texture'].value.wrapT = RepeatWrapping;

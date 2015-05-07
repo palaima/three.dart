@@ -1,8 +1,9 @@
 /// Port of http://alteredqualia.com/three/examples/webgl_cubes.html
 
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
+import 'package:three/extras/three_math.dart' as three_math;
 
 // 150,000 cubes
 // 12 triangles per cube (6 quads)
@@ -88,14 +89,14 @@ void init() {
 
   //
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
 
   for (var i = 0; i < TRIANGLES; i += 12) {
     var l = [0.5, 1.5, 2.5];
 
-    var x = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[randInt(0, 3)];
-    var y = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[randInt(0, 3)];
-    var z = randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[randInt(0, 3)];
+    var x = three_math.randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[three_math.randInt(0, 3)];
+    var y = three_math.randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[three_math.randInt(0, 3)];
+    var z = three_math.randFloat(0.1 * n, 0.2 * n) * (rnd.nextBool() ? 1 : -1) * l[three_math.randInt(0, 3)];
 
     tt.setValues(rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble());
 

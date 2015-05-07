@@ -1,8 +1,8 @@
 import 'dart:html';
 import 'dart:convert' show JSON;
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/font_utils.dart' as FontUtils;
+import 'package:three/extras/font_utils.dart' as font_utils;
 
 PerspectiveCamera camera;
 Scene scene;
@@ -47,7 +47,7 @@ var labeldata = [
 ];
 
 main() async {
-  FontUtils.loadFace(JSON.decode(await HttpRequest.getString('fonts/helvetiker_regular.typeface.json')));
+  font_utils.loadFace(JSON.decode(await HttpRequest.getString('fonts/helvetiker_regular.typeface.json')));
   init();
   animate(0);
 }
@@ -82,7 +82,7 @@ void onBorderMouseDown(MouseEvent ev) {
 }
 
 void onBorderMouseMove(MouseEvent ev) {
-  screensplit = Math.max(0, Math.min(1, ev.client.x / window.innerWidth));
+  screensplit = math.max(0, math.min(1, ev.client.x / window.innerWidth));
   ev.stopPropagation();
 }
 
@@ -205,8 +205,8 @@ void render() {
   var damping = (zoomspeed.abs() > minzoomspeed ? .95 : 1.0);
 
   // Zoom out faster the further out you go
-  var zoom = Math.pow(Math.E, zoompos).clamp(minzoom, maxzoom);
-  zoompos = Math.log(zoom);
+  var zoom = math.pow(math.E, zoompos).clamp(minzoom, maxzoom);
+  zoompos = math.log(zoom);
 
   // Slow down quickly at the zoom limits
   if ((zoom == minzoom && zoomspeed < 0) || (zoom == maxzoom && zoomspeed > 0)) {
@@ -216,9 +216,9 @@ void render() {
   zoompos += zoomspeed;
   zoomspeed *= damping;
 
-  objsNormal['camera'].position.x = Math.sin(.5 * Math.PI * (mouse[0] - .5)) * zoom;
-  objsNormal['camera'].position.y = Math.sin(.25 * Math.PI * (mouse[1] - .5)) * zoom;
-  objsNormal['camera'].position.z = Math.cos(.5 * Math.PI * (mouse[0] - .5)) * zoom;
+  objsNormal['camera'].position.x = math.sin(.5 * math.PI * (mouse[0] - .5)) * zoom;
+  objsNormal['camera'].position.y = math.sin(.25 * math.PI * (mouse[1] - .5)) * zoom;
+  objsNormal['camera'].position.z = math.cos(.5 * math.PI * (mouse[0] - .5)) * zoom;
   objsNormal['camera'].lookAt(objsNormal['scene'].position);
 
   // Clone camera settings across both scenes

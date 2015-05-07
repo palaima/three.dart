@@ -3,9 +3,9 @@
  */
 
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 DivElement container;
 WebGLRenderer renderer;
@@ -30,7 +30,7 @@ void init() {
   scene.add(new DirectionalLight(0xffffff)
     ..position.setValues(0.0, 1.0, 0.0));
 
-  var map = ImageUtils.loadTexture('textures/UV_Grid_Sm.jpg');
+  var map = image_utils.loadTexture('textures/UV_Grid_Sm.jpg');
   map.wrapS = map.wrapT = RepeatWrapping;
   map.anisotropy = 16;
 
@@ -58,10 +58,10 @@ void init() {
   scene.add(new Mesh(new BoxGeometry(100.0, 100.0, 100.0, 4, 4, 4), material)
     ..position.setValues(-200.0, 0.0, 0.0));
 
-  scene.add(new Mesh(new CircleGeometry(50.0, 20, 0.0, Math.PI * 2), material)
+  scene.add(new Mesh(new CircleGeometry(50.0, 20, 0.0, math.PI * 2), material)
     ..position.setValues(0.0, 0.0, 0.0));
 
-  scene.add(new Mesh(new RingGeometry(10.0, 50.0, 20, 5, 0.0, Math.PI * 2), material)
+  scene.add(new Mesh(new RingGeometry(10.0, 50.0, 20, 5, 0.0, math.PI * 2), material)
     ..position.setValues(200.0, 0.0, 0.0));
 
   scene.add(new Mesh(new CylinderGeometry(25.0, 75.0, 100.0, 40, 5), material)
@@ -70,7 +70,7 @@ void init() {
   //
 
   var points = new List.generate(50, (i) =>
-      new Vector3(Math.sin(i * 0.2) * Math.sin(i * 0.1) * 15 + 50, 0.0, (i - 5) * 2.0));
+      new Vector3(math.sin(i * 0.2) * math.sin(i * 0.1) * 15 + 50, 0.0, (i - 5) * 2.0));
 
   scene.add(new Mesh(new LatheGeometry(points, 20), material)
     ..position.setValues(-400.0, 0.0, -200.0));
@@ -110,8 +110,8 @@ void animate(num time) {
 void render() {
   var timer = new DateTime.now().millisecondsSinceEpoch * 0.0001;
 
-  camera.position.x = Math.cos(timer) * 800.0;
-  camera.position.z = Math.sin(timer) * 800.0;
+  camera.position.x = math.cos(timer) * 800.0;
+  camera.position.z = math.sin(timer) * 800.0;
 
   camera.lookAt(scene.position);
 

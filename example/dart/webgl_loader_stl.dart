@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 var container, stats;
@@ -28,7 +28,7 @@ init() {
 
   var plane =
       new Mesh(new PlaneGeometry(40.0, 40.0), new MeshPhongMaterial(color: 0x999999, specular: 0x101010));
-  plane.rotation.x = -Math.PI / 2;
+  plane.rotation.x = -math.PI / 2;
   plane.position.y = -0.5;
   scene.add(plane);
 
@@ -45,7 +45,7 @@ init() {
     var mesh = new Mesh(geometry, material);
 
     mesh.position.setValues(0.0, -0.25, 0.6);
-    mesh.rotation.setValues(0.0, -Math.PI / 2, 0.0);
+    mesh.rotation.setValues(0.0, -math.PI / 2, 0.0);
     mesh.scale.setValues(0.5, 0.5, 0.5);
 
     mesh.castShadow = true;
@@ -65,7 +65,7 @@ init() {
     var mesh = new Mesh(geometry, material);
 
     mesh.position.setValues(0.0, -0.37, -0.6);
-    mesh.rotation.setValues(-Math.PI / 2, 0.0, 0.0);
+    mesh.rotation.setValues(-math.PI / 2, 0.0, 0.0);
     mesh.scale.setValues(2.0, 2.0, 2.0);
 
     mesh.castShadow = true;
@@ -80,7 +80,7 @@ init() {
     var mesh = new Mesh(geometry, material);
 
     mesh.position.setValues(0.136, -0.37, -0.6);
-    mesh.rotation.setValues(-Math.PI / 2, 0.3, 0.0);
+    mesh.rotation.setValues(-math.PI / 2, 0.3, 0.0);
     mesh.scale.setValues(2.0, 2.0, 2.0);
 
     mesh.castShadow = true;
@@ -173,8 +173,8 @@ render() {
 
   var timer = delta_in_sec * 0.5;
 
-  camera.position.x = Math.cos(timer) * 3;
-  camera.position.z = Math.sin(timer) * 3;
+  camera.position.x = math.cos(timer) * 3;
+  camera.position.z = math.sin(timer) * 3;
 
   camera.lookAt(cameraTarget);
 

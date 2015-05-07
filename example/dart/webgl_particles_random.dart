@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 PerspectiveCamera camera;
@@ -16,7 +16,7 @@ double mouseX = 0.0, mouseY = 0.0;
 double windowHalfX = window.innerWidth / 2;
 double windowHalfY = window.innerHeight / 2;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();

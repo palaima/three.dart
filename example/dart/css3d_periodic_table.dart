@@ -3,12 +3,12 @@
  */
 
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:three/three.dart';
 import 'package:three/extras/renderers/css3d_renderer.dart';
 import 'package:three/extras/controls.dart';
-import 'package:three/extras/tween.dart' as TWEEN;
+import 'package:three/extras/tween.dart' as tween;
 
 List table = [
   "H", "Hydrogen", "1.00794", 1, 1,
@@ -139,7 +139,7 @@ TrackballControls controls;
 List<CSS3DObject> objects = [];
 Map<String, List> targets = {'table': [], 'sphere': [], 'helix': [], 'grid': []};
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -188,13 +188,13 @@ void init() {
   // sphere
 
   for (var i = 0, l = objects.length; i < l; i ++) {
-    var phi = Math.acos(-1 + (2 * i) / l);
-    var theta = Math.sqrt(l * Math.PI) * phi;
+    var phi = math.acos(-1 + (2 * i) / l);
+    var theta = math.sqrt(l * math.PI) * phi;
 
     var object = new Object3D()
-      ..position.x = 800 * Math.cos(theta) * Math.sin(phi)
-      ..position.y = 800 * Math.sin(theta) * Math.sin(phi)
-      ..position.z = 800 * Math.cos(phi);
+      ..position.x = 800 * math.cos(theta) * math.sin(phi)
+      ..position.y = 800 * math.sin(theta) * math.sin(phi)
+      ..position.z = 800 * math.cos(phi);
 
     object.lookAt(object.position * 2.0);
 
@@ -204,12 +204,12 @@ void init() {
   // helix
 
   for (var i = 0, l = objects.length; i < l; i++) {
-    var phi = i * 0.175 + Math.PI;
+    var phi = i * 0.175 + math.PI;
 
     var object = new Object3D()
-      ..position.x = 900 * Math.sin(phi)
+      ..position.x = 900 * math.sin(phi)
       ..position.y = -(i * 8) + 450.0
-      ..position.z = 900 * Math.cos(phi);
+      ..position.z = 900 * math.cos(phi);
 
     var vector = new Vector3.zero()
       ..x = object.position.x * 2
@@ -258,24 +258,24 @@ void init() {
 }
 
 void transform(target, List targets, num duration) {
-  TWEEN.removeAll();
+  tween.removeAll();
 
   for (var i = 0; i < objects.length; i++) {
     var object = objects[i];
     var target = targets[i];
 
-    new TWEEN.Tween(object.position)
+    new tween.Tween(object.position)
       ..to({'x': target.position.x, 'y': target.position.y, 'z': target.position.z}, rnd.nextDouble() * duration + duration)
-      ..easing = TWEEN.Easing.Exponential.InOut
+      ..easing = tween.Easing.Exponential.InOut
       ..start();
 
-    new TWEEN.Tween(object.rotation)
+    new tween.Tween(object.rotation)
       ..to({'x': target.rotation.x, 'y': target.rotation.y, 'z': target.rotation.z}, rnd.nextDouble() * duration + duration)
-      ..easing = TWEEN.Easing.Exponential.InOut
+      ..easing = tween.Easing.Exponential.InOut
       ..start();
   }
 
-  new TWEEN.Tween(target)
+  new tween.Tween(target)
     ..to({}, duration * 2)
     ..onUpdate = (object, value) { render(); }
     ..start();
@@ -289,7 +289,7 @@ void onWindowResize(Event e) {
 
 void animate(num time) {
   window.requestAnimationFrame(animate);
-  TWEEN.update();
+  tween.update();
   controls.update();
 }
 

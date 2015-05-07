@@ -23,7 +23,7 @@ class FilmPass implements Pass {
   FilmPass(double noiseIntensity, double scanlinesIntensity, double scanlinesCount, bool grayscale) {
     var shader = filmShader;
 
-    uniforms = UniformsUtils.clone(shader['uniforms']);
+    uniforms = uniforms_utils.clone(shader['uniforms']);
 
     material = new ShaderMaterial(
       uniforms: uniforms,

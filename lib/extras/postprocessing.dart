@@ -1,14 +1,14 @@
 library three.postprocessing;
 
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'package:three/three.dart';
 import 'package:three/extras/shaders.dart';
 export 'package:three/extras/shaders.dart';
-import 'package:three/src/renderers/shaders/uniforms_utils.dart' as UniformsUtils;
-import 'package:three/extras/three_math.dart' as ThreeMath;
+import 'package:three/src/renderers/shaders/uniforms_utils.dart' as uniforms_utils;
+import 'package:three/extras/three_math.dart' as three_math;
 
 part 'postprocessing/adaptive_tone_mapping_pass.dart';
 part 'postprocessing/bloom_pass.dart';

@@ -44,7 +44,7 @@ class AdaptiveToneMappingPass implements Pass {
   AdaptiveToneMappingPass({this.adaptive: true, this.resolution: 256}) {
     var shader = copyShader;
 
-    copyUniforms = UniformsUtils.clone(shader['uniforms']);
+    copyUniforms = uniforms_utils.clone(shader['uniforms']);
 
     materialCopy = new ShaderMaterial(
         uniforms: copyUniforms,
@@ -56,14 +56,14 @@ class AdaptiveToneMappingPass implements Pass {
     var shader2 = luminosityShader;
 
     materialLuminance = new ShaderMaterial(
-        uniforms:UniformsUtils.clone(shader2['uniforms']),
+        uniforms:uniforms_utils.clone(shader2['uniforms']),
         vertexShader: shader2['vertexShader'],
         fragmentShader: shader2['fragmentShader'],
         blending: NoBlending);
 
     adaptLuminanceShader = {
       'define': {
-        "MIP_LEVEL_1X1" : (Math.log(resolution) / Math.log(2.0)).toStringAsFixed(1),
+        "MIP_LEVEL_1X1" : (math.log(resolution) / math.log(2.0)).toStringAsFixed(1),
       },
       'uniforms': {
         "lastLum": new Uniform.texture(),
@@ -108,7 +108,7 @@ class AdaptiveToneMappingPass implements Pass {
     var shader3 = adaptLuminanceShader;
 
     materialAdaptiveLum = new ShaderMaterial(
-      uniforms: UniformsUtils.clone(shader3['uniforms']),
+      uniforms: uniforms_utils.clone(shader3['uniforms']),
       vertexShader: shader3['vertexShader'],
       fragmentShader: shader3['fragmentShader'],
       defines: shader3['defines'],
@@ -117,7 +117,7 @@ class AdaptiveToneMappingPass implements Pass {
     var shader4 = toneMapShader;
 
     materialToneMap = new ShaderMaterial(
-      uniforms: UniformsUtils.clone(shader4['uniforms']),
+      uniforms: uniforms_utils.clone(shader4['uniforms']),
       vertexShader: shader4['vertexShader'],
       fragmentShader: shader4['fragmentShader'],
       blending: NoBlending);

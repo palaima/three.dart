@@ -2,7 +2,7 @@ import 'dart:html';
 import "dart:async";
 import 'dart:convert' show JSON;
 import 'package:three/three.dart';
-import 'package:three/extras/font_utils.dart' as FontUtils;
+import 'package:three/extras/font_utils.dart' as font_utils;
 
 Element container;
 
@@ -14,7 +14,7 @@ Mesh fontmesh;
 
 Future loadFonts() =>
     Future.wait(["fonts/helvetiker_regular.json"].map((path) => HttpRequest.getString(path).then((data) {
-  FontUtils.loadFace(JSON.decode(data));
+  font_utils.loadFace(JSON.decode(data));
 })));
 
 void main() {
@@ -38,7 +38,7 @@ void init() {
 
   scene.add(camera);
 
-  var fontshapes = FontUtils.generateShapes("Hello world");
+  var fontshapes = font_utils.generateShapes("Hello world");
 
   MeshBasicMaterial fontmaterial = new MeshBasicMaterial(color: 0xff0000, side: DoubleSide);
 

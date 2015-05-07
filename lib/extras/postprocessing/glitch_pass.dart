@@ -22,12 +22,12 @@ class GlitchPass implements Pass {
   int curF = 0;
 
   int _randX;
-  Math.Random _rnd = new Math.Random();
+  math.Random _rnd = new math.Random();
 
   GlitchPass({int dtSize: 64}) {
     var shader = digitalGlitchShader;
 
-    uniforms = UniformsUtils.clone(shader['uniforms']);
+    uniforms = uniforms_utils.clone(shader['uniforms']);
 
     uniforms["tDisp"].value = generateHeightmap(dtSize);
 
@@ -51,20 +51,20 @@ class GlitchPass implements Pass {
 
     if (curF % _randX == 0 || goWild) {
       uniforms['amount'].value = _rnd.nextDouble() / 30;
-      uniforms['angle'].value = ThreeMath.randFloat(-Math.PI, Math.PI);
-      uniforms['seed_x'].value = ThreeMath.randFloat(-1.0, 1.0);
-      uniforms['seed_y'].value = ThreeMath.randFloat(-1.0, 1.0);
-      uniforms['distortion_x'].value = ThreeMath.randFloat(0.0, 1.0);
-      uniforms['distortion_y'].value = ThreeMath.randFloat(0.0, 1.0);
+      uniforms['angle'].value = three_math.randFloat(-math.PI, math.PI);
+      uniforms['seed_x'].value = three_math.randFloat(-1.0, 1.0);
+      uniforms['seed_y'].value = three_math.randFloat(-1.0, 1.0);
+      uniforms['distortion_x'].value = three_math.randFloat(0.0, 1.0);
+      uniforms['distortion_y'].value = three_math.randFloat(0.0, 1.0);
       curF=0;
       generateTrigger();
     } else if (curF % _randX < _randX / 5) {
       uniforms['amount'].value = _rnd.nextDouble() / 90;
-      uniforms['angle'].value = ThreeMath.randFloat(-Math.PI, Math.PI);
-      uniforms['distortion_x'].value = ThreeMath.randFloat(0.0, 1.0);
-      uniforms['distortion_y'].value = ThreeMath.randFloat(0.0, 1.0);
-      uniforms['seed_x'].value = ThreeMath.randFloat(-0.3, 0.3);
-      uniforms['seed_y'].value = ThreeMath.randFloat(-0.3, 0.3);
+      uniforms['angle'].value = three_math.randFloat(-math.PI, math.PI);
+      uniforms['distortion_x'].value = three_math.randFloat(0.0, 1.0);
+      uniforms['distortion_y'].value = three_math.randFloat(0.0, 1.0);
+      uniforms['seed_x'].value = three_math.randFloat(-0.3, 0.3);
+      uniforms['seed_y'].value = three_math.randFloat(-0.3, 0.3);
     } else if (!goWild){
       uniforms['byp'].value = 1;
     }
@@ -80,7 +80,7 @@ class GlitchPass implements Pass {
   }
 
   void generateTrigger() {
-    _randX = ThreeMath.randInt(120, 240);
+    _randX = three_math.randInt(120, 240);
   }
 
   DataTexture generateHeightmap(int dtSize) {
@@ -89,7 +89,7 @@ class GlitchPass implements Pass {
     var length = dtSize * dtSize;
 
     for (var i = 0; i < length; i++) {
-      var val = ThreeMath.randFloat(0.0, 1.0);
+      var val = three_math.randFloat(0.0, 1.0);
       dataArr[i * 3 + 0] = val;
       dataArr[i * 3 + 1] = val;
       dataArr[i * 3 + 2] = val;

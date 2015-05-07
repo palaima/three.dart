@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:three/three.dart';
 
@@ -52,7 +52,7 @@ var container, stats;
 
 var camera, scene, renderer;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -181,7 +181,7 @@ void render() {
 
   object.rotation.y = time * 0.0005;
   object.material.uniforms['time'].value = time * 0.005;
-  object.material.uniforms['sineTime'].value = Math.sin(object.material.uniforms['time'].value * 0.05);
+  object.material.uniforms['sineTime'].value = math.sin(object.material.uniforms['time'].value * 0.05);
 
   renderer.render(scene, camera);
 

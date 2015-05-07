@@ -1,6 +1,6 @@
 import 'dart:html';
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 PerspectiveCamera camera;
 Scene scene;
@@ -26,7 +26,7 @@ void init() {
 
   var geometry = new BoxGeometry(200.0, 200.0, 200.0);
 
-  var texture = ImageUtils.loadTexture('textures/crate.gif')
+  var texture = image_utils.loadTexture('textures/crate.gif')
     ..anisotropy = renderer.getMaxAnisotropy();
 
   var material = new MeshBasicMaterial(map: texture);

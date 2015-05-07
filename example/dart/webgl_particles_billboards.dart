@@ -1,7 +1,7 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 PerspectiveCamera camera;
 Scene scene;
@@ -17,7 +17,7 @@ double mouseX = 0.0, mouseY = 0.0;
 double windowHalfX = window.innerWidth / 2;
 double windowHalfY = window.innerHeight / 2;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -33,7 +33,7 @@ void init() {
 
   geometry = new Geometry();
 
-  var sprite = ImageUtils.loadTexture("textures/sprites/disc.png");
+  var sprite = image_utils.loadTexture("textures/sprites/disc.png");
 
   for (var i = 0; i < 10000; i++) {
     var vertex = new Vector3.zero()

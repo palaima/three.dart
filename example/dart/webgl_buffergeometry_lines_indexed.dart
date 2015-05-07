@@ -1,6 +1,6 @@
 import 'dart:html';
 import 'dart:typed_data';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 PerspectiveCamera camera;
@@ -11,7 +11,7 @@ Line mesh;
 
 Object3D parentNode;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -35,7 +35,7 @@ void init() {
   //
 
   var iterationCount = 4;
-  var rangle = 60 * Math.PI / 180.0;
+  var rangle = 60 * math.PI / 180.0;
 
   add_vertex(v) {
     if (nextPositionsIndex == 0xffff) throw new Exception("Too many points");
@@ -58,12 +58,12 @@ void init() {
     var vTier = v * (1.0 / 3.0);
     var p1 = p0 + vTier;
 
-    var angle = Math.atan2(v.y, v.x) + rangle;
+    var angle = math.atan2(v.y, v.x) + rangle;
     var length = vTier.length;
     var p2 = p1.clone();
 
-    p2.x += Math.cos(angle) * length;
-    p2.y += Math.sin(angle) * length;
+    p2.x += math.cos(angle) * length;
+    p2.y += math.sin(angle) * length;
 
     var p3 = p0 + vTier + vTier;
 

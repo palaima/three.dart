@@ -1,14 +1,14 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
-import 'package:three/extras/scene_utils.dart' as SceneUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
+import 'package:three/extras/scene_utils.dart' as scene_utils;
 
 PerspectiveCamera camera;
 Scene scene;
 WebGLRenderer renderer;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -29,7 +29,7 @@ init() {
     ..position.setValues(0.0, 1.0, 0.0);
   scene.add(light);
 
-  var map = ImageUtils.loadTexture('textures/UV_Grid_Sm.jpg');
+  var map = image_utils.loadTexture('textures/UV_Grid_Sm.jpg');
   map.wrapS = map.wrapT = RepeatWrapping;
   map.anisotropy = 16;
 
@@ -49,7 +49,7 @@ init() {
     new Vector3(0.0, 0.0, 0.0)
   ];
 
-  object = SceneUtils.createMultiMaterialObject(new ConvexGeometry(points), materials)
+  object = scene_utils.createMultiMaterialObject(new ConvexGeometry(points), materials)
     ..position.setValues(0.0, 0.0, 0.0);
   scene.add(object);
 
@@ -66,7 +66,7 @@ init() {
     new Vector3(-50.0, -50.0, 50.0),
   ];
 
-  object = SceneUtils.createMultiMaterialObject(new ConvexGeometry(points), materials)
+  object = scene_utils.createMultiMaterialObject(new ConvexGeometry(points), materials)
     ..position.setValues(-200.0, 0.0, -200.0);
   scene.add(object);
 
@@ -74,7 +74,7 @@ init() {
 
   points = new List.generate(30, (_) => randomPointInSphere(50));
 
-  object = SceneUtils.createMultiMaterialObject(new ConvexGeometry(points), materials);
+  object = scene_utils.createMultiMaterialObject(new ConvexGeometry(points), materials);
   object.position.setValues(-200.0, 0.0, 200.0);
   scene.add(object);
 
@@ -121,8 +121,8 @@ void animate(num time) {
 void render() {
   var timer = new DateTime.now().millisecondsSinceEpoch * 0.0001;
 
-  camera.position.x = Math.cos(timer) * 800;
-  camera.position.z = Math.sin(timer) * 800;
+  camera.position.x = math.cos(timer) * 800;
+  camera.position.z = math.sin(timer) * 800;
 
   camera.lookAt(scene.position);
 

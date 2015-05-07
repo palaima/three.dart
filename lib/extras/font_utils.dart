@@ -22,7 +22,7 @@
 library FontUtils;
 
 import "package:three/three.dart";
-import "core/shape_utils.dart" as ShapeUtils;
+import "core/shape_utils.dart" as shape_utils;
 
 var _face = "helvetiker",
     _weight = "normal",
@@ -174,8 +174,8 @@ Map extractGlyphPoints(String c, Map face, num scale, num offset, path) {
             for (i2 = 1; i2 <= divisions; i2++) {
 
               var t = i2 / divisions;
-              var tx = ShapeUtils.b2(t, cpx0, cpx1, cpx);
-              var ty = ShapeUtils.b2(t, cpy0, cpy1, cpy);
+              var tx = shape_utils.b2(t, cpx0, cpx1, cpx);
+              var ty = shape_utils.b2(t, cpy0, cpy1, cpy);
             }
 
           }
@@ -205,8 +205,8 @@ Map extractGlyphPoints(String c, Map face, num scale, num offset, path) {
             for (i2 = 1; i2 <= divisions; i2++) {
 
               var t = i2 / divisions;
-              var tx = ShapeUtils.b3(t, cpx0, cpx1, cpx2, cpx);
-              var ty = ShapeUtils.b3(t, cpy0, cpy1, cpy2, cpy);
+              var tx = shape_utils.b3(t, cpx0, cpx1, cpx2, cpx);
+              var ty = shape_utils.b3(t, cpy0, cpy1, cpy2, cpy);
 
             }
 

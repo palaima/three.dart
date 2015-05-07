@@ -24,7 +24,7 @@ class ShaderPass implements Pass {
   Mesh quad;
 
   ShaderPass(Map shader, {this.textureID: 'tDiffuse'}) {
-    uniforms = UniformsUtils.clone(shader['uniforms']);
+    uniforms = uniforms_utils.clone(shader['uniforms']);
 
     material = new ShaderMaterial(
         defines: shader['defines'] != null ? shader['defines'] : {},

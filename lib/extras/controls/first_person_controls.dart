@@ -33,7 +33,7 @@ class FirstPersonControls {
 
   bool constrainVertical = false;
   num verticalMin = 0;
-  num verticalMax = Math.PI;
+  num verticalMax = math.PI;
 
   num autoSpeedFactor = 0.0;
 
@@ -225,7 +225,7 @@ class FirstPersonControls {
     } else {
 
       if (this.heightSpeed) {
-        var y = ThreeMath.clamp(this.object.position.y, this.heightMin, this.heightMax);
+        var y = three_math.clamp(this.object.position.y, this.heightMin, this.heightMax);
         var heightDelta = y - this.heightMin;
 
         this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
@@ -256,42 +256,42 @@ class FirstPersonControls {
       this.lon += this.mouseX * actualLookSpeed;
       if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed; // * this.invertVertical?-1:1;
 
-      this.lat = Math.max(-85, Math.min(85, this.lat));
-      this.phi = (90 - this.lat) * Math.PI / 180;
-      this.theta = this.lon * Math.PI / 180;
+      this.lat = math.max(-85, math.min(85, this.lat));
+      this.phi = (90 - this.lat) * math.PI / 180;
+      this.theta = this.lon * math.PI / 180;
 
       var targetPosition = this.target,
           position = this.object.position;
 
-      targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta);
-      targetPosition.y = position.y + 100 * Math.cos(this.phi);
-      targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
+      targetPosition.x = position.x + 100 * math.sin(this.phi) * math.cos(this.theta);
+      targetPosition.y = position.y + 100 * math.cos(this.phi);
+      targetPosition.z = position.z + 100 * math.sin(this.phi) * math.sin(this.theta);
     }
 
     var verticalLookRatio = 1;
 
     if (this.constrainVertical) {
-      verticalLookRatio = Math.PI / (this.verticalMax - this.verticalMin);
+      verticalLookRatio = math.PI / (this.verticalMax - this.verticalMin);
     }
 
     this.lon += this.mouseX * actualLookSpeed;
     if (this.lookVertical) this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio;
 
-    this.lat = Math.max(-85, Math.min(85, this.lat));
-    this.phi = (90 - this.lat) * Math.PI / 180;
+    this.lat = math.max(-85, math.min(85, this.lat));
+    this.phi = (90 - this.lat) * math.PI / 180;
 
-    this.theta = this.lon * Math.PI / 180;
+    this.theta = this.lon * math.PI / 180;
 
     if (this.constrainVertical) {
-      this.phi = ThreeMath.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax);
+      this.phi = three_math.mapLinear(this.phi, 0, math.PI, this.verticalMin, this.verticalMax);
     }
 
     var targetPosition = this.target,
         position = this.object.position;
 
-    targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta);
-    targetPosition.y = position.y + 100 * Math.cos(this.phi);
-    targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta);
+    targetPosition.x = position.x + 100 * math.sin(this.phi) * math.cos(this.theta);
+    targetPosition.y = position.y + 100 * math.cos(this.phi);
+    targetPosition.z = position.z + 100 * math.sin(this.phi) * math.sin(this.theta);
 
     this.object.lookAt(targetPosition);
   }

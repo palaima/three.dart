@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:three/three.dart';
 import 'package:three/extras/renderers/canvas_renderer.dart';
@@ -55,7 +55,7 @@ void init() {
 
     line = new Line(geometry, new LineBasicMaterial(color: 0x000000, opacity: 0.2));
     line.position.x = (i * 50.0) - 500.0;
-    line.rotation.y = 90.0 * Math.PI / 180.0;
+    line.rotation.y = 90.0 * math.PI / 180.0;
     scene.add(line);
 
   }
@@ -65,7 +65,7 @@ void init() {
   geometry = new BoxGeometry(50.0, 50.0, 50.0);
   material = new MeshLambertMaterial(color: 0xffffff, overdraw: 1.0);
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
 
   for (int i = 0; i < 100; i++) {
 
@@ -136,8 +136,8 @@ void render() {
 
   var timer = new DateTime.now().millisecondsSinceEpoch * 0.0001;
 
-  camera.position.x = Math.cos(timer) * 200.0;
-  camera.position.z = Math.sin(timer) * 200.0;
+  camera.position.x = math.cos(timer) * 200.0;
+  camera.position.z = math.sin(timer) * 200.0;
   camera.lookAt(scene.position);
 
   renderer.render(scene, camera);

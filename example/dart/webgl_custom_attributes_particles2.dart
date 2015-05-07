@@ -1,7 +1,7 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 final String vertexShader= """
 attribute float size;
@@ -66,7 +66,7 @@ void init() {
   uniforms = {
     'amplitude': new Uniform.float(1.0),
     'color': new Uniform.color(0xffffff),
-    'texture': new Uniform.texture(ImageUtils.loadTexture("textures/sprites/disc.png"))
+    'texture': new Uniform.texture(image_utils.loadTexture("textures/sprites/disc.png"))
   };
 
   uniforms['texture'].value.wrapS = uniforms['texture'].value.wrapT = RepeatWrapping;
@@ -140,7 +140,7 @@ void render() {
 
   for(var i = 0; i < attributes['size'].value.length; i ++) {
     if (i < vc1) {
-      attributes['size'].value[i] = 16 + 12 * Math.sin(0.1 * i + time);
+      attributes['size'].value[i] = 16 + 12 * math.sin(0.1 * i + time);
     }
   }
 

@@ -159,7 +159,7 @@ class OrthographicTrackballControls {
 
     } else {
 
-      mouseOnBall.z = Math.sqrt(1.0 - length * length);
+      mouseOnBall.z = math.sqrt(1.0 - length * length);
 
     }
 
@@ -175,7 +175,7 @@ class OrthographicTrackballControls {
 
   rotateCamera() {
 
-    var angle = Math.acos(_rotateStart.dot(_rotateEnd) / _rotateStart.length / _rotateEnd.length);
+    var angle = math.acos(_rotateStart.dot(_rotateEnd) / _rotateStart.length / _rotateEnd.length);
 
     if (!angle.isNaN && angle != 0) {
 

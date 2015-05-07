@@ -12,12 +12,12 @@
  */
 library ThreeMath;
 
-import "dart:math" as Math;
+import "dart:math" as math;
 
-const double _degreeToRadiansFactor = Math.PI / 180;
-const double _radianToDegreesFactor = 180 / Math.PI;
+const double _degreeToRadiansFactor = math.PI / 180;
+const double _radianToDegreesFactor = 180 / math.PI;
 
-Math.Random _rnd = new Math.Random();
+math.Random _rnd = new math.Random();
 
 String generateUUID() {
   var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');

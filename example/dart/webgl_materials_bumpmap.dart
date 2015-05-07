@@ -1,6 +1,6 @@
 import 'dart:html';
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 /*
  * TODO Investigate why skin is so dark...
@@ -99,7 +99,7 @@ void init() {
     ..color.setHSL(0.08, 1.0, 0.825);
   scene.add(directionalLight2);
 
-  var mapHeight = ImageUtils.loadTexture('obj/leeperrysmith/Infinite-Level_02_Disp_NoSmoothUV-4096.jpg');
+  var mapHeight = image_utils.loadTexture('obj/leeperrysmith/Infinite-Level_02_Disp_NoSmoothUV-4096.jpg');
 
   mapHeight.anisotropy = 4;
   mapHeight.repeat.setValues(0.998, 0.998);

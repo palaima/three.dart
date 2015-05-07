@@ -27,7 +27,7 @@ class SavePass implements Pass {
   SavePass(this.renderTarget) {
     var shader = copyShader;
 
-    uniforms = UniformsUtils.clone(shader['uniforms']);
+    uniforms = uniforms_utils.clone(shader['uniforms']);
 
     material = new ShaderMaterial(
         uniforms: this.uniforms,

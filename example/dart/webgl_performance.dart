@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 Element container;
@@ -41,7 +41,7 @@ void init() {
 
     geometry.computeVertexNormals();
 
-    var rnd = new Math.Random();
+    var rnd = new math.Random();
 
     for (int i = 0; i < 5000; i++) {
 
@@ -50,8 +50,8 @@ void init() {
       mesh.position.x = rnd.nextDouble() * 8000 - 4000;
       mesh.position.y = rnd.nextDouble() * 8000 - 4000;
       mesh.position.z = rnd.nextDouble() * 8000 - 4000;
-      mesh.rotation.x = rnd.nextDouble() * 360 * (Math.PI / 180);
-      mesh.rotation.y = rnd.nextDouble() * 360 * (Math.PI / 180);
+      mesh.rotation.x = rnd.nextDouble() * 360 * (math.PI / 180);
+      mesh.rotation.y = rnd.nextDouble() * 360 * (math.PI / 180);
       mesh.scale.x = mesh.scale.y = mesh.scale.z = rnd.nextDouble() * 50 + 100;
 
       objects.add(mesh);

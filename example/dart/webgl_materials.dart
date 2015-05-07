@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 var container, stats;
@@ -76,7 +76,7 @@ init() {
 
   var sphere, material;
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
 
   for ( var i = 0, l = materials.length; i < l; i ++ ) {
 
@@ -191,8 +191,8 @@ render() {
 
   var timer = 0.0001 * new DateTime.now().millisecondsSinceEpoch;
 
-  camera.position.x = Math.cos( timer ) * 1000;
-  camera.position.z = Math.sin( timer ) * 1000;
+  camera.position.x = math.cos( timer ) * 1000;
+  camera.position.z = math.sin( timer ) * 1000;
 
   camera.lookAt( scene.position );
 
@@ -205,12 +205,12 @@ render() {
 
   }
 
-  materials[ materials.length - 2 ].emissive.setHSL( 0.54, 1.0, 0.35 * ( 0.5 + 0.5 * Math.sin( 35 * timer ) ) );
-  materials[ materials.length - 3 ].emissive.setHSL( 0.04, 1.0, 0.35 * ( 0.5 + 0.5 * Math.cos( 35 * timer ) ) );
+  materials[ materials.length - 2 ].emissive.setHSL( 0.54, 1.0, 0.35 * ( 0.5 + 0.5 * math.sin( 35 * timer ) ) );
+  materials[ materials.length - 3 ].emissive.setHSL( 0.04, 1.0, 0.35 * ( 0.5 + 0.5 * math.cos( 35 * timer ) ) );
 
-  particleLight.position.x = Math.sin( timer * 7 ) * 300;
-  particleLight.position.y = Math.cos( timer * 5 ) * 400;
-  particleLight.position.z = Math.cos( timer * 3 ) * 300;
+  particleLight.position.x = math.sin( timer * 7 ) * 300;
+  particleLight.position.y = math.cos( timer * 5 ) * 400;
+  particleLight.position.z = math.cos( timer * 3 ) * 300;
 
   renderer.render( scene, camera );
 

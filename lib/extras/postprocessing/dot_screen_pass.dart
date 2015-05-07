@@ -22,7 +22,7 @@ class DotScreenPass implements Pass {
   DotScreenPass(Vector2 center, double angle, double scale) {
     var shader = dotScreenShader;
 
-    uniforms = UniformsUtils.clone(shader['uniforms']);
+    uniforms = uniforms_utils.clone(shader['uniforms']);
 
     if (center != null) uniforms['center'].value.setFrom(center);
     if (angle != null) uniforms['angle'].value = angle;

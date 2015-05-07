@@ -1,8 +1,8 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'dart:convert' show JSON;
 import 'package:three/three.dart';
-import 'package:three/extras/font_utils.dart' as FontUtils;
+import 'package:three/extras/font_utils.dart' as font_utils;
 
 final String vertexShader = '''
 uniform float amplitude;
@@ -56,10 +56,10 @@ String font = 'helvetiker'; // helvetiker, optimer, gentilis, droid sans, droid 
 String weight = 'bold'; // normal bold
 String style = 'normal'; // normal italic
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 main() async {
-  FontUtils.loadFace(JSON.decode(await HttpRequest.getString('fonts/helvetiker_bold.typeface.json')));
+  font_utils.loadFace(JSON.decode(await HttpRequest.getString('fonts/helvetiker_bold.typeface.json')));
   init();
   animate(0);
 }
@@ -150,7 +150,7 @@ void render() {
 
   object.rotation.y = 0.25 * time;
 
-  uniforms['amplitude'].value = 0.5 * Math.sin(0.5 * time);
+  uniforms['amplitude'].value = 0.5 * math.sin(0.5 * time);
   uniforms['color'].value.offsetHSL(0.0005, 0.0, 0.0);
 
   attributes['displacement'].value.forEach((value) {

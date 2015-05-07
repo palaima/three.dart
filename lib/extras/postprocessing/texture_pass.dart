@@ -22,7 +22,7 @@ class TexturePass implements Pass {
   TexturePass(Texture texture, {double opacity: 1.0}) {
     var shader = copyShader;
 
-    uniforms = UniformsUtils.clone(shader['uniforms']);
+    uniforms = uniforms_utils.clone(shader['uniforms']);
 
     uniforms['opacity'].value = opacity;
     uniforms['tDiffuse'].value = texture;

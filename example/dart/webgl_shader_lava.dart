@@ -1,8 +1,7 @@
 import 'dart:html' show window, document;
 import 'package:three/three.dart';
 import 'package:three/extras/postprocessing.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
-import 'package:three/extras/shaders.dart' as Shaders;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 final fragmentShader = '''
 uniform float time;
@@ -88,8 +87,8 @@ void init() {
     'time': new Uniform.float(1.0),
     'resolution': new Uniform.vector2(0.0, 0.0),
     'uvScale': new Uniform.vector2(3.0, 1.0),
-    'texture1': new Uniform.texture(ImageUtils.loadTexture('textures/lava/cloud.png')),
-    'texture2': new Uniform.texture(ImageUtils.loadTexture('textures/lava/lavatile.jpg'))
+    'texture1': new Uniform.texture(image_utils.loadTexture('textures/lava/cloud.png')),
+    'texture2': new Uniform.texture(image_utils.loadTexture('textures/lava/lavatile.jpg'))
   };
 
   uniforms['texture1'].value.wrapS = uniforms['texture1'].value.wrapT = RepeatWrapping;

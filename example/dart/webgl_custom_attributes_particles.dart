@@ -1,7 +1,7 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 final vertexShader = r'''
 uniform float amplitude;
@@ -71,7 +71,7 @@ void init() {
   uniforms = {
     "amplitude": amplitude,
     "color": color,
-    "texture": new Uniform.texture(ImageUtils.loadTexture("textures/sprites/spark1.png"))
+    "texture": new Uniform.texture(image_utils.loadTexture("textures/sprites/spark1.png"))
   };
 
   var shaderMaterial = new ShaderMaterial(
@@ -86,7 +86,7 @@ void init() {
   var radius = 200.0;
   var geometry = new Geometry();
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
 
   for (var i = 0; i < 100000; i++) {
     var vertex = new Vector3.zero()
@@ -143,7 +143,7 @@ void render() {
   sphere.rotation.z = 0.01 * time;
 
   for (var i = 0; i < size.value.length; i++) {
-    size.value[i] = 14 + 13 * Math.sin(0.1 * i + time);
+    size.value[i] = 14 + 13 * math.sin(0.1 * i + time);
   }
 
   renderer.render(scene, camera);

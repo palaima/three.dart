@@ -47,7 +47,7 @@ class BokehPass implements Pass {
 
     var shader = bokehShader;
 
-    var bokehUniforms = UniformsUtils.clone(shader['uniforms']);
+    var bokehUniforms = uniforms_utils.clone(shader['uniforms']);
 
     bokehUniforms['tDepth'].value = this.renderTargetDepth;
 

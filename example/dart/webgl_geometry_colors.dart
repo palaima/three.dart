@@ -1,7 +1,7 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/scene_utils.dart' as SceneUtils;
+import 'package:three/extras/scene_utils.dart' as scene_utils;
 
 DivElement container;
 
@@ -55,17 +55,17 @@ void init() {
 
   scene.add(new Mesh(shadowGeo, shadowMaterial)
     ..position.y = -250.0
-    ..rotation.x = -Math.PI / 2);
+    ..rotation.x = -math.PI / 2);
 
   scene.add(new Mesh(shadowGeo, shadowMaterial)
     ..position.y = -250.0
     ..position.x = -400.0
-    ..rotation.x = -Math.PI / 2);
+    ..rotation.x = -math.PI / 2);
 
   scene.add(new Mesh(shadowGeo, shadowMaterial)
     ..position.y = -250.0
     ..position.x = 400.0
-    ..rotation.x = - Math.PI / 2);
+    ..rotation.x = - math.PI / 2);
 
   var radius = 200.0;
 
@@ -93,15 +93,15 @@ void init() {
       [new MeshLambertMaterial(color: 0xffffff, shading: FlatShading, vertexColors: VertexColors),
        new MeshBasicMaterial(color: 0x000000, shading: FlatShading, wireframe: true, transparent: true)];
 
-  scene.add(SceneUtils.createMultiMaterialObject(geometry, materials)
+  scene.add(scene_utils.createMultiMaterialObject(geometry, materials)
     ..position.x = -400.0
     ..rotation.x = -1.87);
 
-  scene.add(SceneUtils.createMultiMaterialObject(geometry2, materials)
+  scene.add(scene_utils.createMultiMaterialObject(geometry2, materials)
     ..position.x = 400.0
     ..rotation.x = 0.0);
 
-  scene.add(SceneUtils.createMultiMaterialObject(geometry3, materials)
+  scene.add(scene_utils.createMultiMaterialObject(geometry3, materials)
     ..position.x = 0.0
     ..rotation.x = 0.0);
 

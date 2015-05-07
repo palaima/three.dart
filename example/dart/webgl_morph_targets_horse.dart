@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 Element container;
@@ -81,8 +81,8 @@ render() {
 
   theta += 0.1;
 
-  camera.position.x = radius * Math.sin(degToRad(theta));
-  camera.position.z = radius * Math.cos(degToRad(theta));
+  camera.position.x = radius * math.sin(degToRad(theta));
+  camera.position.z = radius * math.cos(degToRad(theta));
 
   camera.lookAt(cameraTarget);
 

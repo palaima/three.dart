@@ -1,7 +1,7 @@
 library ImageUtils;
 
 import "dart:html";
-import "dart:math" as Math;
+import "dart:math" as math;
 import "dart:typed_data";
 
 import "package:three/three.dart";
@@ -223,7 +223,7 @@ Map parseDDS(ByteBuffer buffer, bool loadMipmaps) {
   dds["mipmapCount"] = 1;
 
   if (((header[off_flags] & DDSD_MIPMAPCOUNT) != 0) && (loadMipmaps != false)) {
-    dds["mipmapCount"] = Math.max(1, header[off_mipmapCount]);
+    dds["mipmapCount"] = math.max(1, header[off_mipmapCount]);
   }
 
   dds["width"] = header[off_width];
@@ -238,7 +238,7 @@ Map parseDDS(ByteBuffer buffer, bool loadMipmaps) {
 
   for (var i = 0; i < dds["mipmapCount"]; i++) {
 
-    int dataLength = Math.max(4, width) ~/ 4 * Math.max(4, height) ~/ 4 * blockBytes;
+    int dataLength = math.max(4, width) ~/ 4 * math.max(4, height) ~/ 4 * blockBytes;
     var byteArray = new Uint8List.view(buffer, dataOffset, dataLength);
 
     var mipmap = {
@@ -250,8 +250,8 @@ Map parseDDS(ByteBuffer buffer, bool loadMipmaps) {
 
     dataOffset += dataLength;
 
-    width = Math.max(width * 0.5, 1);
-    height = Math.max(height * 0.5, 1);
+    width = math.max(width * 0.5, 1);
+    height = math.max(height * 0.5, 1);
 
   }
 
@@ -277,7 +277,7 @@ CanvasElement getNormalMap(image, int depth) {
 
   var normalize = (a) {
 
-    var l = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+    var l = math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
     return [a[0] / l, a[1] / l, a[2] / l];
 
   };

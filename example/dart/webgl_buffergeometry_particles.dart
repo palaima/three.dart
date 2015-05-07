@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 Element container;
@@ -10,7 +10,7 @@ WebGLRenderer renderer;
 
 var particleSystem;
 
-var rnd = new Math.Random();
+var rnd = new math.Random();
 
 void main() {
   init();
@@ -30,11 +30,9 @@ void init() {
   var positions = new BufferAttribute.float32(particles * 3, 3);
   var colors = new BufferAttribute.float32(particles * 3, 3);
 
-  var geometry = new BufferGeometry();
-  geometry.attributes = {
-    "position": positions,
-    "color": colors
-  };
+  var geometry = new BufferGeometry()
+    ..addAttribute('position', positions)
+    ..addAttribute('color', colors);
 
   var color = new Color.white();
 

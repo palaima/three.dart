@@ -14,7 +14,7 @@ class TrackballControls {
   Object3D object;
   dynamic domElement;
   bool enabled;
-  Math.Rectangle screen;
+  math.Rectangle screen;
   num rotateSpeed, zoomSpeed, panSpeed;
   bool noRotate, noZoom, noPan, noRoll;
   bool staticMoving;
@@ -54,7 +54,7 @@ class TrackballControls {
 
     enabled = true;
 
-    screen = new Math.Rectangle(0, 0, 0, 0);
+    screen = new math.Rectangle(0, 0, 0, 0);
 
     rotateSpeed = 1.0;
     zoomSpeed = 1.2;
@@ -118,7 +118,7 @@ class TrackballControls {
   // methods
   handleResize() {
     if (domElement == document) {
-      screen = new Math.Rectangle(0, 0, window.innerWidth, window.innerHeight);
+      screen = new math.Rectangle(0, 0, window.innerWidth, window.innerHeight);
     } else {
       screen = domElement.getBoundingClientRect();
     }
@@ -138,9 +138,9 @@ class TrackballControls {
 
     if (noRoll) {
 
-      if (length < Math.SQRT1_2) {
+      if (length < math.SQRT1_2) {
 
-        mouseOnBall.z = Math.sqrt(1.0 - length * length);
+        mouseOnBall.z = math.sqrt(1.0 - length * length);
 
       } else {
 
@@ -154,7 +154,7 @@ class TrackballControls {
 
     } else {
 
-      mouseOnBall.z = Math.sqrt(1.0 - length * length);
+      mouseOnBall.z = math.sqrt(1.0 - length * length);
 
     }
 
@@ -170,7 +170,7 @@ class TrackballControls {
 
   rotateCamera() {
 
-    var angle = Math.acos(_rotateStart.dot(_rotateEnd) / _rotateStart.length / _rotateEnd.length);
+    var angle = math.acos(_rotateStart.dot(_rotateEnd) / _rotateStart.length / _rotateEnd.length);
 
     if (!angle.isNaN && angle != 0) {
 
@@ -491,7 +491,7 @@ class TrackballControls {
         _state = State.TOUCH_ZOOM_PAN;
         var dx = event.touches[0].page.x - event.touches[1].page.x;
         var dy = event.touches[0].page.y - event.touches[1].page.y;
-        _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt(dx * dx + dy * dy);
+        _touchZoomDistanceEnd = _touchZoomDistanceStart = math.sqrt(dx * dx + dy * dy);
 
         var x = (event.touches[0].page.x + event.touches[1].page.x) / 2;
         var y = (event.touches[0].page.y + event.touches[1].page.y) / 2;
@@ -522,7 +522,7 @@ class TrackballControls {
       case 2:
         var dx = event.touches[0].page.x - event.touches[1].page.x;
         var dy = event.touches[0].page.y - event.touches[1].page.y;
-        _touchZoomDistanceEnd = Math.sqrt(dx * dx + dy * dy);
+        _touchZoomDistanceEnd = math.sqrt(dx * dx + dy * dy);
 
         var x = (event.touches[0].page.x + event.touches[1].page.x) / 2;
         var y = (event.touches[0].page.y + event.touches[1].page.y) / 2;

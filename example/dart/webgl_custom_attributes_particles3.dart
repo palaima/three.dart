@@ -1,7 +1,7 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 final String vertexShader= """
 attribute float size;
@@ -54,7 +54,7 @@ Map<String, Attribute> attributes;
 
 int vc1;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -75,7 +75,7 @@ void init() {
   uniforms = {
     'amplitude': new Uniform.float(1.0),
     'color': new Uniform.color(0xffffff),
-    'texture': new Uniform.texture(ImageUtils.loadTexture("textures/sprites/ball.png")),
+    'texture': new Uniform.texture(image_utils.loadTexture("textures/sprites/ball.png")),
   };
 
   uniforms['texture'].value.wrapS = uniforms['texture'].value.wrapT = RepeatWrapping;
@@ -127,10 +127,10 @@ void init() {
 
   // side 2
 
-  addGeo(geometry2,  110,  110, 0, Math.PI/2);
-  addGeo(geometry2,  110, -110, 0, Math.PI/2);
-  addGeo(geometry2, -110,  110, 0, Math.PI/2);
-  addGeo(geometry2, -110, -110, 0, Math.PI/2);
+  addGeo(geometry2,  110,  110, 0, math.PI/2);
+  addGeo(geometry2,  110, -110, 0, math.PI/2);
+  addGeo(geometry2, -110,  110, 0, math.PI/2);
+  addGeo(geometry2, -110, -110, 0, math.PI/2);
 
   // corner edges
 
@@ -197,7 +197,7 @@ void render() {
 
   for(var i = 0; i < attributes['size'].value.length; i ++) {
     if (i < vc1) {
-      attributes['size'].value[i] = Math.max(0.0, 26.0 + 32.0 * Math.sin(0.1 * i + 0.6 * time));
+      attributes['size'].value[i] = math.max(0.0, 26.0 + 32.0 * math.sin(0.1 * i + 0.6 * time));
     }
   }
 

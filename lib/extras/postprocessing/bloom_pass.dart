@@ -38,7 +38,7 @@ class BloomPass implements Pass {
 
     var shader = copyShader;
 
-    copyUniforms = UniformsUtils.clone(shader['uniforms']);
+    copyUniforms = uniforms_utils.clone(shader['uniforms']);
 
     copyUniforms['opacity'].value = strength;
 
@@ -53,7 +53,7 @@ class BloomPass implements Pass {
 
     var shader2 = convolutionShader;
 
-    convolutionUniforms = UniformsUtils.clone(shader2['uniforms']);
+    convolutionUniforms = uniforms_utils.clone(shader2['uniforms']);
 
     convolutionUniforms['uImageIncrement'].value = BloomPass.blurX;
     convolutionUniforms['cKernel'].value = shader2['buildKernel'](sigma);

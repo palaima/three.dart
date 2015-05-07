@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:three/three.dart';
 import 'package:three/extras/renderers/canvas_renderer.dart';
@@ -43,7 +43,7 @@ void init() {
 
   List materials = [];
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
   for (int i = 0; i < 6; i++) {
     materials.add(new MeshBasicMaterial(color: rnd.nextDouble() * 0xffffff));
   }
@@ -59,8 +59,8 @@ void init() {
     mesh.position.x = rnd.nextInt(2000).toDouble() - 1000.0;
     mesh.position.y = rnd.nextInt(2000).toDouble() - 1000.0;
     mesh.position.z = rnd.nextInt(2000).toDouble() - 1000.0;
-    mesh.rotation.x = rnd.nextInt(360).toDouble() * (Math.PI / 180.0);
-    mesh.rotation.y = rnd.nextInt(360).toDouble() * (Math.PI / 180.0);
+    mesh.rotation.x = rnd.nextInt(360).toDouble() * (math.PI / 180.0);
+    mesh.rotation.y = rnd.nextInt(360).toDouble() * (math.PI / 180.0);
     mesh.matrixAutoUpdate = false;
     mesh.updateMatrix();
     group.add(mesh);
@@ -96,7 +96,7 @@ void render() {
 
   //TODO describe how this oscillation affects the example
   num t = new DateTime.now().millisecondsSinceEpoch;
-  var oscillate = (num rate) => Math.sin(t * rate) * 0.5;
+  var oscillate = (num rate) => math.sin(t * rate) * 0.5;
   group.rotation.x = oscillate(0.0007);
   group.rotation.y = oscillate(0.0003);
   group.rotation.z = oscillate(0.0002);

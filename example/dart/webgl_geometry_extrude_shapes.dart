@@ -3,8 +3,9 @@
  */
 
 import 'dart:html' hide Path;
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
+import 'package:three/extras/three_math.dart' as three_math;
 import 'package:three/extras/controls.dart';
 
 PerspectiveCamera camera;
@@ -55,8 +56,8 @@ void init() {
   pts = []; var count = 3;
   for (var i = 0; i < count; i++) {
     var l = 20;
-    var a = 2 * i / count * Math.PI;
-    pts.add(new Vector2 (Math.cos(a) * l, Math.sin(a) * l));
+    var a = 2 * i / count * math.PI;
+    pts.add(new Vector2 (math.cos(a) * l, math.sin(a) * l));
   }
 
   shape = new Shape(pts);
@@ -67,7 +68,7 @@ void init() {
   //
   var randomPoints = [];
   for (var i = 0; i < 10; i ++) {
-    randomPoints.add(new Vector3((i - 4.5) * 50, randFloat(-50.0, 50.0), randFloat(-50.0, 50.0)));
+    randomPoints.add(new Vector3((i - 4.5) * 50, three_math.randFloat(-50.0, 50.0), three_math.randFloat(-50.0, 50.0)));
   }
   var randomSpline =  new SplineCurve3(randomPoints);
 
@@ -76,8 +77,8 @@ void init() {
   pts = []; var numPts = 5;
   for (var i = 0; i < numPts * 2; i++) {
     var l = i % 2 == 1 ? 10 : 20;
-    var a = i / numPts * Math.PI;
-    pts.add(new Vector2(Math.cos(a) * l, Math.sin(a) * l));
+    var a = i / numPts * math.PI;
+    pts.add(new Vector2(math.cos(a) * l, math.sin(a) * l));
   }
 
   shape = new Shape(pts);

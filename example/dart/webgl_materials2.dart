@@ -1,7 +1,7 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 WebGLRenderer renderer;
 PerspectiveCamera camera;
@@ -13,7 +13,7 @@ PointLight pointLight;
 
 Scene scene;
 
-var rnd = new Math.Random().nextDouble;
+var rnd = new math.Random().nextDouble;
 
 void main() {
   init();
@@ -26,11 +26,11 @@ void init() {
 
   scene = new Scene();
 
-  var imgTexture2 = ImageUtils.loadTexture("textures/planets/moon_1024.jpg");
+  var imgTexture2 = image_utils.loadTexture("textures/planets/moon_1024.jpg");
   imgTexture2.wrapS = imgTexture2.wrapT = RepeatWrapping;
   imgTexture2.anisotropy = 16;
 
-  var imgTexture = ImageUtils.loadTexture("textures/lava/lavatile.jpg");
+  var imgTexture = image_utils.loadTexture("textures/lava/lavatile.jpg");
   imgTexture.repeat.setValues(4.0, 2.0);
   imgTexture.wrapS = imgTexture.wrapT = RepeatWrapping;
   imgTexture.anisotropy = 16;
@@ -122,16 +122,16 @@ void animate(num time) {
 void render() {
   var timer = new DateTime.now().millisecondsSinceEpoch * 0.00025;
 
-  camera.position.x = Math.cos(timer) * 800;
-  camera.position.z = Math.sin(timer) * 800;
+  camera.position.x = math.cos(timer) * 800;
+  camera.position.z = math.sin(timer) * 800;
 
   camera.lookAt(scene.position);
 
   objects.forEach((object) => object.rotation.y += 0.005);
 
-  particleLight.position.x = Math.sin(timer * 7) * 300;
-  particleLight.position.y = Math.cos(timer * 5) * 400;
-  particleLight.position.z = Math.cos(timer * 3) * 300;
+  particleLight.position.x = math.sin(timer * 7) * 300;
+  particleLight.position.y = math.cos(timer * 5) * 400;
+  particleLight.position.z = math.cos(timer * 3) * 300;
 
   renderer.render(scene, camera);
 }

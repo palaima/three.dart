@@ -1,5 +1,5 @@
 import 'dart:html' show window, document;
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 final fragmentShaderScreen = '''
@@ -132,7 +132,7 @@ void init() {
         ..position.y = (j - (n - 1) / 2) * 20.0
         ..position.z = 0.0
 
-        ..rotation.y = -Math.PI / 2;
+        ..rotation.y = -math.PI / 2;
 
       scene.add(mesh);
     }
@@ -165,7 +165,7 @@ void render() {
 
   if (zmesh1 != null && zmesh2 != null) {
     zmesh1.rotation.y = -time;
-    zmesh2.rotation.y = -time + Math.PI / 2;
+    zmesh2.rotation.y = -time + math.PI / 2;
   }
 
   if (material.uniforms['time'].value > 1 || material.uniforms['time'].value < 0) {

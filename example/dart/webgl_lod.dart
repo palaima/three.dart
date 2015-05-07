@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/controls.dart';
 
@@ -12,7 +12,7 @@ WebGLRenderer renderer;
 FlyControls controls;
 Clock clock = new Clock();
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -29,7 +29,7 @@ void init() {
 
   controls = new FlyControls(camera)
     ..movementSpeed = 1000.0
-    ..rollSpeed = Math.PI / 10;
+    ..rollSpeed = math.PI / 10;
 
   scene = new Scene()
     ..fog = new FogLinear(0x000000, 1.0, 15000.0)

@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/controls.dart';
 
@@ -62,7 +62,7 @@ void init() {
   geometry = new CylinderGeometry(0.0, 10.0, 30.0, 4, 1);
   material = new MeshLambertMaterial(color: 0xffffff, shading: FlatShading);
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
 
   for (var i = 0; i < 500; i++) {
 

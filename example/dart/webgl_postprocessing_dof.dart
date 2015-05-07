@@ -1,7 +1,7 @@
 import 'dart:html' show window, document;
 import 'package:three/three.dart';
 import 'package:three/extras/postprocessing.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 PerspectiveCamera camera;
 Scene scene;
@@ -46,7 +46,7 @@ void init() {
   var urls = new List.generate(6, (i) =>
       'textures/cube/SwedishRoyalCastle/${['px', 'nx', 'py', 'ny', 'pz', 'nz'][i]}.jpg');
 
-  var textureCube = ImageUtils.loadTextureCube(urls);
+  var textureCube = image_utils.loadTextureCube(urls);
 
   var cubeMaterial = new MeshBasicMaterial(color: 0xff1100, envMap: textureCube, shading: FlatShading);
 

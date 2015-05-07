@@ -1,7 +1,7 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 PerspectiveCamera camera;
 Scene scene;
@@ -17,7 +17,7 @@ double mouseX = 0.0, mouseY = 0.0;
 double windowHalfX = window.innerWidth / 2;
 double windowHalfY = window.innerHeight / 2;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -36,11 +36,11 @@ void init() {
 
   geometry = new Geometry();
 
-  var sprite1 = ImageUtils.loadTexture('textures/sprites/snowflake1.png');
-  var sprite2 = ImageUtils.loadTexture('textures/sprites/snowflake2.png');
-  var sprite3 = ImageUtils.loadTexture('textures/sprites/snowflake3.png');
-  var sprite4 = ImageUtils.loadTexture('textures/sprites/snowflake4.png');
-  var sprite5 = ImageUtils.loadTexture('textures/sprites/snowflake5.png');
+  var sprite1 = image_utils.loadTexture('textures/sprites/snowflake1.png');
+  var sprite2 = image_utils.loadTexture('textures/sprites/snowflake2.png');
+  var sprite3 = image_utils.loadTexture('textures/sprites/snowflake3.png');
+  var sprite4 = image_utils.loadTexture('textures/sprites/snowflake4.png');
+  var sprite5 = image_utils.loadTexture('textures/sprites/snowflake5.png');
 
   for (var i = 0; i < 10000; i ++) {
     var vertex = new Vector3.zero()

@@ -1,8 +1,8 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 final vertexShader = '''
 precision highp float;
@@ -51,7 +51,7 @@ WebGLRenderer renderer;
 InterleavedBufferAttribute orientations;
 InstancedInterleavedBuffer instanceBuffer;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();
@@ -159,7 +159,7 @@ void init() {
   geometry.addAttribute('orientation', orientations); // per mesh orientation
 
   // material
-  var texture = ImageUtils.loadTexture('textures/crate.gif')
+  var texture = image_utils.loadTexture('textures/crate.gif')
     ..anisotropy = renderer.getMaxAnisotropy();
 
   var material = new RawShaderMaterial(

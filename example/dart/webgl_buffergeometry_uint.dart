@@ -1,6 +1,6 @@
 import 'dart:html';
 import 'dart:typed_data' show Float32List, Uint32List;
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 PerspectiveCamera camera;
@@ -56,7 +56,7 @@ void init() {
   var pB = new Vector3.zero();
   var pC = new Vector3.zero();
 
-  var random = new Math.Random().nextDouble;
+  var random = new math.Random().nextDouble;
 
   for (var i = 0; i < positions.length; i += 9) {
     // positions

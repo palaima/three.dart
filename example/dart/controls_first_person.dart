@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:three/three.dart' as THREE;
 import 'package:three/extras/renderers/canvas_renderer.dart' as THREE;
@@ -45,7 +45,7 @@ class Game {
   }
 
   void makeParticles() {
-    var rng = new Math.Random();
+    var rng = new math.Random();
     for (var i = 0; i < 500; i++) {
       var material =
           new THREE.ParticleCanvasMaterial(color: rng.nextDouble() * 0x808080 + 0x808080, program: particleRender);
@@ -65,7 +65,7 @@ class Game {
 
   void particleRender(var context) {
     context.beginPath();
-    context.arc(0, 0, 1, 0, Math.PI * 2, true);
+    context.arc(0, 0, 1, 0, math.PI * 2, true);
     context.fill();
   }
 

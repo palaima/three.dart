@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:three/three.dart';
 import 'package:three/extras/renderers/canvas_renderer.dart';
@@ -47,7 +47,7 @@ void init() {
 
   BoxGeometry geometry = new BoxGeometry(100.0, 100.0, 100.0);
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
   for (int i = 0; i < 10; i++) {
     Particle particle = new Particle(particleMaterial);
     particle.position.x = rnd.nextInt(800) - 400.0;
@@ -65,9 +65,9 @@ void init() {
     object.scale.y = rnd.nextDouble() * 2 + 1.0;
     object.scale.z = rnd.nextDouble() * 2 + 1.0;
 
-    object.rotation.x = (rnd.nextDouble() * 360.0) * Math.PI / 180;
-    object.rotation.y = (rnd.nextDouble() * 360.0) * Math.PI / 180;
-    object.rotation.z = (rnd.nextDouble() * 360.0) * Math.PI / 180;
+    object.rotation.x = (rnd.nextDouble() * 360.0) * math.PI / 180;
+    object.rotation.y = (rnd.nextDouble() * 360.0) * math.PI / 180;
+    object.rotation.z = (rnd.nextDouble() * 360.0) * math.PI / 180;
 
     scene.add(object);
 
@@ -77,7 +77,7 @@ void init() {
 
   particleMaterial = new ParticleCanvasMaterial(color: 0x000000, program: (CanvasRenderingContext2D context) {
     context.beginPath();
-    context.arc(0, 0, 1, 0, Math.PI * 2, false);
+    context.arc(0, 0, 1, 0, math.PI * 2, false);
     context.closePath();
     context.fill();
   });
@@ -112,7 +112,7 @@ void onDocumentMouseDown(event) {
 
   if ( intersects.length > 0 ) {
 
-    intersects[ 0 ].object.material.color.setHex( new Math.Random().nextDouble() * 0xffffff );
+    intersects[ 0 ].object.material.color.setHex( new math.Random().nextDouble() * 0xffffff );
 
     var particle = new Particle( particleMaterial );
     particle.position.setFrom( intersects[ 0 ].point );
@@ -133,9 +133,9 @@ void animate(num time) {
 void render() {
   theta += 0.2;
 
-  camera.position.x = radius * Math.sin(theta * Math.PI / 360);
-  camera.position.y = radius * Math.sin(theta * Math.PI / 360);
-  camera.position.z = radius * Math.cos(theta * Math.PI / 360);
+  camera.position.x = radius * math.sin(theta * math.PI / 360);
+  camera.position.y = radius * math.sin(theta * math.PI / 360);
+  camera.position.z = radius * math.cos(theta * math.PI / 360);
   camera.lookAt(scene.position);
 
   renderer.render(scene, camera);

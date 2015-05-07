@@ -3,10 +3,10 @@
  */
 
 import 'dart:html' hide Path;
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'dart:async';
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 PerspectiveCamera camera;
 Scene scene;
@@ -45,7 +45,7 @@ void init() {
     ..position.y = 50.0;
   scene.add(group);
 
-  var texture = ImageUtils.loadTexture('textures/UV_Grid_Sm.jpg');
+  var texture = image_utils.loadTexture('textures/UV_Grid_Sm.jpg');
   texture.wrapS = texture.wrapT = RepeatWrapping;
   texture.repeat.setValues(0.008, 0.008);
 
@@ -191,9 +191,9 @@ void init() {
   var trackShape = new Shape()
     ..moveTo(40.0, 40.0)
     ..lineTo(40.0, 160.0)
-    ..absarc(60.0, 160.0, 20.0, Math.PI, 0, true)
+    ..absarc(60.0, 160.0, 20.0, math.PI, 0, true)
     ..lineTo(80.0, 40.0)
-    ..absarc(60.0, 40.0, 20.0, 2 * Math.PI, Math.PI, true);
+    ..absarc(60.0, 40.0, 20.0, 2 * math.PI, math.PI, true);
 
   // Circle
   var circleRadius = 40.0;
@@ -217,23 +217,23 @@ void init() {
   // Arc circle
   var arcShape = new Shape()
     ..moveTo(50.0, 10.0)
-    ..absarc(10.0, 10.0, 40.0, 0.0, Math.PI * 2, false);
+    ..absarc(10.0, 10.0, 40.0, 0.0, math.PI * 2, false);
   var holePath = new Path()
     ..moveTo(20.0, 10.0)
-    ..absarc(10.0, 10.0, 10.0, 0.0, Math.PI * 2, true);
+    ..absarc(10.0, 10.0, 10.0, 0.0, math.PI * 2, true);
   arcShape.holes.add(holePath);
 
   // Smiley
   var smileyShape = new Shape()
     ..moveTo(80.0, 40.0)
-    ..absarc(40.0, 40.0, 40.0, 0.0, Math.PI * 2, false);
+    ..absarc(40.0, 40.0, 40.0, 0.0, math.PI * 2, false);
   var smileyEye1Path = new Path()
     ..moveTo(35.0, 20.0)
-    ..absellipse(25.0, 20.0, 10.0, 10.0, 0.0, Math.PI * 2, true);
+    ..absellipse(25.0, 20.0, 10.0, 10.0, 0.0, math.PI * 2, true);
   smileyShape.holes.add(smileyEye1Path);
   var smileyEye2Path = new Path()
     ..moveTo(65.0, 20.0)
-    ..absarc(55.0, 20.0, 10.0, 0.0, Math.PI * 2, true);
+    ..absarc(55.0, 20.0, 10.0, 0.0, math.PI * 2, true);
   smileyShape.holes.add(smileyEye2Path);
   var smileyMouthPath = new Path()
     ..moveTo(20.0, 40.0)
@@ -261,10 +261,10 @@ void init() {
   addShape(roundedRectShape, 0x008000, -150,  150, 0, 0, 0, 0, 1);
   addShape(trackShape,       0x008080,  200, -100, 0, 0, 0, 0, 1);
   addShape(squareShape,      0x0040f0,  150,  100, 0, 0, 0, 0, 1);
-  addShape(heartShape,       0xf00000,   60,  100, 0, 0, 0, Math.PI, 1);
+  addShape(heartShape,       0xf00000,   60,  100, 0, 0, 0, math.PI, 1);
   addShape(circleShape,      0x00f000,  120,  250, 0, 0, 0, 0, 1);
   addShape(fishShape,        0x404040,  -60,  200, 0, 0, 0, 0, 1);
-  addShape(smileyShape,      0xf000f0, -200,  250, 0, 0, 0, Math.PI, 1);
+  addShape(smileyShape,      0xf000f0, -200,  250, 0, 0, 0, math.PI, 1);
   addShape(arcShape,         0x804000,  150,    0, 0, 0, 0, 0, 1);
   addShape(splineShape,      0x808080,  -50, -100, 0, 0, 0, 0, 1);
 

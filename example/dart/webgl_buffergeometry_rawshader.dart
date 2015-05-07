@@ -1,6 +1,6 @@
 import 'dart:html';
 import 'dart:typed_data' show Float32List;
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 final vertexShader = '''
@@ -45,7 +45,7 @@ PerspectiveCamera camera;
 Scene scene;
 WebGLRenderer renderer;
 
-Math.Random rnd = new Math.Random();
+math.Random rnd = new math.Random();
 
 void main() {
   init();

@@ -7,7 +7,7 @@ library shaders;
 import 'dart:math' show exp;
 import 'dart:typed_data' show Float32List;
 import 'package:three/three.dart' show Uniform, ShaderChunk, UniformsLib;
-import 'package:three/src/renderers/shaders/uniforms_utils.dart' as UniformsUtils;
+import 'package:three/src/renderers/shaders/uniforms_utils.dart' as uniforms_utils;
 
 final Map basicShader = {
   'uniforms': {},
@@ -1528,7 +1528,7 @@ void main() {
 };
 
 final Map normalDisplacementShader = {
-  'uniforms': UniformsUtils.merge([
+  'uniforms': uniforms_utils.merge([
     UniformsLib['fog'],
     UniformsLib['lights'],
     UniformsLib['shadowmap'], {

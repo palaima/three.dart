@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 const TRIANGLES = 500;
@@ -35,7 +35,7 @@ void init() {
     indices[i] = i++;
   });
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
   var positions = geometry.aPosition.array;
 
   for (var i = 0; i < positions.length; i += 9) {

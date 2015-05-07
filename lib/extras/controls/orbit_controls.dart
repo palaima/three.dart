@@ -31,7 +31,7 @@ class OrbitControls {
   Object3D object;
   dynamic domElement;
   bool enabled;
-  Math.Rectangle screen;
+  math.Rectangle screen;
   num rotateSpeed, zoomSpeed, keyPanSpeed;
   bool noZoom, noRotate, noPan;
   bool autoRotate;
@@ -116,7 +116,7 @@ class OrbitControls {
     // Determines the vertical orbit limit - upper and lower limits.
     // The default range is 0.0 to Math.PI radians.
     minPolarAngle = 0; // in radians
-    maxPolarAngle = Math.PI; // in radians
+    maxPolarAngle = math.PI; // in radians
 
     // Enables/disables the ability to use the keyboard to interact with this
     // control.
@@ -234,7 +234,7 @@ class OrbitControls {
       var targetDistance = offset.length;
 
       // Half of the FOV is the distance from the center to the top of the screen.
-      targetDistance *= Math.tan(((object as PerspectiveCamera).fov / 2) * Math.PI / 180.0);
+      targetDistance *= math.tan(((object as PerspectiveCamera).fov / 2) * math.PI / 180.0);
 
       // screenWidth is not used since [PerspectiveCamera] is fixed to screen height.
       panLeft(2.0 * deltaX * targetDistance / element.clientHeight);
@@ -289,10 +289,10 @@ class OrbitControls {
     quaternion.rotate(_offset);
 
     // Angle from Z-axis around Y-axis
-    var theta = Math.atan2(_offset.x, _offset.z);
+    var theta = math.atan2(_offset.x, _offset.z);
 
     // Angle from Y-axis
-    var phi = Math.atan2(Math.sqrt(_offset.x * _offset.x + _offset.z * _offset.z), _offset.y);
+    var phi = math.atan2(math.sqrt(_offset.x * _offset.x + _offset.z * _offset.z), _offset.y);
 
     if (autoRotate) {
 
@@ -305,22 +305,22 @@ class OrbitControls {
     phi += _phiDelta;
 
     // Restrict phi to be between the desired limits
-    phi = Math.max(minPolarAngle, Math.min(maxPolarAngle, phi));
+    phi = math.max(minPolarAngle, math.min(maxPolarAngle, phi));
 
     // Restrict phi to be between EPS and PI-EPS
-    phi = Math.max(EPS, Math.min(Math.PI - EPS, phi));
+    phi = math.max(EPS, math.min(math.PI - EPS, phi));
 
     var radius = _offset.length * _scale;
 
     // Restrict radius to be between desired limits
-    radius = Math.max(minDistance, Math.min(maxDistance, radius));
+    radius = math.max(minDistance, math.min(maxDistance, radius));
 
     // Move target to panned location
     target.add(_pan);
 
-    _offset.x = radius * Math.sin(phi) * Math.sin(theta);
-    _offset.y = radius * Math.cos(phi);
-    _offset.z = radius * Math.sin(phi) * Math.cos(theta);
+    _offset.x = radius * math.sin(phi) * math.sin(theta);
+    _offset.y = radius * math.cos(phi);
+    _offset.z = radius * math.sin(phi) * math.cos(theta);
 
     // Rotate offset back to 'camera-up-vector-is-up' space
     quaternionInverse.rotate(_offset);
@@ -362,13 +362,13 @@ class OrbitControls {
 
   getAutoRotationAngle() {
 
-    return 2 * Math.PI / 60 / 60 * autoRotateSpeed;
+    return 2 * math.PI / 60 / 60 * autoRotateSpeed;
 
   }
 
   getZoomScale() {
 
-    return Math.pow(0.95, zoomSpeed);
+    return math.pow(0.95, zoomSpeed);
 
   }
 
@@ -426,11 +426,11 @@ class OrbitControls {
       _rotateDelta = _rotateEnd - _rotateStart;
 
       // Rotating across the whole screen is 360 degrees around.
-      rotateLeft(2 * Math.PI * _rotateDelta.x / element.clientWidth * rotateSpeed);
+      rotateLeft(2 * math.PI * _rotateDelta.x / element.clientWidth * rotateSpeed);
 
       // Rotating up and down along the whole screen attempts to go to 360,
       // but it is limited to 180 degrees.
-      rotateUp(2 * Math.PI * _rotateDelta.y / element.clientHeight * rotateSpeed);
+      rotateUp(2 * math.PI * _rotateDelta.y / element.clientHeight * rotateSpeed);
 
       _rotateStart.setFrom(_rotateEnd);
 
@@ -574,7 +574,7 @@ class OrbitControls {
 
         var dy = event.touches[0].pageY.toDouble() - event.touches[1].pageY.toDouble();
 
-        var distance = Math.sqrt(dx * dx + dy * dy);
+        var distance = math.sqrt(dx * dx + dy * dy);
 
         _dollyStart = new Vector2(0.0, distance);
         break;
@@ -617,11 +617,11 @@ class OrbitControls {
         _rotateDelta = _rotateEnd - _rotateStart;
 
         // Rotating across the whole screen is 360 degrees around.
-        rotateLeft(2 * Math.PI * _rotateDelta.x / element.clientWidth * rotateSpeed);
+        rotateLeft(2 * math.PI * _rotateDelta.x / element.clientWidth * rotateSpeed);
 
         // Rotating up and down along the whole screen attempts to go to 360,
         // but it is limited to 180 degrees.
-        rotateUp(2 * Math.PI * _rotateDelta.y / element.clientHeight * rotateSpeed);
+        rotateUp(2 * math.PI * _rotateDelta.y / element.clientHeight * rotateSpeed);
 
         _rotateStart = _rotateEnd;
 
@@ -637,7 +637,7 @@ class OrbitControls {
 
         var dy = event.touches[0].pageY.toDouble() - event.touches[1].pageY.toDouble();
 
-        var distance = Math.sqrt(dx * dx + dy * dy);
+        var distance = math.sqrt(dx * dx + dy * dy);
 
         _dollyEnd = new Vector2(0.0, distance);
         _dollyDelta = _dollyEnd - _dollyStart;

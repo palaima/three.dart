@@ -3,10 +3,10 @@
  */
 
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/controls.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
+import 'package:three/extras/image_utils.dart' as image_utils;
 
 PerspectiveCamera camera;
 FirstPersonControls controls;
@@ -38,15 +38,15 @@ void init() {
     ..fog = new FogExp2(0xaaccff, 0.0007);
 
   var planeGeo = new PlaneGeometry(20000.0, 20000.0, worldWidth - 1, worldDepth - 1)
-    ..applyMatrix(new Matrix4.rotationX(-Math.PI / 2));
+    ..applyMatrix(new Matrix4.rotationX(-math.PI / 2));
 
   for (var i = 0; i < planeGeo.vertices.length; i++) {
-    planeGeo.vertices[i].y = 35 * Math.sin(i / 2);
+    planeGeo.vertices[i].y = 35 * math.sin(i / 2);
   }
 
   geometry = new DynamicGeometry.fromGeometry(planeGeo);
 
-  var texture = ImageUtils.loadTexture('textures/water.jpg');
+  var texture = image_utils.loadTexture('textures/water.jpg');
   texture.wrapS = texture.wrapT = RepeatWrapping;
   texture.repeat.splat(5.0);
 
@@ -86,7 +86,7 @@ void render() {
   var time = clock.elapsedTime * 10;
 
   for (var i = 0; i < geometry.vertices.length; i++) {
-    geometry.vertices[i].y = 35 * Math.sin(i / 5 + (time + i) / 7);
+    geometry.vertices[i].y = 35 * math.sin(i / 5 + (time + i) / 7);
   }
 
   geometry.verticesNeedUpdate = true;

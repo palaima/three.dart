@@ -1,8 +1,8 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
-var rand = new Math.Random();
+var rand = new math.Random();
 var container, stats;
 var camera, scene, renderer, poptart, face, feet, tail;
 var stars,

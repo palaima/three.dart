@@ -3,11 +3,11 @@
  */
 
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/image_utils.dart' as ImageUtils;
-import 'package:three/extras/scene_utils.dart' as SceneUtils;
-import 'package:three/extras/curve_extras.dart' as Curves;
+import 'package:three/extras/image_utils.dart' as image_utils;
+import 'package:three/extras/scene_utils.dart' as scene_utils;
+import 'package:three/extras/curve_extras.dart' as curves;
 
 DivElement container;
 WebGLRenderer renderer;
@@ -33,7 +33,7 @@ void init() {
   scene.add(new DirectionalLight(0xffffff)
     ..position = new Vector3(0.0, 0.0, 1.0));
 
-  var map = ImageUtils.loadTexture('textures/UV_Grid_Sm.jpg');
+  var map = image_utils.loadTexture('textures/UV_Grid_Sm.jpg');
   map.wrapS = map.wrapT = RepeatWrapping;
   map.anisotropy = 16;
 
@@ -47,25 +47,25 @@ void init() {
       segmentsR: 50, segmentsT: 20, p: 2.0 , q: 3.0, heightScale: 1.0);
 
   var sphere2 = new ParametricGeometry.sphere(75.0, 20, 10);
-  var tube2 = new ParametricGeometry.tube(new Curves.GrannyKnot(), segments: 150, radius: 2.0, closed: true);
+  var tube2 = new ParametricGeometry.tube(new curves.GrannyKnot(), segments: 150, radius: 2.0, closed: true);
 
-  scene.add(SceneUtils.createMultiMaterialObject(new ParametricGeometry.klein(20, 20), materials)
+  scene.add(scene_utils.createMultiMaterialObject(new ParametricGeometry.klein(20, 20), materials)
     ..position.setZero()
     ..scale.scale(10.0));
 
-  scene.add(SceneUtils.createMultiMaterialObject(new ParametricGeometry.mobius(20, 20), materials)
+  scene.add(scene_utils.createMultiMaterialObject(new ParametricGeometry.mobius(20, 20), materials)
     ..position.setValues(10.0, 0.0, 0.0)
     ..scale.scale(100.0));
 
-  scene.add(SceneUtils.createMultiMaterialObject(new ParametricGeometry.plane(200.0, 200.0, 10, 20), materials));
+  scene.add(scene_utils.createMultiMaterialObject(new ParametricGeometry.plane(200.0, 200.0, 10, 20), materials));
 
-  scene.add(SceneUtils.createMultiMaterialObject(torus2, materials)
+  scene.add(scene_utils.createMultiMaterialObject(torus2, materials)
     ..position.setValues(0.0, 100.0, 0.0));
 
-  scene.add(SceneUtils.createMultiMaterialObject(sphere2, materials)
+  scene.add(scene_utils.createMultiMaterialObject(sphere2, materials)
     ..position.setValues(200.0, 0.0, 0.0));
 
-  scene.add(SceneUtils.createMultiMaterialObject(tube2, materials)
+  scene.add(scene_utils.createMultiMaterialObject(tube2, materials)
     ..position.setValues(100.0, 0.0, 0.0));
 
   scene.add(new AxisHelper(50.0)..position.setValues(200.0, 0.0, -200.0));
@@ -96,8 +96,8 @@ void animate(num time) {
 void render() {
   var timer = new DateTime.now().millisecondsSinceEpoch * 0.0001;
 
-  camera.position.x = Math.cos(timer) * 800.0;
-  camera.position.z = Math.sin(timer) * 800.0;
+  camera.position.x = math.cos(timer) * 800.0;
+  camera.position.z = math.sin(timer) * 800.0;
 
   camera.lookAt(scene.position);
 

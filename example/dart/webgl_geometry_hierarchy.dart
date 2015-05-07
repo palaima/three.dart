@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'package:three/three.dart';
 
 Element container;
@@ -41,7 +41,7 @@ void init() {
 
   group = new Object3D();
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
 
   for (var i = 0; i < 1000; i++) {
 
@@ -50,8 +50,8 @@ void init() {
     mesh.position.y = rnd.nextInt(2000).toDouble() - 1000.0;
     mesh.position.z = rnd.nextInt(2000).toDouble() - 1000.0;
 
-    mesh.rotation.x = rnd.nextDouble() * 360.0 * (Math.PI / 180.0);
-    mesh.rotation.y = rnd.nextDouble() * 360.0 * (Math.PI / 180.0);
+    mesh.rotation.x = rnd.nextDouble() * 360.0 * (math.PI / 180.0);
+    mesh.rotation.y = rnd.nextDouble() * 360.0 * (math.PI / 180.0);
 
     mesh.matrixAutoUpdate = false;
     mesh.updateMatrix();
@@ -95,9 +95,9 @@ render() {
 
   var time = new DateTime.now().millisecondsSinceEpoch * 0.001;
 
-  var rx = Math.sin(time * 0.7) * 0.5,
-      ry = Math.sin(time * 0.3) * 0.5,
-      rz = Math.sin(time * 0.2) * 0.5;
+  var rx = math.sin(time * 0.7) * 0.5,
+      ry = math.sin(time * 0.3) * 0.5,
+      rz = math.sin(time * 0.2) * 0.5;
 
   camera.position.x += (mouseX - camera.position.x) * .05;
   camera.position.y += (-mouseY - camera.position.y) * .05;

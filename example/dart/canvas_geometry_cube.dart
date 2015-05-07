@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:three/three.dart';
 import 'package:three/extras/renderers/canvas_renderer.dart';
@@ -63,7 +63,7 @@ void init() {
 
   List materials = [];
 
-  var rnd = new Math.Random();
+  var rnd = new math.Random();
   for (int i = 0; i < 6; i++) {
     materials.add(new MeshBasicMaterial(color: rnd.nextDouble() * 0xffffff));
   }
@@ -78,7 +78,7 @@ void init() {
   // Plane
 
   plane = new Mesh(new PlaneGeometry(200.0, 200.0), new MeshBasicMaterial(color: 0xe0e0e0, overdraw: 1.0));
-  plane.rotation.x = -90.0 * (Math.PI / 180.0);
+  plane.rotation.x = -90.0 * (math.PI / 180.0);
   //plane.overdraw = true; //TODO where is this prop?
   scene.add(plane);
 
