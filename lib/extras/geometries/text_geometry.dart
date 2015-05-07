@@ -13,7 +13,7 @@ class TextGeometry extends ExtrudeGeometry {
     String font: 'helvetiker', String weight: 'normal', String style: 'normal',
     bool bevelEnabled: false, double bevelThickness: 10.0, double bevelSize: 8.0, int bevelSegments: 3,
     int steps: 1, Curve extrudePath}) {
-    var textShapes = FontUtils.generateShapes(text, size, curveSegments, font, weight, style);
+    var textShapes = font_utils.generateShapes(text, size, curveSegments, font, weight, style);
 
     return new TextGeometry._internal(textShapes, height, bevelThickness, bevelSize, bevelSegments, bevelEnabled,
         curveSegments, steps, extrudePath);

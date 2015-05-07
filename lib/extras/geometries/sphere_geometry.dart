@@ -20,11 +20,11 @@ class SphereGeometry extends Geometry {
                   int widthSegments,
                   int heightSegments,
                   double phiStart = 0.0,
-                  double phiLength = Math.PI * 2.0,
+                  double phiLength = math.PI * 2.0,
                   double thetaStart = 0.0,
-                  double thetaLength = Math.PI]) {
-    widthSegments = widthSegments != null ? Math.max(3, widthSegments) : 8;
-    heightSegments = heightSegments != null ? Math.max(2, heightSegments) : 6;
+                  double thetaLength = math.PI]) {
+    widthSegments = widthSegments != null ? math.max(3, widthSegments) : 8;
+    heightSegments = heightSegments != null ? math.max(2, heightSegments) : 6;
 
     List<List<int>> _vertices = [];
     List<List<Vector2>> uvs = [];
@@ -38,9 +38,9 @@ class SphereGeometry extends Geometry {
         var v = y / heightSegments;
 
         var vertex = new Vector3.zero()
-          ..x = -radius * Math.cos(phiStart + u * phiLength) * Math.sin(thetaStart + v * thetaLength)
-          ..y = radius * Math.cos(thetaStart + v * thetaLength)
-          ..z = radius * Math.sin(phiStart + u * phiLength) * Math.sin(thetaStart + v * thetaLength);
+          ..x = -radius * math.cos(phiStart + u * phiLength) * math.sin(thetaStart + v * thetaLength)
+          ..y = radius * math.cos(thetaStart + v * thetaLength)
+          ..z = radius * math.sin(phiStart + u * phiLength) * math.sin(thetaStart + v * thetaLength);
 
         vertices.add(vertex);
 

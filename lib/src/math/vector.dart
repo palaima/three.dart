@@ -37,10 +37,10 @@ void cross2B(Vector2 x, double y, Vector2 out) {
 /// Sets [u] and [v] to be two vectors orthogonal to each other and
 /// [planeNormal].
 void buildPlaneVectors(final Vector3 planeNormal, Vector3 u, Vector3 v) {
-  if (planeNormal.z.abs() > Math.SQRT1_2) {
+  if (planeNormal.z.abs() > math.SQRT1_2) {
     // choose u in y-z plane
     double a = planeNormal.y * planeNormal.y + planeNormal.z * planeNormal.z;
-    double k = 1.0 / Math.sqrt(a);
+    double k = 1.0 / math.sqrt(a);
     u.x = 0.0;
     u.y = -planeNormal.z * k;
     u.z = planeNormal.y * k;
@@ -50,7 +50,7 @@ void buildPlaneVectors(final Vector3 planeNormal, Vector3 u, Vector3 v) {
   } else {
     // choose u in x-y plane
     double a = planeNormal.x * planeNormal.x + planeNormal.y * planeNormal.y;
-    double k = 1.0 / Math.sqrt(a);
+    double k = 1.0 / math.sqrt(a);
     u.x = -planeNormal[1] * k;
     u.y = planeNormal[0] * k;
     u.z = 0.0;

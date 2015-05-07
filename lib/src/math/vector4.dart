@@ -10,18 +10,18 @@ class Vector4 implements Vector {
 
   /// Set the values of [result] to the minimum of [a] and [b] for each line.
   static void min(Vector4 a, Vector4 b, Vector4 result) {
-    result.x = Math.min(a.x, b.x);
-    result.y = Math.min(a.y, b.y);
-    result.z = Math.min(a.z, b.z);
-    result.w = Math.min(a.w, b.w);
+    result.x = math.min(a.x, b.x);
+    result.y = math.min(a.y, b.y);
+    result.z = math.min(a.z, b.z);
+    result.w = math.min(a.w, b.w);
   }
 
   /// Set the values of [result] to the maximum of [a] and [b] for each line.
   static void max(Vector4 a, Vector4 b, Vector4 result) {
-    result.x = Math.max(a.x, b.x);
-    result.y = Math.max(a.y, b.y);
-    result.z = Math.max(a.z, b.z);
-    result.w = Math.max(a.w, b.w);
+    result.x = math.max(a.x, b.x);
+    result.y = math.max(a.y, b.y);
+    result.z = math.max(a.z, b.z);
+    result.w = math.max(a.w, b.w);
   }
 
   /// Interpolate between [min] and [max] with the amount of [a] using a linear
@@ -146,7 +146,7 @@ class Vector4 implements Vector {
   }
 
   /// Length.
-  double get length => Math.sqrt(length2);
+  double get length => math.sqrt(length2);
 
   /// Length squared.
   double get length2 {
@@ -197,7 +197,7 @@ class Vector4 implements Vector {
   }
 
   /// Distance from [this] to [arg]
-  double distanceTo(Vector4 arg) => Math.sqrt(distanceToSquared(arg));
+  double distanceTo(Vector4 arg) => math.sqrt(distanceToSquared(arg));
 
   /// Squared distance from [this] to [arg]
   double distanceToSquared(Vector4 arg) {

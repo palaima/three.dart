@@ -52,7 +52,7 @@ class ShapeGeometry extends Geometry {
     List vertices = shapePoints['shape'];
     List holes = shapePoints['holes'];
 
-    var reverse = !ShapeUtils.isClockWise(vertices);
+    var reverse = !shape_utils.isClockWise(vertices);
 
     if (reverse) {
       vertices = vertices.reversed.toList();
@@ -62,7 +62,7 @@ class ShapeGeometry extends Geometry {
       for (var i = 0; i < holes.length; i++) {
         var hole = holes[i];
 
-        if (ShapeUtils.isClockWise(hole)) {
+        if (shape_utils.isClockWise(hole)) {
           holes[i] = hole.reversed.toList();
         }
       }
@@ -70,7 +70,7 @@ class ShapeGeometry extends Geometry {
       reverse = false;
     }
 
-    var faces = ShapeUtils.triangulateShape(vertices, holes);
+    var faces = shape_utils.triangulateShape(vertices, holes);
 
     // Vertices
 

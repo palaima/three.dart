@@ -31,7 +31,7 @@ class Line extends Object3D implements GeometryMaterialObject {
   /// Creates a new [Line].
   Line([IGeometry geometry, Material material]) : super() {
     this.geometry = geometry != null ? geometry : new Geometry();
-    this.material = material != null ? material : new LineBasicMaterial(color: new Math.Random().nextInt(0xffffff));
+    this.material = material != null ? material : new LineBasicMaterial(color: new math.Random().nextInt(0xffffff));
   }
 
   /// Returns intersections between a casted ray and this Line.

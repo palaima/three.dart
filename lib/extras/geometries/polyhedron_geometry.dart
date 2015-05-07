@@ -33,8 +33,8 @@ class PolyhedronGeometry extends Geometry {
       var x1 = uvs[1].x;
       var x2 = uvs[2].x;
 
-      var max = Math.max(x0, Math.max(x1, x2));
-      var min = Math.min(x0, Math.min(x1, x2));
+      var max = math.max(x0, math.max(x1, x2));
+      var min = math.min(x0, math.min(x1, x2));
 
       if (max > 0.9 && min < 0.1) { // 0.9 is somewhat arbitrary
         if (x0 < 0.2) uvs[0].x += 1;
@@ -63,8 +63,8 @@ class PolyhedronGeometry extends Geometry {
 
     // Texture coords are equivalent to map coords, calculate angle and convert to fraction of a circle.
 
-    var u = _azimuth(vector) / 2 / Math.PI + 0.5;
-    var v = _inclination(vector) / Math.PI + 0.5;
+    var u = _azimuth(vector) / 2 / math.PI + 0.5;
+    var v = _inclination(vector) / math.PI + 0.5;
     vertex._uv = new Vector2(u, 1.0 - v);
 
     return vertex;
@@ -84,7 +84,7 @@ class PolyhedronGeometry extends Geometry {
 
   // Analytically subdivide a face to the required detail level.
   void _subdivide(Face3 face, int detail) {
-    var cols = Math.pow(2, detail);
+    var cols = math.pow(2, detail);
     var a = _prepare(vertices[face.a]);
     var b = _prepare(vertices[face.b]);
     var c = _prepare(vertices[face.c]);
@@ -128,11 +128,11 @@ class PolyhedronGeometry extends Geometry {
   }
 
   /// Angle around the Y axis, counter-clockwise when looking from above.
-  double _azimuth(Vector3 vector) => Math.atan2(vector.z, -vector.x);
+  double _azimuth(Vector3 vector) => math.atan2(vector.z, -vector.x);
 
   /// Angle above the XZ plane.
   double _inclination(Vector3 vector) {
-    return Math.atan2(-vector.y, Math.sqrt(vector.x * vector.x + vector.z * vector.z));
+    return math.atan2(-vector.y, math.sqrt(vector.x * vector.x + vector.z * vector.z));
   }
 
   /// Texture fixing helper. Spheres have some odd behaviours.
@@ -141,7 +141,7 @@ class PolyhedronGeometry extends Geometry {
       uv = new Vector2(uv.x - 1.0, uv.y);
     }
     if (vector.x == 0.0 && vector.z == 0.0) {
-      uv = new Vector2(azimuth / 2 / Math.PI + 0.5, uv.y);
+      uv = new Vector2(azimuth / 2 / math.PI + 0.5, uv.y);
     }
 
     return uv.clone();

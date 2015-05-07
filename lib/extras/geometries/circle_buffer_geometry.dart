@@ -8,8 +8,8 @@ class CircleBufferGeometry extends BufferGeometry {
   String type = 'CircleBufferGeometry';
 
   CircleBufferGeometry(
-      [double radius = 50.0, int segments, double thetaStart = 0.0, double thetaLength = Math.PI * 2]) {
-    segments = segments != null ? Math.max(3, segments) : 8;
+      [double radius = 50.0, int segments, double thetaStart = 0.0, double thetaLength = math.PI * 2]) {
+    segments = segments != null ? math.max(3, segments) : 8;
 
     var vertices = segments + 2;
 
@@ -25,8 +25,8 @@ class CircleBufferGeometry extends BufferGeometry {
     for (var s = 0, i = 3, ii = 2; s <= segments; s++, i += 3, ii += 2) {
       var segment = thetaStart + s / segments * thetaLength;
 
-      positions[i] = radius * Math.cos(segment);
-      positions[i + 1] = radius * Math.sin(segment);
+      positions[i] = radius * math.cos(segment);
+      positions[i + 1] = radius * math.sin(segment);
 
       normals[i + 2] = 1.0; // normal z
 

@@ -13,14 +13,14 @@ class Vector2 implements Vector {
 
   /// Set the values of [result] to the minimum of [a] and [b] for each line.
   static void min(Vector2 a, Vector2 b, Vector2 result) {
-    result.x = Math.min(a.x, b.x);
-    result.y = Math.min(a.y, b.y);
+    result.x = math.min(a.x, b.x);
+    result.y = math.min(a.y, b.y);
   }
 
   /// Set the values of [result] to the maximum of [a] and [b] for each line.
   static void max(Vector2 a, Vector2 b, Vector2 result) {
-    result.x = Math.max(a.x, b.x);
-    result.y = Math.max(a.y, b.y);
+    result.x = math.max(a.x, b.x);
+    result.y = math.max(a.y, b.y);
   }
 
   /// Interpolate between [min] and [max] with the amount of [a] using a linear
@@ -116,7 +116,7 @@ class Vector2 implements Vector {
   }
 
   /// Length.
-  double get length => Math.sqrt(length2);
+  double get length => math.sqrt(length2);
 
   /// Length squared.
   double get length2 {
@@ -161,7 +161,7 @@ class Vector2 implements Vector {
   }
 
   /// Distance from [this] to [arg]
-  double distanceTo(Vector2 arg) => Math.sqrt(distanceToSquared(arg));
+  double distanceTo(Vector2 arg) => math.sqrt(distanceToSquared(arg));
 
   /// Squared distance from [this] to [arg]
   double distanceToSquared(Vector2 arg) {

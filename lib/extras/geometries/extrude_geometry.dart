@@ -93,8 +93,8 @@ class ExtrudeGeometry extends Geometry {
 
       // length of vectors for normalizing
 
-      var v_prev_len = Math.sqrt(v_prev_lensq);
-      var v_next_len = Math.sqrt(v_next_x * v_next_x + v_next_y * v_next_y);
+      var v_prev_len = math.sqrt(v_prev_lensq);
+      var v_next_len = math.sqrt(v_next_x * v_next_x + v_next_y * v_next_y);
 
       // shift adjacent points by unit vectors to the left
 
@@ -121,7 +121,7 @@ class ExtrudeGeometry extends Geometry {
       if (v_trans_lensq <= 2) {
         return  new Vector2(v_trans_x, v_trans_y);
       } else {
-        shrink_by = Math.sqrt(v_trans_lensq / 2);
+        shrink_by = math.sqrt(v_trans_lensq / 2);
       }
     } else {    // handle special case of colinear edges
       var direction_eq = false;   // assumes: opposite
@@ -139,12 +139,12 @@ class ExtrudeGeometry extends Geometry {
         // console.log("Warning: lines are a straight sequence");
         v_trans_x = - v_prev_y;
         v_trans_y =  v_prev_x;
-        shrink_by = Math.sqrt(v_prev_lensq);
+        shrink_by = math.sqrt(v_prev_lensq);
       } else {
         // console.log("Warning: lines are a straight spike");
         v_trans_x = v_prev_x;
         v_trans_y = v_prev_y;
-        shrink_by = Math.sqrt(v_prev_lensq / 2);
+        shrink_by = math.sqrt(v_prev_lensq / 2);
       }
     }
 
@@ -196,7 +196,7 @@ class ExtrudeGeometry extends Geometry {
     List vertices = shapePoints["shape"];
     List<List<Vector2>> holes = shapePoints["holes"];
 
-    var reverse = !ShapeUtils.isClockWise(vertices);
+    var reverse = !shape_utils.isClockWise(vertices);
 
     if (reverse) {
       vertices = vertices.reversed.toList();
@@ -206,7 +206,7 @@ class ExtrudeGeometry extends Geometry {
       for (var h = 0; h < holes.length; h++) {
         var ahole = holes[h];
 
-        if (ShapeUtils.isClockWise(ahole)) {
+        if (shape_utils.isClockWise(ahole)) {
           holes[h] = ahole.reversed.toList();
         }
       }
@@ -214,7 +214,7 @@ class ExtrudeGeometry extends Geometry {
       reverse = false; // If vertices are in order now, we shouldn't need to worry about them again (hopefully)!
     }
 
-    var faces = ShapeUtils.triangulateShape(vertices, holes);
+    var faces = shape_utils.triangulateShape(vertices, holes);
 
     // Would it be better to move points after triangulation?
     // shapePoints = shape.extractAllPointsWithBend(curveSegments, bendPath);
@@ -281,7 +281,7 @@ class ExtrudeGeometry extends Geometry {
       var t = b / bevelSegments;
       var z = bevelThickness * (1 - t);
 
-      var bs = bevelSize * (Math.sin(t * Math.PI / 2)); // curved
+      var bs = bevelSize * (math.sin(t * math.PI / 2)); // curved
 
       // contract shape
 
@@ -347,7 +347,7 @@ class ExtrudeGeometry extends Geometry {
     for (var b = bevelSegments - 1; b >= 0; b--) {
       var t = b / bevelSegments;
       var z = bevelThickness * (1 - t);
-      bs = bevelSize * Math.sin(t * Math.PI / 2);
+      bs = bevelSize * math.sin(t * math.PI / 2);
 
       // contract shape
 

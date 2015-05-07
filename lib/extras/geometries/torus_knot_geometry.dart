@@ -33,7 +33,7 @@ class TorusKnotGeometry extends Geometry {
 
     for (var i = 0; i < radialSegments; i++) {
       _grid[i] = new List(tubularSegments);
-      var u = i / radialSegments * 2 * p * Math.PI;
+      var u = i / radialSegments * 2 * p * math.PI;
       var p1 = _getPos(u, q, p, radius, heightScale);
       var p2 = _getPos(u + 0.01, q, p, radius, heightScale);
       var tang = p2 - p1;
@@ -43,9 +43,9 @@ class TorusKnotGeometry extends Geometry {
       n = bitan.cross(tang).normalize();
 
       for (var j = 0; j < tubularSegments; j++) {
-        var v = j / tubularSegments * 2 * Math.PI;
-        var cx = -tube * Math.cos(v);
-        var cy = tube * Math.sin(v);
+        var v = j / tubularSegments * 2 * math.PI;
+        var cx = -tube * math.cos(v);
+        var cy = tube * math.sin(v);
 
         var pos = new Vector3.zero()
           ..x = p1.x + cx * n.x + cy * bitan.x
@@ -86,14 +86,14 @@ class TorusKnotGeometry extends Geometry {
   }
 
   Vector3 _getPos(double u, double in_q, double in_p, double radius, double heightScale) {
-    var cu = Math.cos(u);
-    var su = Math.sin(u);
+    var cu = math.cos(u);
+    var su = math.sin(u);
     var quOverP = in_q / in_p * u;
-    var cs = Math.cos(quOverP);
+    var cs = math.cos(quOverP);
 
     var tx = radius * (2 + cs) * 0.5 * cu;
     var ty = radius * (2 + cs) * su * 0.5;
-    var tz = heightScale * radius * Math.sin(quOverP) * 0.5;
+    var tz = heightScale * radius * math.sin(quOverP) * 0.5;
 
     return new Vector3(tx, ty, tz);
   }

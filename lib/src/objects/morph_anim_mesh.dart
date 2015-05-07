@@ -151,7 +151,7 @@ class MorphAnimMesh extends Mesh {
 
     }
 
-    var keyframe = _startKeyframe + ThreeMath.clamp((time / frameTime).floor(), 0, _length - 1);
+    var keyframe = _startKeyframe + three_math.clamp((time / frameTime).floor(), 0, _length - 1);
 
     if (keyframe != currentKeyframe) {
 

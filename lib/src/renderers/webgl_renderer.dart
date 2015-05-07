@@ -1567,7 +1567,7 @@ class WebGLRenderer implements Renderer {
       var shader = ShaderLib[shaderID];
 
       material.__webglShader = {
-        'uniforms': UniformsUtils.clone(shader['uniforms']),
+        'uniforms': uniforms_utils.clone(shader['uniforms']),
         'vertexShader': shader['vertexShader'],
         'fragmentShader': shader['fragmentShader']
       };
@@ -1741,7 +1741,7 @@ class WebGLRenderer implements Renderer {
       _gl.uniformMatrix4fv(p_uniforms['projectionMatrix'], false, camera.projectionMatrix.storage);
 
       if (_logarithmicDepthBuffer) {
-        _gl.uniform1f(p_uniforms['logDepthBufFC'], 2.0 / (Math.log(camera.far + 1.0) / Math.LN2));
+        _gl.uniform1f(p_uniforms['logDepthBufFC'], 2.0 / (math.log(camera.far + 1.0) / math.LN2));
       }
 
 
@@ -2413,7 +2413,7 @@ class WebGLRenderer implements Renderer {
         spotDirections[spotOffset + 1] = _direction.y;
         spotDirections[spotOffset + 2] = _direction.z;
 
-        spotAnglesCos[spotLength] = Math.cos(light.angle);
+        spotAnglesCos[spotLength] = math.cos(light.angle);
         spotExponents[spotLength] = light.exponent;
         spotDecays[spotLength] = (light.distance == 0) ? 0.0 : light.decay;
 
@@ -2450,23 +2450,23 @@ class WebGLRenderer implements Renderer {
     // TODO check if this works
     //dirColors.skip(dirLength * 3).take(Math.max(dirColors.length, dirCount * 3)).map((_) => 0.0);
 
-    for (var l = dirLength * 3; l < Math.max(dirColors.length, dirCount * 3); l++) {
+    for (var l = dirLength * 3; l < math.max(dirColors.length, dirCount * 3); l++) {
       dirColors[l] = 0.0;
     }
 
-    for (var l = pointLength * 3; l < Math.max(pointColors.length, pointCount * 3); l++) {
+    for (var l = pointLength * 3; l < math.max(pointColors.length, pointCount * 3); l++) {
       pointColors[l] = 0.0;
     }
 
-    for (var l = spotLength * 3; l < Math.max(spotColors.length, spotCount * 3); l++) {
+    for (var l = spotLength * 3; l < math.max(spotColors.length, spotCount * 3); l++) {
       spotColors[l] = 0.0;
     }
 
-    for (var l = hemiLength * 3; l < Math.max(hemiSkyColors.length, hemiCount * 3); l++) {
+    for (var l = hemiLength * 3; l < math.max(hemiSkyColors.length, hemiCount * 3); l++) {
       hemiSkyColors[l] = 0.0;
     }
 
-    for (var l = hemiLength * 3; l < Math.max(hemiGroundColors.length, hemiCount * 3);  l++) {
+    for (var l = hemiLength * 3; l < math.max(hemiGroundColors.length, hemiCount * 3);  l++) {
       hemiGroundColors[l] = 0.0;
     }
 
@@ -2543,7 +2543,7 @@ class WebGLRenderer implements Renderer {
     if (extension != null && texture.type != FloatType && texture.type != HalfFloatType) {
       if (texture.anisotropy > 1 || texture.__currentAnisotropy != null) {
         _gl.texParameterf(textureType, gl.ExtTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
-            Math.min(texture.anisotropy, getMaxAnisotropy()));
+            math.min(texture.anisotropy, getMaxAnisotropy()));
         texture.__currentAnisotropy = texture.anisotropy;
       }
     }
@@ -2568,7 +2568,7 @@ class WebGLRenderer implements Renderer {
     texture.image = clampToMaxSize(texture.image, _maxTextureSize);
 
     var image = texture.image,
-        isImagePowerOfTwo = ThreeMath.isPowerOfTwo(image.width) && ThreeMath.isPowerOfTwo(image.height),
+        isImagePowerOfTwo = three_math.isPowerOfTwo(image.width) && three_math.isPowerOfTwo(image.height),
         glFormat = paramThreeToGL(texture.format),
         glType = paramThreeToGL(texture.type);
 
@@ -2652,7 +2652,7 @@ class WebGLRenderer implements Renderer {
       // Warning: Scaling through the canvas will only work with images that use
       // premultiplied alpha.
 
-      var scale = maxSize / Math.max(image.width, image.height);
+      var scale = maxSize / math.max(image.width, image.height);
 
       var canvas = new CanvasElement(width: (image.width * scale).floor(), height: (image.height * scale).floor());
       var context = canvas.context2D;
@@ -2699,7 +2699,7 @@ class WebGLRenderer implements Renderer {
 
         var image = cubeImage[0],
             isImagePowerOfTwo =
-            ThreeMath.isPowerOfTwo(image.width) && ThreeMath.isPowerOfTwo(image.height),
+            three_math.isPowerOfTwo(image.width) && three_math.isPowerOfTwo(image.height),
             glFormat = paramThreeToGL(texture.format),
             glType = paramThreeToGL(texture.type);
 
@@ -2798,8 +2798,8 @@ class WebGLRenderer implements Renderer {
       // Setup texture, create render and frame buffers
 
       var isTargetPowerOfTwo =
-          ThreeMath.isPowerOfTwo(renderTarget.width) &&
-          ThreeMath.isPowerOfTwo(renderTarget.height);
+          three_math.isPowerOfTwo(renderTarget.width) &&
+          three_math.isPowerOfTwo(renderTarget.height);
 
       var glFormat = paramThreeToGL(renderTarget.format);
       var glType = paramThreeToGL(renderTarget.type);
@@ -3061,7 +3061,7 @@ class WebGLRenderer implements Renderer {
       var maxBones = nVertexMatrices;
 
       if (object != null && object is SkinnedMesh) {
-        maxBones = Math.min(object.skeleton.bones.length, maxBones);
+        maxBones = math.min(object.skeleton.bones.length, maxBones);
 
         if (maxBones < object.skeleton.bones.length) {
           warn('WebGLRenderer: too many bones - ${object.skeleton.bones.length}' +

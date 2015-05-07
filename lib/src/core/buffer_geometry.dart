@@ -12,7 +12,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 
   int id = GeometryIdCount++;
 
-  String uuid = ThreeMath.generateUUID();
+  String uuid = three_math.generateUUID();
 
   String name = '';
   String type = 'BufferGeometry';
@@ -479,10 +479,10 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 
       for (var i = 0; i < positions.length; i += 3) {
         _vector.copyFromArray(positions, i);
-        maxRadiusSq = Math.max(maxRadiusSq, center.distanceToSquared(_vector));
+        maxRadiusSq = math.max(maxRadiusSq, center.distanceToSquared(_vector));
       }
 
-      boundingSphere._radius = Math.sqrt(maxRadiusSq);
+      boundingSphere._radius = math.sqrt(maxRadiusSq);
 
       if (boundingSphere._radius.isNaN) {
         error('BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values.');
@@ -810,7 +810,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
       var y = aNormal.array[i + 1];
       var z = aNormal.array[i + 2];
 
-      var n = 1.0 / Math.sqrt(x * x + y * y + z * z);
+      var n = 1.0 / math.sqrt(x * x + y * y + z * z);
 
       aNormal.array[i] *= n;
       aNormal.array[i + 1] *= n;

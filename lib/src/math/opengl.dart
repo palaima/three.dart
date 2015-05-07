@@ -118,7 +118,7 @@ Matrix4 makeViewMatrix(
 /// (always positive).
 void setPerspectiveMatrix(Matrix4 perspectiveMatrix, double fovYRadians,
     double aspectRatio, double zNear, double zFar) {
-  double height = Math.tan(fovYRadians * 0.5) * zNear;
+  double height = math.tan(fovYRadians * 0.5) * zNear;
   double width = height * aspectRatio;
   setFrustumMatrix(
       perspectiveMatrix, -width, width, -height, height, zNear, zFar);

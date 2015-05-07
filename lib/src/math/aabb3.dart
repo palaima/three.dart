@@ -74,16 +74,16 @@ class Aabb3 {
 
   /// Set the AABB to enclose a [triangle].
   void setTriangle(Triangle triangle) {
-    _min.setValues(Math.min(triangle._point0.x,
-        Math.min(triangle._point1.x, triangle._point2.x)), Math.min(
+    _min.setValues(math.min(triangle._point0.x,
+        math.min(triangle._point1.x, triangle._point2.x)), math.min(
         triangle._point0.y,
-        Math.min(triangle._point1.y, triangle._point2.y)), Math.min(
-        triangle._point0.z, Math.min(triangle._point1.z, triangle._point2.z)));
-    _max.setValues(Math.max(triangle._point0.x,
-        Math.max(triangle._point1.x, triangle._point2.x)), Math.max(
+        math.min(triangle._point1.y, triangle._point2.y)), math.min(
+        triangle._point0.z, math.min(triangle._point1.z, triangle._point2.z)));
+    _max.setValues(math.max(triangle._point0.x,
+        math.max(triangle._point1.x, triangle._point2.x)), math.max(
         triangle._point0.y,
-        Math.max(triangle._point1.y, triangle._point2.y)), Math.max(
-        triangle._point0.z, Math.max(triangle._point1.z, triangle._point2.z)));
+        math.max(triangle._point1.y, triangle._point2.y)), math.max(
+        triangle._point0.z, math.max(triangle._point1.z, triangle._point2.z)));
   }
 
 //  /// Set the AABB to enclose a [quad].

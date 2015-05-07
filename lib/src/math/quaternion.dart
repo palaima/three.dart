@@ -61,7 +61,7 @@ class Quaternion {
 
   /// Constructs a quaternion with a random rotation. The random number
   /// generator [rn] is used to generate the random numbers for the rotation.
-  factory Quaternion.random(Math.Random rn) =>
+  factory Quaternion.random(math.Random rn) =>
       new Quaternion._()..setRandom(rn);
 
   /// Constructs a quaternion set to the identity quaternion.
@@ -113,12 +113,12 @@ class Quaternion {
     if (len == 0.0) {
       return;
     }
-    final halfSin = Math.sin(radians * 0.5) / len;
+    final halfSin = math.sin(radians * 0.5) / len;
     final axisStorage = axis.storage;
     _storage[0] = axisStorage[0] * halfSin;
     _storage[1] = axisStorage[1] * halfSin;
     _storage[2] = axisStorage[2] * halfSin;
-    _storage[3] = Math.cos(radians * 0.5);
+    _storage[3] = math.cos(radians * 0.5);
     _onChangeController.add(null);
   }
 
@@ -127,7 +127,7 @@ class Quaternion {
     final rotationMatrixStorage = rotationMatrix.storage;
     final trace = rotationMatrix.trace();
     if (trace > 0.0) {
-      var s = Math.sqrt(trace + 1.0);
+      var s = math.sqrt(trace + 1.0);
       _storage[3] = s * 0.5;
       s = 0.5 / s;
       _storage[0] = (rotationMatrixStorage[5] - rotationMatrixStorage[7]) * s;
@@ -139,7 +139,7 @@ class Quaternion {
           : (rotationMatrixStorage[0] < rotationMatrixStorage[8] ? 2 : 0);
       var j = (i + 1) % 3;
       var k = (i + 2) % 3;
-      var s = Math.sqrt(rotationMatrixStorage[rotationMatrix.index(i, i)] -
+      var s = math.sqrt(rotationMatrixStorage[rotationMatrix.index(i, i)] -
           rotationMatrixStorage[rotationMatrix.index(j, j)] -
           rotationMatrixStorage[rotationMatrix.index(k, k)] +
           1.0);
@@ -160,18 +160,18 @@ class Quaternion {
 
   /// Set the quaternion to a random rotation. The random number generator [rn]
   /// is used to generate the random numbers for the rotation.
-  void setRandom(Math.Random rn) {
+  void setRandom(math.Random rn) {
     // From: "Uniform Random Rotations", Ken Shoemake, Graphics Gems III,
     // pg. 124-132.
     final x0 = rn.nextDouble();
-    final r1 = Math.sqrt(1.0 - x0);
-    final r2 = Math.sqrt(x0);
-    final t1 = Math.PI * 2.0 * rn.nextDouble();
-    final t2 = Math.PI * 2.0 * rn.nextDouble();
-    final c1 = Math.cos(t1);
-    final s1 = Math.sin(t1);
-    final c2 = Math.cos(t2);
-    final s2 = Math.sin(t2);
+    final r1 = math.sqrt(1.0 - x0);
+    final r2 = math.sqrt(x0);
+    final t1 = math.PI * 2.0 * rn.nextDouble();
+    final t2 = math.PI * 2.0 * rn.nextDouble();
+    final c1 = math.cos(t1);
+    final s1 = math.sin(t1);
+    final c2 = math.cos(t2);
+    final s2 = math.sin(t2);
     _storage[0] = s1 * r1;
     _storage[1] = c1 * r1;
     _storage[2] = s2 * r2;
@@ -205,12 +205,12 @@ class Quaternion {
     final halfYaw = yaw * 0.5;
     final halfPitch = pitch * 0.5;
     final halfRoll = roll * 0.5;
-    final cosYaw = Math.cos(halfYaw);
-    final sinYaw = Math.sin(halfYaw);
-    final cosPitch = Math.cos(halfPitch);
-    final sinPitch = Math.sin(halfPitch);
-    final cosRoll = Math.cos(halfRoll);
-    final sinRoll = Math.sin(halfRoll);
+    final cosYaw = math.cos(halfYaw);
+    final sinYaw = math.sin(halfYaw);
+    final cosPitch = math.cos(halfPitch);
+    final sinPitch = math.sin(halfPitch);
+    final cosRoll = math.cos(halfRoll);
+    final sinRoll = math.sin(halfRoll);
     _storage[0] = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
     _storage[1] = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
     _storage[2] = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw;
@@ -261,7 +261,7 @@ class Quaternion {
   Quaternion inverted() => clone()..inverse();
 
   /// [radians] of rotation around the [axis] of the rotation.
-  double get radians => 2.0 * Math.acos(_storage[3]);
+  double get radians => 2.0 * math.acos(_storage[3]);
 
   /// [axis] of rotation.
   Vector3 get axis {
@@ -280,7 +280,7 @@ class Quaternion {
   }
 
   /// Length.
-  double get length => Math.sqrt(length2);
+  double get length => math.sqrt(length2);
 
   /// Returns a copy of [v] rotated by quaternion.
   Vector3 rotated(Vector3 v) {
@@ -461,12 +461,12 @@ class Quaternion {
     //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
     //  content/SpinCalc.m
 
-    var c1 = Math.cos(euler._x / 2);
-    var c2 = Math.cos(euler._y / 2);
-    var c3 = Math.cos(euler._z / 2);
-    var s1 = Math.sin(euler._x / 2);
-    var s2 = Math.sin(euler._y / 2);
-    var s3 = Math.sin(euler._z / 2);
+    var c1 = math.cos(euler._x / 2);
+    var c2 = math.cos(euler._y / 2);
+    var c3 = math.cos(euler._z / 2);
+    var s1 = math.sin(euler._x / 2);
+    var s2 = math.sin(euler._y / 2);
+    var s3 = math.sin(euler._z / 2);
 
     if (euler.order == 'XYZ') {
       storage[0] = s1 * c2 * c3 + c1 * s2 * s3;
@@ -538,25 +538,25 @@ class Quaternion {
     var trace = m11 + m22 + m33;
     var s;
     if (trace > 0) {
-      s = 0.5 / Math.sqrt(trace + 1.0);
+      s = 0.5 / math.sqrt(trace + 1.0);
       _storage[3] = 0.25 / s;
       _storage[0] = (m32 - m23) * s;
       _storage[1] = (m13 - m31) * s;
       _storage[2] = (m21 - m12) * s;
     } else if (m11 > m22 && m11 > m33) {
-      s = 2.0 * Math.sqrt(1.0 + m11 - m22 - m33);
+      s = 2.0 * math.sqrt(1.0 + m11 - m22 - m33);
       _storage[3] = (m32 - m23) / s;
       _storage[0] = 0.25 * s;
       _storage[1] = (m12 + m21) / s;
       _storage[2] = (m13 + m31) / s;
     } else if (m22 > m33) {
-      s = 2.0 * Math.sqrt(1.0 + m22 - m11 - m33);
+      s = 2.0 * math.sqrt(1.0 + m22 - m11 - m33);
       _storage[3] = (m13 - m31) / s;
       _storage[0] = (m12 + m21) / s;
       _storage[1] = 0.25 * s;
       _storage[2] = (m23 + m32) / s;
     } else {
-      s = 2.0 * Math.sqrt(1.0 + m33 - m11 - m22);
+      s = 2.0 * math.sqrt(1.0 + m33 - m11 - m22);
       _storage[3] = (m21 - m12) / s;
       _storage[0]= (m13 + m31) / s;
       _storage[1] = (m23 + m32) / s;

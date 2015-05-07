@@ -25,7 +25,7 @@ class CylinderGeometry extends Geometry {
                     int heightSegments = 1,
                     bool openEnded = false,
                     double thetaStart = 0.0,
-                    double thetaLength = 2 * Math.PI]) : super() {
+                    double thetaLength = 2 * math.PI]) : super() {
 
     double heightHalf = height / 2;
 
@@ -43,9 +43,9 @@ class CylinderGeometry extends Geometry {
         double u = x / radialSegments;
 
         var vertex = new Vector3.zero()
-          ..x = radius * Math.sin(u * thetaLength + thetaStart)
+          ..x = radius * math.sin(u * thetaLength + thetaStart)
           ..y = -v * height + heightHalf
-          ..z = radius * Math.cos(u * thetaLength + thetaStart);
+          ..z = radius * math.cos(u * thetaLength + thetaStart);
 
         this.vertices.add(vertex);
 
@@ -69,9 +69,9 @@ class CylinderGeometry extends Geometry {
         nb = this.vertices[vertices[1][x + 1]].clone();
       }
 
-      na.y = Math.sqrt(na.x * na.x + na.z * na.z) * tanTheta;
+      na.y = math.sqrt(na.x * na.x + na.z * na.z) * tanTheta;
       na.normalize();
-      nb.y = Math.sqrt(nb.x * nb.x + nb.z * nb.z) * tanTheta;
+      nb.y = math.sqrt(nb.x * nb.x + nb.z * nb.z) * tanTheta;
       nb.normalize();
 
       for (var y = 0; y < heightSegments; y++) {

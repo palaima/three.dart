@@ -10,9 +10,9 @@ class SphereBufferGeometry extends BufferGeometry {
   String type = 'SphereBufferGeometry';
 
   SphereBufferGeometry([double radius = 50.0, int widthSegments, int heightSegments, double phiStart = 0.0,
-      double phiLength = Math.PI * 2.0, double thetaStart = 0.0, double thetaLength = Math.PI]) {
-    widthSegments = widthSegments != null ? Math.max(3, widthSegments) : 8;
-    heightSegments = heightSegments != null ? Math.max(2, heightSegments) : 6;
+      double phiLength = math.PI * 2.0, double thetaStart = 0.0, double thetaLength = math.PI]) {
+    widthSegments = widthSegments != null ? math.max(3, widthSegments) : 8;
+    heightSegments = heightSegments != null ? math.max(2, heightSegments) : 6;
     var vertexCount = ((widthSegments + 1) * (heightSegments + 1));
 
     var positions = new BufferAttribute.float32(vertexCount * 3, 3);
@@ -34,9 +34,9 @@ class SphereBufferGeometry extends BufferGeometry {
       for (var x = 0; x <= widthSegments; x++) {
         var u = x / widthSegments;
 
-        var px = -radius * Math.cos(phiStart + u * phiLength) * Math.sin(thetaStart + v * thetaLength);
-        var py = radius * Math.cos(thetaStart + v * thetaLength);
-        var pz = radius * Math.sin(phiStart + u * phiLength) * Math.sin(thetaStart + v * thetaLength);
+        var px = -radius * math.cos(phiStart + u * phiLength) * math.sin(thetaStart + v * thetaLength);
+        var py = radius * math.cos(thetaStart + v * thetaLength);
+        var pz = radius * math.sin(phiStart + u * phiLength) * math.sin(thetaStart + v * thetaLength);
 
         var normal = new Vector3(px, py, pz).normalize();
 

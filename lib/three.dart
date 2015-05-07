@@ -12,17 +12,16 @@ import 'dart:collection';
 import 'dart:html' hide Path;
 import 'dart:typed_data';
 import 'dart:web_gl' as gl;
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'dart:convert' show JSON;
 
-import 'extras/three_math.dart' as ThreeMath;
+import 'extras/three_math.dart' as three_math;
+import 'extras/font_utils.dart' as font_utils;
 
-import 'extras/font_utils.dart' as FontUtils;
+import 'extras/core/curve_utils.dart' as curve_utils;
+import 'extras/core/shape_utils.dart' as shape_utils;
 
-import 'extras/core/curve_utils.dart' as CurveUtils;
-import 'extras/core/shape_utils.dart' as ShapeUtils;
-
-import 'extras/uniforms_utils.dart' as UniformsUtils;
+import 'extras/uniforms_utils.dart' as uniforms_utils;
 
 part 'src/cameras/camera.dart';
 part 'src/cameras/cube_camera.dart';

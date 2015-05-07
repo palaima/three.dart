@@ -476,7 +476,7 @@ class Projector {
             _line.v1.positionScreen.setFrom(_clippedVertex1PositionScreen);
             _line.v2.positionScreen.setFrom(_clippedVertex2PositionScreen);
 
-            _line.z = Math.max(_clippedVertex1PositionScreen.z, _clippedVertex2PositionScreen.z);
+            _line.z = math.max(_clippedVertex1PositionScreen.z, _clippedVertex2PositionScreen.z);
 
             _line.material = obj.material;
 
@@ -631,18 +631,18 @@ class Projector {
       // The line segment spans at least one clip plane.
       if (bc1near < 0) {
         // v1 lies outside the near plane, v2 inside
-        alpha1 = Math.max(alpha1, bc1near / (bc1near - bc2near));
+        alpha1 = math.max(alpha1, bc1near / (bc1near - bc2near));
       } else if (bc2near < 0) {
         // v2 lies outside the near plane, v1 inside
-        alpha2 = Math.min(alpha2, bc1near / (bc1near - bc2near));
+        alpha2 = math.min(alpha2, bc1near / (bc1near - bc2near));
       }
 
       if (bc1far < 0) {
         // v1 lies outside the far plane, v2 inside
-        alpha1 = Math.max(alpha1, bc1far / (bc1far - bc2far));
+        alpha1 = math.max(alpha1, bc1far / (bc1far - bc2far));
       } else if (bc2far < 0) {
         // v2 lies outside the far plane, v2 inside
-        alpha2 = Math.min(alpha2, bc1far / (bc1far - bc2far));
+        alpha2 = math.min(alpha2, bc1far / (bc1far - bc2far));
       }
 
       if (alpha2 < alpha1) {

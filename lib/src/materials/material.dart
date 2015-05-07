@@ -15,7 +15,7 @@ class Material extends Object with DisposeStream {
   /// Unique number for this material instance.
   int id = MaterialIdCount++;
 
-  String uuid = ThreeMath.generateUUID();
+  String uuid = three_math.generateUUID();
 
   /// Material name. Default is an empty string.
   String name = '';

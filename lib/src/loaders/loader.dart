@@ -111,7 +111,7 @@ class Loader {
   }
 
   _createMaterial(Map m, String texturePath) {
-    nearest_pow2(n) => Math.pow(2, (Math.log(n) / Math.LN2).round());
+    nearest_pow2(n) => math.pow(2, (math.log(n) / math.LN2).round());
 
     create_texture(String sourceFile, List repeat, List offset, List wrap, int anisotropy) {
       var fullPath = texturePath + sourceFile;
@@ -128,7 +128,7 @@ class Loader {
         loader = imageLoader;
         loader.crossOrigin = crossOrigin;
         loader.onLoad.listen((image) {
-          if (!ThreeMath.isPowerOfTwo(image.width) || !ThreeMath.isPowerOfTwo(image.height)) {
+          if (!three_math.isPowerOfTwo(image.width) || !three_math.isPowerOfTwo(image.height)) {
             var width = nearest_pow2(image.width);
             var height = nearest_pow2(image.height);
 

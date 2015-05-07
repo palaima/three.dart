@@ -9,7 +9,7 @@ part of three;
 class IcosahedronGeometry extends PolyhedronGeometry {
 
   factory IcosahedronGeometry(double radius, int detail) {
-    var t = (1 + Math.sqrt(5)) / 2;
+    var t = (1 + math.sqrt(5)) / 2;
 
     var vertices = [
       -1, t, 0, 1, t, 0, -1, -t, 0, 1, -t, 0,

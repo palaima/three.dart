@@ -41,10 +41,10 @@ class TubeGeometry extends Geometry {
       var binormal = binormals[i];
 
       for (var j = 0; j < radialSegments; j++) {
-        var v = j / radialSegments * 2 * Math.PI;
+        var v = j / radialSegments * 2 * math.PI;
 
-        var cx = -radius * Math.cos(v);
-        var cy = radius * Math.sin(v);
+        var cx = -radius * math.cos(v);
+        var cy = radius * math.sin(v);
 
         var pos2 = new Vector3.copy(pos);
         pos2.x += cx * normal.x + cy * binormal.x;
@@ -140,7 +140,7 @@ class TubeGeometryFrenetFrames {
       if (vec.length > EPSILON) {
         vec.normalize();
 
-        var theta = Math.acos(tangents[i - 1].dot(tangents[i]));
+        var theta = math.acos(tangents[i - 1].dot(tangents[i]));
 
         normals[i].applyProjection(new Matrix4.identity().rotate(vec, theta));
       }
@@ -150,7 +150,7 @@ class TubeGeometryFrenetFrames {
 
     // if the curve is closed, postprocess the vectors so the first and last normal vectors are the same
     if (closed) {
-      var theta = Math.acos(normals[0].dot(normals[numpoints - 1]));
+      var theta = math.acos(normals[0].dot(normals[numpoints - 1]));
       theta /= (numpoints - 1);
 
       if (tangents[0].dot(normals[0].cross(normals[numpoints - 1])) > 0) {

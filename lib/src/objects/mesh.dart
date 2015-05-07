@@ -28,7 +28,7 @@ class Mesh extends Object3D implements GeometryMaterialObject {
     this.geometry = geometry != null ? geometry : new Geometry();
     this.material = material != null
         ? material
-        : new MeshBasicMaterial(color: new Math.Random().nextInt(0xffffff));
+        : new MeshBasicMaterial(color: new math.Random().nextInt(0xffffff));
 
     updateMorphTargets();
   }

@@ -51,20 +51,20 @@ class ParametricGeometry extends Geometry {
 
   factory ParametricGeometry.klein(int slices, int stacks) {
     var func = (v, u) {
-      u *= Math.PI;
-      v *= 2 * Math.PI;
+      u *= math.PI;
+      v *= 2 * math.PI;
 
       u = u * 2;
       var x, y, z;
-      if (u < Math.PI) {
-        x = 3 * Math.cos(u) * (1 + Math.sin(u)) + (2 * (1 - Math.cos(u) / 2)) * Math.cos(u) * Math.cos(v);
-        z = -8 * Math.sin(u) - 2 * (1 - Math.cos(u) / 2) * Math.sin(u) * Math.cos(v);
+      if (u < math.PI) {
+        x = 3 * math.cos(u) * (1 + math.sin(u)) + (2 * (1 - math.cos(u) / 2)) * math.cos(u) * math.cos(v);
+        z = -8 * math.sin(u) - 2 * (1 - math.cos(u) / 2) * math.sin(u) * math.cos(v);
       } else {
-        x = 3 * Math.cos(u) * (1 + Math.sin(u)) + (2 * (1 - Math.cos(u) / 2)) * Math.cos(v + Math.PI);
-        z = -8 * Math.sin(u);
+        x = 3 * math.cos(u) * (1 + math.sin(u)) + (2 * (1 - math.cos(u) / 2)) * math.cos(v + math.PI);
+        z = -8 * math.sin(u);
       }
 
-      y = -2 * (1 - Math.cos(u) / 2) * Math.sin(v);
+      y = -2 * (1 - math.cos(u) / 2) * math.sin(v);
 
       return new Vector3(x, y, z);
     };
@@ -80,14 +80,14 @@ class ParametricGeometry extends Geometry {
   factory ParametricGeometry.mobius(int slices, int stacks) {
     var func = (u, t) {
       u = u - 0.5;
-      var v = 2 * Math.PI * t;
+      var v = 2 * math.PI * t;
 
       var x, y, z;
 
       var a = 2;
-      x = Math.cos(v) * (a + u * Math.cos(v/2));
-      y = Math.sin(v) * (a + u * Math.cos(v/2));
-      z = u * Math.sin(v/2);
+      x = math.cos(v) * (a + u * math.cos(v/2));
+      y = math.sin(v) * (a + u * math.cos(v/2));
+      z = u * math.sin(v/2);
       return new Vector3(x, y, z);
     };
 
@@ -96,17 +96,17 @@ class ParametricGeometry extends Geometry {
 
   factory ParametricGeometry.mobius3d(int slices, int stacks) {
     var func = (u, t) {
-      u *= Math.PI;
-      t *= 2 * Math.PI;
+      u *= math.PI;
+      t *= 2 * math.PI;
 
       u = u * 2;
       var phi = u / 2;
       var major = 2.25, a = 0.125, b = 0.65;
       var x, y, z;
-      x = a * Math.cos(t) * Math.cos(phi) - b * Math.sin(t) * Math.sin(phi);
-      z = a * Math.cos(t) * Math.sin(phi) + b * Math.sin(t) * Math.cos(phi);
-      y = (major + x) * Math.sin(u);
-      x = (major + x) * Math.cos(u);
+      x = a * math.cos(t) * math.cos(phi) - b * math.sin(t) * math.sin(phi);
+      z = a * math.cos(t) * math.sin(phi) + b * math.sin(t) * math.cos(phi);
+      y = (major + x) * math.sin(u);
+      x = (major + x) * math.cos(u);
       return new Vector3(x, y, z);
     };
 
@@ -116,12 +116,12 @@ class ParametricGeometry extends Geometry {
   /// Parametric Replacement for SphereGeometry
   factory ParametricGeometry.sphere(double size, int u, int v) {
       var sphere = (u, v) {
-        u *= Math.PI;
-        v *= 2 * Math.PI;
+        u *= math.PI;
+        v *= 2 * math.PI;
 
-        var x = size * Math.sin(u) * Math.cos(v);
-        var y = size * Math.sin(u) * Math.sin(v);
-        var z = size * Math.cos(u);
+        var x = size * math.sin(u) * math.cos(v);
+        var y = size * math.sin(u) * math.sin(v);
+        var z = size * math.cos(u);
 
 
         return new Vector3(x, y, z);
@@ -140,7 +140,7 @@ class ParametricGeometry extends Geometry {
     var frames = new TubeGeometryFrenetFrames(path, segments, closed);
 
     var func = (u, v) {
-      v *= 2 * Math.PI;
+      v *= 2 * math.PI;
 
       var i = (u * segments).floor();
 
@@ -156,8 +156,8 @@ class ParametricGeometry extends Geometry {
       //  debugObject.add(new ArrowHelper(binormal, pos, radius, 0x00ff00));
       //}
 
-      var cx = -radius * Math.cos(v);
-      var cy = radius * Math.sin(v);
+      var cx = -radius * math.cos(v);
+      var cy = radius * math.sin(v);
 
       var pos2 = pos.clone();
       pos2.x += cx * normal.x + cy * binormal.x;
@@ -179,11 +179,11 @@ class ParametricGeometry extends Geometry {
                                  double q: 3.0,
                                  double heightScale: 1.0}) {
     var path = new Curve.create((double t) {
-      t *= Math.PI * 2;
+      t *= math.PI * 2;
       var r = 0.5;
-      var tx = (1 + r * Math.cos(q * t)) * Math.cos(p * t),
-        ty = (1 + r * Math.cos(q * t)) * Math.sin(p * t),
-        tz = r * Math.sin(q * t);
+      var tx = (1 + r * math.cos(q * t)) * math.cos(p * t),
+        ty = (1 + r * math.cos(q * t)) * math.sin(p * t),
+        tz = r * math.sin(q * t);
 
       return new Vector3(tx, ty * heightScale, tz)..scale(radius);
     });

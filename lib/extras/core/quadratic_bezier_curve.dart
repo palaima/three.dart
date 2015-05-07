@@ -10,8 +10,8 @@ class QuadraticBezierCurve extends Curve2D {
 
     var tx, ty;
 
-    tx = ShapeUtils.b2(t, v0.x, v1.x, v2.x);
-    ty = ShapeUtils.b2(t, v0.y, v1.y, v2.y);
+    tx = shape_utils.b2(t, v0.x, v1.x, v2.x);
+    ty = shape_utils.b2(t, v0.y, v1.y, v2.y);
 
     return new Vector2(tx, ty);
   }
@@ -21,8 +21,8 @@ class QuadraticBezierCurve extends Curve2D {
 
     var tx, ty;
 
-    tx = CurveUtils.tangentQuadraticBezier(t, v0.x, v1.x, v2.x);
-    ty = CurveUtils.tangentQuadraticBezier(t, v0.y, v1.y, v2.y);
+    tx = curve_utils.tangentQuadraticBezier(t, v0.x, v1.x, v2.x);
+    ty = curve_utils.tangentQuadraticBezier(t, v0.y, v1.y, v2.y);
 
     // returns unit vector
     return new Vector2(tx, ty).normalize();

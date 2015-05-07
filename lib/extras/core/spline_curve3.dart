@@ -29,9 +29,9 @@ class SplineCurve3 extends Curve3D {
         pt2 = points[c[2]],
         pt3 = points[c[3]];
 
-    v.x = CurveUtils.interpolate(pt0.x, pt1.x, pt2.x, pt3.x, weight);
-    v.y = CurveUtils.interpolate(pt0.y, pt1.y, pt2.y, pt3.y, weight);
-    v.z = CurveUtils.interpolate(pt0.z, pt1.z, pt2.z, pt3.z, weight);
+    v.x = curve_utils.interpolate(pt0.x, pt1.x, pt2.x, pt3.x, weight);
+    v.y = curve_utils.interpolate(pt0.y, pt1.y, pt2.y, pt3.y, weight);
+    v.z = curve_utils.interpolate(pt0.z, pt1.z, pt2.z, pt3.z, weight);
 
     return v;
 

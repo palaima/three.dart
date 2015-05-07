@@ -27,7 +27,7 @@ class Object3D {
   int id = Object3DIdCount++;
 
   // Unique UUID
-  String uuid = ThreeMath.generateUUID();
+  String uuid = three_math.generateUUID();
 
   /// Optional name of the object (doesn't need to be unique).
   String name = '';

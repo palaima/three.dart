@@ -100,68 +100,68 @@ class Euler {
 
     switch (order) {
       case 'XYZ':
-        _y = Math.asin(m13.clamp(-1.0, 1.0));
+        _y = math.asin(m13.clamp(-1.0, 1.0));
 
         if (m13.abs() < 0.99999) {
-          _x = Math.atan2(-m23, m33);
-          _z = Math.atan2(-m12, m11);
+          _x = math.atan2(-m23, m33);
+          _z = math.atan2(-m12, m11);
         } else {
-          _x = Math.atan2(m32, m22);
+          _x = math.atan2(m32, m22);
           _z = 0.0;
         }
         break;
       case 'YXZ':
-        _x = Math.asin(-m23.clamp(-1.0, 1.0));
+        _x = math.asin(-m23.clamp(-1.0, 1.0));
 
         if (m23.abs() < 0.99999) {
-          _y = Math.atan2(m13, m33);
-          _z = Math.atan2(m21, m22);
+          _y = math.atan2(m13, m33);
+          _z = math.atan2(m21, m22);
         } else {
-          _y = Math.atan2(-m31, m11);
+          _y = math.atan2(-m31, m11);
           _z = 0.0;
         }
         break;
       case 'ZXY':
-        _x = Math.asin(m32.clamp(-1.0, 1.0));
+        _x = math.asin(m32.clamp(-1.0, 1.0));
 
         if (m32.abs() < 0.99999) {
-          _y = Math.atan2(-m31, m33);
-          _z = Math.atan2(-m12, m22);
+          _y = math.atan2(-m31, m33);
+          _z = math.atan2(-m12, m22);
         } else {
           _y = 0.0;
-          _z = Math.atan2(m21, m11);
+          _z = math.atan2(m21, m11);
         }
         break;
       case 'ZYX':
-        _y = Math.asin(-m31.clamp(-1.0, 1.0));
+        _y = math.asin(-m31.clamp(-1.0, 1.0));
 
         if (m31.abs() < 0.99999 ) {
-          _x = Math.atan2(m32, m33);
-          _z = Math.atan2(m21, m11);
+          _x = math.atan2(m32, m33);
+          _z = math.atan2(m21, m11);
         } else {
           _x = 0.0;
-          _z = Math.atan2(-m12, m22);
+          _z = math.atan2(-m12, m22);
         }
         break;
       case 'YZX':
-        _z = Math.asin(m21.clamp(-1.0, 1.0));
+        _z = math.asin(m21.clamp(-1.0, 1.0));
 
         if (m21.abs() < 0.99999) {
-          _x = Math.atan2(-m23, m22);
-          _y = Math.atan2(-m31, m11);
+          _x = math.atan2(-m23, m22);
+          _y = math.atan2(-m31, m11);
         } else {
           _x = 0.0;
-          _y = Math.atan2(m13, m33);
+          _y = math.atan2(m13, m33);
         }
         break;
       case 'XZY':
-        _z = Math.asin(-m12.clamp(-1.0, 1.0));
+        _z = math.asin(-m12.clamp(-1.0, 1.0));
 
         if (m12.abs() < 0.99999) {
-          _x = Math.atan2(m32, m22);
-          _y = Math.atan2(m13, m11);
+          _x = math.atan2(m32, m22);
+          _y = math.atan2(m13, m11);
         } else {
-          _x = Math.atan2(-m23, m33);
+          _x = math.atan2(-m23, m33);
           _y = 0.0;
         }
         break;
@@ -185,36 +185,36 @@ class Euler {
 
     switch (_order) {
       case 'XYZ':
-        _x = Math.atan2(2 * (q.x * q.w - q.y * q.z), (sqw - sqx - sqy + sqz));
-        _y = Math.asin((2 * (q.x * q.z + q.y * q.w)).clamp(-1.0, 1.0));
-        _z = Math.atan2(2 * (q.z * q.w - q.x * q.y), (sqw + sqx - sqy - sqz));
+        _x = math.atan2(2 * (q.x * q.w - q.y * q.z), (sqw - sqx - sqy + sqz));
+        _y = math.asin((2 * (q.x * q.z + q.y * q.w)).clamp(-1.0, 1.0));
+        _z = math.atan2(2 * (q.z * q.w - q.x * q.y), (sqw + sqx - sqy - sqz));
         break;
       case 'YXZ':
-        _x = Math.asin((2 * (q.x * q.w - q.y * q.z)).clamp(-1.0, 1.0));
-        _y = Math.atan2(2 * (q.x * q.z + q.y * q.w), (sqw - sqx - sqy + sqz));
-        _z = Math.atan2(2 * (q.x * q.y + q.z * q.w), (sqw - sqx + sqy - sqz));
+        _x = math.asin((2 * (q.x * q.w - q.y * q.z)).clamp(-1.0, 1.0));
+        _y = math.atan2(2 * (q.x * q.z + q.y * q.w), (sqw - sqx - sqy + sqz));
+        _z = math.atan2(2 * (q.x * q.y + q.z * q.w), (sqw - sqx + sqy - sqz));
         break;
       case 'ZXY':
-        _x = Math.asin((2 * (q.x * q.w + q.y * q.z)).clamp(-1.0, 1.0));
-        _y = Math.atan2(2 * (q.y * q.w - q.z * q.x), (sqw - sqx - sqy + sqz));
-        _z = Math.atan2(2 * (q.z * q.w - q.x * q.y), (sqw - sqx + sqy - sqz));
+        _x = math.asin((2 * (q.x * q.w + q.y * q.z)).clamp(-1.0, 1.0));
+        _y = math.atan2(2 * (q.y * q.w - q.z * q.x), (sqw - sqx - sqy + sqz));
+        _z = math.atan2(2 * (q.z * q.w - q.x * q.y), (sqw - sqx + sqy - sqz));
 
         break;
       case 'ZYX':
-        _x = Math.atan2(2 * (q.x * q.w + q.z * q.y), (sqw - sqx - sqy + sqz));
-        _y = Math.asin((2 * (q.y * q.w - q.x * q.z)).clamp(-1.0, 1.0));
-        _z = Math.atan2(2 * (q.x * q.y + q.z * q.w), ( sqw + sqx - sqy - sqz));
+        _x = math.atan2(2 * (q.x * q.w + q.z * q.y), (sqw - sqx - sqy + sqz));
+        _y = math.asin((2 * (q.y * q.w - q.x * q.z)).clamp(-1.0, 1.0));
+        _z = math.atan2(2 * (q.x * q.y + q.z * q.w), ( sqw + sqx - sqy - sqz));
 
         break;
       case 'YZX':
-        _x = Math.atan2(2 * (q.x * q.w - q.z * q.y), (sqw - sqx + sqy - sqz));
-        _y = Math.atan2(2 * (q.y * q.w - q.x * q.z), (sqw + sqx - sqy - sqz));
-        _z = Math.asin((2 * (q.x * q.y + q.z * q.w)).clamp(-1.0, 1.0));
+        _x = math.atan2(2 * (q.x * q.w - q.z * q.y), (sqw - sqx + sqy - sqz));
+        _y = math.atan2(2 * (q.y * q.w - q.x * q.z), (sqw + sqx - sqy - sqz));
+        _z = math.asin((2 * (q.x * q.y + q.z * q.w)).clamp(-1.0, 1.0));
         break;
       case 'XZY':
-        _x = Math.atan2(2 * (q.x * q.w + q.y * q.z), (sqw - sqx + sqy - sqz) );
-        _y = Math.atan2(2 * (q.x * q.z + q.y * q.w), (sqw + sqx - sqy - sqz) );
-        _z = Math.asin((2 * (q.z * q.w - q.x * q.y) ).clamp(-1.0, 1.0));
+        _x = math.atan2(2 * (q.x * q.w + q.y * q.z), (sqw - sqx + sqy - sqz) );
+        _y = math.atan2(2 * (q.x * q.z + q.y * q.w), (sqw + sqx - sqy - sqz) );
+        _z = math.asin((2 * (q.z * q.w - q.x * q.y) ).clamp(-1.0, 1.0));
         break;
       default:
         print('WARNING: Euler.setFromQuaternion() given unsupported order: [$order]');

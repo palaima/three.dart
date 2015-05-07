@@ -41,7 +41,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   /// Unique number of this object instance.
   int id = GeometryIdCount++;
 
-  String uuid = ThreeMath.generateUUID();
+  String uuid = three_math.generateUUID();
 
   /// Name for this geometry. Default is an empty string.
   String name = '';
@@ -377,7 +377,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     for (var f = 0; f < faces.length; f++) {
       var face = faces[f];
 
-      for (var i = 0; i < Math.min(face.vertexNormals.length, 3); i++) {
+      for (var i = 0; i < math.min(face.vertexNormals.length, 3); i++) {
         n.setFrom(face.vertexNormals[i]);
 
         var vertexIndex = face.indices[i];
@@ -526,7 +526,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     var unique = [], changes = new List(vertices.length);
 
     var precisionPoints = 4; // number of decimal points, eg. 4 for epsilon of 0.0001
-    var precision = Math.pow(10, precisionPoints);
+    var precision = math.pow(10, precisionPoints);
 
     for (var i = 0; i < vertices.length; i++) {
       var v = this.vertices[i];
@@ -622,7 +622,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   int get _maxFaceIndex {
     var maxIndex = 0;
     for (var f = 0; f < faces.length; f++) {
-      var max = faces[f].indices.reduce(Math.max);
+      var max = faces[f].indices.reduce(math.max);
       if (max > maxIndex) maxIndex = max;
     }
     return maxIndex + 1;

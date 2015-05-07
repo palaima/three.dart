@@ -92,11 +92,11 @@ class Color {
   Color.random({bool useNamed: false}) {
     if (useNamed) {
       var colors = Colors.toList();
-      setHex(colors[ThreeMath.randInt(0, colors.length)]);
+      setHex(colors[three_math.randInt(0, colors.length)]);
     } else {
-      storage[0] = ThreeMath.randFloat(0.0, 1.0);
-      storage[1] = ThreeMath.randFloat(0.0, 1.0);
-      storage[2] = ThreeMath.randFloat(0.0, 1.0);
+      storage[0] = three_math.randFloat(0.0, 1.0);
+      storage[1] = three_math.randFloat(0.0, 1.0);
+      storage[2] = three_math.randFloat(0.0, 1.0);
     }
   }
 
@@ -146,18 +146,18 @@ class Color {
     // rgb(255,0,0)
     color = new RegExp(r'^rgb\((\d+), ?(\d+), ?(\d+)\)$', caseSensitive: true).firstMatch(style);
     if (color != null) {
-      storage[0] = Math.min(255, int.parse(color[1])) / 255;
-      storage[1] = Math.min(255, int.parse(color[2])) / 255;
-      storage[2] = Math.min(255, int.parse(color[3])) / 255;
+      storage[0] = math.min(255, int.parse(color[1])) / 255;
+      storage[1] = math.min(255, int.parse(color[2])) / 255;
+      storage[2] = math.min(255, int.parse(color[3])) / 255;
       return this;
     }
 
     // rgb(100%,0%,0%)
     color = new RegExp(r'^rgb\((\d+)\%, ?(\d+)\%, ?(\d+)\%\)$', caseSensitive: true).firstMatch(style);
     if (color != null) {
-      storage[0] = Math.min(100, int.parse(color[1])) / 100;
-      storage[1] = Math.min(100, int.parse(color[2])) / 100;
-      storage[2] = Math.min(100, int.parse(color[3])) / 100;
+      storage[0] = math.min(100, int.parse(color[1])) / 100;
+      storage[1] = math.min(100, int.parse(color[2])) / 100;
+      storage[2] = math.min(100, int.parse(color[3])) / 100;
       return this;
     }
 
@@ -180,18 +180,18 @@ class Color {
 
   /// Copies [color] making conversion from gamma to linear space.
   Color copyGammaToLinear(Color color, [double gammaFactor = 2.0]) {
-    storage[0] = Math.pow(color.storage[0], gammaFactor);
-    storage[1] = Math.pow(color.storage[1], gammaFactor);
-    storage[2] = Math.pow(color.storage[2], gammaFactor);
+    storage[0] = math.pow(color.storage[0], gammaFactor);
+    storage[1] = math.pow(color.storage[1], gammaFactor);
+    storage[2] = math.pow(color.storage[2], gammaFactor);
     return this;
   }
 
   /// Copies [color] making conversion from linear to gamma space.
   Color copyLinearToGamma(Color color, [double gammaFactor = 2.0]) {
     var safeInverse = gammaFactor > 0 ? (1.0 / gammaFactor) : 1.0;
-    storage[0] = Math.pow(color.storage[0], safeInverse);
-    storage[1] = Math.pow(color.storage[1], safeInverse);
-    storage[2] = Math.pow(color.storage[2], safeInverse);
+    storage[0] = math.pow(color.storage[0], safeInverse);
+    storage[1] = math.pow(color.storage[1], safeInverse);
+    storage[2] = math.pow(color.storage[2], safeInverse);
     return this;
   }
 
@@ -205,9 +205,9 @@ class Color {
 
   /// Converts RGB values from linear to gamma space.
   Color convertLinearToGamma() {
-    storage[0] = Math.sqrt(storage[0]);
-    storage[1] = Math.sqrt(storage[1]);
-    storage[2] = Math.sqrt(storage[2]);
+    storage[0] = math.sqrt(storage[0]);
+    storage[1] = math.sqrt(storage[1]);
+    storage[2] = math.sqrt(storage[2]);
     return this;
   }
 
@@ -318,8 +318,8 @@ class HSL {
 
   HSL.fromRGB(double r, double g, double b) {
     // h,s,l ranges are in 0.0 - 1.0
-    var max = Math.max(Math.max(r, g), b);
-    var min = Math.min(Math.min(r, g), b);
+    var max = math.max(math.max(r, g), b);
+    var min = math.min(math.min(r, g), b);
 
     _l = (min + max) / 2.0;
 

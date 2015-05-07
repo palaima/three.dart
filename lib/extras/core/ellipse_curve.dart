@@ -19,8 +19,8 @@ class EllipseCurve extends Curve2D {
 
     var angle = aStartAngle + t * deltaAngle;
 
-    var tx = aX + xRadius * Math.cos(angle);
-    var ty = aY + yRadius * Math.sin(angle);
+    var tx = aX + xRadius * math.cos(angle);
+    var ty = aY + yRadius * math.sin(angle);
 
     return new Vector2(tx, ty);
 

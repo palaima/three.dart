@@ -22,8 +22,8 @@ class SplineCurve extends Curve2D {
     c[2] = intPoint > points.length - 2 ? points.length - 1 : intPoint + 1;
     c[3] = intPoint > points.length - 3 ? points.length - 1 : intPoint + 2;
 
-    v.x = CurveUtils.interpolate(points[c[0]].x, points[c[1]].x, points[c[2]].x, points[c[3]].x, weight);
-    v.y = CurveUtils.interpolate(points[c[0]].y, points[c[1]].y, points[c[2]].y, points[c[3]].y, weight);
+    v.x = curve_utils.interpolate(points[c[0]].x, points[c[1]].x, points[c[2]].x, points[c[3]].x, weight);
+    v.y = curve_utils.interpolate(points[c[0]].y, points[c[1]].y, points[c[2]].y, points[c[3]].y, weight);
 
     return v;
 

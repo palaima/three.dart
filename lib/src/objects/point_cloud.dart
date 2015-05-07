@@ -16,7 +16,7 @@ class PointCloud extends Object3D implements GeometryMaterialObject {
   PointCloud([IGeometry geometry, Material material])
       : geometry = geometry != null ? geometry : new Geometry(),
         material = material != null ? material : new PointCloudMaterial(
-            color: new Math.Random().nextDouble() * 0xffffff);
+            color: new math.Random().nextDouble() * 0xffffff);
 
   raycast(raycaster, intersects) {
     throw new UnimplementedError();

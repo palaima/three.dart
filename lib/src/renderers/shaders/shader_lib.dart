@@ -12,7 +12,7 @@ part of three;
 
 final Map<String, Map> ShaderLib = {
   'basic': {
-    'uniforms': UniformsUtils.merge([
+    'uniforms': uniforms_utils.merge([
       UniformsLib["common"],
       UniformsLib["fog"],
       UniformsLib["shadowmap"]
@@ -79,7 +79,7 @@ final Map<String, Map> ShaderLib = {
     ].join("\n")
   },
   'lambert': {
-    'uniforms': UniformsUtils.merge([
+    'uniforms': uniforms_utils.merge([
       UniformsLib["common"],
       UniformsLib["fog"],
       UniformsLib["lights"],
@@ -168,7 +168,7 @@ final Map<String, Map> ShaderLib = {
     ].join("\n")
   },
   'phong': {
-    'uniforms': UniformsUtils.merge([
+    'uniforms': uniforms_utils.merge([
       UniformsLib["common"],
       UniformsLib["aomap"],
       UniformsLib["lightmap"],
@@ -266,7 +266,7 @@ final Map<String, Map> ShaderLib = {
   },
 
   'particle_basic': {
-    'uniforms': UniformsUtils.merge([
+    'uniforms': uniforms_utils.merge([
       UniformsLib["particle"],
       UniformsLib["shadowmap"]
     ]),
@@ -315,7 +315,7 @@ final Map<String, Map> ShaderLib = {
     ].join("\n")
   },
   'dashed': {
-    'uniforms': UniformsUtils.merge([
+    'uniforms': uniforms_utils.merge([
       UniformsLib["common"],
       UniformsLib["fog"], {
         "scale": new Uniform.float(1.0),

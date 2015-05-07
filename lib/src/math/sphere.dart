@@ -72,10 +72,10 @@ class Sphere {
     var maxRadiusSq = 0;
 
     points.forEach((point) {
-      maxRadiusSq = Math.max( maxRadiusSq, center.distanceToSquared( point) );
+      maxRadiusSq = math.max( maxRadiusSq, center.distanceToSquared( point) );
     });
 
-    radius = Math.sqrt(maxRadiusSq);
+    radius = math.sqrt(maxRadiusSq);
 
     return this;
   }

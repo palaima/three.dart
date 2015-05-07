@@ -17,15 +17,15 @@ class LatheGeometry extends Geometry {
   /// * [segments]: The number of circumference segments to generate.
   /// * [phiStart]: The starting angle in radians.
   /// * [phiLength]: The radian (0 to 2PI) range of the lathed section 2PI is a closed lathe, less than 2PI is a portion.
-  LatheGeometry(List<Vector3> points, [int segments = 12, double phiStart = 0.0, double phiLength = 2 * Math.PI]) : super() {
+  LatheGeometry(List<Vector3> points, [int segments = 12, double phiStart = 0.0, double phiLength = 2 * math.PI]) : super() {
     var inversePointLength = 1.0 / (points.length - 1);
     var inverseSegments = 1.0 / segments;
 
     for (var i = 0; i <= segments; i++) {
       var phi = phiStart + i * inverseSegments * phiLength;
 
-      var c = Math.cos(phi),
-          s = Math.sin(phi);
+      var c = math.cos(phi),
+          s = math.sin(phi);
 
       points.forEach((pt) => vertices.add(new Vector3(c * pt.x - s * pt.y, s * pt.x + c * pt.y, pt.z)));
     }

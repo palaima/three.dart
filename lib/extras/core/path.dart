@@ -258,8 +258,8 @@ class Path extends CurvePath {
 
             t = j / divisions;
 
-            tx = ShapeUtils.b2(t, cpx0, cpx1, cpx);
-            ty = ShapeUtils.b2(t, cpy0, cpy1, cpy);
+            tx = shape_utils.b2(t, cpx0, cpx1, cpx);
+            ty = shape_utils.b2(t, cpy0, cpy1, cpy);
 
             points.add(new Vector2(tx, ty));
 
@@ -299,8 +299,8 @@ class Path extends CurvePath {
 
             t = j / divisions;
 
-            tx = ShapeUtils.b3(t, cpx0, cpx1, cpx2, cpx);
-            ty = ShapeUtils.b3(t, cpy0, cpy1, cpy2, cpy);
+            tx = shape_utils.b3(t, cpx0, cpx1, cpx2, cpx);
+            ty = shape_utils.b3(t, cpy0, cpy1, cpy2, cpy);
 
             points.add(new Vector2(tx, ty));
 
@@ -357,8 +357,8 @@ class Path extends CurvePath {
 
             angle = aStartAngle + t * deltaAngle;
 
-            tx = aX + aRadius * Math.cos(angle);
-            ty = aY + aRadius * Math.sin(angle);
+            tx = aX + aRadius * math.cos(angle);
+            ty = aY + aRadius * math.sin(angle);
 
             //console.log('t', t, 'angle', angle, 'tx', tx, 'ty', ty);
 
@@ -397,8 +397,8 @@ class Path extends CurvePath {
 
             angle = aStartAngle + t * deltaAngle;
 
-            tx = aX + xRadius * Math.cos(angle);
-            ty = aY + yRadius * Math.sin(angle);
+            tx = aX + xRadius * math.cos(angle);
+            ty = aY + yRadius * math.sin(angle);
 
             //console.log('t', t, 'angle', angle, 'tx', tx, 'ty', ty);
 
@@ -489,7 +489,7 @@ class Path extends CurvePath {
     Shape tmpShape;
     List<Shape> shapes = [];
 
-    var holesFirst = !ShapeUtils.isClockWise(subPaths[0].getPoints());
+    var holesFirst = !shape_utils.isClockWise(subPaths[0].getPoints());
     // console.log("Holes first", holesFirst);
 
     if (subPaths.length == 1) {
@@ -509,7 +509,7 @@ class Path extends CurvePath {
 
         tmpPath = subPaths[i];
 
-        if (ShapeUtils.isClockWise(tmpPath.getPoints())) {
+        if (shape_utils.isClockWise(tmpPath.getPoints())) {
 
           tmpShape.actions = tmpPath.actions;
           tmpShape.curves = tmpPath.curves;
@@ -537,7 +537,7 @@ class Path extends CurvePath {
 
         tmpPath = subPaths[i];
 
-        if (ShapeUtils.isClockWise(tmpPath.getPoints())) {
+        if (shape_utils.isClockWise(tmpPath.getPoints())) {
 
 
           if (tmpShape != null) shapes.add(tmpShape);

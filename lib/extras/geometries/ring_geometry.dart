@@ -20,9 +20,9 @@ class RingGeometry extends Geometry {
                 int thetaSegments,
                 int phiSegments,
                 double thetaStart = 0.0,
-                double thetaLength = Math.PI * 2]) : super() {
-    thetaSegments = thetaSegments != null ? Math.max(3, thetaSegments) : 8;
-    phiSegments = phiSegments != null ? Math.max(3, phiSegments) : 8;
+                double thetaLength = math.PI * 2]) : super() {
+    thetaSegments = thetaSegments != null ? math.max(3, thetaSegments) : 8;
+    phiSegments = phiSegments != null ? math.max(3, phiSegments) : 8;
 
     List<Vector2> uvs = [];
     double radius = innerRadius;
@@ -33,8 +33,8 @@ class RingGeometry extends Geometry {
         var vertex = new Vector3.zero();
         var segment = thetaStart + o / thetaSegments * thetaLength;
 
-        vertex.x = radius * Math.cos(segment);
-        vertex.y = radius * Math.sin(segment);
+        vertex.x = radius * math.cos(segment);
+        vertex.y = radius * math.sin(segment);
 
         vertices.add(vertex);
         uvs.add(new Vector2((vertex.x / outerRadius + 1) / 2, (vertex.y / outerRadius + 1) / 2));

@@ -17,8 +17,8 @@ class ArcCurve extends Curve2D {
 
     var angle = aStartAngle + t * deltaAngle;
 
-    var tx = aX + aRadius * Math.cos(angle);
-    var ty = aY + aRadius * Math.sin(angle);
+    var tx = aX + aRadius * math.cos(angle);
+    var ty = aY + aRadius * math.sin(angle);
 
     return new Vector2(tx, ty);
   }

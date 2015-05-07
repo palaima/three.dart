@@ -22,7 +22,7 @@ class TorusGeometry extends Geometry {
                  double tube = 40.0,
                  int radialSegments = 8,
                  int tubularSegments = 6,
-                 double arc = Math.PI * 2]) : super() {
+                 double arc = math.PI * 2]) : super() {
 
     List<Vector2> uvs = [];
     List<Vector3> normals = [];
@@ -30,16 +30,16 @@ class TorusGeometry extends Geometry {
     for (var j = 0; j <= radialSegments; j++) {
       for (var i = 0; i <= tubularSegments; i++) {
         var u = i / tubularSegments * arc;
-        var v = j / radialSegments * Math.PI * 2;
+        var v = j / radialSegments * math.PI * 2;
 
         var center = new Vector3.zero()
-            ..x = radius * Math.cos(u)
-            ..y = radius * Math.sin(u);
+            ..x = radius * math.cos(u)
+            ..y = radius * math.sin(u);
 
         var vertex = new Vector3.zero()
-            ..x = (radius + tube * Math.cos(v)) * Math.cos(u)
-            ..y = (radius + tube * Math.cos(v)) * Math.sin(u)
-            ..z = tube * Math.sin(v);
+            ..x = (radius + tube * math.cos(v)) * math.cos(u)
+            ..y = (radius + tube * math.cos(v)) * math.sin(u)
+            ..z = tube * math.sin(v);
 
         vertices.add(vertex);
 

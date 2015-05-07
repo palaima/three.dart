@@ -77,7 +77,7 @@ class Triangle {
 
     var resultLengthSq = result.length2;
     if (resultLengthSq > 0) {
-      return result.scale(1 / Math.sqrt(resultLengthSq));
+      return result.scale(1 / math.sqrt(resultLengthSq));
     }
 
     return result.setZero();

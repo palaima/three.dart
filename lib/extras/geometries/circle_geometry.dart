@@ -27,8 +27,8 @@ class CircleGeometry extends Geometry {
   CircleGeometry([double radius = 50.0,
                   int segments,
                   double thetaStart = 0.0,
-                  double thetaLength =  Math.PI * 2]) {
-    segments = segments != null ? Math.max(3, segments) : 8;
+                  double thetaLength =  math.PI * 2]) {
+    segments = segments != null ? math.max(3, segments) : 8;
 
     List<Vector2> uvs = [];
     var center = new Vector3.zero();
@@ -39,8 +39,8 @@ class CircleGeometry extends Geometry {
 
     for (var i = 0; i <= segments; i++) {
       var vertex = new Vector3.zero();
-      vertex.x = radius * Math.cos(thetaStart + i / segments * thetaLength);
-      vertex.y = radius * Math.sin(thetaStart + i / segments * thetaLength);
+      vertex.x = radius * math.cos(thetaStart + i / segments * thetaLength);
+      vertex.y = radius * math.sin(thetaStart + i / segments * thetaLength);
 
       vertices.add(vertex);
       uvs.add(new Vector2((vertex.x / radius + 1) / 2, -(vertex.y / radius + 1) / 2 + 1));

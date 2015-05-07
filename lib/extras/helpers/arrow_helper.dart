@@ -47,7 +47,7 @@ class ArrowHelper extends Object3D {
       quaternion = new Quaternion(1.0, 0.0, 0.0, 0.0);
     } else {
       var axis = new Vector3(direction.z, 0.0, -direction.x).normalize();
-      var radians = Math.acos(direction.y);
+      var radians = math.acos(direction.y);
       quaternion.setAxisAngle(axis, radians);
     }
   }

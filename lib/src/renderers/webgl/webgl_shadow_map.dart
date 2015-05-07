@@ -37,7 +37,7 @@ class WebGLShadowMap {
     _gl = _renderer.context;
 
     var depthShader = ShaderLib['depthRGBA'];
-    var depthUniforms = UniformsUtils.clone(depthShader['uniforms']);
+    var depthUniforms = uniforms_utils.clone(depthShader['uniforms']);
 
     _depthMaterial = new ShaderMaterial(
       uniforms: depthUniforms,

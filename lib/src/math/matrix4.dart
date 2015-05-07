@@ -597,8 +597,8 @@ class Matrix4 {
     var x = axisStorage[0] / len;
     var y = axisStorage[1] / len;
     var z = axisStorage[2] / len;
-    var c = Math.cos(angle);
-    var s = Math.sin(angle);
+    var c = math.cos(angle);
+    var s = math.sin(angle);
     var C = 1.0 - c;
     var m11 = x * x * C + c;
     var m12 = x * y * C - z * s;
@@ -638,8 +638,8 @@ class Matrix4 {
 
   /// Rotate this [angle] radians around X
   Matrix4 rotateX(double angle) {
-    double cosAngle = Math.cos(angle);
-    double sinAngle = Math.sin(angle);
+    double cosAngle = math.cos(angle);
+    double sinAngle = math.sin(angle);
     var t1 = _storage[4] * cosAngle + _storage[8] * sinAngle;
     var t2 = _storage[5] * cosAngle + _storage[9] * sinAngle;
     var t3 = _storage[6] * cosAngle + _storage[10] * sinAngle;
@@ -661,8 +661,8 @@ class Matrix4 {
 
   /// Rotate this matrix [angle] radians around Y
   Matrix4 rotateY(double angle) {
-    double cosAngle = Math.cos(angle);
-    double sinAngle = Math.sin(angle);
+    double cosAngle = math.cos(angle);
+    double sinAngle = math.sin(angle);
     var t1 = _storage[0] * cosAngle + _storage[8] * -sinAngle;
     var t2 = _storage[1] * cosAngle + _storage[9] * -sinAngle;
     var t3 = _storage[2] * cosAngle + _storage[10] * -sinAngle;
@@ -684,8 +684,8 @@ class Matrix4 {
 
   /// Rotate this matrix [angle] radians around Z
   Matrix4 rotateZ(double angle) {
-    double cosAngle = Math.cos(angle);
-    double sinAngle = Math.sin(angle);
+    double cosAngle = math.cos(angle);
+    double sinAngle = math.sin(angle);
     var t1 = _storage[0] * cosAngle + _storage[4] * sinAngle;
     var t2 = _storage[1] * cosAngle + _storage[5] * sinAngle;
     var t3 = _storage[2] * cosAngle + _storage[6] * sinAngle;
@@ -1021,7 +1021,7 @@ class Matrix4 {
     final scaleZSq = _storage[8] * _storage[8] +
         _storage[9] * _storage[9] +
         _storage[10] * _storage[10];
-    return Math.sqrt(Math.max(scaleXSq, Math.max(scaleYSq, scaleZSq)));
+    return math.sqrt(math.max(scaleXSq, math.max(scaleYSq, scaleZSq)));
   }
 
   /// Transposes just the upper 3x3 rotation matrix.
@@ -1146,8 +1146,8 @@ class Matrix4 {
 
   /// Sets the upper 3x3 to a rotation of [radians] around X
   void setRotationX(double radians) {
-    double c = Math.cos(radians);
-    double s = Math.sin(radians);
+    double c = math.cos(radians);
+    double s = math.sin(radians);
     _storage[0] = 1.0;
     _storage[1] = 0.0;
     _storage[2] = 0.0;
@@ -1164,8 +1164,8 @@ class Matrix4 {
 
   /// Sets the upper 3x3 to a rotation of [radians] around Y
   void setRotationY(double radians) {
-    double c = Math.cos(radians);
-    double s = Math.sin(radians);
+    double c = math.cos(radians);
+    double s = math.sin(radians);
     _storage[0] = c;
     _storage[1] = 0.0;
     _storage[2] = -s;
@@ -1182,8 +1182,8 @@ class Matrix4 {
 
   /// Sets the upper 3x3 to a rotation of [radians] around Z
   void setRotationZ(double radians) {
-    double c = Math.cos(radians);
-    double s = Math.sin(radians);
+    double c = math.cos(radians);
+    double s = math.sin(radians);
     _storage[0] = c;
     _storage[1] = s;
     _storage[2] = 0.0;
@@ -1869,9 +1869,9 @@ class Matrix4 {
 
   Matrix4 makeRotationFromEuler(Euler euler) {
     var x = euler.x, y = euler.y, z = euler.z;
-    var a = Math.cos(x), b = Math.sin(x);
-    var c = Math.cos(y), d = Math.sin(y);
-    var e = Math.cos(z), f = Math.sin(z);
+    var a = math.cos(x), b = math.sin(x);
+    var c = math.cos(y), d = math.sin(y);
+    var e = math.cos(z), f = math.sin(z);
 
     if (euler.order == 'XYZ') {
       var ae = a * e, af = a * f, be = b * e, bf = b * f;
