@@ -1595,11 +1595,48 @@ class WebGLRenderer implements Renderer {
     }
 
     if (program == null) {
-      var symbolMap = new Map.fromIterable(parameters.keys,
-          key: (param) => new Symbol(param),
-          value: (param) => parameters[param]);
+      var p = parameters;
+      program = new WebGLProgram._(this, code, material,
+          precision: p['precision'],
+          supportsVertexTextures: p['supportsVertexTextures'],
+          map: p['map'],
+          envMap: p['envMap'],
+          envMapMode: p['envMapMode'],
+          lightMap: p['lightMap'],
+          aoMap: p['aoMap'],
+          bumpMap: p['bumpMap'],
+          normalMap: p['normalMap'],
+          specularMap: p['specularMap'],
+          alphaMap: p['alphaMap'],
+          combine: p['combine'],
+          vertexColors: p['vertexColors'],
+          fog: p['fog'],
+          useFog: p['useFog'],
+          fogExp: p['fogExp'],
+          flatShading: p['flatShading'],
+          sizeAttenuation: p['sizeAttenuation'],
+          logarithmicDepthBuffer: p['logarithmicDepthBuffer'],
+          skinning: p['skinning'],
+          maxBones: p['maxBones'],
+          useVertexTexture: p['useVertexTexture'],
+          morphTargets: p['morphTargets'],
+          morphNormals: p['morphNormals'],
+          maxMorphTargets: p['maxMorphTargets'],
+          maxMorphNormals: p['maxMorphNormals'],
+          maxDirLights: p['maxDirLights'],
+          maxPointLights: p['maxPointLights'],
+          maxSpotLights: p['maxSpotLights'],
+          maxHemiLights: p['maxHemiLights'],
+          maxShadows: p['maxShadows'],
+          shadowMapEnabled: p['shadowMapEnabled'],
+          shadowMapType: p['shadowMapType'],
+          shadowMapDebug: p['shadowMapDebug'],
+          shadowMapCascade: p['shadowMapCascade'],
+          alphaTest: p['alphaTest'],
+          metal: p['metal'],
+          doubleSided: p['doubleSided'],
+          flipSided: p['flipSided']);
 
-      program = reflectClass(WebGLProgram).newInstance(#_, [this, code, material], symbolMap).reflectee;
       _programs.add(program);
 
       info.memory.programs = _programs.length;
