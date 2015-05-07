@@ -21,7 +21,7 @@ import 'extras/font_utils.dart' as font_utils;
 import 'extras/core/curve_utils.dart' as curve_utils;
 import 'extras/core/shape_utils.dart' as shape_utils;
 
-import 'extras/uniforms_utils.dart' as uniforms_utils;
+import 'src/renderers/shaders/uniforms_utils.dart' as uniforms_utils;
 
 part 'src/cameras/camera.dart';
 part 'src/cameras/cube_camera.dart';

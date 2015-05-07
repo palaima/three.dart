@@ -7,7 +7,7 @@ import 'dart:web_gl' as gl;
 import 'package:three/three.dart';
 import 'package:three/extras/shaders.dart';
 export 'package:three/extras/shaders.dart';
-import 'package:three/extras/uniforms_utils.dart' as UniformsUtils;
+import 'package:three/src/renderers/shaders/uniforms_utils.dart' as UniformsUtils;
 import 'package:three/extras/three_math.dart' as ThreeMath;
 
 part 'postprocessing/adaptive_tone_mapping_pass.dart';
