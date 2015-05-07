@@ -12,8 +12,6 @@ class WebGLGeometries {
   gl.RenderingContext _gl;
   WebGLRendererInfo _info;
 
-  StreamSubscription _disposeSubscription;
-
   WebGLGeometries(this._gl, this._info);
 
   BufferGeometry get(Object3D object) {
@@ -23,7 +21,7 @@ class WebGLGeometries {
       return geometries[geometry.id];
     }
 
-    _disposeSubscription = geometry.onDispose.listen(onGeometryDispose);
+    geometry._onDisposeSubscription = geometry.onDispose.listen(onGeometryDispose);
 
     if (geometry is BufferGeometry) {
       geometries[geometry.id] = geometry;
@@ -37,8 +35,8 @@ class WebGLGeometries {
     return geometries[geometry.id];
   }
 
-  void onGeometryDispose(Geometry geometry) {
-    _disposeSubscription.cancel();
+  void onGeometryDispose(IGeometry geometry) {
+    geometry._onDisposeSubscription.cancel();
 
     var geo = geometries[geometry.id];
 

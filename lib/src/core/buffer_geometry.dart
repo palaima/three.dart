@@ -888,7 +888,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
   }
 
   void dispose() {
-    _onDisposeController.add(null);
+    _onDisposeController.add(this);
   }
 
   noSuchMethod(Invocation invocation) {

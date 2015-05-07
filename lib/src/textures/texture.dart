@@ -89,6 +89,10 @@ class Texture extends Object with DisposeStream {
     return clonedTexture;
   }
 
+  void dispose() {
+    _onDisposeController.add(this);
+  }
+
   // Quick hack to allow setting new properties (used by the renderer)
   Map __data;
 

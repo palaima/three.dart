@@ -485,7 +485,7 @@ class WebGLRenderer implements Renderer {
   // Buffer deallocation
 
   void deallocateTexture(Texture texture) {
-    if (texture.image && texture.image.__webglTextureCube != null) {
+    if (texture.image != null && texture is ImageList && texture.image.__webglTextureCube != null) {
       // cube texture
       _gl.deleteTexture(texture.image.__webglTextureCube);
 
@@ -1553,7 +1553,7 @@ class WebGLRenderer implements Renderer {
 
     if (material._program == null) {
       // new material
-      material.onDispose.listen(onMaterialDispose);
+      material._onDisposeSubscription = material.onDispose.listen(onMaterialDispose);
 
     } else if (material._program.code != code) {
       // changed glsl or parameters
@@ -2515,7 +2515,7 @@ class WebGLRenderer implements Renderer {
   void uploadTexture(Texture texture, int slot) {
     if (!texture.__webglInit) {
       texture.__webglInit = true;
-      texture.onDispose.listen(onTextureDispose);
+      texture._onDisposeSubscription = texture.onDispose.listen(onTextureDispose);
       texture.__webglTexture = _gl.createTexture();
 
       info.memory.textures++;
@@ -2635,7 +2635,7 @@ class WebGLRenderer implements Renderer {
     if (texture.image.length == 6) {
       if (texture.needsUpdate) {
         if (texture.image.__webglTextureCube == null) {
-          texture.onDispose.listen(onTextureDispose);
+          texture._onDisposeSubscription = texture.onDispose.listen(onTextureDispose);
 
           texture.image.__webglTextureCube = _gl.createTexture();
 
@@ -2753,7 +2753,7 @@ class WebGLRenderer implements Renderer {
       if (renderTarget.depthBuffer == null) renderTarget.depthBuffer = true;
       if (renderTarget.stencilBuffer == null) renderTarget.stencilBuffer = true;
 
-      renderTarget.onDispose.listen(onRenderTargetDispose);
+      renderTarget._onDisposeSubscription = renderTarget.onDispose.listen(onRenderTargetDispose);
       renderTarget.__webglTexture = _gl.createTexture();
 
       info.memory.textures++;

@@ -10,7 +10,7 @@
 part of three;
 
 abstract class GeometryObject {
-  Geometry geometry;
+  IGeometry geometry;
 }
 
 abstract class MaterialObject {
@@ -236,7 +236,7 @@ class Object3D {
   void remove(Object3D object) {
     if (children.contains(object)) {
       object.parent = null;
-      object._onObjectRemovedController.add(null);
+      object._onObjectRemovedController.add(object);
 
       children.remove(object);
     }

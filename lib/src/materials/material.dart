@@ -137,7 +137,7 @@ class Material extends Object with DisposeStream {
   }
 
   void dispose() {
-    _onDisposeController.add(null);
+    _onDisposeController.add(this);
   }
 }
 

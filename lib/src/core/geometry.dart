@@ -13,7 +13,7 @@ part of three;
  * based on r70
  */
 
-abstract class IGeometry {
+abstract class IGeometry extends DisposeStream {
   int id;
   String uuid;
   String type;
