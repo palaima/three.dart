@@ -12,7 +12,7 @@ import 'package:three/three.dart';
  * @author rob silverton / http://www.unwrong.com/
  */
 
-class CanvasRenderer implements Renderer {
+class CanvasRenderer {
   Element domElement;
 
   bool _autoClear, _sortObjects, _sortElements;

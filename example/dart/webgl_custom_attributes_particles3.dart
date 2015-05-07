@@ -43,7 +43,7 @@ void main() {
 }
 """;
 
-Renderer renderer;
+WebGLRenderer renderer;
 Scene scene;
 PerspectiveCamera camera;
 

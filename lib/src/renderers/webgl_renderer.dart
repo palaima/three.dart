@@ -13,7 +13,7 @@ part of three;
 /// if your device supports it.
 ///
 /// This renderer has way better performance than CanvasRenderer.
-class WebGLRenderer implements Renderer {
+class WebGLRenderer {
   WebGLState state;
   WebGLExtensions extensions;
   WebGLObjects objects;

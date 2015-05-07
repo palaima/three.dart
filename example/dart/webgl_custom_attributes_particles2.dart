@@ -38,7 +38,7 @@ void main() {
 
 """;
 
-Renderer renderer;
+WebGLRenderer renderer;
 PerspectiveCamera camera;
 
 Map<String, Attribute> attributes;

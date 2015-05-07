@@ -178,7 +178,6 @@ part 'src/renderers/webgl/webgl_shadow_map.dart';
 part 'src/renderers/webgl/webgl_state.dart';
 part 'src/renderers/webgl/webgl_textures.dart';
 
-part 'src/renderers/renderer.dart';
 part 'src/renderers/webgl_renderer.dart';
 part 'src/renderers/webgl_render_target.dart';
 part 'src/renderers/webgl_render_target_cube.dart';

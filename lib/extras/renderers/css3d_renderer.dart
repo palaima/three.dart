@@ -15,7 +15,7 @@ class CSS3DObject extends Object3D {
   }
 }
 
-class CSS3DRenderer implements Renderer {
+class CSS3DRenderer {
   Projector _projector;
   Element domElement;
   Element cameraElement;
