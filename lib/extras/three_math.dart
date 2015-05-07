@@ -47,7 +47,7 @@ num clamp(num x, num a, num b) => (x < a) ? a : ((x > b) ? b : x);
 num clampBottom(num x, num a) => x < a ? a : x;
 
 /// Linear mapping of x from range [a1, a2] to range [b1, b2].
-num mapLinear(num x, num a1, num a2, num b1, num b2) => b1 + (x - a1) * (b2 - b1) / (a2 - a1);
+double mapLinear(num x, num a1, num a2, num b1, num b2) => b1 + (x - a1) * (b2 - b1) / (a2 - a1);
 
 /// Returns a value between 0-1 that represents the percentage that x has moved between min and max,
 /// but smoothed or slowed down the closer X is to the min and max.
@@ -72,7 +72,7 @@ double smootherstep(double x, double min, double max) {
 
 /// Random float from 0 to 1 with 16 bits of randomness.
 /// Standard Math.Random() creates repetitive patterns when applied over larger space.
-num random16() => (65280 * _rnd.nextDouble() + 255 * _rnd.nextDouble()) / 65535;
+double random16() => (65280 * _rnd.nextDouble() + 255 * _rnd.nextDouble()) / 65535;
 
 /// Random integer from low to high interval.
 int randInt(int low, int high) => randFloat(low.toDouble(), high.toDouble()).floor();
