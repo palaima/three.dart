@@ -46,7 +46,7 @@ class Loader {
 
   String crossOrigin;
 
-  Loader({this.showStatus}) {
+  Loader({this.showStatus: false}) {
     statusDomElement = showStatus ? Loader.addStatusElement() : null;
   }
 
