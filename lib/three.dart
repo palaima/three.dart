@@ -16,12 +16,8 @@ import 'dart:math' as Math;
 import 'dart:convert' show JSON;
 
 import 'extras/three_math.dart' as ThreeMath;
-export 'extras/three_math.dart';
 
-// TODO - Use M1 Re-export ( see: http://code.google.com/p/dart/issues/detail?id=760)
-import 'extras/image_utils.dart' as ImageUtils;
 import 'extras/font_utils.dart' as FontUtils;
-import 'extras/shader_utils.dart' as ShaderUtils;
 
 import 'extras/core/curve_utils.dart' as CurveUtils;
 import 'extras/core/shape_utils.dart' as ShapeUtils;
