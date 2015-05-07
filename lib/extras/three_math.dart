@@ -19,27 +19,25 @@ const double _radianToDegreesFactor = 180 / math.PI;
 
 math.Random _rnd = new math.Random();
 
+final List<String> _uuid = new List<String>(36);
+final List<String> _chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 String generateUUID() {
-  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-  var uuid = new List(36);
-  var rnd = 0, r;
+  var rnd = 0;
 
-  return () {
-    for (var i = 0; i < 36; i ++) {
-      if (i == 8 || i == 13 || i == 18 || i == 23) {
-        uuid[i] = '-';
-      } else if (i == 14) {
-        uuid[i] = '4';
-      } else {
-        if (rnd <= 0x02) rnd = 0x2000000 + (random16() * 0x1000000).toInt() | 0;
-        r = rnd & 0xf;
-        rnd = rnd >> 4;
-        uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-      }
+  for (var i = 0; i < 36; i++) {
+    if (i == 8 || i == 13 || i == 18 || i == 23) {
+      _uuid[i] = '-';
+    } else if (i == 14) {
+      _uuid[i] = '4';
+    } else {
+      if (rnd <= 0x02) rnd = 0x2000000 + (random16() * 0x1000000).toInt() | 0;
+      var r = rnd & 0xf;
+      rnd = rnd >> 4;
+      _uuid[i] = _chars[(i == 19) ? (r & 0x3) | 0x8 : r];
     }
+  }
 
-    return uuid.join('');
-  }();
+  return _uuid.join('');
 }
 
 /// Clamps the x to be between a and b.
