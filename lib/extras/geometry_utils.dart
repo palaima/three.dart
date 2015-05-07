@@ -1,4 +1,4 @@
-library GeometryUtils;
+library three.extras.geometry_utils;
 
 import "package:three/three.dart";
 

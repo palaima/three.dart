@@ -1,4 +1,4 @@
-library SceneUtils;
+library three.extras.scene_utils;
 
 import "package:three/three.dart";
 

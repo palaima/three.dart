@@ -2,7 +2,7 @@
  * Based on r71
  */
 
-library shaders;
+library three.extras.shaders;
 
 import 'dart:math' show exp;
 import 'dart:typed_data' show Float32List;

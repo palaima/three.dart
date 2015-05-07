@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three.postprocessing;
+part of three.extras.postprocessing;
 
 class SavePass implements Pass {
   String textureID = "tDiffuse";

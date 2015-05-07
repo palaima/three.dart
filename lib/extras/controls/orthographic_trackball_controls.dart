@@ -6,7 +6,7 @@
  * @author Adam Joseph Cook / https://github.com/adamjcook
  *
  **/
-part of controls;
+part of three.extras.controls;
 
 class OrthographicTrackballControls {
 

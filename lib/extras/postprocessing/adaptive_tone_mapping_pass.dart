@@ -9,7 +9,7 @@
  * based on r71
  */
 
-part of three.postprocessing;
+part of three.extras.postprocessing;
 
 class AdaptiveToneMappingPass implements Pass {
   int resolution;

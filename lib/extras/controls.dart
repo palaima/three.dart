@@ -1,4 +1,4 @@
-library controls;
+library three.extras.controls;
 
 import 'dart:html';
 import 'dart:async';

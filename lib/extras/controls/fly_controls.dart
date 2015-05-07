@@ -5,7 +5,7 @@
  */
 
 
-part of controls;
+part of three.extras.controls;
 
 class FlyControls {
   Object3D object;

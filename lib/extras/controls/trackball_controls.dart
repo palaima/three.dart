@@ -6,7 +6,7 @@
  *
  * based on rev 5816003656
  **/
-part of controls;
+part of three.extras.controls;
 
 class TrackballControls {
 

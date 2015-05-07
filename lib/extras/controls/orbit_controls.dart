@@ -23,7 +23,7 @@
  * Only [PerspectiveCamera] and [OrthographicCamera] are supported with this
  * control.
  **/
-part of controls;
+part of three.extras.controls;
 
 class OrbitControls {
 

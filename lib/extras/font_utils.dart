@@ -19,7 +19,7 @@
  *
  */
 
-library FontUtils;
+library three.extras.font_utils;
 
 import "package:three/three.dart";
 import "core/shape_utils.dart" as shape_utils;

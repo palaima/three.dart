@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three.postprocessing;
+part of three.extras.postprocessing;
 
 class TexturePass implements Pass {
   Map<String, Uniform> uniforms;

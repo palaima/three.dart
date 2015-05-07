@@ -1,4 +1,4 @@
-library three.postprocessing;
+library three.extras.postprocessing;
 
 import 'dart:html';
 import 'dart:math' as math;

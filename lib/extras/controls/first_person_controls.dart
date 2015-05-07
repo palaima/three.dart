@@ -9,7 +9,7 @@
   * based on rev 04b652ae26e228796f67838c0ec4d555e8b16528
   */
 
-part of controls;
+part of three.extras.controls;
 
 class FirstPersonControls {
   Object3D object;

@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three.postprocessing;
+part of three.extras.postprocessing;
 
 class BloomPass implements Pass {
   static final blurX = new Vector2(0.001953125, 0.0);

@@ -1,4 +1,4 @@
-library ImageUtils;
+library three.extras.image_utils;
 
 import "dart:html";
 import "dart:math" as math;

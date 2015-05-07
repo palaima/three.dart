@@ -10,7 +10,7 @@
 /**
  * Math utility functions
  */
-library ThreeMath;
+library three.extras.three_math;
 
 import "dart:math" as math;
 

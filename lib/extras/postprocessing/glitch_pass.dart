@@ -2,7 +2,7 @@
  * Based on r71
  */
 
-part of three.postprocessing;
+part of three.extras.postprocessing;
 
 class GlitchPass implements Pass {
   Map<String, Uniform> uniforms;
