@@ -29,9 +29,9 @@ class Line extends Object3D implements GeometryMaterialObject {
   Material material;
 
   /// Creates a new [Line].
-  Line([IGeometry geometry, Material material]) : super() {
+  Line([IGeometry geometry, LineMaterial material]) : super() {
     this.geometry = geometry != null ? geometry : new Geometry();
-    this.material = material != null ? material : new LineBasicMaterial(color: new math.Random().nextInt(0xffffff));
+    this.material = material != null ? (material as Material) : new LineBasicMaterial(color: new math.Random().nextInt(0xffffff));
   }
 
   /// Returns intersections between a casted ray and this Line.
@@ -42,7 +42,7 @@ class Line extends Object3D implements GeometryMaterialObject {
 
   /// Returns a clone of [this].
   Line clone([Object3D object, bool recursive = true]) {
-    if (object == null) object = new Line(geometry, material);
+    if (object == null) object = new Line(geometry, material as LineMaterial);
 
     super.clone(object, recursive);
 

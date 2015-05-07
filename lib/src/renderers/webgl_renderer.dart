@@ -923,10 +923,7 @@ class WebGLRenderer implements Renderer {
   void renderLine(Material material, BufferGeometry geometry, Line object, WebGLProgram program, bool updateBuffers) {
     var mode = object is LineSegments ? gl.LINES : gl.LINE_STRIP;
 
-    // In case user is not using Line*Material by mistake
-    var lineWidth = material.linewidth != null ? material.linewidth : 1.0;
-
-    state.setLineWidth(lineWidth * _pixelRatio);
+    state.setLineWidth((material as LineMaterial).linewidth * _pixelRatio);
 
     var index = geometry.attributes['index'];
 
