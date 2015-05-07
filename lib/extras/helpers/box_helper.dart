@@ -17,8 +17,8 @@ class BoxHelper extends LineSegments {
     return new BoxHelper._(object, geometry, new LineBasicMaterial(color: 0xffff00));
   }
 
-  void update(GeometryObject object) {
-    var geometry = object.geometry;
+  void update(Object3D object) {
+    var geometry = (object as GeometryObject).geometry;
 
     if (geometry.boundingBox == null) {
       geometry.computeBoundingBox();
@@ -136,7 +136,7 @@ class BoxHelper extends LineSegments {
 
     this.geometry.computeBoundingSphere();
 
-    this.matrix = (object as Object3D).matrixWorld;
+    this.matrix = object.matrixWorld;
     this.matrixAutoUpdate = false;
   }
 }
