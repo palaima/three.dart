@@ -34,6 +34,8 @@ abstract class IGeometry extends DisposeStream {
   void computeBoundingSphere();
   void computeBoundingBox();
 
+  clone();
+
   void dispose();
 }
 
