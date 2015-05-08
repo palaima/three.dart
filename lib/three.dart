@@ -32,7 +32,6 @@ part 'src/core/buffer_attribute.dart';
 part 'src/core/buffer_geometry.dart';
 part 'src/core/clock.dart';
 part 'src/core/object3d.dart';
-part 'src/core/color.dart';
 part 'src/core/dynamic_buffer_attribute.dart';
 part 'src/core/dynamic_geometry.dart';
 part 'src/core/face3.dart';
@@ -48,6 +47,7 @@ part 'src/core/rectangle.dart';
 
 part 'src/math/aabb2.dart';
 part 'src/math/aabb3.dart';
+part 'src/math/color.dart';
 part 'src/math/frustum.dart';
 part 'src/math/matrix2.dart';
 part 'src/math/matrix3.dart';
