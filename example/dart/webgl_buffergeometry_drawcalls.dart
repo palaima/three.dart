@@ -2,6 +2,7 @@ import 'dart:html';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:three/three.dart';
+import 'package:three/extras/helpers.dart' show BoxHelper;
 import 'package:three/extras/controls.dart';
 
 Group group;

@@ -5,6 +5,7 @@
 import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
+import 'package:three/extras/helpers.dart' show AxisHelper, ArrowHelper;
 import 'package:three/extras/image_utils.dart' as image_utils;
 
 DivElement container;
@@ -84,8 +85,8 @@ void init() {
 
   scene.add(new AxisHelper(50.0)..position.setValues(200.0, 0.0, -200.0));
 
-//  scene.add(new ArrowHelper(new Vector3(0.0, 1.0, 0.0), new Vector3.zero(), 50.0)
-//    ..position.setValues(400.0, 0.0, -200.0));
+  scene.add(new ArrowHelper(new Vector3(0.0, 1.0, 0.0), new Vector3.zero(), 50.0)
+    ..position.setValues(400.0, 0.0, -200.0));
 
   renderer = new WebGLRenderer(antialias: true)
     ..setPixelRatio(window.devicePixelRatio)

@@ -2,7 +2,7 @@
  * @author WestLangley / http://github.com/WestLangley
  */
 
-part of three;
+part of three.extras.helpers;
 
 /// a helper to show the world-axis-aligned bounding box for an object
 class BoundingBoxHelper extends Mesh {

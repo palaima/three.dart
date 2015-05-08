@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
+import 'package:three/extras/helpers.dart' show CameraHelper;
 import 'package:three/extras/three_math.dart' as three_math;
 
 Scene scene;

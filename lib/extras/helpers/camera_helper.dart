@@ -1,6 +1,4 @@
-part of three;
-
-/**
+/*
  * @author alteredq / http://alteredqualia.com/
  *
  *  - shows frustum, line of sight and up of the camera
@@ -8,6 +6,8 @@ part of three;
  *  - based on frustum visualization in lightgl.js shadowmap example
  *    http://evanw.github.com/lightgl.js/tests/shadowmap.html
  */
+
+part of three.extras.helpers;
 
 class CameraHelper extends LineSegments {
   Camera camera;

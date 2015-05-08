@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'dart:math' as math;
+import 'package:three/extras/helpers.dart' show ArrowHelper;
 import 'package:three/three.dart';
 
 int screenWidth = window.innerWidth;

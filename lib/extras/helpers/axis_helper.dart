@@ -5,7 +5,7 @@
  * based on r63
  */
 
-part of three;
+part of three.extras.helpers;
 
 class AxisHelper extends LineSegments {
   factory AxisHelper([double size = 1.0]) {

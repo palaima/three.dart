@@ -2,7 +2,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-part of three;
+part of three.extras.helpers;
 
 class BoxHelper extends LineSegments {
   BoxHelper._(Object3D object, BufferGeometry geometry, LineBasicMaterial material)
@@ -24,8 +24,8 @@ class BoxHelper extends LineSegments {
       geometry.computeBoundingBox();
     }
 
-    var min = geometry.boundingBox._min;
-    var max = geometry.boundingBox._max;
+    var min = geometry.boundingBox.min;
+    var max = geometry.boundingBox.max;
 
     /*
       5____4
