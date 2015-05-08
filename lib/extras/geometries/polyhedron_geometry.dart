@@ -9,20 +9,24 @@
 part of three;
 
 class PolyhedronGeometry extends Geometry {
-  PolyhedronGeometry(List<int> vertices, List<int> indices, [double radius = 1.0, int detail = 0])
+  List<UVIndexVector> _vertices = [];
+
+  PolyhedronGeometry(List<int> verticesInt, List<int> indices, [double radius = 1.0, int detail = 0])
       : super() {
-    for (var i = 0; i < vertices.length; i += 3) {
-      _prepare(new Vector3(vertices[i].toDouble(), vertices[i + 1].toDouble(), vertices[i + 2].toDouble()));
+    var verticesDouble = verticesInt.map((v) => v.toDouble()).toList();
+
+    for (var i = 0; i < verticesDouble.length; i += 3) {
+      _prepare(new Vector3.array(verticesDouble, i));
     }
 
     var faces = [];
 
     for (var i = 0, j = 0; i < indices.length; i += 3, j++) {
-      var v1 = this.vertices[indices[i    ]];
-      var v2 = this.vertices[indices[i + 1]];
-      var v3 = this.vertices[indices[i + 2]];
+      var v1 = _vertices[indices[i]];
+      var v2 = _vertices[indices[i + 1]];
+      var v3 = _vertices[indices[i + 2]];
 
-      faces.add(new Face3(v1._index, v2._index, v3._index, normal: [v1.clone(), v2.clone(), v3.clone()]));
+      faces.add(new Face3(v1.index, v2.index, v3.index, normal: [v1.clone(), v2.clone(), v3.clone()]));
     }
 
     faces.forEach((face) => _subdivide(face, detail));
@@ -36,12 +40,18 @@ class PolyhedronGeometry extends Geometry {
       var max = math.max(x0, math.max(x1, x2));
       var min = math.min(x0, math.min(x1, x2));
 
-      if (max > 0.9 && min < 0.1) { // 0.9 is somewhat arbitrary
+      if (max > 0.9 && min < 0.1) {
+        // 0.9 is somewhat arbitrary
         if (x0 < 0.2) uvs[0].x += 1;
         if (x1 < 0.2) uvs[1].x += 1;
         if (x2 < 0.2) uvs[2].x += 1;
       }
     });
+
+    for (var i = 0; i < _vertices.length; i++) {
+      this.vertices.add(_vertices[i]);
+    }
+
 
     // Apply radius
     this.vertices.forEach((vertex) => vertex.scale(radius));
@@ -57,42 +67,43 @@ class PolyhedronGeometry extends Geometry {
 
   // Project vector onto sphere's surface
   Vector3 _prepare(Vector3 vector) {
-    var vertex = vector.normalize().clone();
-    vertices.add(vertex);
-    vertex._index = vertices.length - 1;
+    var vertex = new UVIndexVector.copy(vector.normalize());
+    _vertices.add(vertex);
+    vertex.index = _vertices.length - 1;
 
     // Texture coords are equivalent to map coords, calculate angle and convert to fraction of a circle.
 
     var u = _azimuth(vector) / 2 / math.PI + 0.5;
     var v = _inclination(vector) / math.PI + 0.5;
-    vertex._uv = new Vector2(u, 1.0 - v);
+    vertex.uv = new Vector2(u, 1.0 - v);
 
     return vertex;
   }
 
   // Approximate a curved face with recursively sub-divided triangles.
-  void _make(Vector3 v1, Vector3 v2, Vector3 v3) {
-    var face = new Face3(v1._index, v2._index, v3._index, normal: [v1.clone(), v2.clone(), v3.clone()]);
+  void _make(UVIndexVector v1, UVIndexVector v2, UVIndexVector v3) {
+    var face = new Face3(v1.index, v2.index, v3.index, normal: [v1.clone(), v2.clone(), v3.clone()]);
     faces.add(face);
 
     var centroid = (v1 + v2 + v3) * (1 / 3);
 
     var azi = _azimuth(centroid);
 
-    faceVertexUvs[0].add([_correctUV(v1._uv, v1, azi), _correctUV(v2._uv, v2, azi), _correctUV(v3._uv, v3, azi)]);
+    faceVertexUvs[0]
+        .add([_correctUV(v1.uv, v1, azi), _correctUV(v2.uv, v2, azi), _correctUV(v3.uv, v3, azi)]);
   }
 
   // Analytically subdivide a face to the required detail level.
   void _subdivide(Face3 face, int detail) {
     var cols = math.pow(2, detail);
-    var a = _prepare(vertices[face.a]);
-    var b = _prepare(vertices[face.b]);
-    var c = _prepare(vertices[face.c]);
+    var a = _prepare(_vertices[face.a]);
+    var b = _prepare(_vertices[face.b]);
+    var c = _prepare(_vertices[face.c]);
     var v = [];
 
     // Construct all of the vertices for this subdivision.
 
-    for (var i = 0 ; i <= cols; i ++) {
+    for (var i = 0; i <= cols; i++) {
       v.add([]);
 
       var result = new Vector3.zero();
@@ -102,7 +113,7 @@ class PolyhedronGeometry extends Geometry {
       var bj = _prepare(result);
       var rows = cols - i;
 
-      for (var j = 0; j <= rows; j ++) {
+      for (var j = 0; j <= rows; j++) {
         if (j == 0 && i == cols) {
           v[i].add(aj);
         } else {
@@ -114,8 +125,8 @@ class PolyhedronGeometry extends Geometry {
 
     // Construct all of the faces.
 
-    for (var i = 0; i < cols ; i ++) {
-      for (var j = 0; j < 2 * (cols - i) - 1; j ++) {
+    for (var i = 0; i < cols; i++) {
+      for (var j = 0; j < 2 * (cols - i) - 1; j++) {
         var k = (j / 2).floor();
 
         if (j % 2 == 0) {
@@ -146,4 +157,12 @@ class PolyhedronGeometry extends Geometry {
 
     return uv.clone();
   }
+}
+
+class UVIndexVector extends Vector3 {
+  Vector2 uv;
+  int index;
+  UVIndexVector._() : super.zero();
+  factory UVIndexVector(double x, double y, double z) => new UVIndexVector._()..setValues(x, y, z);
+  factory UVIndexVector.copy(Vector3 arg) => new UVIndexVector._()..setFrom(arg);
 }

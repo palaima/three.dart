@@ -1078,9 +1078,6 @@ class Vector3 implements Vector {
    * Additions from three.js
    */
 
-  Vector2 _uv;
-  int _index;
-
   Vector3 applyEuler(Euler euler) {
     applyQuaternion(new Quaternion.fromEuler(euler));
     return this;
