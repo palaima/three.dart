@@ -2565,7 +2565,7 @@ class WebGLRenderer {
     texture.image = clampToMaxSize(texture.image, _maxTextureSize);
 
     var image = texture.image,
-        isImagePowerOfTwo = three_math.isPowerOfTwo(image.width) && three_math.isPowerOfTwo(image.height),
+        isImagePowerOfTwo = isPowerOfTwo(image.width) && isPowerOfTwo(image.height),
         glFormat = paramThreeToGL(texture.format),
         glType = paramThreeToGL(texture.type);
 
@@ -2696,7 +2696,7 @@ class WebGLRenderer {
 
         var image = cubeImage[0],
             isImagePowerOfTwo =
-            three_math.isPowerOfTwo(image.width) && three_math.isPowerOfTwo(image.height),
+            isPowerOfTwo(image.width) && isPowerOfTwo(image.height),
             glFormat = paramThreeToGL(texture.format),
             glType = paramThreeToGL(texture.type);
 
@@ -2795,8 +2795,8 @@ class WebGLRenderer {
       // Setup texture, create render and frame buffers
 
       var isTargetPowerOfTwo =
-          three_math.isPowerOfTwo(renderTarget.width) &&
-          three_math.isPowerOfTwo(renderTarget.height);
+          isPowerOfTwo(renderTarget.width) &&
+          isPowerOfTwo(renderTarget.height);
 
       var glFormat = paramThreeToGL(renderTarget.format);
       var glType = paramThreeToGL(renderTarget.type);

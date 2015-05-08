@@ -41,7 +41,7 @@ class PerspectiveCamera extends Camera {
   ///
   /// Formula based on http://www.bobatkins.com/photography/technical/field_of_view.html
   void setLens(double focalLength, [double frameHeight = 24.0]) {
-    fov = 2 * three_math.radToDeg(math.atan(frameHeight / (focalLength * 2)));
+    fov = 2 * radToDeg(math.atan(frameHeight / (focalLength * 2)));
     updateProjectionMatrix();
   }
 
@@ -95,7 +95,7 @@ class PerspectiveCamera extends Camera {
   ///
   /// Must be called after change of parameters.
   void updateProjectionMatrix() {
-    var _fov = 2 * math.atan(math.tan(three_math.degToRad(fov) * 0.5) / zoom);
+    var _fov = 2 * math.atan(math.tan(degToRad(fov) * 0.5) / zoom);
 
     if (_fullWidth != null) {
       var aspect = _fullWidth / _fullHeight;

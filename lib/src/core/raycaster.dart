@@ -41,8 +41,8 @@ class Raycaster {
   }
 
   void setFromCamera(Vector2 coords, Camera camera) {
-    var origin = ray._origin;
-    var direction = ray._direction;
+    var origin = ray.origin;
+    var direction = ray.direction;
     if (camera is PerspectiveCamera) {
       origin.setFromMatrixTranslation(camera.matrixWorld);
       direction.setValues(coords.x, coords.y, 0.5);

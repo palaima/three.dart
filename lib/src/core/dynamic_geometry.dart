@@ -7,7 +7,7 @@ part of three;
 class DynamicGeometry extends Object with DisposeStream implements IGeometry {
   int id = GeometryIdCount++;
 
-  String uuid = three_math.generateUUID();
+  String uuid = generateUUID();
 
   String name = '';
   String type = 'DynamicGeometry';

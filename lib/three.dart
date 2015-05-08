@@ -18,7 +18,8 @@ import 'dart:convert' show JSON;
 import 'src/math.dart';
 export 'src/math.dart';
 
-import 'extras/three_math.dart' as three_math;
+import 'extras/helpers.dart' show CameraHelper;
+
 import 'extras/font_utils.dart' as font_utils;
 
 import 'extras/core/curve_utils.dart' as curve_utils;

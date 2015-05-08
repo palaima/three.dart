@@ -225,7 +225,7 @@ class FirstPersonControls {
     } else {
 
       if (this.heightSpeed) {
-        var y = three_math.clamp(this.object.position.y, this.heightMin, this.heightMax);
+        var y = this.object.position.y.clamp(this.heightMin, this.heightMax);
         var heightDelta = y - this.heightMin;
 
         this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
@@ -283,7 +283,7 @@ class FirstPersonControls {
     this.theta = this.lon * math.PI / 180;
 
     if (this.constrainVertical) {
-      this.phi = three_math.mapLinear(this.phi, 0, math.PI, this.verticalMin, this.verticalMax);
+      this.phi = mapLinear(this.phi, 0, math.PI, this.verticalMin, this.verticalMax);
     }
 
     var targetPosition = this.target,

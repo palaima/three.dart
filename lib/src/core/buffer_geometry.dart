@@ -12,7 +12,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
 
   int id = GeometryIdCount++;
 
-  String uuid = three_math.generateUUID();
+  String uuid = generateUUID();
 
   String name = '';
   String type = 'BufferGeometry';
@@ -445,11 +445,11 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     }
 
     if (positions == null || positions.length == 0) {
-      boundingBox._min.setZero();
-      boundingBox._max.setZero();
+      boundingBox.min.setZero();
+      boundingBox.max.setZero();
     }
 
-    if (boundingBox._min.x.isNaN || boundingBox._min.y.isNaN || boundingBox._min.z.isNaN) {
+    if (boundingBox.min.x.isNaN || boundingBox.min.y.isNaN || boundingBox.min.z.isNaN) {
       error('BufferGeometry.computeBoundingBox: Computed min/max have NaN values. The "position" attribute is likely to have NaN values.');
     }
   }
@@ -463,7 +463,7 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     var positions = aPosition.array;
 
     if (positions != null) {
-      var center = boundingSphere._center;
+      var center = boundingSphere.center;
 
       for (var i = 0; i < positions.length; i += 3) {
         _vector.copyFromArray(positions, i);
@@ -482,9 +482,9 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
         maxRadiusSq = math.max(maxRadiusSq, center.distanceToSquared(_vector));
       }
 
-      boundingSphere._radius = math.sqrt(maxRadiusSq);
+      boundingSphere.radius = math.sqrt(maxRadiusSq);
 
-      if (boundingSphere._radius.isNaN) {
+      if (boundingSphere.radius.isNaN) {
         error('BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values.');
       }
     }

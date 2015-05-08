@@ -126,7 +126,7 @@ class ConvexGeometry extends Geometry {
   bool _equalEdge(List<Face3> ea, List<Face3> eb) => ea[0] == eb[1] && ea[1] == eb[0];
 
   // Create a random offset between -1e-6 and 1e-6.
-  double _randomOffset() => three_math.randFloat(-1e-6, 1e-6);
+  double _randomOffset() => randFloat(-1e-6, 1e-6);
 
   Vector2 _vertexUv(vertex) => new Vector2(vertex.x / vertex.length, vertex.y / vertex.length);
 }

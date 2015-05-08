@@ -45,7 +45,7 @@ class Geometry extends Object with DisposeStream implements IGeometry {
   /// Unique number of this object instance.
   int id = GeometryIdCount++;
 
-  String uuid = three_math.generateUUID();
+  String uuid = generateUUID();
 
   /// Name for this geometry. Default is an empty string.
   String name = '';

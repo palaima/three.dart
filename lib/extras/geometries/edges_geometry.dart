@@ -6,7 +6,7 @@ part of three;
 
 class EdgesGeometry extends BufferGeometry {
   EdgesGeometry(IGeometry geometry, [double thresholdAngle = 1.0]) {
-    var thresholdDot = math.cos(three_math.degToRad(thresholdAngle));
+    var thresholdDot = math.cos(degToRad(thresholdAngle));
 
     var edge = [0, 0],
         hash = {};

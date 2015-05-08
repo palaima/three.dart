@@ -128,7 +128,7 @@ class Loader {
         loader = imageLoader;
         loader.crossOrigin = crossOrigin;
         loader.onLoad.listen((image) {
-          if (!three_math.isPowerOfTwo(image.width) || !three_math.isPowerOfTwo(image.height)) {
+          if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
             var width = nearest_pow2(image.width);
             var height = nearest_pow2(image.height);
 
