@@ -1078,20 +1078,21 @@ class Vector3 implements Vector {
    * Additions from three.js
    */
 
+  static final Quaternion _q = new Quaternion.identity();
+  static final Matrix4 _m = new Matrix4.zero();
+
   Vector3 applyEuler(Euler euler) {
-    applyQuaternion(new Quaternion.fromEuler(euler));
+    applyQuaternion(_q..setFromEuler(euler));
     return this;
   }
 
   Vector3 project(Camera camera) {
-    var matrixWorldInverse = new Matrix4.identity()..copyInverse(camera.matrixWorld);
-    applyProjection(camera.projectionMatrix * matrixWorldInverse);
+    applyProjection(_m..multiplyMatrices(camera.projectionMatrix, _m..copyInverse(camera.matrixWorld)));
     return this;
   }
 
   Vector3 unproject(Camera camera) {
-    var projectionMatrixInverse = new Matrix4.identity()..copyInverse(camera.projectionMatrix);
-    applyProjection(camera.matrixWorld * projectionMatrixInverse);
+    applyProjection(_m..multiplyMatrices(camera.matrixWorld, _m..copyInverse(camera.projectionMatrix)));
     return this;
   }
 
