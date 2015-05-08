@@ -57,15 +57,15 @@ class Face3 {
       ..color.setFrom(color);
 
     for (var i = 0; i < vertexNormals.length; i++) {
-      face.vertexNormals[i] = vertexNormals[i].clone();
+      face.vertexNormals.add(vertexNormals[i].clone());
     }
 
     for (var i = 0; i < vertexColors.length; i++) {
-      face.vertexColors[i] = vertexColors[i].clone();
+      face.vertexColors.add(vertexColors[i].clone());
     }
 
     for (var i = 0; i < vertexTangents.length; i++) {
-      face.vertexTangents[i] = vertexTangents[i].clone();
+      face.vertexTangents.add(vertexTangents[i].clone());
     }
 
     return face;
