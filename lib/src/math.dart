@@ -63,9 +63,6 @@ String generateUUID() {
   return _uuid.join('');
 }
 
-/// Clamps the x to be between a and b.
-num clamp(num x, num a, num b) => (x < a) ? a : ((x > b) ? b : x);
-
 /// Clamps the x to be larger than a.
 num clampBottom(num x, num a) => x < a ? a : x;
 
