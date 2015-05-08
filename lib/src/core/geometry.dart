@@ -33,6 +33,8 @@ abstract class IGeometry extends DisposeStream {
 
   void computeBoundingSphere();
   void computeBoundingBox();
+
+  void dispose();
 }
 
 /// Base class for geometries.
@@ -641,6 +643,10 @@ class Geometry extends Object with DisposeStream implements IGeometry {
       face.centroid /= face.indices.length.toDouble();
 
     });
+  }
+
+  void dispose() {
+    _onDisposeController.add(this);
   }
 }
 
