@@ -2,7 +2,6 @@ import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/helpers.dart' show CameraHelper;
-import 'package:three/extras/three_math.dart' as three_math;
 
 Scene scene;
 WebGLRenderer renderer;
@@ -81,9 +80,9 @@ void init() {
 
   for (var i = 0; i < 10000; i++) {
     geometry.vertices.add(new Vector3.zero()
-      ..x = three_math.randFloatSpread(2000.0)
-      ..y = three_math.randFloatSpread(2000.0)
-      ..z = three_math.randFloatSpread(2000.0));
+      ..x = randFloatSpread(2000.0)
+      ..y = randFloatSpread(2000.0)
+      ..z = randFloatSpread(2000.0));
   }
 
   var particles = new PointCloud(geometry, new PointCloudMaterial(color: 0x888888));

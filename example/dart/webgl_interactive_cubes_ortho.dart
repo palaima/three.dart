@@ -1,7 +1,6 @@
 import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/three_math.dart' as three_math;
 
 Element container;
 
@@ -79,9 +78,9 @@ void onDocumentMouseMove(MouseEvent event) {
 void render() {
   theta += 0.1;
 
-  camera.position.x = radius * math.sin(three_math.degToRad(theta));
-  camera.position.y = radius * math.sin(three_math.degToRad(theta));
-  camera.position.z = radius * math.cos(three_math.degToRad(theta));
+  camera.position.x = radius * math.sin(degToRad(theta));
+  camera.position.y = radius * math.sin(degToRad(theta));
+  camera.position.z = radius * math.cos(degToRad(theta));
   camera.lookAt(scene.position);
 
   camera.updateMatrixWorld();

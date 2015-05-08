@@ -5,7 +5,6 @@
 import 'dart:html' hide Path;
 import 'dart:math' as math;
 import 'package:three/three.dart';
-import 'package:three/extras/three_math.dart' as three_math;
 import 'package:three/extras/controls.dart';
 
 PerspectiveCamera camera;
@@ -68,7 +67,7 @@ void init() {
   //
   var randomPoints = [];
   for (var i = 0; i < 10; i ++) {
-    randomPoints.add(new Vector3((i - 4.5) * 50, three_math.randFloat(-50.0, 50.0), three_math.randFloat(-50.0, 50.0)));
+    randomPoints.add(new Vector3((i - 4.5) * 50, randFloat(-50.0, 50.0), randFloat(-50.0, 50.0)));
   }
   var randomSpline =  new SplineCurve3(randomPoints);
 
