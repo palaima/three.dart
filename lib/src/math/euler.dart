@@ -6,7 +6,7 @@
  * based on r68
  */
 
-part of three;
+part of three.math;
 
 class Euler {
   static const rotationOrder = const ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'];

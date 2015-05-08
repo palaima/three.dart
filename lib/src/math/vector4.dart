@@ -2,7 +2,7 @@
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-part of three;
+part of three.math;
 
 /// 4D column vector.
 class Vector4 implements Vector {

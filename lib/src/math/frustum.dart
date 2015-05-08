@@ -2,7 +2,7 @@
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-part of three;
+part of three.math;
 
 /// Defines a frustum constructed out of six [Plane]s.
 class Frustum {

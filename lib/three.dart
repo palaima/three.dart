@@ -15,6 +15,9 @@ import 'dart:web_gl' as gl;
 import 'dart:math' as math;
 import 'dart:convert' show JSON;
 
+import 'src/math.dart';
+export 'src/math.dart';
+
 import 'extras/three_math.dart' as three_math;
 import 'extras/font_utils.dart' as font_utils;
 
@@ -44,26 +47,6 @@ part 'src/core/interleaved_buffer_attribute.dart';
 part 'src/core/projector.dart';
 part 'src/core/raycaster.dart';
 part 'src/core/rectangle.dart';
-
-part 'src/math/aabb2.dart';
-part 'src/math/aabb3.dart';
-part 'src/math/color.dart';
-part 'src/math/frustum.dart';
-part 'src/math/matrix2.dart';
-part 'src/math/matrix3.dart';
-part 'src/math/matrix4.dart';
-part 'src/math/opengl.dart';
-part 'src/math/plane.dart';
-part 'src/math/quaternion.dart';
-part 'src/math/ray.dart';
-part 'src/math/sphere.dart';
-part 'src/math/spline.dart';
-part 'src/math/triangle.dart';
-part 'src/math/vector.dart';
-part 'src/math/vector2.dart';
-part 'src/math/vector3.dart';
-part 'src/math/vector4.dart';
-part 'src/math/euler.dart';
 
 part 'src/loaders/cache.dart';
 part 'src/loaders/loader.dart';

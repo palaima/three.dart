@@ -6,7 +6,7 @@
  * @author alteredq / http://alteredqualia.com/
  */
 
-part of three;
+part of three.math;
 
 class Spline {
   List<Vector3> points;

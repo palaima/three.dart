@@ -7,7 +7,7 @@
  * based on r70.
  */
 
-part of three;
+part of three.math;
 
 /// Represents a color.
 class Color {
@@ -92,11 +92,11 @@ class Color {
   Color.random({bool useNamed: false}) {
     if (useNamed) {
       var colors = Colors.toList();
-      setHex(colors[three_math.randInt(0, colors.length)]);
+      setHex(colors[randInt(0, colors.length)]);
     } else {
-      storage[0] = three_math.randFloat(0.0, 1.0);
-      storage[1] = three_math.randFloat(0.0, 1.0);
-      storage[2] = three_math.randFloat(0.0, 1.0);
+      storage[0] = randFloat(0.0, 1.0);
+      storage[1] = randFloat(0.0, 1.0);
+      storage[2] = randFloat(0.0, 1.0);
     }
   }
 
