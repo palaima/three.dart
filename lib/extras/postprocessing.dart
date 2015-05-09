@@ -7,7 +7,7 @@ import 'dart:web_gl' as gl;
 import 'package:three/three.dart';
 import 'package:three/extras/shaders.dart';
 export 'package:three/extras/shaders.dart';
-import 'package:three/src/renderers/shaders/uniforms_utils.dart' as uniforms_utils;
+import 'package:three/extras/uniforms_utils.dart' as uniforms_utils;
 
 part 'postprocessing/adaptive_tone_mapping_pass.dart';
 part 'postprocessing/bloom_pass.dart';

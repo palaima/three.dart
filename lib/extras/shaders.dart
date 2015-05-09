@@ -7,7 +7,7 @@ library three.extras.shaders;
 import 'dart:math' show exp;
 import 'dart:typed_data' show Float32List;
 import 'package:three/three.dart' show Uniform, ShaderChunk, UniformsLib;
-import 'package:three/src/renderers/shaders/uniforms_utils.dart' as uniforms_utils;
+import 'package:three/extras/uniforms_utils.dart' as uniforms_utils;
 
 final Map basicShader = {
   'uniforms': {},
