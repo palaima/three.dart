@@ -2123,7 +2123,7 @@ class WebGLRenderer {
         case 'Matrix3fv': _gl.uniformMatrix3fv(location, false, value); break;
         case 'Matrix4fv': _gl.uniformMatrix4fv(location, false, value); break;
         // single integer
-        case 'i': _gl.uniform1i(location, value); break;
+        case 'i': _gl.uniform1i(location, value); break; // TODO automatically convert bool to int?
         // single float
         case 'f': _gl.uniform1f(location, value); break;
         // single Vector2
