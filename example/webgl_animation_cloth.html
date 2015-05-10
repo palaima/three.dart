@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - cloth simulation</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000;
+				color: #000;
+				margin: 0px;
+				overflow: hidden;
+			}
+			#info {
+				text-align: center;
+				padding: 10px;
+				z-index: 10;
+				width: 100%;
+				position: absolute;
+			}
+			a {
+				text-decoration: underline;
+				cursor: pointer;
+			}
+			#stats { position: absolute; top:0; left: 0 }
+			#stats #fps { background: transparent !important }
+			#stats #fps #fpsText { color: #aaa !important }
+			#stats #fps #fpsGraph { display: none }
+		</style>
+	</head>
+
+	<body>
+		<div id="info">Simple Cloth Simulation<br/>
+			Verlet integration with Constrains relaxation<br/>
+			Toggle: <a id="camera">Camera</a> |
+			<a id="wind">Wind</a> |
+			<a id="ball">Ball</a> |
+			<a id="pins">Pins</a>
+		</div>
+        <script type="application/dart" src="dart/webgl_animation_cloth.dart"></script>
+        <script src="packages/browser/dart.js"></script>
+	</body>
+</html>

@@ -25,6 +25,7 @@ abstract class IGeometry extends DisposeStream {
   Sphere boundingSphere;
 
   bool verticesNeedUpdate;
+  bool normalsNeedUpdate;
 
   List<Vector3> vertices;
   List<Face3> faces;
