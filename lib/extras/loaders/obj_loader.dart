@@ -1,12 +1,12 @@
-part of three;
-
-/**
+/*
  * @author mrdoob / http://mrdoob.com/
  *
  * Ported to Dart from JS by:
  * @author seguins
  *
  */
+
+part of three.extras.loaders;
 
 class OBJLoader extends Loader {
 

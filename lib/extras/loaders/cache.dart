@@ -1,4 +1,4 @@
-part of three;
+part of three.extras.loaders;
 
 class Cache {
   static final Cache _cache = new Cache._();

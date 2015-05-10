@@ -7,7 +7,7 @@
  * based on r71
  */
 
-part of three;
+part of three.extras.loaders;
 
 class Loader {
   static List handlers = [];
@@ -31,7 +31,7 @@ class Loader {
   }
 
   bool showStatus;
-  Element statusDomElement;
+  DivElement statusDomElement;
 
   StreamController _onLoadStartController = new StreamController();
   Stream get onLoadStart => _onLoadStartController.stream;

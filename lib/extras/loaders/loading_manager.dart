@@ -2,7 +2,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-part of three;
+part of three.extras.loaders;
 
 class LoadingManager {
   int loaded = 0;

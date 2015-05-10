@@ -8,7 +8,7 @@
  * based on r71
  */
 
-part of three;
+part of three.extras.loaders;
 
 class JSONLoader extends Loader {
   bool withCredentials = false;

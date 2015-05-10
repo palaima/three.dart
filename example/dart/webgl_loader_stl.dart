@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
+import 'package:three/extras/loaders.dart' show STLLoader;
 
 var container, stats;
 
@@ -107,9 +108,9 @@ init() {
 
   renderer.gammaInput = true;
   renderer.gammaOutput = true;
-  renderer.physicallyBasedShading = true;
+  //renderer.physicallyBasedShading = true;
 
-  renderer.shadowMapEnabled = true;
+  //renderer.shadowMapEnabled = true;
   //renderer.shadowMapCullFace = CullFaceBack;
 
   container.append(renderer.domElement);

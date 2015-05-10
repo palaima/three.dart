@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'package:three/three.dart';
+import 'package:three/extras/loaders.dart' show ImageLoader, OBJLoader;
 
 var container, stats;
 

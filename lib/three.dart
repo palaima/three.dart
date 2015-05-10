@@ -13,7 +13,6 @@ import 'dart:html' hide Path;
 import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'dart:math' as math;
-import 'dart:convert' show JSON;
 
 import 'src/math.dart';
 export 'src/math.dart';
@@ -48,16 +47,6 @@ part 'src/core/interleaved_buffer_attribute.dart';
 part 'src/core/projector.dart';
 part 'src/core/raycaster.dart';
 part 'src/core/rectangle.dart';
-
-part 'src/loaders/cache.dart';
-part 'src/loaders/loader.dart';
-part 'src/loaders/loading_manager.dart';
-part 'src/loaders/json_loader.dart';
-part 'src/loaders/binary_loader.dart';
-part 'src/loaders/image_loader.dart';
-part 'src/loaders/stl_loader.dart';
-part 'src/loaders/mtl_loader.dart';
-part 'src/loaders/obj_loader.dart';
 
 part 'extras/geometries/circle_geometry.dart';
 part 'extras/geometries/circle_buffer_geometry.dart';
@@ -170,8 +159,6 @@ part 'src/textures/texture.dart';
 part 'src/textures/cube_texture.dart';
 part 'src/textures/data_texture.dart';
 part 'src/textures/compressed_texture.dart';
-
-Cache _cache = new Cache();
 
 // from _geometry
 int GeometryIdCount = 0;

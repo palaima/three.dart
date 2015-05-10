@@ -5,6 +5,7 @@ import "dart:math" as math;
 import "dart:typed_data";
 
 import "package:three/three.dart";
+import 'loaders.dart' show ImageLoader;
 
 var crossOrigin = 'anonymous';
 

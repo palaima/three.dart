@@ -1,12 +1,13 @@
-part of three;
-
-/**
+/*
  * Loads a Wavefront .mtl file specifying materials
  *
  * @author angelxuanchang
  * Ported to Dart from JS by:
  * @author seguins
  */
+
+part of three.extras.loaders;
+
 class MTLLoader {
 
   String _baseUrl = '';

@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.extras.loaders;
 
 class ImageLoader {
   String crossOrigin;

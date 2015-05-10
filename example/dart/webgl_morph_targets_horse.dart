@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
+import 'package:three/extras/loaders.dart' show JSONLoader;
 
 Element container;
 

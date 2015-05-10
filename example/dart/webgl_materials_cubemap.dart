@@ -2,6 +2,7 @@ import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/image_utils.dart' as image_utils;
+import 'package:three/extras/loaders.dart' show BinaryLoader;
 
 PerspectiveCamera camera;
 Scene scene;

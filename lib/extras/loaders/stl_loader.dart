@@ -1,6 +1,4 @@
-part of three;
-
-/**
+/*
  * @author aleeper / http://adamleeper.com/
  * @author mrdoob / http://mrdoob.com/
  * @author gero3 / https://github.com/gero3
@@ -27,6 +25,8 @@ part of three;
  *         } );
  *         loader.load( './models/stl/slotted_disk.stl' );
  */
+
+part of three.extras.loaders;
 
 class STLLoader extends Loader {
 

@@ -4,7 +4,7 @@
 
 // TODO: Clean up a bit (add type information etc.)
 
-part of three;
+part of three.extras.loaders;
 
 class BinaryLoader extends Loader {
   bool showProgress;
