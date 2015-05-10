@@ -1,29 +1,19 @@
 part of three.extras.loaders;
 
-class Cache {
-  static final Cache _cache = new Cache._();
-  Map files = {};
+abstract class Cache {
+  static final Map _files = {};
 
-  Cache._();
-
-  factory Cache() => _cache;
-
-  void add(String key, Object file) {
-    files[key] = file;
+  static void add(String key, Object file) {
+    _files[key] = file;
   }
 
-  Object get(String key) => files[key];
+  static Object get(String key) => _files[key];
 
-  void remove(String key) {
-    files.remove(key);
+  static void remove(String key) {
+    _files.remove(key);
   }
 
-  void clear() {
-    files = {};
-  }
-
-  Object operator [](String key) => files[key];
-  void operator []=(String key, Object value) {
-    files[key] = value;
+  static void clear() {
+    _files.clear();
   }
 }

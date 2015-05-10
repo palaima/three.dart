@@ -20,17 +20,17 @@ class ImageLoader {
   ImageLoader([LoadingManager manager]) : this.manager = manager != null ? manager : defaultLoadingManager;
 
   ImageElement load(String url) {
-    var cached = _cache[url];
+    var cached = Cache.get(url);
 
     if (cached != null) {
       _onLoadController.add(cached);
-      return null;
+      return cached;
     }
 
     var image = new ImageElement();
 
     image.onLoad.listen((_) {
-      _cache[url] = image;
+      Cache.add(url, image);
       _onLoadController.add(image);
       manager.itemEnd(url);
     });
