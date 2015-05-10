@@ -209,8 +209,8 @@ void createScene(Geometry geometry, double scale) {
 
   var uniforms = uniforms_utils.clone(shader['uniforms']);
 
-  uniforms['enableBump'].value = true;
-  uniforms['enableSpecular'].value = true;
+  uniforms['enableBump'].value = 1;
+  uniforms['enableSpecular'].value = 1;
 
   uniforms['tBeckmann'].value = composerBeckmann.renderTarget1;
   uniforms['tDiffuse'].value = mapColor;
