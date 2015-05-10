@@ -1,7 +1,7 @@
 /*
  * @author alteredq / http://alteredqualia.com/
  *
- * based on 82b4f9dda28b7df74023db6bb21d6df249a30158
+ * based on https://github.com/mrdoob/three.js/commit/2034b611f1c97148c1bd795d45307d035a5334c1
  */
 
 part of three;
@@ -40,28 +40,28 @@ class WebGLShadowMap {
     var depthUniforms = uniforms_utils.clone(depthShader['uniforms']);
 
     _depthMaterial = new ShaderMaterial(
-      uniforms: depthUniforms,
-      vertexShader: depthShader['vertexShader'],
-      fragmentShader: depthShader['fragmentShader']);
+        uniforms: depthUniforms,
+        vertexShader: depthShader['vertexShader'],
+        fragmentShader: depthShader['fragmentShader']);
 
     _depthMaterialMorph = new ShaderMaterial(
-      uniforms: depthUniforms,
-      vertexShader: depthShader['vertexShader'],
-      fragmentShader: depthShader['fragmentShader'],
-      morphTargets: true);
+        uniforms: depthUniforms,
+        vertexShader: depthShader['vertexShader'],
+        fragmentShader: depthShader['fragmentShader'],
+        morphTargets: true);
 
     _depthMaterialSkin = new ShaderMaterial(
-      uniforms: depthUniforms,
-      vertexShader: depthShader['vertexShader'],
-      fragmentShader: depthShader['fragmentShader'],
-      skinning: true);
+        uniforms: depthUniforms,
+        vertexShader: depthShader['vertexShader'],
+        fragmentShader: depthShader['fragmentShader'],
+        skinning: true);
 
     _depthMaterialMorphSkin = new ShaderMaterial(
-      uniforms: depthUniforms,
-      vertexShader: depthShader['vertexShader'],
-      fragmentShader: depthShader['fragmentShader'],
-      morphTargets: true,
-      skinning: true);
+        uniforms: depthUniforms,
+        vertexShader: depthShader['vertexShader'],
+        fragmentShader: depthShader['fragmentShader'],
+        morphTargets: true,
+        skinning: true);
 
     _depthMaterial._shadowPass = true;
     _depthMaterialMorph._shadowPass = true;
@@ -107,8 +107,7 @@ class WebGLShadowMap {
             virtualLight = createVirtualLight(light, n);
             virtualLight.originalCamera = camera;
 
-            var gyro = new Gyroscope()
-              ..position.setFrom(light.shadowCascadeOffset);
+            var gyro = new Gyroscope()..position.setFrom(light.shadowCascadeOffset);
 
             gyro.add(virtualLight);
             gyro.add(virtualLight.target);
@@ -144,7 +143,8 @@ class WebGLShadowMap {
         light.shadowMap = new WebGLRenderTarget(light.shadowMapWidth, light.shadowMapHeight,
             minFilter: shadowFilter, magFilter: shadowFilter, format: RGBAFormat);
 
-        light.shadowMapSize = new Vector2(light.shadowMapWidth.toDouble(), light.shadowMapHeight.toDouble());
+        light.shadowMapSize =
+            new Vector2(light.shadowMapWidth.toDouble(), light.shadowMapHeight.toDouble());
 
         light.shadowMatrix = new Matrix4.identity();
       }
@@ -152,10 +152,12 @@ class WebGLShadowMap {
       if (light.shadowCamera == null) {
         if (light is SpotLight) {
           light.shadowCamera = new PerspectiveCamera(light.shadowCameraFov,
-              light.shadowMapWidth / light.shadowMapHeight, light.shadowCameraNear, light.shadowCameraFar);
+              light.shadowMapWidth / light.shadowMapHeight, light.shadowCameraNear,
+              light.shadowCameraFar);
         } else if (light is DirectionalLight) {
-          light.shadowCamera = new OrthographicCamera(light.shadowCameraLeft, light.shadowCameraRight,
-              light.shadowCameraTop, light.shadowCameraBottom, light.shadowCameraNear, light.shadowCameraFar);
+          light.shadowCamera = new OrthographicCamera(light.shadowCameraLeft,
+              light.shadowCameraRight, light.shadowCameraTop, light.shadowCameraBottom,
+              light.shadowCameraNear, light.shadowCameraFar);
         } else {
           error('ShadowMapPlugin: Unsupported light type for shadow $light');
           continue;
@@ -174,7 +176,6 @@ class WebGLShadowMap {
       if (light is VirtualLight && light.originalCamera == camera) {
         updateShadowCamera(camera, light);
       }
-
 
       var shadowMap = light.shadowMap;
       var shadowMatrix = light.shadowMatrix;
@@ -197,17 +198,15 @@ class WebGLShadowMap {
       // compute shadow matrix
 
       shadowMatrix.setValues(
-        0.5, 0.0, 0.0, 0.5,
-        0.0, 0.5, 0.0, 0.5,
-        0.0, 0.0, 0.5, 0.5,
-        0.0, 0.0, 0.0, 1.0);
+          0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 
       shadowMatrix.multiply(shadowCamera.projectionMatrix);
       shadowMatrix.multiply(shadowCamera.matrixWorldInverse);
 
       // update camera matrices and frustum
 
-      _projScreenMatrix.multiplyMatrices(shadowCamera.projectionMatrix, shadowCamera.matrixWorldInverse);
+      _projScreenMatrix.multiplyMatrices(
+          shadowCamera.projectionMatrix, shadowCamera.matrixWorldInverse);
       _frustum.setFromMatrix(_projScreenMatrix);
 
       // render shadow map
@@ -221,15 +220,15 @@ class WebGLShadowMap {
 
       projectObject(scene, scene, shadowCamera);
 
-
       // render regular objects
 
       var objectMaterial, useMorphing, useSkinning;
       var material;
 
-      _renderList.forEach((webglObject) {
+      for (var j = 0; j < _renderList.length; j++) {
+        var webglObject = _renderList[j];
+
         var object = webglObject.object;
-        var buffer = _objects.geometries.get(object);
 
         // culling is overriden globally for all objects
         // while rendering depth map
@@ -243,8 +242,8 @@ class WebGLShadowMap {
         objectMaterial = object.material;
 
         useMorphing = object.geometry.morphTargets != null &&
-                      object.geometry.morphTargets.length > 0 &&
-                      objectMaterial.morphTargets;
+            object.geometry.morphTargets.length > 0 &&
+            objectMaterial.morphTargets;
 
         useSkinning = object is SkinnedMesh && objectMaterial.skinning;
 
@@ -259,27 +258,28 @@ class WebGLShadowMap {
         }
 
         _renderer.setMaterialFaces(objectMaterial);
-
-        _renderer.renderBufferDirect(shadowCamera, lights, null, material, object);
-      });
+        _renderer.renderBufferDirect(shadowCamera, _lights, null, material, object);
+      }
 
       // set matrices and render immediate objects
 
-      _objects.objectsImmediate.forEach((webglObject) {
+      for (var j = 0; j < _objects.objectsImmediate.length; j++) {
+        var webglObject = _objects.objectsImmediate[j];
         var object = webglObject.object;
 
         if (object.visible && object.castShadow) {
-          object._modelViewMatrix = shadowCamera.matrixWorldInverse * object.matrixWorld;
+          object._modelViewMatrix.multiplyMatrices(
+              shadowCamera.matrixWorldInverse, object.matrixWorld);
 
           _renderer.renderImmediateObject(shadowCamera, _lights, null, _depthMaterial, object);
         }
-      });
+      }
     }
 
     // restore GL state
 
     var clearColor = _renderer.getClearColor(),
-    clearAlpha = _renderer.getClearAlpha();
+        clearAlpha = _renderer.getClearAlpha();
 
     _gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearAlpha);
     _gl.enable(gl.BLEND);
@@ -295,12 +295,17 @@ class WebGLShadowMap {
     if (object.visible) {
       var webglObject = _objects.objects[object.id];
 
-      if (webglObject != null && object.castShadow && (!object.frustumCulled || _frustum.intersectsWithObject(object))) {
-        object._modelViewMatrix = shadowCamera.matrixWorldInverse * object.matrixWorld;
+      if (webglObject != null &&
+          object.castShadow &&
+          (!object.frustumCulled || _frustum.intersectsWithObject(object))) {
+        object._modelViewMatrix.multiplyMatrices(
+            shadowCamera.matrixWorldInverse, object.matrixWorld);
         _renderList.add(webglObject);
       }
 
-      object.children.forEach((child) => projectObject(scene, child, shadowCamera));
+      for (var i = 0; i < object.children.length; i++) {
+        projectObject(scene, object.children[i], shadowCamera);
+      }
     }
   }
 
@@ -390,7 +395,7 @@ class WebGLShadowMap {
     _min.splat(double.INFINITY);
     _max.splat(-double.INFINITY);
 
-    for (var i = 0; i < 8; i ++) {
+    for (var i = 0; i < 8; i++) {
       var p = pointsWorld[i];
 
       p.setFrom(pointsFrustum[i]);
@@ -417,7 +422,6 @@ class WebGLShadowMap {
   }
 }
 
-
 class VirtualLight extends DirectionalLight {
   //bool isVirtual = true;
   List<Vector3> pointsWorld = [];
@@ -425,4 +429,3 @@ class VirtualLight extends DirectionalLight {
   Camera originalCamera;
   VirtualLight() : super(0);
 }
-
