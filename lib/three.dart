@@ -7,7 +7,6 @@
 
 library three;
 
-import 'dart:async';
 import 'dart:collection';
 import 'dart:html' hide Path;
 import 'dart:typed_data';
