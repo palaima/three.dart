@@ -6,7 +6,12 @@ import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'dart:math' as math;
 
-import 'package:three/three.dart';
+import 'constants.dart';
+import 'cameras.dart';
+import 'math.dart';
+import 'materials.dart';
+import 'objects.dart';
+import 'scenes.dart';
 
 part 'core/buffer_attribute.dart';
 part 'core/buffer_geometry.dart';
@@ -28,3 +33,7 @@ part 'core/rectangle.dart';
 int GeometryIdCount = 0;
 
 int Object3DIdCount = 0;
+
+warn(String msg) => window.console.warn(msg);
+log(String msg) => window.console.log(msg);
+error(String msg) => window.console.error(msg);

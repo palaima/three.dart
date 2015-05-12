@@ -3132,20 +3132,6 @@ class WebGLRendererRenderInfo {
 // Wrapper classes for WebGL stuff by nelsonsilva
 //
 
-class Buffer {
-  gl.RenderingContext context;
-  gl.Buffer _glbuffer;
-  String belongsToAttribute;
-
-  Buffer(this.context) {
-    _glbuffer = context.createBuffer();
-  }
-
-  void bind(int target) {
-    context.bindBuffer(target, _glbuffer);
-  }
-}
-
 class WebGLObject {
   int id;
   Object3D object;
