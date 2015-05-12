@@ -17,6 +17,9 @@ import 'dart:math' as math;
 import 'src/core.dart';
 export 'src/core.dart';
 
+import 'src/objects.dart';
+export 'src/objects.dart';
+
 import 'src/cameras.dart';
 export 'src/cameras.dart';
 
@@ -96,18 +99,6 @@ part 'src/lights/point_light.dart';
 part 'src/lights/spot_light.dart';
 part 'src/lights/hemisphere_light.dart';
 part 'src/lights/light.dart';
-
-part 'src/objects/bone.dart';
-part 'src/objects/group.dart';
-part 'src/objects/mesh.dart';
-part 'src/objects/line.dart';
-part 'src/objects/line_segments.dart';
-part 'src/objects/particle.dart';
-part 'src/objects/point_cloud.dart';
-part 'src/objects/sprite.dart';
-part 'src/objects/skinned_mesh.dart';
-part 'src/objects/lod.dart';
-part 'src/objects/morph_anim_mesh.dart';
 
 part 'src/renderers/shaders/attribute.dart';
 part 'src/renderers/shaders/shader_chunk.dart';

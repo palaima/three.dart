@@ -1,4 +1,4 @@
-part of three;
+part of three.objects;
 
 /*
  * @author mrdoob / http://mrdoob.com/

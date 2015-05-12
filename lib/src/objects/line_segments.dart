@@ -2,7 +2,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-part of three;
+part of three.objects;
 
 class LineSegments extends Line {
   String type = 'LineSegments';

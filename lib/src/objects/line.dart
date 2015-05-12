@@ -7,7 +7,7 @@
  * based on r71
  */
 
-part of three;
+part of three.objects;
 
 /// A line or a series of lines.
 ///

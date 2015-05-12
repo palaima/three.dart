@@ -5,7 +5,7 @@
  * based on r66
  */
 
-part of three;
+part of three.objects;
 
 /// A bone which is part of a SkinnedMesh.
 class Bone extends Object3D {

@@ -1,4 +1,4 @@
-part of three;
+part of three.objects;
 
 /// An 3d object that has bones data. These Bones can then be used to animate the vertices of the object.
 class SkinnedMesh extends Mesh {

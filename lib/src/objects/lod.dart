@@ -6,7 +6,7 @@
  * based on r71
  */
 
-part of three;
+part of three.objects;
 
 class LOD extends Object3D {
   List<LODObject> objects = [];

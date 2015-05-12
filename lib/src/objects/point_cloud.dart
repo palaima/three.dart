@@ -5,7 +5,7 @@
  */
 
 
-part of three;
+part of three.objects;
 
 class PointCloud extends Object3D implements GeometryMaterialObject {
   String type = 'PointCloud';
