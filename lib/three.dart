@@ -116,18 +116,6 @@ part 'src/renderers/webgl_renderer.dart';
 part 'src/renderers/webgl_render_target.dart';
 part 'src/renderers/webgl_render_target_cube.dart';
 
-// from _geometry
-int GeometryIdCount = 0;
-
-// from Object3D
-int Object3DIdCount = 0;
-
-// from _material
-int MaterialIdCount = 0;
-
-// from Texture
-int TextureIdCount = 0;
-
 warn(String msg) => window.console.warn(msg);
 log(String msg) => window.console.log(msg);
 error(String msg) => window.console.error(msg);

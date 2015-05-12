@@ -24,3 +24,7 @@ part 'core/object3d.dart';
 part 'core/projector.dart';
 part 'core/raycaster.dart';
 part 'core/rectangle.dart';
+
+int GeometryIdCount = 0;
+
+int Object3DIdCount = 0;
