@@ -192,7 +192,7 @@ class WebGLShadowMap {
 
       //
 
-      if (light._cameraHelper != null) light.cameraHelper.visible = light.shadowCameraVisible;
+      if (light.cameraHelper != null) light.cameraHelper.visible = light.shadowCameraVisible;
       if (light.shadowCameraVisible) light.cameraHelper.update();
 
       // compute shadow matrix

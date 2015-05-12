@@ -14,7 +14,7 @@ class Light extends Object3D {
   /// Color of the light.
   Color color;
 
-  //CameraHelper _cameraHelper;
+  CameraHelper cameraHelper;
 
   /// This creates a light with color.
   Light(num hex)
