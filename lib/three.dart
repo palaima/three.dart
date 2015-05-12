@@ -23,6 +23,9 @@ export 'src/math.dart';
 import 'src/textures.dart';
 export 'src/textures.dart';
 
+import 'src/materials.dart';
+export 'src/materials.dart';
+
 import 'src/constants.dart';
 export 'src/constants.dart';
 
@@ -95,21 +98,6 @@ part 'src/lights/point_light.dart';
 part 'src/lights/spot_light.dart';
 part 'src/lights/hemisphere_light.dart';
 part 'src/lights/light.dart';
-
-part 'src/materials/material.dart';
-part 'src/materials/mesh_basic_material.dart';
-part 'src/materials/mesh_face_material.dart';
-part 'src/materials/point_cloud_material.dart';
-part 'src/materials/particle_canvas_material.dart';
-part 'src/materials/line_basic_material.dart';
-part 'src/materials/line_dashed_material.dart';
-part 'src/materials/mesh_lambert_material.dart';
-part 'src/materials/mesh_depth_material.dart';
-part 'src/materials/mesh_normal_material.dart';
-part 'src/materials/mesh_phong_material.dart';
-part 'src/materials/shader_material.dart';
-part 'src/materials/raw_shader_material.dart';
-part 'src/materials/sprite_material.dart';
 
 part 'src/objects/bone.dart';
 part 'src/objects/group.dart';

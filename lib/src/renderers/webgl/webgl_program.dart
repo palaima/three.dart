@@ -61,12 +61,12 @@ class WebGLProgram {
     var _gl = renderer._gl;
 
     var defines = material is ShaderMaterial ? material.defines : {};
-    Map<String, Uniform> uniforms = material.__webglShader['uniforms'];
+    Map<String, Uniform> uniforms = material['__webglShader']['uniforms'];
 
     Map<String, Attribute> attributes = material is ShaderMaterial && material.attributes != null ? material.attributes : {};
 
-    var vertexShader = material.__webglShader['vertexShader'];
-    var fragmentShader = material.__webglShader['fragmentShader'];
+    var vertexShader = material['__webglShader']['vertexShader'];
+    var fragmentShader = material['__webglShader']['fragmentShader'];
 
     var index0AttributeName = material is ShaderMaterial ? material.index0AttributeName : null;
 

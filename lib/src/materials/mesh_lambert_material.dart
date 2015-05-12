@@ -5,7 +5,7 @@
  * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
-part of three;
+part of three.materials;
 
 /// A material for non-shiny (Lambertian) surfaces, evaluated per vertex.
 class MeshLambertMaterial extends Material implements Lighting, Mapping, Morphing, Wireframe {

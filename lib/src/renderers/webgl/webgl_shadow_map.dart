@@ -63,10 +63,10 @@ class WebGLShadowMap {
         morphTargets: true,
         skinning: true);
 
-    _depthMaterial._shadowPass = true;
-    _depthMaterialMorph._shadowPass = true;
-    _depthMaterialSkin._shadowPass = true;
-    _depthMaterialMorphSkin._shadowPass = true;
+    _depthMaterial['_shadowPass'] = true;
+    _depthMaterialMorph['_shadowPass'] = true;
+    _depthMaterialSkin['_shadowPass'] = true;
+    _depthMaterialMorphSkin['_shadowPass'] = true;
   }
 
   void render(Scene scene, Camera camera) {

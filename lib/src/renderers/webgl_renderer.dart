@@ -1080,7 +1080,7 @@ class WebGLRenderer {
   void setupMorphTargets(Material material, geometryGroup, object) {
     // set base
 
-    var attributes = material._program.attributes;
+    var attributes = material['_program'].attributes;
 
     if (object.morphTargetBase != - 1 && attributes['position'] >= 0) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[object.morphTargetBase]);
@@ -1104,7 +1104,7 @@ class WebGLRenderer {
 
       var attribute;
 
-      while (m < material._numSupportedMorphTargets && m < order.length) {
+      while (m < material['_numSupportedMorphTargets'] && m < order.length) {
         attribute = attributes['morphTarget' + m];
 
         if (attribute >= 0) {
@@ -1141,10 +1141,10 @@ class WebGLRenderer {
         activeInfluenceIndices.add([influence, i]);
       }
 
-      if (activeInfluenceIndices.length > material._numSupportedMorphTargets) {
+      if (activeInfluenceIndices.length > material['_numSupportedMorphTargets']) {
         activeInfluenceIndices.sort(numericalSort);
-        activeInfluenceIndices.length = material._numSupportedMorphTargets;
-      } else if (activeInfluenceIndices.length > material._numSupportedMorphNormals) {
+        activeInfluenceIndices.length = material['_numSupportedMorphTargets'];
+      } else if (activeInfluenceIndices.length > material['_numSupportedMorphNormals']) {
         activeInfluenceIndices.sort(numericalSort);
       } else if (activeInfluenceIndices.length == 0) {
         activeInfluenceIndices.add([0, 0]);
@@ -1152,7 +1152,7 @@ class WebGLRenderer {
 
       var attribute;
 
-      for (var m = 0; m < material._numSupportedMorphTargets; m++) {
+      for (var m = 0; m < material['_numSupportedMorphTargets']; m++) {
         if (activeInfluenceIndices[m]) {
           var influenceIndex = activeInfluenceIndices[m][1];
 
@@ -1182,8 +1182,8 @@ class WebGLRenderer {
 
     // load updated influences uniform
 
-    if (material._program.uniforms['morphTargetInfluences'] != null) {
-      _gl.uniform1fv(material._program.uniforms['morphTargetInfluences'], object.__webglMorphTargetInfluences);
+    if (material['_program'].uniforms['morphTargetInfluences'] != null) {
+      _gl.uniform1fv(material['_program'].uniforms['morphTargetInfluences'], object.__webglMorphTargetInfluences);
     }
   }
 
@@ -1548,11 +1548,11 @@ class WebGLRenderer {
 
     var code = chunks.join(',');
 
-    if (material._program == null) {
+    if (material['_program'] == null) {
       // new material
-      material._onDisposeSubscription = material.onDispose.listen(onMaterialDispose);
+      material['_onDisposeSubscription'] = material.onDispose.listen(onMaterialDispose);
 
-    } else if (material._program.code != code) {
+    } else if (material['_program'].code != code) {
       // changed glsl or parameters
       deallocateMaterial(material);
     } else {
@@ -1563,14 +1563,14 @@ class WebGLRenderer {
     if (shaderID != null) {
       var shader = ShaderLib[shaderID];
 
-      material.__webglShader = {
+      material['__webglShader'] = {
         'uniforms': uniforms_utils.clone(shader['uniforms']),
         'vertexShader': shader['vertexShader'],
         'fragmentShader': shader['fragmentShader']
       };
     } else {
       var mat = material as ShaderMaterial;
-      material.__webglShader = {
+      material['__webglShader'] = {
         'uniforms': mat.uniforms,
         'vertexShader': mat.vertexShader,
         'fragmentShader': mat.fragmentShader
@@ -1639,43 +1639,43 @@ class WebGLRenderer {
       info.memory.programs = _programs.length;
     }
 
-    material._program = program;
+    material['_program'] = program;
 
     var attributes = program.attributes;
 
     var mat = material;
 
     if (mat is Morphing && mat.morphTargets != null && mat.morphTargets) {
-      material._numSupportedMorphTargets = 0;
+      material['_numSupportedMorphTargets'] = 0;
 
       for (var i = 0; i < maxMorphTargets; i ++) {
         var id = 'morphTarget$i';
 
         if (attributes[id] >= 0) {
-          material._numSupportedMorphTargets++;
+          material['_numSupportedMorphTargets']++;
         }
       }
     }
 
     if (mat is Morphing && mat.morphNormals != null && mat.morphNormals) {
-      material._numSupportedMorphNormals = 0;
+      material['_numSupportedMorphNormals'] = 0;
 
       for (var i = 0; i < maxMorphNormals; i++) {
         var id = 'morphNormal$i';
 
         if (attributes[id] >= 0) {
-          material._numSupportedMorphNormals++;
+          material['_numSupportedMorphNormals']++;
         }
       }
     }
 
-    material._uniformsList = [];
+    material['_uniformsList'] = [];
 
-    for (var u in material.__webglShader['uniforms'].keys) {
-      var location = material._program.uniforms[u];
+    for (var u in material['__webglShader']['uniforms'].keys) {
+      var location = material['_program'].uniforms[u];
 
       if (location != null) {
-        material._uniformsList.add([material.__webglShader['uniforms'][u], location]);
+        material['_uniformsList'].add([material['__webglShader']['uniforms'][u], location]);
       }
     }
   }
@@ -1714,9 +1714,9 @@ class WebGLRenderer {
     var refreshMaterial = false;
     var refreshLights = false;
 
-    var program = material._program,
+    var program = material['_program'],
         p_uniforms = program.uniforms,
-        m_uniforms = material.__webglShader['uniforms'];
+        m_uniforms = material['__webglShader']['uniforms'];
 
     if (program.id != _currentProgram) {
       _gl.useProgram(program.program);
@@ -1857,12 +1857,12 @@ class WebGLRenderer {
         m_uniforms['opacity'].value = material.opacity;
       }
 
-      if (object.receiveShadow && !material._shadowPass) {
+      if (object.receiveShadow && material['_shadowPass'] != true) {
         refreshUniformsShadow(m_uniforms, lights as List<ShadowCaster>);
       }
 
       // load common uniforms
-      loadUniformsGeneric(material._uniformsList);
+      loadUniformsGeneric(material['_uniformsList']);
     }
 
     loadUniformsMatrices(p_uniforms, object);

@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.materials;
 
 class LineDashedMaterial extends Material implements LineMaterial {
   String type = 'LineDashedMaterial';

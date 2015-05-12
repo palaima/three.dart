@@ -1,4 +1,4 @@
-part of three;
+part of three.materials;
 
 @Deprecated("ASAP")
 class MeshFaceMaterial extends Material {

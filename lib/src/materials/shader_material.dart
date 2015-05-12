@@ -4,7 +4,7 @@
  * based on https://github.com/mrdoob/three.js/blob/59aebeda0837e7ef1e2ad874c4d2dc486b8d3a45/src/materials/ShaderMaterial.js
  */
 
-part of three;
+part of three.materials;
 
 class ShaderMaterial extends Material implements Morphing, Wireframe, LineMaterial {
   static const defaultVertexShader = 'void main() {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n}';
