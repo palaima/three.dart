@@ -17,6 +17,9 @@ import 'dart:math' as math;
 import 'src/core.dart';
 export 'src/core.dart';
 
+import 'src/cameras.dart';
+export 'src/cameras.dart';
+
 import 'src/math.dart';
 export 'src/math.dart';
 
@@ -37,11 +40,6 @@ import 'extras/core/curve_utils.dart' as curve_utils;
 import 'extras/core/shape_utils.dart' as shape_utils;
 
 import 'extras/uniforms_utils.dart' as uniforms_utils;
-
-part 'src/cameras/camera.dart';
-part 'src/cameras/cube_camera.dart';
-part 'src/cameras/perspective_camera.dart';
-part 'src/cameras/orthographic_camera.dart';
 
 part 'extras/geometries/circle_geometry.dart';
 part 'extras/geometries/circle_buffer_geometry.dart';

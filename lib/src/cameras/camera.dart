@@ -8,7 +8,7 @@
  * based on r71
  */
 
-part of three;
+part of three.cameras;
 
 class Camera extends Object3D {
   Matrix4 matrixWorldInverse = new Matrix4.identity();

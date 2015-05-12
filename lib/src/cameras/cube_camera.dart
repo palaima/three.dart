@@ -7,7 +7,7 @@
  * based on r72
  */
 
-part of three;
+part of three.cameras;
 
 class CubeCamera extends Object3D {
   String type = 'CubeCamera';

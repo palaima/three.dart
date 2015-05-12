@@ -9,7 +9,7 @@
  * based on r71
  */
 
-part of three;
+part of three.cameras;
 
 /// Camera with perspective projection.
 class PerspectiveCamera extends Camera {
