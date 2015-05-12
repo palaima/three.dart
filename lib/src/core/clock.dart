@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.core;
 
 /// Class for keeping track of time.
 class Clock {

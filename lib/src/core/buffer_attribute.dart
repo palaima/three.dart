@@ -4,7 +4,7 @@
  * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
-part of three;
+part of three.core;
 
 class BufferAttribute {
   List array;

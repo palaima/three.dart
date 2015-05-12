@@ -11,7 +11,7 @@ part of three;
 ///
 /// They are defined in a (mostly) renderer-independent way, so you don't have
 /// to rewrite materials if you decide to use a different renderer.
-class Material extends Object with DisposeStream {
+class Material {
   /// Unique number for this material instance.
   int id = MaterialIdCount++;
 
@@ -135,6 +135,10 @@ class Material extends Object with DisposeStream {
   void update() {
     _onUpdateController.add(null);
   }
+
+  StreamController _onDisposeController = new StreamController.broadcast();
+  Stream get onDispose => _onDisposeController.stream;
+  StreamSubscription _onDisposeSubscription;
 
   void dispose() {
     _onDisposeController.add(this);

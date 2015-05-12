@@ -268,7 +268,7 @@ class WebGLShadowMap {
         var object = webglObject.object;
 
         if (object.visible && object.castShadow) {
-          object._modelViewMatrix.multiplyMatrices(
+          object['_modelViewMatrix'].multiplyMatrices(
               shadowCamera.matrixWorldInverse, object.matrixWorld);
 
           _renderer.renderImmediateObject(shadowCamera, _lights, null, _depthMaterial, object);
@@ -298,7 +298,7 @@ class WebGLShadowMap {
       if (webglObject != null &&
           object.castShadow &&
           (!object.frustumCulled || _frustum.intersectsWithObject(object))) {
-        object._modelViewMatrix.multiplyMatrices(
+        object['_modelViewMatrix'].multiplyMatrices(
             shadowCamera.matrixWorldInverse, object.matrixWorld);
         _renderList.add(webglObject);
       }

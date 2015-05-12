@@ -1705,8 +1705,8 @@ class WebGLRenderer {
     }
     var mat = material;
     if (mat is Morphing && mat.morphTargets) {
-      if (object.__webglMorphTargetInfluences == null) {
-        object.__webglMorphTargetInfluences = new Float32List(maxMorphTargets);
+      if (object['__webglMorphTargetInfluences'] == null) {
+        object['__webglMorphTargetInfluences'] = new Float32List(maxMorphTargets);
       }
     }
 
@@ -2078,10 +2078,10 @@ class WebGLRenderer {
   // Uniforms (load to GPU)
 
   void loadUniformsMatrices(Map<String, gl.UniformLocation> uniforms, Object3D object) {
-    _gl.uniformMatrix4fv(uniforms['modelViewMatrix'], false, object._modelViewMatrix.storage);
+    _gl.uniformMatrix4fv(uniforms['modelViewMatrix'], false, object['_modelViewMatrix'].storage);
 
     if (uniforms['normalMatrix'] != null) {
-      _gl.uniformMatrix3fv(uniforms['normalMatrix'], false, object._normalMatrix.storage);
+      _gl.uniformMatrix3fv(uniforms['normalMatrix'], false, object['_normalMatrix'].storage);
     }
   }
 
@@ -2264,8 +2264,8 @@ class WebGLRenderer {
   }
 
   void setupMatrices(Object3D object, Camera camera) {
-    object._modelViewMatrix.multiplyMatrices(camera.matrixWorldInverse, object.matrixWorld);
-    object._normalMatrix.copyNormalMatrix(object._modelViewMatrix);
+    object['_modelViewMatrix'].multiplyMatrices(camera.matrixWorldInverse, object.matrixWorld);
+    object['_normalMatrix'].copyNormalMatrix(object['_modelViewMatrix']);
   }
 
   void setColorLinear(List array, int offset, Color color, double intensity) {
@@ -2787,7 +2787,7 @@ class WebGLRenderer {
       if (renderTarget.depthBuffer == null) renderTarget.depthBuffer = true;
       if (renderTarget.stencilBuffer == null) renderTarget.stencilBuffer = true;
 
-      renderTarget._onDisposeSubscription = renderTarget.onDispose.listen(onRenderTargetDispose);
+      renderTarget['_onDisposeSubscription'] = renderTarget.onDispose.listen(onRenderTargetDispose);
       renderTarget.__webglTexture = _gl.createTexture();
 
       info.memory.textures++;

@@ -3,7 +3,7 @@
  */
 
 
-part of three;
+part of three.core;
 
 class InstancedInterleavedBuffer extends InterleavedBuffer {
   int meshPerAttribute;

@@ -33,11 +33,11 @@ class WebGLObjects {
       removeInstances(objectsImmediate, object);
     }
 
-    object.__webglInit = false;
-    object._modelViewMatrix = null;
-    object._normalMatrix = null;
+    object['__webglInit'] = false;
+    object['_modelViewMatrix'] = null;
+    object['_normalMatrix'] = null;
 
-    object.__webglActive = false;
+    object['__webglActive'] = false;
   }
 
   void removeInstances(List<WebGLObject> objlist, Object3D object) {
@@ -49,16 +49,16 @@ class WebGLObjects {
   }
 
   void init(Object3D object) {
-    if (!object.__webglInit) {
-      object.__webglInit = true;
-      object._modelViewMatrix = new Matrix4.identity();
-      object._normalMatrix = new Matrix3.identity();
+    if (object['__webglInit'] != true) {
+      object['__webglInit'] = true;
+      object['_modelViewMatrix'] = new Matrix4.identity();
+      object['_normalMatrix'] = new Matrix3.identity();
 
-      object._objectRemovedSubscription = object.onObjectRemoved.listen(onObjectRemoved);
+      object['_objectRemovedSubscription'] = object.onObjectRemoved.listen(onObjectRemoved);
     }
 
-    if (!object.__webglActive) {
-      object.__webglActive = true;
+    if (object['__webglActive'] != true) {
+      object['__webglActive'] = true;
 
       if (object is Mesh || object is Line || object is PointCloud) {
         objects[object.id] =

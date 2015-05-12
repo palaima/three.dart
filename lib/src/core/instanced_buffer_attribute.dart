@@ -1,4 +1,4 @@
-part of three;
+part of three.core;
 
 class InstancedBufferAttribute extends DynamicBufferAttribute {
   bool dynamic;

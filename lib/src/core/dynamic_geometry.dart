@@ -2,9 +2,9 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-part of three;
+part of three.core;
 
-class DynamicGeometry extends Object with DisposeStream implements IGeometry {
+class DynamicGeometry implements IGeometry {
   int id = GeometryIdCount++;
 
   String uuid = generateUUID();
@@ -120,7 +120,14 @@ class DynamicGeometry extends Object with DisposeStream implements IGeometry {
     if (colors.any((e) => e == null)) colors.length = 0;
   }
 
+  StreamController _onDisposeController = new StreamController.broadcast();
+  Stream get onDispose => _onDisposeController.stream;
+
   void dispose() {
     _onDisposeController.add(null);
   }
+
+  Map _data = {};
+  operator [](k) => _data[k];
+  operator []=(k, v) => _data[k] = v;
 }

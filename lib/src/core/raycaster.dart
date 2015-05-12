@@ -6,7 +6,7 @@
  * based on r71
  */
 
-part of three;
+part of three.core;
 
 class Raycaster {
   Ray ray;

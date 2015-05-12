@@ -7,7 +7,7 @@
  * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
-part of three;
+part of three.core;
 
 abstract class GeometryObject {
   IGeometry geometry;
@@ -349,6 +349,10 @@ class Object3D {
   toJSON() {
     throw new UnimplementedError();
   }
+
+  Map _data = {};
+  operator [](k) => _data[k];
+  operator []=(k, v) => _data[k] = v;
 
   /// Creates a new clone of this object and all descendants.
   Object3D clone([Object3D object, bool recursive = true]) {

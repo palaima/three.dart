@@ -5,9 +5,9 @@
  * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
-part of three;
+part of three.core;
 
-class BufferGeometry extends Object with DisposeStream implements IGeometry {
+class BufferGeometry implements IGeometry {
   static int maxIndex = 65535;
 
   int id = GeometryIdCount++;
@@ -887,9 +887,16 @@ class BufferGeometry extends Object with DisposeStream implements IGeometry {
     throw new UnimplementedError();
   }
 
+  StreamController _onDisposeController = new StreamController.broadcast();
+  Stream get onDispose => _onDisposeController.stream;
+
   void dispose() {
     _onDisposeController.add(this);
   }
+
+  Map _data = {};
+  operator [](k) => _data[k];
+  operator []=(k, v) => _data[k] = v;
 
   noSuchMethod(Invocation invocation) {
     throw new UnimplementedError('Unimplemented ${invocation.memberName}');

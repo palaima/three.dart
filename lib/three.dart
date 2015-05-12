@@ -14,6 +14,9 @@ import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'dart:math' as math;
 
+import 'src/core.dart';
+export 'src/core.dart';
+
 import 'src/math.dart';
 export 'src/math.dart';
 
@@ -33,23 +36,6 @@ part 'src/cameras/camera.dart';
 part 'src/cameras/cube_camera.dart';
 part 'src/cameras/perspective_camera.dart';
 part 'src/cameras/orthographic_camera.dart';
-
-part 'src/core/buffer_attribute.dart';
-part 'src/core/buffer_geometry.dart';
-part 'src/core/clock.dart';
-part 'src/core/object3d.dart';
-part 'src/core/dynamic_buffer_attribute.dart';
-part 'src/core/dynamic_geometry.dart';
-part 'src/core/face3.dart';
-part 'src/core/geometry.dart';
-part 'src/core/instanced_buffer_attribute.dart';
-part 'src/core/instanced_buffer_geometry.dart';
-part 'src/core/instanced_interleaved_buffer.dart';
-part 'src/core/interleaved_buffer.dart';
-part 'src/core/interleaved_buffer_attribute.dart';
-part 'src/core/projector.dart';
-part 'src/core/raycaster.dart';
-part 'src/core/rectangle.dart';
 
 part 'extras/geometries/circle_geometry.dart';
 part 'extras/geometries/circle_buffer_geometry.dart';

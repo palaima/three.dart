@@ -1,4 +1,4 @@
-part of three;
+part of three.core;
 
 /*
  * @author mr.doob / http://mrdoob.com/
@@ -13,7 +13,7 @@ part of three;
  * based on r70
  */
 
-abstract class IGeometry extends DisposeStream {
+abstract class IGeometry {
   int id;
   String uuid;
   String type;
@@ -35,6 +35,9 @@ abstract class IGeometry extends DisposeStream {
   void computeBoundingSphere();
   void computeBoundingBox();
 
+  operator [](String key);
+  operator []=(String key, value);
+
   clone();
 
   void dispose();
@@ -42,7 +45,7 @@ abstract class IGeometry extends DisposeStream {
 
 /// Base class for geometries.
 /// A geometry holds all data necessary to describe a 3D model.
-class Geometry extends Object with DisposeStream implements IGeometry {
+class Geometry implements IGeometry {
   /// Unique number of this object instance.
   int id = GeometryIdCount++;
 
@@ -623,6 +626,10 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     return geometry;
   }
 
+  Map _data = {};
+  operator [](k) => _data[k];
+  operator []=(k, v) => _data[k] = v;
+
   // Used in DynamicGeometry
   int get _maxFaceIndex {
     var maxIndex = 0;
@@ -648,6 +655,9 @@ class Geometry extends Object with DisposeStream implements IGeometry {
     });
   }
 
+  StreamController _onDisposeController = new StreamController.broadcast();
+  Stream get onDispose => _onDisposeController.stream;
+
   void dispose() {
     _onDisposeController.add(this);
   }
@@ -669,10 +679,4 @@ class MorphNormal {
   List faceNormals;
   List vertexNormals;
   MorphNormal({this.faceNormals, this.vertexNormals});
-}
-
-abstract class DisposeStream {
-  StreamController _onDisposeController = new StreamController.broadcast();
-  Stream get onDispose => _onDisposeController.stream;
-  StreamSubscription _onDisposeSubscription;
 }

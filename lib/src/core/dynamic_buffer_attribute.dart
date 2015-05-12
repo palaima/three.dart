@@ -2,7 +2,7 @@
  * @author benaadams / https://twitter.com/ben_a_adams
  */
 
-part of three;
+part of three.core;
 
 class DynamicBufferAttribute extends BufferAttribute {
   Map updateRange = {'offset': 0, 'count': -1};

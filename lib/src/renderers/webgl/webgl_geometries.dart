@@ -21,7 +21,7 @@ class WebGLGeometries {
       return geometries[geometry.id];
     }
 
-    geometry._onDisposeSubscription = geometry.onDispose.listen(onGeometryDispose);
+    geometry['_onDisposeSubscription'] = geometry.onDispose.listen(onGeometryDispose);
 
     if (geometry is BufferGeometry) {
       geometries[geometry.id] = geometry;
@@ -36,7 +36,7 @@ class WebGLGeometries {
   }
 
   void onGeometryDispose(IGeometry geometry) {
-    geometry._onDisposeSubscription.cancel();
+    geometry['_onDisposeSubscription'].cancel();
 
     var geo = geometries[geometry.id];
 

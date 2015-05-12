@@ -35,7 +35,7 @@ class ImageList extends Object with ListMixin<ImageElement> {
   }
 }
 
-class Texture extends Object with DisposeStream {
+class Texture {
   int id;
   var image;
   int mapping; //UVMapping appears to be missing..
@@ -88,6 +88,10 @@ class Texture extends Object with DisposeStream {
 
     return clonedTexture;
   }
+
+  StreamController _onDisposeController = new StreamController.broadcast();
+  Stream get onDispose => _onDisposeController.stream;
+  StreamSubscription _onDisposeSubscription;
 
   void dispose() {
     _onDisposeController.add(this);

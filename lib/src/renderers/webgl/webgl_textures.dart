@@ -21,13 +21,13 @@ class WebGLTextures {
   }
 
   Texture create(Texture texture) {
-    texture._onDisposeSubscription = texture.onDispose.listen(delete);
+    //texture._onDisposeSubscription = texture.onDispose.listen(delete);
     _textures[texture.id] = _gl.createTexture();
     return _textures[texture.id];
   }
 
   void delete(Texture texture) {
-    texture._onDisposeSubscription.cancel();
+    //texture._onDisposeSubscription.cancel();
     _gl.deleteTexture(_textures[texture.id]);
     _textures[texture.id] = null;
   }
