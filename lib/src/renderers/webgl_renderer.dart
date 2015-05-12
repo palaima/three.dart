@@ -478,7 +478,7 @@ class WebGLRenderer {
   }
 
   void onMaterialDispose(Material material) {
-    material._onDisposeSubscription.cancel();
+    material['_onDisposeSubscription'].cancel();
     deallocateMaterial(material);
   }
 
@@ -523,11 +523,11 @@ class WebGLRenderer {
   }
 
   void deallocateMaterial(Material material) {
-    var program = material._program.program;
+    var program = material['_program'].program;
 
     if (program == null) return;
 
-    material._program = null;
+    material['_program'] = null;
 
     // only deallocate GL program if this was the last use of shared program
     // assumed there is only single copy of any program in the _programs list
@@ -570,26 +570,26 @@ class WebGLRenderer {
   void renderBufferImmediate(Object3D object, WebGLProgram program, Material material) {
     state.initAttributes();
 
-    if (object._hasPositions && object.__webglVertexBuffer == null) object.__webglVertexBuffer = _gl.createBuffer();
-    if (object._hasNormals && object.__webglNormalBuffer == null) object.__webglNormalBuffer = _gl.createBuffer();
-    if (object._hasUvs && object.__webglUVBuffer == null) object.__webglUVBuffer = _gl.createBuffer();
-    if (object._hasColors && object.__webglColorBuffer == null) object.__webglColorBuffer = _gl.createBuffer();
+    if (object['_hasPositions'] && object['__webglVertexBuffer'] == null) object['__webglVertexBuffer'] = _gl.createBuffer();
+    if (object['_hasNormals'] && object['__webglNormalBuffer'] == null) object['__webglNormalBuffer'] = _gl.createBuffer();
+    if (object['_hasUvs'] && object['__webglUVBuffer'] == null) object['__webglUVBuffer'] = _gl.createBuffer();
+    if (object['_hasColors'] && object['__webglColorBuffer'] == null) object['__webglColorBuffer'] = _gl.createBuffer();
 
-    if (object._hasPositions) {
-      _gl.bindBuffer(gl.ARRAY_BUFFER, object.__webglVertexBuffer);
-      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object._positionArray, gl.DYNAMIC_DRAW);
+    if (object['_hasPositions']) {
+      _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglVertexBuffer']);
+      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object['_positionArray'], gl.DYNAMIC_DRAW);
 
       state.enableAttribute(program.attributes['position']);
 
       _gl.vertexAttribPointer(program.attributes['position'], 3, gl.FLOAT, false, 0, 0);
     }
 
-    if (object._hasNormals) {
-      _gl.bindBuffer(gl.ARRAY_BUFFER, object.__webglNormalBuffer);
+    if (object['_hasNormals']) {
+      _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglNormalBuffer']);
 
       if (material is! MeshPhongMaterial && material.shading == FlatShading) {
-        for (var i = 0; i < object._count * 3; i += 9) {
-          var normalArray = object._normalArray as List;
+        for (var i = 0; i < object['_count'] * 3; i += 9) {
+          var normalArray = object['_normalArray'] as List;
 
           var nax  = normalArray[i + 0];
           var nay  = normalArray[i + 1];
@@ -621,23 +621,23 @@ class WebGLRenderer {
         }
       }
 
-      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object._normalArray, gl.DYNAMIC_DRAW);
+      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object['_normalArray'], gl.DYNAMIC_DRAW);
       state.enableAttribute(program.attributes['normal']);
       _gl.vertexAttribPointer(program.attributes['normal'], 3, gl.FLOAT, false, 0, 0);
     }
 
-    if (object._hasUvs && material is Mapping && (material as Mapping).map != null) {
-      _gl.bindBuffer(gl.ARRAY_BUFFER, object.__webglUVBuffer);
-      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object._uvArray, gl.DYNAMIC_DRAW);
+    if (object['_hasUvs'] && material is Mapping && (material as Mapping).map != null) {
+      _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglUVBuffer']);
+      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object['_uvArray'], gl.DYNAMIC_DRAW);
 
       state.enableAttribute(program.attributes['uv']);
 
       _gl.vertexAttribPointer(program.attributes['uv'], 2, gl.FLOAT, false, 0, 0);
     }
 
-    if (object._hasColors && material.vertexColors != NoColors) {
-      _gl.bindBuffer(gl.ARRAY_BUFFER, object.__webglColorBuffer);
-      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object._colorArray, gl.DYNAMIC_DRAW);
+    if (object['_hasColors'] && material.vertexColors != NoColors) {
+      _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglColorBuffer']);
+      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object['_colorArray'], gl.DYNAMIC_DRAW);
 
       state.enableAttribute(program.attributes['color']);
 
@@ -646,9 +646,9 @@ class WebGLRenderer {
 
     state.disableUnusedAttributes();
 
-    _gl.drawArrays(gl.TRIANGLES, 0, object._count);
+    _gl.drawArrays(gl.TRIANGLES, 0, object['_count']);
 
-    object._count = 0;
+    object['_count'] = 0;
   }
 
   void setupVertexAttributes(Material material, WebGLProgram program, BufferGeometry geometry, int startIndex) {
