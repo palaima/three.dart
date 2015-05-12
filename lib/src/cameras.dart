@@ -1,15 +1,10 @@
 library three.cameras;
 
-import 'dart:async';
-import 'dart:collection';
-import 'dart:html' hide Path;
-import 'dart:typed_data';
-import 'dart:web_gl' as gl;
 import 'dart:math' as math;
 
-import 'core.dart';
+import 'core.dart' show Object3D;
 import 'math.dart';
-import 'constants.dart';
+import 'constants.dart' show RGBFormat, LinearFilter;
 
 import 'package:three/three.dart' show WebGLRenderer, WebGLRenderTargetCube, Scene;
 
