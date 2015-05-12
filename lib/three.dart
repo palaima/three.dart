@@ -26,6 +26,9 @@ export 'src/cameras.dart';
 import 'src/math.dart';
 export 'src/math.dart';
 
+import 'src/scenes.dart';
+export 'src/scenes.dart';
+
 import 'src/textures.dart';
 export 'src/textures.dart';
 
@@ -113,11 +116,6 @@ part 'src/renderers/webgl/webgl_textures.dart';
 part 'src/renderers/webgl_renderer.dart';
 part 'src/renderers/webgl_render_target.dart';
 part 'src/renderers/webgl_render_target_cube.dart';
-
-part 'src/scenes/scene.dart';
-part 'src/scenes/fog.dart';
-part 'src/scenes/fog_linear.dart';
-part 'src/scenes/fog_exp2.dart';
 
 // from _geometry
 int GeometryIdCount = 0;

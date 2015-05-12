@@ -1,4 +1,4 @@
-part of three;
+part of three.scenes;
 
 class FogExp2 extends Fog {
   num density;

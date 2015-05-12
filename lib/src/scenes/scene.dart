@@ -7,7 +7,7 @@
  * based on r71
  */
 
-part of three;
+part of three.scenes;
 
 class Scene extends Object3D {
   String type = 'Scene';

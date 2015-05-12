@@ -1,4 +1,4 @@
-part of three;
+part of three.scenes;
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -11,5 +11,4 @@ part of three;
 abstract class Fog {
   Color color;
   String name = '';
-
 }
