@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.lights;
 
 /// A point light that can cast shadow in one direction.
 ///

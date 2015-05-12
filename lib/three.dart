@@ -29,6 +29,9 @@ export 'src/math.dart';
 import 'src/textures.dart';
 export 'src/textures.dart';
 
+import 'src/lights.dart';
+export 'src/lights.dart';
+
 import 'src/materials.dart';
 export 'src/materials.dart';
 
@@ -91,14 +94,6 @@ part 'extras/core/gyroscope.dart';
 
 part 'extras/objects/lens_flare.dart';
 part 'extras/objects/immediate_render_object.dart';
-
-part 'src/lights/ambient_light.dart';
-part 'src/lights/area_light.dart';
-part 'src/lights/directional_light.dart';
-part 'src/lights/point_light.dart';
-part 'src/lights/spot_light.dart';
-part 'src/lights/hemisphere_light.dart';
-part 'src/lights/light.dart';
 
 part 'src/renderers/shaders/attribute.dart';
 part 'src/renderers/shaders/shader_chunk.dart';

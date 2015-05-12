@@ -5,7 +5,7 @@
  * based on r71
  */
 
-part of three;
+part of three.lights;
 
 /// Abstract base class for lights.
 class Light extends Object3D {
@@ -14,7 +14,7 @@ class Light extends Object3D {
   /// Color of the light.
   Color color;
 
-  CameraHelper _cameraHelper;
+  //CameraHelper _cameraHelper;
 
   /// This creates a light with color.
   Light(num hex)

@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.lights;
 
 /// A light source positioned directly above the scene.
 class HemisphereLight extends Light {

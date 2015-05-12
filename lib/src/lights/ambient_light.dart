@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.lights;
 
 /// This light's color gets applied to all the objects in the scene globally.
 class AmbientLight extends Light {

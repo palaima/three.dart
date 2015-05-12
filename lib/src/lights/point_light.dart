@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.lights;
 
 /// Affects objects using MeshLambertMaterial or MeshPhongMaterial.
 class PointLight extends Light {

@@ -5,7 +5,7 @@
  * based on r71
  */
 
-part of three;
+part of three.lights;
 
 class AreaLight extends Light {
   String type = 'AreaLight';

@@ -5,7 +5,7 @@
  * based on r71
  */
 
-part of three;
+part of three.lights;
 
 /// Affects objects using MeshLambertMaterial or MeshPhongMaterial.
 class DirectionalLight extends Light implements ShadowCaster {
