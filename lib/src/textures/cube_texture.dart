@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.textures;
 
 class CubeTexture extends Texture {
   List images;

@@ -1,4 +1,4 @@
-part of three;
+part of three.textures;
 
 class DataTexture extends Texture {
   DataTexture._internal(image, data, width, height, format, [type, mapping, wrapS, wrapT, magFilter, minFilter])

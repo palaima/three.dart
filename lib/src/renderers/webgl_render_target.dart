@@ -29,8 +29,6 @@ class WebGLRenderTarget extends Texture {
 
   var activeCubeFace;
 
-  gl.Texture __webglTexture;
-
   WebGLRenderTarget(this.width, this.height, {this.wrapS: ClampToEdgeWrapping, this.wrapT: ClampToEdgeWrapping,
     this.magFilter: LinearFilter, this.minFilter: LinearMipMapLinearFilter, this.anisotropy: 1,
     this.format: RGBAFormat, this.type: UnsignedByteType, this.depthBuffer: true, this.stencilBuffer: true,
@@ -70,6 +68,6 @@ class WebGLRenderTarget extends Texture {
   }
 
   void dispose() {
-    _onDisposeController.add(null);
+    super.dispose();
   }
 }

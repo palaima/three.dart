@@ -1,4 +1,4 @@
-part of three;
+part of three.textures;
 
 class CompressedTexture extends Texture {
   var mipmaps;

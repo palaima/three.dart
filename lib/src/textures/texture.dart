@@ -1,4 +1,4 @@
-part of three;
+part of three.textures;
 
 /**
  * @author mr.doob / http://mrdoob.com/
@@ -8,32 +8,6 @@ part of three;
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
  */
-
-class ImageList extends Object with ListMixin<ImageElement> {
-  int loadCount;
-  List<ImageElement> _images;
-  Map<String, dynamic> props;
-
-  // WebGL
-  gl.Texture __webglTextureCube;
-
-  ImageList(size)
-      : props = {},
-        _images = new List<ImageElement>(size);
-
-  ImageList.from(ImageList other)
-      : props = {},
-        _images = new List<ImageElement>.from(other._images);
-
-  ImageElement operator [](int index) => _images[index];
-  void operator []=(int index, ImageElement img) {
-    _images[index] = img;
-  }
-  int get length => _images.length;
-  void set length(int size) {
-    _images.length = size;
-  }
-}
 
 class Texture {
   int id;

@@ -466,13 +466,13 @@ class WebGLRenderer {
   // Events
 
   void onTextureDispose(Texture texture) {
-    texture._onDisposeSubscription.cancel();
+    texture['_onDisposeSubscription'].cancel();
     deallocateTexture(texture);
     info.memory.textures--;
   }
 
   void onRenderTargetDispose(WebGLRenderTarget renderTarget) {
-    renderTarget._onDisposeSubscription.cancel();
+    renderTarget['_onDisposeSubscription'].cancel();
     deallocateRenderTarget(renderTarget);
     info.memory.textures--;
   }
@@ -492,21 +492,21 @@ class WebGLRenderer {
       texture.image.__webglTextureCube = null;
     } else {
       // 2D texture
-      if (texture.__webglInit == null) return;
+      if (texture['__webglInit'] == null) return;
 
-      _gl.deleteTexture(texture.__webglTexture);
+      _gl.deleteTexture(texture['__webglTexture']);
 
-      texture.__webglTexture = null;
-      texture.__webglInit = false;
+      texture['__webglTexture'] = null;
+      texture['__webglInit'] = false;
     }
   }
 
   void deallocateRenderTarget(WebGLRenderTarget renderTarget) {
-    if (renderTarget == null || renderTarget.__webglTexture == null) return;
+    if (renderTarget == null || renderTarget['__webglTexture'] == null) return;
 
-    _gl.deleteTexture(renderTarget.__webglTexture);
+    _gl.deleteTexture(renderTarget['__webglTexture']);
 
-    renderTarget.__webglTexture = null;
+    renderTarget['__webglTexture'] = null;
 
     if (renderTarget is WebGLRenderTargetCube) {
       for (var i = 0; i < 6; i++) {
@@ -2538,25 +2538,25 @@ class WebGLRenderer {
     extension = extensions.get('EXT_texture_filter_anisotropic');
 
     if (extension != null && texture.type != FloatType && texture.type != HalfFloatType) {
-      if (texture.anisotropy > 1 || texture.__currentAnisotropy != null) {
+      if (texture.anisotropy > 1 || texture['__currentAnisotropy'] != null) {
         _gl.texParameterf(textureType, gl.ExtTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
             math.min(texture.anisotropy, getMaxAnisotropy()));
-        texture.__currentAnisotropy = texture.anisotropy;
+        texture['__currentAnisotropy'] = texture.anisotropy;
       }
     }
   }
 
   void uploadTexture(Texture texture, int slot) {
-    if (!texture.__webglInit) {
-      texture.__webglInit = true;
-      texture._onDisposeSubscription = texture.onDispose.listen(onTextureDispose);
-      texture.__webglTexture = _gl.createTexture();
+    if (texture['__webglInit'] != true) {
+      texture['__webglInit'] = true;
+      texture['_onDisposeSubscription'] = texture.onDispose.listen(onTextureDispose);
+      texture['__webglTexture'] = _gl.createTexture();
 
       info.memory.textures++;
     }
 
     state.activeTexture(gl.TEXTURE0 + slot);
-    state.bindTexture(gl.TEXTURE_2D, texture.__webglTexture);
+    state.bindTexture(gl.TEXTURE_2D, texture['__webglTexture']);
 
     _gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, texture.flipY ? 1 : 0);
     _gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha ? 1 : 0);
@@ -2641,7 +2641,7 @@ class WebGLRenderer {
     }
 
     state.activeTexture(gl.TEXTURE0 + slot);
-    state.bindTexture(gl.TEXTURE_2D, texture.__webglTexture);
+    state.bindTexture(gl.TEXTURE_2D, texture['__webglTexture']);
   }
 
   clampToMaxSize(image, int maxSize) {
@@ -2669,7 +2669,7 @@ class WebGLRenderer {
     if (texture.image.length == 6) {
       if (texture.needsUpdate) {
         if (texture.image.__webglTextureCube == null) {
-          texture._onDisposeSubscription = texture.onDispose.listen(onTextureDispose);
+          texture['_onDisposeSubscription'] = texture.onDispose.listen(onTextureDispose);
 
           texture.image.__webglTextureCube = _gl.createTexture();
 
@@ -2749,7 +2749,7 @@ class WebGLRenderer {
 
   void setCubeTextureDynamic(Texture texture, int slot) {
     state.activeTexture(gl.TEXTURE0 + slot);
-    state.bindTexture(gl.TEXTURE_CUBE_MAP, texture.__webglTexture);
+    state.bindTexture(gl.TEXTURE_CUBE_MAP, texture['__webglTexture']);
   }
 
   // Render targets
@@ -2758,7 +2758,7 @@ class WebGLRenderer {
                         int textureTarget) {
     _gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     _gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
-        textureTarget, renderTarget.__webglTexture, 0);
+        textureTarget, renderTarget['__webglTexture'], 0);
   }
 
   void setupRenderBuffer(gl.Renderbuffer renderbuffer, WebGLRenderTarget renderTarget) {
@@ -2788,7 +2788,7 @@ class WebGLRenderer {
       if (renderTarget.stencilBuffer == null) renderTarget.stencilBuffer = true;
 
       renderTarget['_onDisposeSubscription'] = renderTarget.onDispose.listen(onRenderTargetDispose);
-      renderTarget.__webglTexture = _gl.createTexture();
+      renderTarget['__webglTexture'] = _gl.createTexture();
 
       info.memory.textures++;
 
@@ -2805,7 +2805,7 @@ class WebGLRenderer {
         renderTarget.__webglFramebuffer = [];
         renderTarget.__webglRenderbuffer = [];
 
-        state.bindTexture(gl.TEXTURE_CUBE_MAP, renderTarget.__webglTexture);
+        state.bindTexture(gl.TEXTURE_CUBE_MAP, renderTarget['__webglTexture']);
         setTextureParameters(gl.TEXTURE_CUBE_MAP, renderTarget, isTargetPowerOfTwo);
 
         for (var i = 0; i < 6; i ++) {
@@ -2832,7 +2832,7 @@ class WebGLRenderer {
           renderTarget.__webglRenderbuffer = _gl.createRenderbuffer();
         }
 
-        state.bindTexture(gl.TEXTURE_2D, renderTarget.__webglTexture);
+        state.bindTexture(gl.TEXTURE_2D, renderTarget['__webglTexture']);
         setTextureParameters(gl.TEXTURE_2D, renderTarget, isTargetPowerOfTwo);
 
         _gl.texImage2D(gl.TEXTURE_2D, 0, glFormat, renderTarget.width, renderTarget.height,
@@ -2931,11 +2931,11 @@ class WebGLRenderer {
 
   void updateRenderTargetMipmap(WebGLRenderTarget renderTarget) {
     if (renderTarget is WebGLRenderTargetCube) {
-      state.bindTexture(gl.TEXTURE_CUBE_MAP, renderTarget.__webglTexture);
+      state.bindTexture(gl.TEXTURE_CUBE_MAP, renderTarget['__webglTexture']);
       _gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
       state.bindTexture(gl.TEXTURE_CUBE_MAP, null);
     } else {
-      state.bindTexture(gl.TEXTURE_2D, renderTarget.__webglTexture);
+      state.bindTexture(gl.TEXTURE_2D, renderTarget['__webglTexture']);
       _gl.generateMipmap(gl.TEXTURE_2D);
       state.bindTexture(gl.TEXTURE_2D, null);
     }
@@ -3170,5 +3170,30 @@ class GeometryProgram {
   }
   bool operator ==(GeometryProgram other) =>
       geometryId == other.geometryId && programId == other.programId && wireframeBit == other.wireframeBit;
+}
 
+class ImageList extends Object with ListMixin<ImageElement> {
+  int loadCount;
+  List<ImageElement> _images;
+  Map<String, dynamic> props;
+
+  // WebGL
+  gl.Texture __webglTextureCube;
+
+  ImageList(size)
+      : props = {},
+        _images = new List<ImageElement>(size);
+
+  ImageList.from(ImageList other)
+      : props = {},
+        _images = new List<ImageElement>.from(other._images);
+
+  ImageElement operator [](int index) => _images[index];
+  void operator []=(int index, ImageElement img) {
+    _images[index] = img;
+  }
+  int get length => _images.length;
+  void set length(int size) {
+    _images.length = size;
+  }
 }

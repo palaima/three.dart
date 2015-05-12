@@ -20,6 +20,9 @@ export 'src/core.dart';
 import 'src/math.dart';
 export 'src/math.dart';
 
+import 'src/textures.dart';
+export 'src/textures.dart';
+
 import 'src/constants.dart';
 export 'src/constants.dart';
 
@@ -143,11 +146,6 @@ part 'src/scenes/scene.dart';
 part 'src/scenes/fog.dart';
 part 'src/scenes/fog_linear.dart';
 part 'src/scenes/fog_exp2.dart';
-
-part 'src/textures/texture.dart';
-part 'src/textures/cube_texture.dart';
-part 'src/textures/data_texture.dart';
-part 'src/textures/compressed_texture.dart';
 
 // from _geometry
 int GeometryIdCount = 0;
