@@ -4,7 +4,7 @@
  * based on https://github.com/mrdoob/three.js/blob/c9f111c3109b98b2449cf8849787096594e3282e/src/renderers/webgl/WebGLExtensions.js
  */
 
-part of three;
+part of three.renderers;
 
 class WebGLExtensions {
   Map extensions = {};

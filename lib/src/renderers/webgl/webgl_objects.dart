@@ -4,7 +4,7 @@
  * based on https://github.com/mrdoob/three.js/blob/f36b11a4b0c64d0775b4fb75db3935939eec6812/src/renderers/webgl/WebGLObjects.js
  */
 
-part of three;
+part of three.renderers;
 
 class WebGLObjects {
   Map<int, WebGLObject> objects = {};

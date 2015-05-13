@@ -4,7 +4,7 @@
  * based on https://github.com/mrdoob/three.js/blob/bf573f30aff137d574365fe7a645cd3edc0ac739/src/renderers/webgl/WebGLGeometries.js
  */
 
-part of three;
+part of three.renderers;
 
 class WebGLGeometries {
   Map<String, BufferGeometry> geometries = {};

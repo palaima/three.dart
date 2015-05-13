@@ -4,7 +4,7 @@
  * based on https://github.com/mrdoob/three.js/commit/2034b611f1c97148c1bd795d45307d035a5334c1
  */
 
-part of three;
+part of three.renderers;
 
 class WebGLShadowMap {
   gl.RenderingContext _gl;

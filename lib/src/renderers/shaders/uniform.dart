@@ -1,4 +1,4 @@
-part of three;
+part of three.renderers;
 
 class Uniform<T> {
   String type;

@@ -4,7 +4,7 @@
  * based on https://github.com/mrdoob/three.js/blob/77c7364298361a55deae254e185f1a083e7826be/src/renderers/webgl/WebGLState.js
  */
 
-part of three;
+part of three.renderers;
 
 class WebGLState {
   gl.RenderingContext _gl;

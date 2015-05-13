@@ -7,7 +7,7 @@
  * based on https://github.com/mrdoob/three.js/blob/ba36e1d75f470f63812a260994a564bca2e4c574/src/renderers/WebGLRenderer.js
  */
 
-part of three;
+part of three.renderers;
 
 /// The WebGL renderer displays your beautifully crafted scenes using WebGL,
 /// if your device supports it.
@@ -1350,7 +1350,7 @@ class WebGLRenderer {
         lights.add(object);
       } else if (object is Sprite) {
         _sprites.add(object);
-      } else if (object is LensFlare) {
+      } else if (false) { //object is LensFlare) {
         _lensFlares.add(object);
       } else {
         var webglObject = objects.objects[object.id];

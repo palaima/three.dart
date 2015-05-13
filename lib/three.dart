@@ -38,6 +38,9 @@ import 'src/materials.dart';
 export 'src/materials.dart';
 
 import 'src/constants.dart';
+
+export 'src/renderers.dart';
+
 export 'src/constants.dart';
 
 import 'extras/helpers.dart' show CameraHelper;
@@ -96,23 +99,3 @@ part 'extras/core/gyroscope.dart';
 
 part 'extras/objects/lens_flare.dart';
 part 'extras/objects/immediate_render_object.dart';
-
-part 'src/renderers/shaders/attribute.dart';
-part 'src/renderers/shaders/shader_chunk.dart';
-part 'src/renderers/shaders/shader_lib.dart';
-part 'src/renderers/shaders/uniform.dart';
-part 'src/renderers/shaders/uniforms_lib.dart';
-
-part 'src/renderers/webgl/webgl_extensions.dart';
-part 'src/renderers/webgl/webgl_geometries.dart';
-part 'src/renderers/webgl/webgl_objects.dart';
-part 'src/renderers/webgl/webgl_program.dart';
-part 'src/renderers/webgl/webgl_shader.dart';
-part 'src/renderers/webgl/webgl_shadow_map.dart';
-part 'src/renderers/webgl/webgl_state.dart';
-part 'src/renderers/webgl/webgl_textures.dart';
-
-part 'src/renderers/webgl_renderer.dart';
-part 'src/renderers/webgl_render_target.dart';
-part 'src/renderers/webgl_render_target_cube.dart';
-

@@ -1,4 +1,4 @@
-part of three;
+part of three.renderers;
 
 class WebGLRenderTarget extends Texture {
   int width, height;
@@ -30,9 +30,9 @@ class WebGLRenderTarget extends Texture {
   var activeCubeFace;
 
   WebGLRenderTarget(this.width, this.height, {this.wrapS: ClampToEdgeWrapping, this.wrapT: ClampToEdgeWrapping,
-    this.magFilter: LinearFilter, this.minFilter: LinearMipMapLinearFilter, this.anisotropy: 1,
-    this.format: RGBAFormat, this.type: UnsignedByteType, this.depthBuffer: true, this.stencilBuffer: true,
-    this.shareDepthFrom});
+  this.magFilter: LinearFilter, this.minFilter: LinearMipMapLinearFilter, this.anisotropy: 1,
+  this.format: RGBAFormat, this.type: UnsignedByteType, this.depthBuffer: true, this.stencilBuffer: true,
+  this.shareDepthFrom});
 
   void setSize(int width, int height) {
     if (this.width != width || this.height != height) {

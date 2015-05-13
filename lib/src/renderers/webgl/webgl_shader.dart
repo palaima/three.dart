@@ -2,7 +2,7 @@
  * based on https://github.com/mrdoob/three.js/blob/0f945f290b5d4eda71663bb73befd299f2664bb8/src/renderers/webgl/WebGLShader.js
  */
 
-part of three;
+part of three.renderers;
 
 class WebGLShader {
   String _addLineNumbers(String string) {
