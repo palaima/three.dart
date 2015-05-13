@@ -686,7 +686,7 @@ class WebGLRenderer {
             var stride = data.stride;
             var offset = geometryAttribute.offset;
 
-            _gl.bindBuffer(gl.ARRAY_BUFFER, geometryAttribute.data.buffer._glbuffer);
+            _gl.bindBuffer(gl.ARRAY_BUFFER, geometryAttribute.data.buffer.glbuffer);
             _gl.vertexAttribPointer(programAttribute, size, gl.FLOAT, false, stride * data.bytesPerElement,
                 (startIndex * stride + offset) * data.bytesPerElement);
 
@@ -826,7 +826,7 @@ class WebGLRenderer {
 
           if (updateBuffers) {
             setupVertexAttributes(material, program, geometry, startIndex);
-            _gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index.buffer._glbuffer);
+            _gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index.buffer.glbuffer);
           }
 
           // render indexed triangles
