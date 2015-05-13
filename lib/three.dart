@@ -7,50 +7,29 @@
 
 library three;
 
-import 'dart:collection';
-import 'dart:html' hide Path;
 import 'dart:typed_data';
-import 'dart:web_gl' as gl;
 import 'dart:math' as math;
 
 import 'src/core.dart';
 export 'src/core.dart';
 
-import 'src/objects.dart';
 export 'src/objects.dart';
-
-import 'src/cameras.dart';
 export 'src/cameras.dart';
 
 import 'src/math.dart';
 export 'src/math.dart';
 
-import 'src/scenes.dart';
 export 'src/scenes.dart';
-
-import 'src/textures.dart';
 export 'src/textures.dart';
-
-import 'src/lights.dart';
 export 'src/lights.dart';
-
-import 'src/materials.dart';
 export 'src/materials.dart';
-
-import 'src/constants.dart';
-
 export 'src/renderers.dart';
-
 export 'src/constants.dart';
-
-import 'extras/helpers.dart' show CameraHelper;
 
 import 'extras/font_utils.dart' as font_utils;
 
 import 'extras/core/curve_utils.dart' as curve_utils;
 import 'extras/core/shape_utils.dart' as shape_utils;
-
-import 'extras/uniforms_utils.dart' as uniforms_utils;
 
 part 'extras/geometries/circle_geometry.dart';
 part 'extras/geometries/circle_buffer_geometry.dart';
