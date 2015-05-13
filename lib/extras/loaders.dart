@@ -8,6 +8,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:convert' show JSON;
 import 'package:three/three.dart';
+import '../src/logging.dart';
 
 part 'loaders/cache.dart';
 part 'loaders/loader.dart';

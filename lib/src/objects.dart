@@ -3,6 +3,7 @@ library three.objects;
 import 'dart:typed_data';
 import 'dart:math' as math;
 
+import 'logging.dart';
 import 'cameras.dart';
 import 'core.dart';
 import 'math.dart';
@@ -10,7 +11,7 @@ import 'constants.dart';
 
 import 'package:three/three.dart'
   show Material, LineMaterial, LineBasicMaterial, MeshBasicMaterial, SpriteMaterial,
-       PointCloudMaterial, Morphing, warn;
+       PointCloudMaterial, Morphing;
 
 part 'objects/bone.dart';
 part 'objects/group.dart';

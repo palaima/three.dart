@@ -116,6 +116,3 @@ part 'src/renderers/webgl_renderer.dart';
 part 'src/renderers/webgl_render_target.dart';
 part 'src/renderers/webgl_render_target_cube.dart';
 
-warn(String msg) => window.console.warn(msg);
-log(String msg) => window.console.log(msg);
-error(String msg) => window.console.error(msg);
