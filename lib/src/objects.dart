@@ -8,10 +8,7 @@ import 'cameras.dart';
 import 'core.dart';
 import 'math.dart';
 import 'constants.dart';
-
-import 'package:three/three.dart'
-  show Material, LineMaterial, LineBasicMaterial, MeshBasicMaterial, SpriteMaterial,
-       PointCloudMaterial, Morphing;
+import 'materials.dart';
 
 part 'objects/bone.dart';
 part 'objects/group.dart';

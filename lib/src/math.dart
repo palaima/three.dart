@@ -4,7 +4,9 @@ import 'dart:async' show Stream, StreamController;
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:math' as math;
 import 'dart:typed_data' show Float32List, ByteBuffer;
-import 'package:three/three.dart' show Geometry, BufferGeometry, Object3D, GeometryObject, Camera;
+
+import 'core.dart' show Geometry, BufferGeometry, GeometryObject, Object3D;
+import 'cameras.dart' show Camera;
 
 part 'math/aabb2.dart';
 part 'math/aabb3.dart';

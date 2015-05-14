@@ -7,7 +7,7 @@ import 'constants.dart';
 import 'textures.dart';
 import 'math.dart';
 
-import 'package:three/three.dart' show Uniform, Attribute, WebGLProgram;
+import 'renderers.dart' show Uniform, Attribute, WebGLProgram;
 
 part 'materials/line_basic_material.dart';
 part 'materials/line_dashed_material.dart';
