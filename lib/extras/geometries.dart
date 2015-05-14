@@ -3,7 +3,7 @@ library three.extras.geometries;
 import 'dart:typed_data';
 import 'dart:math' as math;
 
-import 'font_utils.dart' as shape_utils;
+import 'font_utils.dart' as font_utils;
 import 'core/shape_utils.dart' as shape_utils;
 
 import 'package:three/three.dart' show Curve, Shape;
