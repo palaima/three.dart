@@ -1,4 +1,4 @@
-part of three;
+part of three.objects;
 
 class LensFlare extends Object3D {
   List lensFlares;

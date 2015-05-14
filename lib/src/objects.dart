@@ -24,3 +24,5 @@ part 'objects/particle.dart';
 part 'objects/point_cloud.dart';
 part 'objects/skinned_mesh.dart';
 part 'objects/sprite.dart';
+part 'objects/immediate_render_object.dart';
+part 'objects/lens_flare.dart';

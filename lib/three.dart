@@ -75,6 +75,3 @@ part 'extras/core/spline_curve3.dart';
 part 'extras/core/closed_spline_curve3.dart';
 
 part 'extras/core/gyroscope.dart';
-
-part 'extras/objects/lens_flare.dart';
-part 'extras/objects/immediate_render_object.dart';
