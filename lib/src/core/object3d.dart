@@ -102,27 +102,12 @@ class Object3D {
 
   StreamController _onObjectRemovedController = new StreamController.broadcast();
   Stream get onObjectRemoved => _onObjectRemovedController.stream;
-  StreamSubscription _objectRemovedSubscription;
 
   StreamController _onAddedToSceneController = new StreamController.broadcast();
   Stream get onAddedToScene => _onAddedToSceneController.stream;
 
   StreamController _onRemovedFromSceneController = new StreamController.broadcast();
   Stream get onRemovedFromScene => _onRemovedFromSceneController.stream;
-
-  // WebGL
-
-  bool __webglInit = false;
-  bool __webglActive = false;
-
-  Matrix4 _modelViewMatrix;
-  Matrix3 _normalMatrix;
-  int _count;
-  bool _hasPositions, _hasNormals, _hasUvs, _hasColors;
-  TypedData _positionArray, _normalArray, _uvArray, _colorArray;
-  gl.Buffer __webglVertexBuffer, __webglNormalBuffer, __webglUVBuffer, __webglColorBuffer;
-
-  var __webglMorphTargetInfluences;
 
   var renderDepth;
   var matrixRotationWorld = new Matrix4.identity();

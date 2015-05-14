@@ -113,14 +113,6 @@ class Material {
 
   int shading;
 
-  // WebGL
-  Map __webglShader;
-  WebGLProgram _program;
-  List _uniformsList;
-  int _numSupportedMorphTargets;
-  int _numSupportedMorphNormals;
-  bool _shadowPass = false;
-
   StreamController _onUpdateController = new StreamController();
   Stream get onUpdate => _onUpdateController.stream;
 

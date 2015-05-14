@@ -49,9 +49,6 @@ class BufferGeometry implements IGeometry {
       morphTargetsNeedUpdate = true,
       lineDistancesNeedUpdate = true;
 
-  bool __webglInit = false;
-  var __webglVertexBuffer;
-
   // dynamic is a reserved word in Dart
   bool get isDynamic => _dynamic;
   set isDynamic(bool value) => _dynamic = value;

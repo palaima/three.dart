@@ -29,9 +29,6 @@ class Texture {
   List mipmaps = [];
 
   // WebGL
-  var __webglTexture;
-  bool __webglInit = false;
-  var __currentAnisotropy;
   var sourceFile;
 
   //TODO: resolve dynamic vars, find out what UVMapping is!
@@ -65,7 +62,6 @@ class Texture {
 
   StreamController _onDisposeController = new StreamController.broadcast();
   Stream get onDispose => _onDisposeController.stream;
-  StreamSubscription _onDisposeSubscription;
 
   void dispose() {
     _onDisposeController.add(this);
