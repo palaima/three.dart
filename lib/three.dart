@@ -18,4 +18,5 @@ export 'src/renderers.dart';
 export 'src/constants.dart';
 
 export 'extras/core.dart';
+export 'extras/curves.dart';
 export 'extras/geometries.dart';
