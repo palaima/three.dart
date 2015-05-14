@@ -319,25 +319,22 @@ class WebGLRenderer {
     state.reset();
   }
 
+  List<int> _array;
 
   List getCompressedTextureFormats() {
-    var array;
+    if (_array != null) return _array;
 
-    return (() {
-      if (array != null) return array;
+    _array = [];
 
-      array = [];
+    if (extensions.get('WEBGL_compressed_texture_pvrtc') != null || extensions.get('WEBGL_compressed_texture_s3tc') != null) {
+      var formats = _gl.getParameter(gl.COMPRESSED_TEXTURE_FORMATS);
 
-      if (extensions.get('WEBGL_compressed_texture_pvrtc') != null || extensions.get('WEBGL_compressed_texture_s3tc') != null) {
-        var formats = _gl.getParameter(gl.COMPRESSED_TEXTURE_FORMATS);
-
-        for (var i = 0; i < formats.length; i ++) {
-          array.add(formats[i]);
-        }
+      for (var i = 0; i < formats.length; i ++) {
+        _array.add(formats[i]);
       }
+    }
 
-      return array;
-    })();
+    return _array;
   }
 
   // API
@@ -2720,14 +2717,14 @@ class WebGLRenderer {
               if (texture.format != RGBAFormat && texture.format != RGBFormat) {
                 if (getCompressedTextureFormats().indexOf(glFormat) > -1) {
                   _gl.compressedTexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, j, glFormat,
-                      mipmap.width, mipmap.height, 0, mipmap.data);
+                      mipmap['width'].toInt(), mipmap['height'].toInt(), 0, mipmap['data']);
                 } else {
                   warn('WebGLRenderer: Attempt to load unsupported compressed texture format' +
                        'in .setCubeTexture()');
                 }
               } else {
-                _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, j, glFormat, mipmap.width,
-                    mipmap.height, 0, glFormat, glType, mipmap.data);
+                _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, j, glFormat, mipmap['width'].toInt(),
+                    mipmap['height'].toInt(), 0, glFormat, glType, mipmap['data']);
               }
             }
           }
@@ -2983,7 +2980,7 @@ class WebGLRenderer {
     extension = extensions.get('OES_texture_half_float');
 
     if (extension != null) {
-      if (p == HalfFloatType) return extension.HALF_FLOAT_OES;
+      if (p == HalfFloatType) return gl.OesTextureHalfFloat.HALF_FLOAT_OES;
     }
 
     if (p == AlphaFormat) return gl.ALPHA;
@@ -3012,10 +3009,10 @@ class WebGLRenderer {
     extension = extensions.get('WEBGL_compressed_texture_s3tc');
 
     if (extension != null) {
-      if (p == RGB_S3TC_DXT1_Format) return extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
-      if (p == RGBA_S3TC_DXT1_Format) return extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-      if (p == RGBA_S3TC_DXT3_Format) return extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      if (p == RGBA_S3TC_DXT5_Format) return extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      if (p == RGB_S3TC_DXT1_Format) return gl.CompressedTextureS3TC.COMPRESSED_RGB_S3TC_DXT1_EXT;
+      if (p == RGBA_S3TC_DXT1_Format) return gl.CompressedTextureS3TC.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+      if (p == RGBA_S3TC_DXT3_Format) return gl.CompressedTextureS3TC.COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      if (p == RGBA_S3TC_DXT5_Format) return gl.CompressedTextureS3TC.COMPRESSED_RGBA_S3TC_DXT5_EXT;
     }
 
     extension = extensions.get('WEBGL_compressed_texture_pvrtc');
@@ -3158,9 +3155,9 @@ class GeometryProgram {
       geometryId == other.geometryId && programId == other.programId && wireframeBit == other.wireframeBit;
 }
 
-class ImageList extends Object with ListMixin<ImageElement> {
+class ImageList extends Object with ListMixin {
   int loadCount;
-  List<ImageElement> _images;
+  List _images;
   Map<String, dynamic> props;
 
   // WebGL
@@ -3168,14 +3165,14 @@ class ImageList extends Object with ListMixin<ImageElement> {
 
   ImageList(size)
       : props = {},
-        _images = new List<ImageElement>(size);
+        _images = new List(size);
 
   ImageList.from(ImageList other)
       : props = {},
-        _images = new List<ImageElement>.from(other._images);
+        _images = new List.from(other._images);
 
-  ImageElement operator [](int index) => _images[index];
-  void operator []=(int index, ImageElement img) {
+  operator [](int index) => _images[index];
+  void operator []=(int index, img) {
     _images[index] = img;
   }
   int get length => _images.length;
