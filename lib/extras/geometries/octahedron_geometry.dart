@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.extras.geometries;
 
 class OctahedronGeometry extends PolyhedronGeometry {
   factory OctahedronGeometry(double radius, int detail) {

@@ -6,7 +6,7 @@
  * based on r66
  */
 
-part of three;
+part of three.extras.geometries;
 
 /// Class for generating meshes with axial symmetry. Possible uses include donuts,
 /// pipes, vases etc. The lathe rotate around the Z axis.

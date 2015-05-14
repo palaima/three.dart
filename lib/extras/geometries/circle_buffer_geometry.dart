@@ -2,7 +2,7 @@
  * @author benaadams / https://twitter.com/ben_a_adams
  */
 
-part of three;
+part of three.extras.geometries;
 
 class CircleBufferGeometry extends BufferGeometry {
   String type = 'CircleBufferGeometry';

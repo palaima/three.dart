@@ -4,7 +4,7 @@
  * based on r70
  */
 
-part of three;
+part of three.extras.geometries;
 
 /**
  *  A class for generating cylinder geometries

@@ -5,7 +5,7 @@
  * based on r66
  */
 
-part of three;
+part of three.extras.geometries;
 
 class ParametricGeometry extends Geometry {
   ParametricGeometry(Function func, int slices, int stacks) : super() {

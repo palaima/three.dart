@@ -5,7 +5,7 @@
  * @link http://www.openprocessing.org/visuals/?visualID=15599
  */
 
-part of three;
+part of three.extras.geometries;
 
 // Hilbert Curve: Generates 2D-Coordinates in a very fast way.
 class HilbertGeometry extends Geometry {

@@ -4,7 +4,7 @@
  * based on r71
  */
 
-part of three;
+part of three.extras.geometries;
 
 class BoxGeometry extends Geometry {
   int _widthSegments;

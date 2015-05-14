@@ -8,7 +8,7 @@
  * based on r63
  */
 
-part of three;
+part of three.extras.geometries;
 
 class TubeGeometry extends Geometry {
   List<Vector3> tangents;

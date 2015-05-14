@@ -4,7 +4,7 @@
  * based on r72
  */
 
-part of three;
+part of three.extras.geometries;
 
 class SphereBufferGeometry extends BufferGeometry {
   String type = 'SphereBufferGeometry';

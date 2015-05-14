@@ -2,7 +2,7 @@
  * @author WestLangley / http://github.com/WestLangley
  */
 
-part of three;
+part of three.extras.geometries;
 
 class EdgesGeometry extends BufferGeometry {
   EdgesGeometry(IGeometry geometry, [double thresholdAngle = 1.0]) {

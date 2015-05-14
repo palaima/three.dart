@@ -6,7 +6,7 @@
  * based on r66
  */
 
-part of three;
+part of three.extras.geometries;
 
 /**
  * A class for generating torus geometries

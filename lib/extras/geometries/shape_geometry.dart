@@ -14,7 +14,7 @@
  * }
  */
 
-part of three;
+part of three.extras.geometries;
 
 class ShapeGeometry extends Geometry {
   String type = 'ShapeGeometry';

@@ -1,6 +1,4 @@
-part of three;
-
-/**
+/*
  * @author zz85 / http://www.lab4games.net/zz85/blog
  *
  * Creates extruded geometry from a path shape.
@@ -28,6 +26,8 @@ part of three;
  *
  *  }
   **/
+
+part of three.extras.geometries;
 
 class ExtrudeGeometry extends Geometry {
   String type = 'ExtrudeGeometry';

@@ -2,7 +2,7 @@
  * Based on r66
  */
 
-part of three;
+part of three.extras.geometries;
 
 
 /// A convex hull generator using the incremental method.

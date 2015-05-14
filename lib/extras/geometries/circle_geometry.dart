@@ -4,7 +4,7 @@
  * based on r70
  */
 
-part of three;
+part of three.extras.geometries;
 
 /**
  * CircleGeometry is a simple shape of Euclidean geometry. It is contructed

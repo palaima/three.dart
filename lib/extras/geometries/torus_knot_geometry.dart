@@ -5,7 +5,7 @@
  * based on r66
  */
 
-part of three;
+part of three.extras.geometries;
 
 /**
  * Class for generating torus knot geometries, the particular shape
