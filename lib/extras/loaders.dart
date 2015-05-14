@@ -21,3 +21,4 @@ part 'loaders/mtl_loader.dart';
 part 'loaders/obj_loader.dart';
 part 'loaders/compressed_texture_loader.dart';
 part 'loaders/dds_loader.dart';
+part 'loaders/xhr_loader.dart';
