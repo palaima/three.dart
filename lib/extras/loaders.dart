@@ -19,3 +19,4 @@ part 'loaders/image_loader.dart';
 part 'loaders/stl_loader.dart';
 part 'loaders/mtl_loader.dart';
 part 'loaders/obj_loader.dart';
+part 'loaders/compressed_texture_loader.dart';
