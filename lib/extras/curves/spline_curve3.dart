@@ -1,4 +1,4 @@
-part of three.extras.core;
+part of three.extras.curves;
 
 /**************************************************************
  *  Spline 3D curve

@@ -1,4 +1,4 @@
-part of three.extras.core;
+part of three.extras.curves;
 
 class SplineCurve extends Curve2D {
   List<Vector2> points;

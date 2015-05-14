@@ -1,4 +1,4 @@
-part of three.extras.core;
+part of three.extras.curves;
 
 class ArcCurve extends Curve2D {
 
