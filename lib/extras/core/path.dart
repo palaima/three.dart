@@ -1,4 +1,4 @@
-part of three;
+part of three.extras.core;
 
 /**
  * @author zz85 / http://www.lab4games.net/zz85/blog

@@ -1,4 +1,4 @@
-part of three;
+part of three.extras.core;
 
 class QuadraticBezierCurve3 extends Curve3D {
   Vector3 v0, v1, v2;

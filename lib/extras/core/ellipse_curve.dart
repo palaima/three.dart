@@ -1,4 +1,4 @@
-part of three;
+part of three.extras.core;
 
 class EllipseCurve extends Curve2D {
   num aX, aY;

@@ -1,4 +1,4 @@
-library CurveUtils;
+library three.extras.core.curve_utils;
 
 tangentQuadraticBezier(t, p0, p1, p2) => 2 * (1 - t) * (p1 - p0) + 2 * t * (p2 - p1);
 

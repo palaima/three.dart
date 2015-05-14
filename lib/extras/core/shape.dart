@@ -3,7 +3,7 @@
  * Defines a 2d shape plane using paths.
  */
 
-part of three;
+part of three.extras.core;
 
 class Shape extends Path {
   List<Path> holes = [];

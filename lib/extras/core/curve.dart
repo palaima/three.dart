@@ -1,4 +1,4 @@
-part of three;
+part of three.extras.core;
 
 /**************************************************************
  *  Abstract Curve base class
@@ -8,11 +8,11 @@ class Curve<V> {
   int _arcLengthDivisions = null;
   List cacheArcLengths = null;
   bool needsUpdate = false;
-  
+
   Function _getPoint;
-  
+
   Curve();
-    
+
   Curve.create(this._getPoint);
 
   // Virtual base class method to overwrite and implement in subclasses

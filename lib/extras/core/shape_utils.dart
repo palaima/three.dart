@@ -1,7 +1,7 @@
 /**************************************************************
  *  Utils
  **************************************************************/
-library ShapeUtils;
+library three.extras.core.shape_utils;
 
 import "package:three/three.dart" show Vector2;
 import 'package:three/extras/font_utils.dart' as FontUtils;

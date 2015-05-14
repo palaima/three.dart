@@ -1,4 +1,4 @@
-part of three;
+part of three.extras.core;
 
 class CubicBezierCurve extends Curve2D {
   Vector2 v0, v1, v2, v3;
