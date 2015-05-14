@@ -1,12 +1,14 @@
 library three.renderers;
 
-import 'dart:async';
 import 'dart:collection';
 import 'dart:html' hide Path;
 import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 import 'dart:math' as math;
+
 import 'package:three/extras/uniforms_utils.dart' as uniforms_utils;
+
+import 'package:three/extras/helpers.dart' show CameraHelper;
 
 import 'logging.dart';
 import 'constants.dart';
