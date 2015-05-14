@@ -127,6 +127,10 @@ class DynamicGeometry implements IGeometry {
     _onDisposeController.add(null);
   }
 
+  noSuchMethod(Invocation invocation) {
+    print("'${invocation.memberName}' not available in DynamicGeometry");
+  }
+
   Map _data = {};
   operator [](k) => _data[k];
   operator []=(k, v) => _data[k] = v;

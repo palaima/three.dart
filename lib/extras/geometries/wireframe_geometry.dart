@@ -128,4 +128,8 @@ class WireframeGeometry extends BufferGeometry {
       }
     }
   }
+
+  noSuchMethod(Invocation invocation) {
+    print("'${invocation.memberName}' not available in BufferGeometry");
+  }
 }

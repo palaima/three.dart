@@ -1435,7 +1435,8 @@ class WebGLRenderer {
     if (object.immediateRenderCallback != null) {
       object.immediateRenderCallback(program, _gl, _frustum);
     } else {
-      object.render((object) => renderBufferImmediate(object, program, material));
+      // TODO
+      //object.render((object) => renderBufferImmediate(object, program, material));
     }
   }
 
@@ -1855,7 +1856,7 @@ class WebGLRenderer {
       }
 
       if (object.receiveShadow && material['_shadowPass'] != true) {
-        refreshUniformsShadow(m_uniforms, lights as List<ShadowCaster>);
+        refreshUniformsShadow(m_uniforms, lights);
       }
 
       // load common uniforms
@@ -2035,7 +2036,7 @@ class WebGLRenderer {
     uniforms['hemisphereLightDirection'].needsUpdate = value;
   }
 
-  void refreshUniformsShadow(Map<String, Uniform> uniforms, List<ShadowCaster> lights) {
+  void refreshUniformsShadow(Map<String, Uniform> uniforms, List<Light> lights) {
     if (uniforms['shadowMatrix'] != null) {
       var maxShadows = allocateShadows(lights);
 
@@ -3087,7 +3088,7 @@ class WebGLRenderer {
     return {'directional': dirLights, 'point': pointLights, 'spot': spotLights, 'hemi': hemiLights};
   }
 
-  int allocateShadows(List<ShadowCaster> lights) {
+  int allocateShadows(List<Light> lights) {
     var maxShadows = 0;
 
     lights.where((l) => l.castShadow).forEach((light) {

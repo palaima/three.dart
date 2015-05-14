@@ -81,4 +81,8 @@ class PlaneBufferGeometry extends BufferGeometry {
     aNormal = new BufferAttribute(normals, 3);
     aUV = new BufferAttribute(uvs, 2);
   }
+
+  noSuchMethod(Invocation invocation) {
+    print("'${invocation.memberName}' not available in BufferGeometry");
+  }
 }

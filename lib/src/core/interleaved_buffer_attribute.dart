@@ -56,4 +56,8 @@ class InterleavedBufferAttribute implements BufferAttribute {
     data.array[index + 2] = z;
     data.array[index + 3] = w;
   }
+
+  noSuchMethod(Invocation invocation) {
+    print("'${invocation.memberName}' not available in InterleavedBufferAttribute");
+  }
 }

@@ -57,4 +57,8 @@ class SpotLight extends Light implements ShadowCaster {
   toJSON() {
     throw new UnimplementedError();
   }
+
+  noSuchMethod(Invocation invocation) {
+    print("'${invocation.memberName}' not defined in SpotLight");
+  }
 }

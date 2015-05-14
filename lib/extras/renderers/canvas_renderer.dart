@@ -760,7 +760,7 @@ class CanvasRenderer {
 
     //TODO: make sure all relevant materials implement ITextureMapMaterial
 //    if ( material.map != null || material.envMap != null )
-    if (material is TextureMapping) {
+    if (material is Mapping) {
       // Let renderFace3() handle this
 
       renderFace3(v1, v2, v4, 0, 1, 3, element, material, scene);

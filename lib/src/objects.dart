@@ -9,6 +9,7 @@ import 'core.dart';
 import 'math.dart';
 import 'constants.dart';
 import 'materials.dart';
+import 'textures.dart';
 
 part 'objects/bone.dart';
 part 'objects/group.dart';

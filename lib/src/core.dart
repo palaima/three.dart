@@ -13,6 +13,7 @@ import 'math.dart';
 import 'materials.dart';
 import 'objects.dart';
 import 'scenes.dart';
+import 'lights.dart' show Light;
 
 part 'core/buffer_attribute.dart';
 part 'core/buffer_geometry.dart';

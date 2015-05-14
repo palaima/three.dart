@@ -225,8 +225,6 @@ class OBJLoader extends Loader {
                 if (e.material is MeshLambertMaterial && e.material.name.isNotEmpty) {
                   materialCreator.create(e.material.name).then((material) {
                     if (material != null) {
-                      e.geometry.buffersNeedUpdate = true;
-                      e.geometry.uvsNeedUpdate = true;
                       e.material = material;
                     }
                   });

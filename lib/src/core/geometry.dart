@@ -30,6 +30,10 @@ abstract class IGeometry {
   List<Vector3> vertices;
   List<Face3> faces;
 
+  var animations, firstAnimation;
+
+  List skinWeights, skinIndices;
+
   void applyMatrix(Matrix4 matrix);
 
   void computeBoundingSphere();
@@ -114,7 +118,7 @@ class Geometry implements IGeometry {
   var normals = [];
 
   // Used in JSONLoader
-  var bones, animation, animations;
+  var bones, animation, animations, firstAnimation;
 
   /// Set to true if attribute buffers will need to change in runtime (using "dirty" flags).
   /// Unless set to true internal typed arrays corresponding to buffers will be deleted once sent to GPU.

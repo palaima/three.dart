@@ -80,4 +80,8 @@ class SphereBufferGeometry extends BufferGeometry {
 
     boundingSphere = new Sphere.centerRadius(new Vector3.zero(), radius);
   }
+
+  noSuchMethod(Invocation invocation) {
+    print("'${invocation.memberName}' not available in BufferGeometry");
+  }
 }

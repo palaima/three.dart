@@ -891,13 +891,13 @@ class BufferGeometry implements IGeometry {
     _onDisposeController.add(this);
   }
 
+  noSuchMethod(Invocation invocation) {
+    print("'${invocation.memberName}' not available in BufferGeometry");
+  }
+
   Map _data = {};
   operator [](k) => _data[k];
   operator []=(k, v) => _data[k] = v;
-
-  noSuchMethod(Invocation invocation) {
-    throw new UnimplementedError('Unimplemented ${invocation.memberName}');
-  }
 }
 
 class DrawCall {
