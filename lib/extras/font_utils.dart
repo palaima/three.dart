@@ -1,14 +1,10 @@
-/**
+/*
  * @author zz85 / http://www.lab4games.net/zz85/blog
  * @author alteredq / http://alteredqualia.com/
  *
  * For Text operations in three.js (See TextGeometry)
  *
  * It uses techniques used in:
- *
- *  typeface.js and canvastext
- *    For converting fonts and rendering with javascript
- *    http://typeface.neocracy.org
  *
  *  Triangulation ported from AS3
  *    Simple Polygon Triangulation
@@ -21,220 +17,149 @@
 
 library three.extras.font_utils;
 
-import "package:three/three.dart";
-import "core/shape_utils.dart" as shape_utils;
+import 'package:three/three.dart';
+import 'core/shape_utils.dart' as shape_utils;
 
-var _face = "helvetiker",
-    _weight = "normal",
-    _style = "normal",
-    _size = 150,
-    _divisions = 10;
-
-/// Map of [FontFace] of Map<String, Map> (before parsing)
 Map<String, Map<String, Map<String, dynamic>>> _faces = {};
+
+String _face = 'helvetiker';
+String _weight = 'normal';
+String _style = 'normal';
+
+int _size = 150;
+int _divisions = 10;
 
 Map<String, Map> getFace() => _faces[_face][_weight][_style];
 
 Map<String, String> loadFace(Map<String, String> data) {
-
-  var family = data["familyName"].toLowerCase();
+  var family = data['familyName'].toLowerCase();
 
   if (_faces[family] == null) _faces[family] = {};
 
-  if (_faces[family][data["cssFontWeight"]] == null) _faces[family][data["cssFontWeight"]] = {};
-  _faces[family][data["cssFontWeight"]][data["cssFontStyle"]] = data;
+  if (_faces[family][data['cssFontWeight']] == null) _faces[family][data['cssFontWeight']] = {};
+  _faces[family][data['cssFontWeight']][data['cssFontStyle']] = data;
 
-  // TODO - Parse data
-  var face = _faces[family][data["cssFontWeight"]][data["cssFontStyle"]] = data;
+  _faces[family][data['cssFontWeight']][data['cssFontStyle']] = data;
 
   return data;
-
 }
 
+// RenderText
 Map drawText(String text) {
-
-  var characterPts = [],
-      allPts = [];
-
-  // RenderText
-
-  var i,
-      p,
-      face = getFace(),
-      scale = _size / face["resolution"],
+  var face = getFace(),
+      scale = _size / face['resolution'],
       offset = 0,
-      chars = text.split(''),
-      length = chars.length;
+      chars = text.split('');
 
   var fontPaths = [];
 
-  for (i = 0; i < length; i++) {
-
+  for (var i = 0; i < chars.length; i++) {
     var path = new Path();
 
-    var ret = extractGlyphPoints(chars[i], face, scale, offset, path);
-    offset += ret["offset"];
+    var ret = extractGlyphPoints(chars[i], face, scale, offset.toDouble(), path);
+    offset += ret['offset'];
 
-    fontPaths.add(ret["path"]);
-
+    fontPaths.add(ret['path']);
   }
 
   // get the width
 
   var width = offset / 2;
-  //
-  // for ( p = 0; p < allPts.length; p++ ) {
-  //
-  //  allPts[ p ].x -= width;
-  //
-  // }
 
-  //var extract = this.extractPoints( allPts, characterPts );
-  //extract.contour = allPts;
-
-  //extract.paths = fontPaths;
-  //extract.offset = width;
-
-  return {
-    "paths": fontPaths,
-    "offset": width
-  };
-
+  return {'paths': fontPaths, 'offset': width};
 }
 
-Map extractGlyphPoints(String c, Map face, num scale, num offset, path) {
-
+Map extractGlyphPoints(String c, Map face, double scale, double offset, path) {
   List<Vector2> pts = [];
 
-  var i, i2, divisions, outline, action, length, scaleX, scaleY, x, y, cpx, cpy, cpx0, cpy0, cpx1, cpy1, cpx2, cpy2,
-      laste;
-
-  var glyph = face["glyphs"][c];
-  if (glyph == null) glyph = face["glyphs"]['?'];
+  var glyph = face['glyphs'][c];
+  if (glyph == null) glyph = face['glyphs']['?'];
 
   if (glyph == null) return null;
 
-  if (glyph["o"] != null) {
-
-    outline = glyph["_cachedOutline"];
+  if (glyph['o'] != null) {
+    var outline = glyph['_cachedOutline'];
     if (outline == null) {
-      glyph["_cachedOutline"] = glyph["o"].split(' ');
-      outline = glyph["_cachedOutline"];
+      glyph['_cachedOutline'] = glyph['o'].split(' ');
+      outline = glyph['_cachedOutline'];
     }
-    length = outline.length;
+    var length = outline.length;
 
-    scaleX = scale;
-    scaleY = scale;
+    var scaleX = scale;
+    var scaleY = scale;
 
-    for (i = 0; i < length; ) {
-
-      action = outline[i++];
-
-      //console.log( action );
+    for (var i = 0; i < length;) {
+      var action = outline[i++];
 
       switch (action) {
-
+        // Move To
         case 'm':
-
-          // Move To
-
-          x = int.parse(outline[i++]) * scaleX + offset;
-          y = int.parse(outline[i++]) * scaleY;
-
+          var x = int.parse(outline[i++]) * scaleX + offset;
+          var y = int.parse(outline[i++]) * scaleY;
           path.moveTo(x, y);
           break;
-
+        // Line To
         case 'l':
-
-          // Line To
-
-          x = int.parse(outline[i++]) * scaleX + offset;
-          y = int.parse(outline[i++]) * scaleY;
+          var x = int.parse(outline[i++]) * scaleX + offset;
+          var y = int.parse(outline[i++]) * scaleY;
           path.lineTo(x, y);
           break;
-
         case 'q':
-
           // QuadraticCurveTo
-
-          cpx = int.parse(outline[i++]) * scaleX + offset;
-          cpy = int.parse(outline[i++]) * scaleY;
-          cpx1 = int.parse(outline[i++]) * scaleX + offset;
-          cpy1 = int.parse(outline[i++]) * scaleY;
+          var cpx = int.parse(outline[i++]) * scaleX + offset;
+          var cpy = int.parse(outline[i++]) * scaleY;
+          var cpx1 = int.parse(outline[i++]) * scaleX + offset;
+          var cpy1 = int.parse(outline[i++]) * scaleY;
 
           path.quadraticCurveTo(cpx1, cpy1, cpx, cpy);
 
-          if (pts.length > 0) laste = pts[pts.length - 1];
+          if (pts.length > 0) {
+            var laste = pts.last;
 
-          if (laste != null) {
+            var cpx0 = laste.x;
+            var cpy0 = laste.y;
 
-            cpx0 = laste.x;
-            cpy0 = laste.y;
-
-            for (i2 = 1; i2 <= divisions; i2++) {
-
-              var t = i2 / divisions;
-              var tx = shape_utils.b2(t, cpx0, cpx1, cpx);
-              var ty = shape_utils.b2(t, cpy0, cpy1, cpy);
+            for (var i2 = 1; i2 <= _divisions; i2++) {
+              var t = i2 / _divisions;
+              shape_utils.b2(t, cpx0, cpx1, cpx);
+              shape_utils.b2(t, cpy0, cpy1, cpy);
             }
-
           }
 
           break;
-
+        // Cubic Bezier Curve
         case 'b':
+          var cpx = int.parse(outline[i++]) * scaleX + offset;
+          var cpy = int.parse(outline[i++]) * scaleY;
+          var cpx1 = int.parse(outline[i++]) * scaleX + offset;
+          var cpy1 = int.parse(outline[i++]) * scaleY;
+          var cpx2 = int.parse(outline[i++]) * scaleX + offset;
+          var cpy2 = int.parse(outline[i++]) * scaleY;
 
-          // Cubic Bezier Curve
+          path.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, cpx, cpy);
 
-          cpx = int.parse(outline[i++]) * scaleX + offset;
-          cpy = int.parse(outline[i++]) * scaleY;
-          cpx1 = int.parse(outline[i++]) * scaleX + offset;
-          cpy1 = int.parse(outline[i++]) * -scaleY;
-          cpx2 = int.parse(outline[i++]) * scaleX + offset;
-          cpy2 = int.parse(outline[i++]) * -scaleY;
+          if (pts.length > 0) {
+            var laste = pts.last;
+            var cpx0 = laste.x;
+            var cpy0 = laste.y;
 
-          path.bezierCurveTo(cpx, cpy, cpx1, cpy1, cpx2, cpy2);
-
-          if (pts.length > 0) laste = pts[pts.length - 1];
-
-          if (laste != null) {
-
-            cpx0 = laste.x;
-            cpy0 = laste.y;
-
-            for (i2 = 1; i2 <= divisions; i2++) {
-
-              var t = i2 / divisions;
-              var tx = shape_utils.b3(t, cpx0, cpx1, cpx2, cpx);
-              var ty = shape_utils.b3(t, cpy0, cpy1, cpy2, cpy);
-
+            for (var i2 = 1; i2 <= _divisions; i2++) {
+              var t = i2 / _divisions;
+              shape_utils.b3(t, cpx0, cpx1, cpx2, cpx);
+              shape_utils.b3(t, cpy0, cpy1, cpy2, cpy);
             }
-
           }
 
           break;
-
       }
-
     }
   }
 
-  return {
-    "offset": glyph["ha"] * scale,
-    "path": path
-  };
+  return {'offset': glyph['ha'] * scale, 'path': path};
 }
 
-List<Shape> generateShapes(String text, [int size = 100, int curveSegments = 4, String font = "helvetiker",
-    String weight = "normal", String style = "normal"]) {
-
-  var face = _faces[font][weight][style];
-
-  if (_faces == null) {
-    face = new FontFace(size: size, divisions: curveSegments);
-    _faces[font][weight][style] = face;
-  }
-
+List<Shape> generateShapes(String text, [int size = 100, int curveSegments = 4,
+    String font = 'helvetiker', String weight = 'normal', String style = 'normal']) {
   _size = size;
   _divisions = curveSegments;
 
@@ -246,36 +171,16 @@ List<Shape> generateShapes(String text, [int size = 100, int curveSegments = 4, 
 
   var data = drawText(text);
 
-  var paths = data["paths"];
+  var paths = data['paths'];
 
   var shapes = [];
-  paths.forEach((p) { shapes.addAll(p.toShapes()); });
+
+  paths.forEach((p) => shapes.addAll(p.toShapes()));
+
   return shapes;
 }
 
-class Glyph {
-  String o;
-  /// outline
-  List _cachedOutline;
-
-  num ha;
-}
-
-class FontFace {
-  Map<String, Map> _data;
-
-  Map<String, Glyph> glyphs;
-
-  num size, divisions;
-
-  num resolution;
-
-  FontFace({this.size: 150, this.divisions: 10}) : glyphs = {};
-
-  Map operator [](String weight) => _data[weight];
-}
-
-/**
+/*
  * This code is a quick port of code written in C++ which was submitted to
  * flipcode.com by John W. Ratcliff  // July 22, 2000
  * See original code and more information here:
@@ -289,12 +194,10 @@ class FontFace {
  *
  */
 
-
 var EPSILON = 0.0000000001;
 
 // takes in an contour array and returns
-List<List<Vector2>> process(List<Vector2> contour, bool indices) {
-
+List<List<Vector2>> _process(List<Vector2> contour, bool indices) {
   var n = contour.length;
 
   if (n < 3) return null;
@@ -305,76 +208,63 @@ List<List<Vector2>> process(List<Vector2> contour, bool indices) {
 
   /* we want a counter-clockwise polygon in verts */
 
-  num u, v, w;
-
   if (area(contour) > 0.0) {
-
-    for (v = 0; v < n; v++) verts[v] = v;
-
+    for (var v = 0; v < n; v++) verts[v] = v;
   } else {
-
-    for (v = 0; v < n; v++) verts[v] = (n - 1) - v;
-
+    for (var v = 0; v < n; v++) verts[v] = (n - 1) - v;
   }
 
-  num nv = n;
+  var nv = n;
 
   /*  remove nv - 2 vertices, creating 1 triangle every time */
 
   var count = 2 * nv;
   /* error detection */
 
-  for (v = nv - 1; nv > 2; ) {
-
+  for (var v = nv - 1; nv > 2;) {
     /* if we loop, it is probably a non-simple polygon */
 
     if ((count--) <= 0) {
 
       //** Triangulate: ERROR - probable bad polygon!
 
-      //throw ( "Warning, unable to triangulate polygon!" );
+      //throw ( 'Warning, unable to triangulate polygon!' );
       //return null;
       // Sometimes warning is fine, especially polygons are triangulated in reverse.
-      print("Warning, unable to triangulate polygon!");
+      print('font_utils: Warning, unable to triangulate polygon!');
 
       if (indices) return vertIndices;
       return result;
-
     }
 
     /* three consecutive vertices in current polygon, <u,v,w> */
 
-    u = v;
+    var u = v;
     if (nv <= u) u = 0;
     /* previous */
     v = u + 1;
     if (nv <= v) v = 0;
     /* new v    */
-    w = v + 1;
+    var w = v + 1;
     if (nv <= w) w = 0;
     /* next     */
 
     if (snip(contour, u, v, w, nv, verts)) {
-
-      var a, b, c, s, t;
-
       /* true names of the vertices */
 
-      a = verts[u];
-      b = verts[v];
-      c = verts[w];
+      var a = verts[u];
+      var b = verts[v];
+      var c = verts[w];
 
       /* output Triangle */
 
       result.add([contour[a], contour[b], contour[c]]);
 
-
       vertIndices.addAll([verts[u], verts[v], verts[w]]);
 
       /* remove v from the remaining polygon */
-      s = v;
-      for (t = v + 1; t < nv; t++) {
-
+      var s = v;
+      for (var t = v + 1; t < nv; t++) {
         verts[s] = verts[t];
         s++;
       }
@@ -384,39 +274,41 @@ List<List<Vector2>> process(List<Vector2> contour, bool indices) {
       /* reset error detection counter */
 
       count = 2 * nv;
-
     }
-
   }
 
   if (indices) return vertIndices;
   return result;
-
 }
+
+List<List<Vector2>> triangulate(List<Vector2> contour, bool indices) => _process(contour, indices);
 
 // calculate area of the contour polygon
 double area(List contour) {
-
   var n = contour.length;
   var a = 0.0;
 
-  for (var p = n - 1,
-      q = 0; q < n; p = q++) {
-
+  for (var p = n - 1, q = 0; q < n; p = q++) {
     a += contour[p].x * contour[q].y - contour[q].x * contour[p].y;
-
   }
 
   return a * 0.5;
-
 }
 
-// see if p is inside triangle abc
-insideTriangle(num ax, num ay, num bx, num by, num cx, num cy, num px, num py) {
+bool snip(List<Vector2> contour, int u, int v, int w, int n, List<int> verts) {
+  var ax = contour[verts[u]].x;
+  var ay = contour[verts[u]].y;
 
-  var aX, aY, bX, bY;
-  var cX, cY, apx, apy;
-  var bpx, bpy, cpx, cpy;
+  var bx = contour[verts[v]].x;
+  var by = contour[verts[v]].y;
+
+  var cx = contour[verts[w]].x;
+  var cy = contour[verts[w]].y;
+
+  if (EPSILON > (((bx - ax) * (cy - ay)) - ((by - ay) * (cx - ax)))) return false;
+
+  var aX, aY, bX, bY, cX, cY;
+  var apx, apy, bpx, bpy, cpx, cpy;
   var cCROSSap, bCROSScp, aCROSSbp;
 
   aX = cx - bx;
@@ -425,54 +317,30 @@ insideTriangle(num ax, num ay, num bx, num by, num cx, num cy, num px, num py) {
   bY = ay - cy;
   cX = bx - ax;
   cY = by - ay;
-  apx = px - ax;
-  apy = py - ay;
-  bpx = px - bx;
-  bpy = py - by;
-  cpx = px - cx;
-  cpy = py - cy;
 
-  aCROSSbp = aX * bpy - aY * bpx;
-  cCROSSap = cX * apy - cY * apx;
-  bCROSScp = bX * cpy - bY * cpx;
+  for (var p = 0; p < n; p++) {
+    var px = contour[verts[p]].x;
+    var py = contour[verts[p]].y;
 
-  return ((aCROSSbp >= 0.0) && (bCROSScp >= 0.0) && (cCROSSap >= 0.0));
+    if (((px == ax) && (py == ay)) ||
+        ((px == bx) && (py == by)) ||
+        ((px == cx) && (py == cy))) continue;
 
-}
+    apx = px - ax;
+    apy = py - ay;
+    bpx = px - bx;
+    bpy = py - by;
+    cpx = px - cx;
+    cpy = py - cy;
 
+    // see if p is inside triangle abc
 
-bool snip(List<Vector2> contour, num u, num v, num w, num n, List<num> verts) {
+    aCROSSbp = aX * bpy - aY * bpx;
+    cCROSSap = cX * apy - cY * apx;
+    bCROSScp = bX * cpy - bY * cpx;
 
-  var p;
-  var ax, ay, bx, by;
-  var cx, cy, px, py;
-
-  ax = contour[verts[u]].x;
-  ay = contour[verts[u]].y;
-
-  bx = contour[verts[v]].x;
-  by = contour[verts[v]].y;
-
-  cx = contour[verts[w]].x;
-  cy = contour[verts[w]].y;
-
-  if (EPSILON > (((bx - ax) * (cy - ay)) - ((by - ay) * (cx - ax)))) return false;
-
-  for (p = 0; p < n; p++) {
-
-    if ((p == u) || (p == v) || (p == w)) continue;
-
-    px = contour[verts[p]].x;
-    py = contour[verts[p]].y;
-
-    if (insideTriangle(ax, ay, bx, by, cx, cy, px, py)) return false;
-
+    if ((aCROSSbp >= -EPSILON) && (bCROSScp >= -EPSILON) && (cCROSSap >= -EPSILON)) return false;
   }
 
   return true;
-
 }
-
-
-//namespace.Triangulate = process;
-//namespace.Triangulate.area = area;
