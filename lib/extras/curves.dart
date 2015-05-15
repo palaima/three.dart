@@ -8,6 +8,7 @@ import 'core.dart';
 import '../src/math.dart';
 
 part 'curves/arc_curve.dart';
+part 'curves/catmull_rom_curve3.dart';
 part 'curves/closed_spline_curve3.dart';
 part 'curves/cubic_bezier_curve.dart';
 part 'curves/cubic_bezier_curve3.dart';
