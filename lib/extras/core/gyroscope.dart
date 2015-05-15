@@ -1,64 +1,46 @@
-part of three.extras.core;
-/**
+/*
  * @author alteredq / http://alteredqualia.com/
+ *
+ * based on r71
  */
 
+part of three.extras.core;
+
 class Gyroscope extends Object3D {
-  Vector3 translationWorld, translationObject;
-  Quaternion rotationWorld, rotationObject;
-  Vector3 scaleWorld, scaleObject;
+  Vector3 translationWorld = new Vector3.zero();
+  Quaternion quaternionObject = new Quaternion.identity();
+  Vector3 scaleObject = new Vector3.zero();
 
-  Gyroscope()
-      : translationWorld = new Vector3.zero(),
-        translationObject = new Vector3.zero(),
-        rotationWorld = new Quaternion.identity(),
-        rotationObject = new Quaternion.identity(),
-        scaleWorld = new Vector3.zero(),
-        scaleObject = new Vector3.zero(),
-        super();
+  Vector3 translationObject = new Vector3.zero();
+  Quaternion quaternionWorld = new Quaternion.identity();
+  Vector3 scaleWorld = new Vector3.zero();
 
-  updateMatrixWorld({bool force: false}) {
-
+  void updateMatrixWorld({bool force: false}) {
     if (matrixAutoUpdate) {
       updateMatrix();
     }
 
-    // update matrixWorld
-
+    // Update matrixWorld.
     if (matrixWorldNeedsUpdate || force) {
-
       if (parent != null) {
+        matrixWorld.multiplyMatrices(parent.matrixWorld, matrix);
 
-        matrixWorld = parent.matrixWorld * matrix;
+        matrixWorld.decompose(translationWorld, quaternionWorld, scaleWorld);
+        matrix.decompose(translationObject, quaternionObject, scaleObject);
 
-        matrixWorld.decompose(translationWorld, rotationWorld, scaleWorld);
-        matrix.decompose(translationObject, rotationObject, scaleObject);
-
-        matrixWorld.setFromTranslationRotationScale(translationWorld, rotationObject, scaleWorld);
-
-
+        matrixWorld.setFromTranslationRotationScale(translationWorld, quaternionObject, scaleWorld);
       } else {
-
         matrixWorld.setFrom(matrix);
-
       }
-
 
       matrixWorldNeedsUpdate = false;
 
       force = true;
-
     }
 
-    // update children
-    var l = this.children.length;
-    for (var i = 0; i < l; i++) {
-
+    // Update children.
+    for (var i = 0; i < children.length; i++) {
       children[i].updateMatrixWorld(force: force);
-
     }
-
   }
 }
-
-
