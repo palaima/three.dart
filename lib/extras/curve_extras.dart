@@ -91,7 +91,7 @@ class TrefoilKnot extends Curve3D {
 class TorusKnot extends Curve3D {
   double scale;
 
-  TorusKnot([double scale = 10.0]);
+  TorusKnot([this.scale = 10.0]);
 
   Vector3 getPoint(double t) {
     var p = 3, q = 4;

@@ -17,7 +17,9 @@ class TubeGeometry extends Geometry {
 
   List<List> grid = [];
 
-  TubeGeometry(Curve path,
+  final Curve path;
+
+  TubeGeometry(this.path,
               [int segments = 64,
                double radius = 1.0,
                int radialSegments = 8,
