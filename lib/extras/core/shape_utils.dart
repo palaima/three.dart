@@ -1,324 +1,426 @@
-/**************************************************************
- *  Utils
- **************************************************************/
 library three.extras.core.shape_utils;
 
-import "package:three/three.dart" show Vector2;
-import 'package:three/extras/font_utils.dart' as FontUtils;
+import 'package:three/three.dart' show Vector2;
+import 'package:three/extras/font_utils.dart' as font_utils;
 
-/*
-  contour - array of vector2 for contour
-  holes   - array of array of vector2
-*/
-removeHoles(List<Vector2> contour, List<List<Vector2>> holes) {
-
-  var shape = new List.from(contour); // work on this shape
-  var allpoints = new List.from(shape);
-
-  /* For each isolated shape, find the closest points and break to the hole to allow triangulation */
-
-
-  var prevShapeVert, nextShapeVert, prevHoleVert, nextHoleVert;
-
-  int holeIndex, shapeIndex;
-
-  var shapeId,
-      shapeGroup,
-      h,
-      h2,
-      hole,
-      shortest,
-      d,
-      p,
-      pts1,
-      pts2,
-      tmpShape1,
-      tmpShape2,
-      tmpHole1,
-      tmpHole2,
-      verts = [];
-
-  for (h = 0; h < holes.length; h++) {
-
-    hole = holes[h];
-
-    /*
-    shapeholes[ h ].concat(); // preserves original
-    holes.push( hole );
-    */
-
-    allpoints.addAll(hole); //Array.prototype.push.apply( allpoints, hole );
-
-    shortest = double.INFINITY;
-
-
-    // Find the shortest pair of pts between shape and hole
-
-    // Note: Actually, I'm not sure now if we could optimize this to be faster than O(m*n)
-    // Using distanceToSquared() intead of distanceTo() should speed a little
-    // since running square roots operations are reduced.
-
-    for (h2 = 0; h2 < hole.length; h2++) {
-
-      pts1 = hole[h2];
-      var dist = [];
-
-      for (p = 0; p < shape.length; p++) {
-
-        pts2 = shape[p];
-        d = (pts1 - pts2).length2;
-
-        dist.add(d);
-
-        if (d < shortest) {
-
-          shortest = d;
-          holeIndex = h2;
-          shapeIndex = p;
-
-        }
-
+List<List<Vector2>> triangulateShape(List<Vector2> contour, List<List<Vector2>> holes) {
+  bool point_in_segment_2D_colin(Vector2 inSegPt1, Vector2 inSegPt2, Vector2 inOtherPt) {
+    // inOtherPt needs to be colinear to the inSegment
+    if (inSegPt1.x != inSegPt2.x) {
+      if (inSegPt1.x < inSegPt2.x) {
+        return ((inSegPt1.x <= inOtherPt.x) && (inOtherPt.x <= inSegPt2.x));
+      } else {
+        return ((inSegPt2.x <= inOtherPt.x) && (inOtherPt.x <= inSegPt1.x));
       }
-
-    }
-
-    //console.log("shortest", shortest, dist);
-
-    prevShapeVert = (shapeIndex - 1) >= 0 ? shapeIndex - 1 : shape.length - 1;
-    prevHoleVert = (holeIndex - 1) >= 0 ? holeIndex - 1 : hole.length - 1;
-
-    var areaapts = [hole[holeIndex], shape[shapeIndex], shape[prevShapeVert]];
-
-    var areaa = FontUtils.area(areaapts);
-
-    var areabpts = [hole[holeIndex], hole[prevHoleVert], shape[shapeIndex]];
-
-    var areab = FontUtils.area(areabpts);
-
-    var shapeOffset = 1;
-    var holeOffset = -1;
-
-    var oldShapeIndex = shapeIndex,
-        oldHoleIndex = holeIndex;
-    shapeIndex += shapeOffset;
-    holeIndex += holeOffset;
-
-    if (shapeIndex < 0) {
-      shapeIndex += shape.length;
-    }
-    shapeIndex %= shape.length;
-
-    if (holeIndex < 0) {
-      holeIndex += hole.length;
-    }
-    holeIndex %= hole.length;
-
-    prevShapeVert = (shapeIndex - 1) >= 0 ? shapeIndex - 1 : shape.length - 1;
-    prevHoleVert = (holeIndex - 1) >= 0 ? holeIndex - 1 : hole.length - 1;
-
-    areaapts = [hole[holeIndex], shape[shapeIndex], shape[prevShapeVert]];
-
-    var areaa2 = FontUtils.area(areaapts);
-
-    areabpts = [hole[holeIndex], hole[prevHoleVert], shape[shapeIndex]];
-
-    var areab2 = FontUtils.area(areabpts);
-    //console.log(areaa,areab ,areaa2,areab2, ( areaa + areab ),  ( areaa2 + areab2 ));
-
-    if ((areaa + areab) > (areaa2 + areab2)) {
-
-      // In case areas are not correct.
-      //console.log("USE THIS");
-
-      shapeIndex = oldShapeIndex;
-      holeIndex = oldHoleIndex;
-
-      if (shapeIndex < 0) {
-        shapeIndex += shape.length;
-      }
-      shapeIndex %= shape.length;
-
-      if (holeIndex < 0) {
-        holeIndex += hole.length;
-      }
-      holeIndex %= hole.length;
-
-      prevShapeVert = (shapeIndex - 1) >= 0 ? shapeIndex - 1 : shape.length - 1;
-      prevHoleVert = (holeIndex - 1) >= 0 ? holeIndex - 1 : hole.length - 1;
-
     } else {
-
-      //console.log("USE THAT ")
-
+      if (inSegPt1.y < inSegPt2.y) {
+        return ((inSegPt1.y <= inOtherPt.y) && (inOtherPt.y <= inSegPt2.y));
+      } else {
+        return ((inSegPt2.y <= inOtherPt.y) && (inOtherPt.y <= inSegPt1.y));
+      }
     }
-
-    tmpShape1 = shape.getRange(0, shapeIndex);
-    tmpShape2 = shape.getRange(shapeIndex, shape.length);
-    tmpHole1 = hole.getRange(holeIndex, hole.length);
-    tmpHole2 = hole.getRange(0, holeIndex);
-
-    // Should check orders here again?
-
-    var trianglea = [hole[holeIndex], shape[shapeIndex], shape[prevShapeVert]];
-
-    var triangleb = [hole[holeIndex], hole[prevHoleVert], shape[shapeIndex]];
-
-    verts.add(trianglea);
-    verts.add(triangleb);
-
-    shape = [];
-    shape.addAll(tmpShape1);
-    shape.addAll(tmpHole1);
-    shape.addAll(tmpHole2);
-    shape.addAll(tmpShape2);
-
   }
 
-  return {
+  List<Vector2> intersect_segments_2D(Vector2 inSeg1Pt1, Vector2 inSeg1Pt2, Vector2 inSeg2Pt1,
+      Vector2 inSeg2Pt2, bool inExcludeAdjacentSegs) {
+    var EPSILON = 0.0000000001;
 
-    "shape": shape,
-    /* shape with no holes */
-    "isolatedPts": verts,
-    /* isolated faces */
-    "allpoints": allpoints
+    var seg1dx = inSeg1Pt2.x - inSeg1Pt1.x,
+        seg1dy = inSeg1Pt2.y - inSeg1Pt1.y;
+    var seg2dx = inSeg2Pt2.x - inSeg2Pt1.x,
+        seg2dy = inSeg2Pt2.y - inSeg2Pt1.y;
 
-  };
+    var seg1seg2dx = inSeg1Pt1.x - inSeg2Pt1.x;
+    var seg1seg2dy = inSeg1Pt1.y - inSeg2Pt1.y;
 
+    var limit = seg1dy * seg2dx - seg1dx * seg2dy;
+    var perpSeg1 = seg1dy * seg1seg2dx - seg1dx * seg1seg2dy;
 
-}
+    if (limit.abs() > EPSILON) {
+      // not parallel
 
-triangulateShape(contour, holes) {
+      var perpSeg2;
+      if (limit > 0) {
+        if ((perpSeg1 < 0) || (perpSeg1 > limit)) return [];
+        perpSeg2 = seg2dy * seg1seg2dx - seg2dx * seg1seg2dy;
+        if ((perpSeg2 < 0) || (perpSeg2 > limit)) return [];
+      } else {
+        if ((perpSeg1 > 0) || (perpSeg1 < limit)) return [];
+        perpSeg2 = seg2dy * seg1seg2dx - seg2dx * seg1seg2dy;
+        if ((perpSeg2 > 0) || (perpSeg2 < limit)) return [];
+      }
 
-  var shapeWithoutHoles = removeHoles(contour, holes);
+      // i.e. to reduce rounding errors
+      // intersection at endpoint of segment#1?
+      if (perpSeg2 == 0) {
+        if ((inExcludeAdjacentSegs) && ((perpSeg1 == 0) || (perpSeg1 == limit))) return [];
+        return [inSeg1Pt1];
+      }
+      if (perpSeg2 == limit) {
+        if ((inExcludeAdjacentSegs) && ((perpSeg1 == 0) || (perpSeg1 == limit))) return [];
+        return [inSeg1Pt2];
+      }
+      // intersection at endpoint of segment#2?
+      if (perpSeg1 == 0) return [inSeg2Pt1];
+      if (perpSeg1 == limit) return [inSeg2Pt2];
 
-  var shape = shapeWithoutHoles["shape"],
-      allpoints = shapeWithoutHoles["allpoints"],
-      isolatedPts = shapeWithoutHoles["isolatedPts"];
+      // return real intersection point
+      var factorSeg1 = perpSeg2 / limit;
+      return [{'x': inSeg1Pt1.x + factorSeg1 * seg1dx, 'y': inSeg1Pt1.y + factorSeg1 * seg1dy}];
+    } else {
+      // parallel or colinear
+      if ((perpSeg1 != 0) || (seg2dy * seg1seg2dx != seg2dx * seg1seg2dy)) return [];
 
-  var triangles = FontUtils.process(shape, false); // True returns indices for points of spooled shape
+      // they are collinear or degenerate
+      var seg1Pt = ((seg1dx == 0) && (seg1dy == 0)); // segment1 ist just a point?
+      var seg2Pt = ((seg2dx == 0) && (seg2dy == 0)); // segment2 ist just a point?
+      // both segments are points
+      if (seg1Pt && seg2Pt) {
+        if ((inSeg1Pt1.x != inSeg2Pt1.x) || (inSeg1Pt1.y != inSeg2Pt1.y)) return [
+        ]; // they are distinct  points
+        return [inSeg1Pt1]; // they are the same point
+      }
+      // segment#1  is a single point
+      if (seg1Pt) {
+        if (!point_in_segment_2D_colin(inSeg2Pt1, inSeg2Pt2, inSeg1Pt1)) return [
+        ]; // but not in segment#2
+        return [inSeg1Pt1];
+      }
+      // segment#2  is a single point
+      if (seg2Pt) {
+        if (!point_in_segment_2D_colin(inSeg1Pt1, inSeg1Pt2, inSeg2Pt1)) return [
+        ]; // but not in segment#1
+        return [inSeg2Pt1];
+      }
 
-  // To maintain reference to old shape, one must match coordinates, or offset the indices from original arrays.
-  // It's probably easier to do the first.
+      // they are collinear segments, which might overlap
+      var seg1min, seg1max, seg1minVal, seg1maxVal;
+      var seg2min, seg2max, seg2minVal, seg2maxVal;
+      if (seg1dx != 0) {
+        // the segments are NOT on a vertical line
+        if (inSeg1Pt1.x < inSeg1Pt2.x) {
+          seg1min = inSeg1Pt1;
+          seg1minVal = inSeg1Pt1.x;
+          seg1max = inSeg1Pt2;
+          seg1maxVal = inSeg1Pt2.x;
+        } else {
+          seg1min = inSeg1Pt2;
+          seg1minVal = inSeg1Pt2.x;
+          seg1max = inSeg1Pt1;
+          seg1maxVal = inSeg1Pt1.x;
+        }
+        if (inSeg2Pt1.x < inSeg2Pt2.x) {
+          seg2min = inSeg2Pt1;
+          seg2minVal = inSeg2Pt1.x;
+          seg2max = inSeg2Pt2;
+          seg2maxVal = inSeg2Pt2.x;
+        } else {
+          seg2min = inSeg2Pt2;
+          seg2minVal = inSeg2Pt2.x;
+          seg2max = inSeg2Pt1;
+          seg2maxVal = inSeg2Pt1.x;
+        }
+      } else {
+        // the segments are on a vertical line
+        if (inSeg1Pt1.y < inSeg1Pt2.y) {
+          seg1min = inSeg1Pt1;
+          seg1minVal = inSeg1Pt1.y;
+          seg1max = inSeg1Pt2;
+          seg1maxVal = inSeg1Pt2.y;
+        } else {
+          seg1min = inSeg1Pt2;
+          seg1minVal = inSeg1Pt2.y;
+          seg1max = inSeg1Pt1;
+          seg1maxVal = inSeg1Pt1.y;
+        }
+        if (inSeg2Pt1.y < inSeg2Pt2.y) {
+          seg2min = inSeg2Pt1;
+          seg2minVal = inSeg2Pt1.y;
+          seg2max = inSeg2Pt2;
+          seg2maxVal = inSeg2Pt2.y;
+        } else {
+          seg2min = inSeg2Pt2;
+          seg2minVal = inSeg2Pt2.y;
+          seg2max = inSeg2Pt1;
+          seg2maxVal = inSeg2Pt1.y;
+        }
+      }
+      if (seg1minVal <= seg2minVal) {
+        if (seg1maxVal < seg2minVal) return [];
+        if (seg1maxVal == seg2minVal) {
+          if (inExcludeAdjacentSegs) return [];
+          return [seg2min];
+        }
+        if (seg1maxVal <= seg2maxVal) return [seg2min, seg1max];
+        return [seg2min, seg2max];
+      } else {
+        if (seg1minVal > seg2maxVal) return [];
+        if (seg1minVal == seg2maxVal) {
+          if (inExcludeAdjacentSegs) return [];
+          return [seg1min];
+        }
+        if (seg1maxVal <= seg2maxVal) return [seg1min, seg1max];
+        return [seg1min, seg2max];
+      }
+    }
+  }
 
-  //console.log( "triangles",triangles, triangles.length );
-  //console.log( "allpoints",allpoints, allpoints.length );
+  bool isPointInsideAngle(
+      Vector2 inVertex, Vector2 inLegFromPt, Vector2 inLegToPt, Vector2 inOtherPt) {
+    // The order of legs is important
 
-  var i,
-      il,
-      f,
-      face,
-      key,
-      index,
-      allPointsMap = {},
-      isolatedPointsMap = {};
+    var EPSILON = 0.0000000001;
+
+    // translation of all points, so that Vertex is at (0,0)
+    var legFromPtX = inLegFromPt.x - inVertex.x,
+        legFromPtY = inLegFromPt.y - inVertex.y;
+    var legToPtX = inLegToPt.x - inVertex.x,
+        legToPtY = inLegToPt.y - inVertex.y;
+    var otherPtX = inOtherPt.x - inVertex.x,
+        otherPtY = inOtherPt.y - inVertex.y;
+
+    // main angle >0: < 180 deg.; 0: 180 deg.; <0: > 180 deg.
+    var from2toAngle = legFromPtX * legToPtY - legFromPtY * legToPtX;
+    var from2otherAngle = legFromPtX * otherPtY - legFromPtY * otherPtX;
+
+    if (from2toAngle.abs() > EPSILON) {
+      // angle != 180 deg.
+
+      var other2toAngle = otherPtX * legToPtY - otherPtY * legToPtX;
+      // console.log( 'from2to: ' + from2toAngle + ', from2other: ' + from2otherAngle + ', other2to: ' + other2toAngle );
+
+      if (from2toAngle > 0) {
+        // main angle < 180 deg.
+        return ((from2otherAngle >= 0) && (other2toAngle >= 0));
+      } else {
+        // main angle > 180 deg.
+        return ((from2otherAngle >= 0) || (other2toAngle >= 0));
+      }
+    } else {
+      // angle == 180 deg.
+      // console.log( 'from2to: 180 deg., from2other: ' + from2otherAngle  );
+      return (from2otherAngle > 0);
+    }
+  }
+
+  List<Vector2> removeHoles(List<Vector2> contour, List<List<Vector2>> holes) {
+    List<Vector2> shape = contour.toList(); // work on this shape
+    List<Vector2> hole;
+
+    bool isCutLineInsideAngles(int inShapeIdx, int inHoleIdx) {
+      // Check if hole point lies within angle around shape point
+      var lastShapeIdx = shape.length - 1;
+
+      var prevShapeIdx = inShapeIdx - 1;
+      if (prevShapeIdx < 0) prevShapeIdx = lastShapeIdx;
+
+      var nextShapeIdx = inShapeIdx + 1;
+      if (nextShapeIdx > lastShapeIdx) nextShapeIdx = 0;
+
+      var insideAngle = isPointInsideAngle(
+          shape[inShapeIdx], shape[prevShapeIdx], shape[nextShapeIdx], hole[inHoleIdx]);
+      if (!insideAngle) {
+        // console.log( 'Vertex (Shape): ' + inShapeIdx + ', Point: ' + hole[inHoleIdx].x + '/' + hole[inHoleIdx].y );
+        return false;
+      }
+
+      // Check if shape point lies within angle around hole point
+      var lastHoleIdx = hole.length - 1;
+
+      var prevHoleIdx = inHoleIdx - 1;
+      if (prevHoleIdx < 0) prevHoleIdx = lastHoleIdx;
+
+      var nextHoleIdx = inHoleIdx + 1;
+      if (nextHoleIdx > lastHoleIdx) nextHoleIdx = 0;
+
+      insideAngle = isPointInsideAngle(
+          hole[inHoleIdx], hole[prevHoleIdx], hole[nextHoleIdx], shape[inShapeIdx]);
+      if (!insideAngle) {
+        // console.log( 'Vertex (Hole): ' + inHoleIdx + ', Point: ' + shape[inShapeIdx].x + '/' + shape[inShapeIdx].y );
+        return false;
+      }
+
+      return true;
+    }
+
+    bool intersectsShapeEdge(Vector2 inShapePt, Vector2 inHolePt) {
+      // checks for intersections with shape edges
+      var sIdx, nextIdx, intersection;
+      for (sIdx = 0; sIdx < shape.length; sIdx++) {
+        nextIdx = sIdx + 1;
+        nextIdx %= shape.length;
+        intersection =
+            intersect_segments_2D(inShapePt, inHolePt, shape[sIdx], shape[nextIdx], true);
+        if (intersection.length > 0) return true;
+      }
+
+      return false;
+    }
+
+    var indepHoles = [];
+
+    bool intersectsHoleEdge(Vector2 inShapePt, Vector2 inHolePt) {
+      // checks for intersections with hole edges
+      var ihIdx, chkHole, hIdx, nextIdx, intersection;
+      for (ihIdx = 0; ihIdx < indepHoles.length; ihIdx++) {
+        chkHole = holes[indepHoles[ihIdx]];
+        for (hIdx = 0; hIdx < chkHole.length; hIdx++) {
+          nextIdx = hIdx + 1;
+          nextIdx %= chkHole.length;
+          intersection =
+              intersect_segments_2D(inShapePt, inHolePt, chkHole[hIdx], chkHole[nextIdx], true);
+          if (intersection.length > 0) return true;
+        }
+      }
+      return false;
+    }
+
+    var failedCuts = {};
+
+    for (var h = 0, hl = holes.length; h < hl; h++) {
+      indepHoles.add(h);
+    }
+
+    var minShapeIndex = 0;
+    var counter = indepHoles.length * 2;
+    while (indepHoles.length > 0) {
+      counter--;
+      if (counter < 0) {
+        print('Infinite Loop! Holes left: ${indepHoles.length}, Probably Hole outside Shape!');
+        break;
+      }
+
+      // search for shape-vertex and hole-vertex,
+      // which can be connected without intersections
+      for (var shapeIndex = minShapeIndex; shapeIndex < shape.length; shapeIndex++) {
+        var shapePt = shape[shapeIndex];
+        var holeIndex = -1;
+
+        // search for hole which can be reached without intersections
+        for (var h = 0; h < indepHoles.length; h++) {
+          var holeIdx = indepHoles[h];
+
+          // prevent multiple checks
+          var cutKey = '${shapePt.x}:${shapePt.y}:${holeIdx}';
+          if (failedCuts[cutKey] != null) continue;
+
+          hole = holes[holeIdx];
+          for (var h2 = 0; h2 < hole.length; h2++) {
+            var holePt = hole[h2];
+            if (!isCutLineInsideAngles(shapeIndex, h2)) continue;
+            if (intersectsShapeEdge(shapePt, holePt)) continue;
+            if (intersectsHoleEdge(shapePt, holePt)) continue;
+
+            holeIndex = h2;
+            indepHoles.removeAt(h);
+
+            var tmpShape1 = shape.sublist(0, shapeIndex + 1);
+            var tmpShape2 = shape.sublist(shapeIndex);
+            var tmpHole1 = hole.sublist(holeIndex);
+            var tmpHole2 = hole.sublist(0, holeIndex + 1);
+
+            shape = tmpShape1
+              ..addAll(tmpHole1)
+              ..addAll(tmpHole2)
+              ..addAll(tmpShape2);
+
+            minShapeIndex = shapeIndex;
+            break;
+          }
+          if (holeIndex >= 0) break; // hole-vertex found
+
+          failedCuts[cutKey] = true; // remember failure
+        }
+        if (holeIndex >= 0) break; // hole-vertex found
+      }
+    }
+
+    return shape; /* shape with no holes */
+  }
+
+  var allPointsMap = {};
+
+  // To maintain reference to old shape, one must match coordinates, or offset the indices from original arrays. It's probably easier to do the first.
+
+  var allpoints = contour.toList();
+
+  for (var h = 0, hl = holes.length; h < hl; h++) {
+    allpoints.addAll(holes[h]);
+  }
 
   // prepare all points map
 
-  for (i = 0; i < allpoints.length; i++) {
+  for (var i = 0; i < allpoints.length; i++) {
+    var key = '${allpoints[i].x}:${allpoints[i].y}';
 
-    key = "${allpoints[ i ].x}:${allpoints[ i ].y}";
-
-    if (allPointsMap.containsKey(key)) {
-
-      print("Duplicate point $key");
-
+    if (allPointsMap[key] != null) {
+      print('Shape: Duplicate point $key');
     }
 
     allPointsMap[key] = i;
-
   }
+
+  // remove holes by cutting paths to holes and adding them to the shape
+  var shapeWithoutHoles = removeHoles(contour, holes);
+
+  var triangles = font_utils.triangulate(
+      shapeWithoutHoles, false); // True returns indices for points of spooled shape
 
   // check all face vertices against all points map
 
-  for (i = 0; i < triangles.length; i++) {
+  for (var i = 0; i < triangles.length; i++) {
+    var face = triangles[i];
 
-    face = triangles[i];
+    for (var f = 0; f < 3; f++) {
+      var key = '${face[f].x}:${face[f].y}';
 
-    for (f = 0; f < 3; f++) {
+      var index = allPointsMap[key];
 
-      key = "${face[ f ].x}:${face[ f ].y}";
-
-      if (allPointsMap.containsKey(key)) {
-
-        face[f] = allPointsMap[key];
-
+      if (index != null) {
+        face[f] = index;
       }
-
     }
-
   }
 
-  // check isolated points vertices against all points map
-
-  for (i = 0; i < isolatedPts.length; i++) {
-
-    face = isolatedPts[i];
-
-    for (f = 0; f < 3; f++) {
-
-      key = "${face[ f ].x}:${face[ f ].y}";
-
-      if (allPointsMap.containsKey(key)) {
-
-        face[f] = allPointsMap[key];
-
-      }
-
-    }
-
-  }
-
-  triangles.addAll(isolatedPts);
-  return triangles;
-
+  return triangles.toList();
 }
 
-isClockWise(pts) => FontUtils.area(pts) < 0;
-
+bool isClockWise(pts) => font_utils.area(pts) < 0;
 
 // Bezier Curves formulas obtained from
 // http://en.wikipedia.org/wiki/B%C3%A9zier_curve
 
 // Quad Bezier Functions
 
-b2p0(t, p) {
-
+double b2p0(double t, double p) {
   var k = 1 - t;
   return k * k * p;
-
 }
 
-b2p1(t, p) => 2 * (1 - t) * t * p;
+double b2p1(double t, double p) => 2 * (1 - t) * t * p;
 
-b2p2(t, p) => t * t * p;
+double b2p2(double t, double p) => t * t * p;
 
-b2(t, p0, p1, p2) => b2p0(t, p0) + b2p1(t, p1) + b2p2(t, p2);
-
-
+double b2(double t, double p0, double p1, double p2) => b2p0(t, p0) + b2p1(t, p1) + b2p2(t, p2);
 
 // Cubic Bezier Functions
 
-b3p0(t, p) {
+double b3p0(double t, double p) {
   var k = 1 - t;
   return k * k * k * p;
 }
 
-b3p1(t, p) {
-
+double b3p1(double t, double p) {
   var k = 1 - t;
   return 3 * k * k * t * p;
-
 }
 
-b3p2(t, p) {
-
+double b3p2(double t, double p) {
   var k = 1 - t;
   return 3 * k * t * t * p;
-
 }
 
-b3p3(t, p) => t * t * t * p;
+double b3p3(double t, double p) => t * t * t * p;
 
-
-b3(t, p0, p1, p2, p3) => b3p0(t, p0) + b3p1(t, p1) + b3p2(t, p2) + b3p3(t, p3);
-
+double b3(double t, double p0, double p1, double p2, double p3) =>
+    b3p0(t, p0) + b3p1(t, p1) + b3p2(t, p2) + b3p3(t, p3);
