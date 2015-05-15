@@ -21,7 +21,7 @@ class WebGLObjects {
 
   void onObjectRemoved(Object3D object) {
     object.traverse((child) {
-      child._objectRemovedSubscription.cancel();
+      child['_objectRemovedSubscription'].cancel();
       removeObject(child);
     });
   }
