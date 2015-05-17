@@ -9,3 +9,4 @@ pubspec.lock
 *.dart.js.deps
 out
 .idea
+web
