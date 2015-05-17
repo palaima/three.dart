@@ -110,8 +110,6 @@ class Geometry implements IGeometry {
   /// True if geometry has tangents. Set in Geometry.computeTangents.
   bool hasTangents = false;
 
-  bool _dynamic = true;
-
   // Backwards compatibility
   var materials = [];
   var faceUvs = [];
@@ -119,38 +117,6 @@ class Geometry implements IGeometry {
 
   // Used in JSONLoader
   var bones, animation, animations, firstAnimation;
-
-  /// Set to true if attribute buffers will need to change in runtime (using "dirty" flags).
-  /// Unless set to true internal typed arrays corresponding to buffers will be deleted once sent to GPU.
-  set isDynamic(bool flag) { _dynamic = flag; } // Named isDynamic because dynamic is a reserved word in Dart.
-  get isDynamic => _dynamic;
-
-  /// Set to true if the vertices array has been updated.
-  bool verticesNeedUpdate = false;
-
-  /// Set to true if the colors array has been updated.
-  bool colorsNeedUpdate = false;
-
-  /// Set to true if the faces array has been updated.
-  bool elementsNeedUpdate = false;
-
-  /// Set to true if the uvs array has been updated.
-  bool uvsNeedUpdate = false;
-
-  /// Set to true if the normals array has been updated.
-  bool normalsNeedUpdate = false;
-
-  /// Set to true if the tangents in the faces has been updated.
-  bool tangentsNeedUpdate = false;
-
-  bool buffersNeedUpdate = false;
-
-  bool morphTargetsNeedUpdate = false;
-
-  /// Set to true if the linedistances array has been updated.
-  bool lineDistancesNeedUpdate = false;
-
-  bool groupsNeedUpdate = false;
 
   /// Bakes matrix transform directly into vertex coordinates.
   void applyMatrix(Matrix4 matrix) {

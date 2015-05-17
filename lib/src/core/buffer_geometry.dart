@@ -38,17 +38,6 @@ class BufferGeometry implements IGeometry {
 
   int maxInstancedCount;
 
-  // WebGL
-  bool verticesNeedUpdate = true,
-      colorsNeedUpdate = true,
-      elementsNeedUpdate = true,
-      uvsNeedUpdate = true,
-      normalsNeedUpdate = true,
-      tangentsNeedUpdate = true,
-      buffersNeedUpdate = true,
-      morphTargetsNeedUpdate = true,
-      lineDistancesNeedUpdate = true;
-
   // dynamic is a reserved word in Dart
   bool get isDynamic => _dynamic;
   set isDynamic(bool value) => _dynamic = value;
