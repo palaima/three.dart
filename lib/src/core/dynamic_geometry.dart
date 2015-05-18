@@ -72,7 +72,7 @@ class DynamicGeometry implements IGeometry {
   /// Neither bounding boxes or bounding spheres are computed by default.
   /// They need to be explicitly computed, otherwise they are null.
   void computeBoundingSphere() {
-    if (boundingSphere == null ) {
+    if (boundingSphere == null) {
       boundingSphere = new Sphere();
     }
 
@@ -102,7 +102,7 @@ class DynamicGeometry implements IGeometry {
 
       var vertexNormals = face.vertexNormals;
       var vertexColors = face.vertexColors;
-      var vertexUvs = faceVertexUvs[i];
+      var vertexUvs;
 
       for (var j = 0; j < vertexNormals.length; j++) {
         normals[indices[j]] = vertexNormals[j];
@@ -110,6 +110,12 @@ class DynamicGeometry implements IGeometry {
 
       for (var j = 0; j < vertexColors.length; j++) {
         colors[indices[j]] = vertexColors[j];
+      }
+
+      if (faceVertexUvs.length > i) {
+        vertexUvs = faceVertexUvs[i];
+      } else {
+        vertexUvs = [new Vector2.zero(), new Vector2.zero(), new Vector2.zero()];
       }
 
       for (var j = 0; j < vertexUvs.length; j++) {
