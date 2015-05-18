@@ -588,26 +588,26 @@ class WebGLRenderer {
 
   // Buffer rendering
   void renderBufferImmediate(
-      Object3D object, WebGLProgram program, Material material) {
+      ImmediateRenderObject object, WebGLProgram program, Material material) {
     state.initAttributes();
 
-    if (object['_hasPositions'] && object['__webglVertexBuffer'] == null) {
+    if (object.hasPositions && object['__webglVertexBuffer'] == null) {
       object['__webglVertexBuffer'] = _gl.createBuffer();
     }
-    if (object['_hasNormals'] && object['__webglNormalBuffer'] == null) {
+    if (object.hasNormals && object['__webglNormalBuffer'] == null) {
       object['__webglNormalBuffer'] = _gl.createBuffer();
     }
-    if (object['_hasUvs'] && object['__webglUVBuffer'] == null) {
+    if (object.hasUvs && object['__webglUVBuffer'] == null) {
       object['__webglUVBuffer'] = _gl.createBuffer();
     }
-    if (object['_hasColors'] && object['__webglColorBuffer'] == null) {
+    if (object.hasColors && object['__webglColorBuffer'] == null) {
       object['__webglColorBuffer'] = _gl.createBuffer();
     }
 
-    if (object['_hasPositions']) {
+    if (object.hasPositions) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglVertexBuffer']);
       _gl.bufferDataTyped(
-          gl.ARRAY_BUFFER, object['_positionArray'], gl.DYNAMIC_DRAW);
+          gl.ARRAY_BUFFER, object.positionArray, gl.DYNAMIC_DRAW);
 
       state.enableAttribute(program.attributes['position']);
 
@@ -615,12 +615,12 @@ class WebGLRenderer {
           program.attributes['position'], 3, gl.FLOAT, false, 0, 0);
     }
 
-    if (object['_hasNormals']) {
+    if (object.hasNormals) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglNormalBuffer']);
 
       if (material is! MeshPhongMaterial && material.shading == FlatShading) {
-        for (var i = 0; i < object['_count'] * 3; i += 9) {
-          var normalArray = object['_normalArray'] as List;
+        for (var i = 0; i < object.count * 3; i += 9) {
+          var normalArray = object.normalArray as List;
 
           var nax = normalArray[i + 0];
           var nay = normalArray[i + 1];
@@ -653,17 +653,18 @@ class WebGLRenderer {
       }
 
       _gl.bufferDataTyped(
-          gl.ARRAY_BUFFER, object['_normalArray'], gl.DYNAMIC_DRAW);
+          gl.ARRAY_BUFFER, object.normalArray, gl.DYNAMIC_DRAW);
       state.enableAttribute(program.attributes['normal']);
       _gl.vertexAttribPointer(
           program.attributes['normal'], 3, gl.FLOAT, false, 0, 0);
     }
 
-    if (object['_hasUvs'] &&
-        material is Mapping &&
-        (material as Mapping).map != null) {
+    var m = material;
+
+    if (object.hasUvs &&
+        m is Mapping && m.map != null) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglUVBuffer']);
-      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object['_uvArray'], gl.DYNAMIC_DRAW);
+      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object.uvArray, gl.DYNAMIC_DRAW);
 
       state.enableAttribute(program.attributes['uv']);
 
@@ -671,10 +672,10 @@ class WebGLRenderer {
           program.attributes['uv'], 2, gl.FLOAT, false, 0, 0);
     }
 
-    if (object['_hasColors'] && material.vertexColors != NoColors) {
+    if (object.hasColors && material.vertexColors != NoColors) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglColorBuffer']);
       _gl.bufferDataTyped(
-          gl.ARRAY_BUFFER, object['_colorArray'], gl.DYNAMIC_DRAW);
+          gl.ARRAY_BUFFER, object.colorArray, gl.DYNAMIC_DRAW);
 
       state.enableAttribute(program.attributes['color']);
 
@@ -684,9 +685,9 @@ class WebGLRenderer {
 
     state.disableUnusedAttributes();
 
-    _gl.drawArrays(gl.TRIANGLES, 0, object['_count']);
+    _gl.drawArrays(gl.TRIANGLES, 0, object.count);
 
-    object['_count'] = 0;
+    object.count = 0;
   }
 
   void setupVertexAttributes(Material material, WebGLProgram program,
@@ -1511,7 +1512,11 @@ class WebGLRenderer {
         if (overrideMaterial != null) {
           material = overrideMaterial;
         } else {
-          material = webglObject[materialType];
+          if (materialType == 'opaque') {
+            material = webglObject.opaque;
+          } else if (materialType == 'transparent') {
+            material = webglObject.transparent;
+          }
 
           if (material == null) continue;
 
@@ -1534,8 +1539,8 @@ class WebGLRenderer {
     if (object.immediateRenderCallback != null) {
       object.immediateRenderCallback(program, _gl, _frustum);
     } else {
-      // TODO
-      //object.render((object) => renderBufferImmediate(object, program, material));
+      (object as ImmediateRenderObject).render((object) =>
+          renderBufferImmediate(object, program, material));
     }
   }
 
