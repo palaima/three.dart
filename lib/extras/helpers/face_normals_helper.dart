@@ -13,7 +13,7 @@ class FaceNormalsHelper extends LineSegments {
   Matrix3 normalMatrix = new Matrix3.identity();
 
   FaceNormalsHelper(this.object, {this.size: 1.0, hex: 0xffff00, linewidth: 1.0})
-      : super(new Geometry(), new LineBasicMaterial(color: hex, linewidth: linewidth)) {
+      : super(new DynamicGeometry(), new LineBasicMaterial(color: hex, linewidth: linewidth)) {
     var faces = (object as GeometryObject).geometry.faces;
 
     for (var i = 0; i < faces.length; i++) {
@@ -55,6 +55,6 @@ class FaceNormalsHelper extends LineSegments {
         ..add(vertices[i2]);
     }
 
-    geometry.verticesNeedUpdate = true;
+    (geometry as DynamicGeometry).verticesNeedUpdate = true;
   }
 }

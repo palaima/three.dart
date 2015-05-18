@@ -13,7 +13,7 @@ class DynamicGeometry implements IGeometry {
   String type = 'DynamicGeometry';
 
   List<Vector3> vertices = [];
-  List<Vector3> colors = [];
+  List<Color> colors = [];
   List<Vector3> normals = [];
   List<Vector2> uvs = [];
   List<Face3> faces = [];

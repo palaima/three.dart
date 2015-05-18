@@ -24,9 +24,6 @@ abstract class IGeometry {
   Aabb3 boundingBox;
   Sphere boundingSphere;
 
-  bool verticesNeedUpdate;
-  bool normalsNeedUpdate;
-
   List<Vector3> vertices;
   List<Face3> faces;
 

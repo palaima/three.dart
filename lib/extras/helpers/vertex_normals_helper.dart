@@ -8,7 +8,7 @@ class VertexNormalsHelper extends LineSegments {
   Matrix3 normalMatrix;
 
   VertexNormalsHelper(this.object, {this.size: 1.0, hex: 0xff0000, linewidth: 1.0})
-      : super(new Geometry(), new LineBasicMaterial(color: hex, linewidth: linewidth)) {
+      : super(new DynamicGeometry(), new LineBasicMaterial(color: hex, linewidth: linewidth)) {
     var faces = (object as GeometryObject).geometry.faces;
 
     for (var i = 0; i < faces.length; i++) {
@@ -60,7 +60,7 @@ class VertexNormalsHelper extends LineSegments {
       }
     }
 
-    geometry.verticesNeedUpdate = true;
+    (geometry as DynamicGeometry).verticesNeedUpdate = true;
   }
 
 
