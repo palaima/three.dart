@@ -1374,55 +1374,7 @@ class Matrix4 {
 
   /// Multiply [this] by [arg].
   Matrix4 multiply(Matrix4 arg) {
-    final m00 = _storage[0];
-    final m01 = _storage[4];
-    final m02 = _storage[8];
-    final m03 = _storage[12];
-    final m10 = _storage[1];
-    final m11 = _storage[5];
-    final m12 = _storage[9];
-    final m13 = _storage[13];
-    final m20 = _storage[2];
-    final m21 = _storage[6];
-    final m22 = _storage[10];
-    final m23 = _storage[14];
-    final m30 = _storage[3];
-    final m31 = _storage[7];
-    final m32 = _storage[11];
-    final m33 = _storage[15];
-    final argStorage = arg._storage;
-    final n00 = argStorage[0];
-    final n01 = argStorage[4];
-    final n02 = argStorage[8];
-    final n03 = argStorage[12];
-    final n10 = argStorage[1];
-    final n11 = argStorage[5];
-    final n12 = argStorage[9];
-    final n13 = argStorage[13];
-    final n20 = argStorage[2];
-    final n21 = argStorage[6];
-    final n22 = argStorage[10];
-    final n23 = argStorage[14];
-    final n30 = argStorage[3];
-    final n31 = argStorage[7];
-    final n32 = argStorage[11];
-    final n33 = argStorage[15];
-    _storage[0] = (m00 * n00) + (m01 * n10) + (m02 * n20) + (m03 * n30);
-    _storage[4] = (m00 * n01) + (m01 * n11) + (m02 * n21) + (m03 * n31);
-    _storage[8] = (m00 * n02) + (m01 * n12) + (m02 * n22) + (m03 * n32);
-    _storage[12] = (m00 * n03) + (m01 * n13) + (m02 * n23) + (m03 * n33);
-    _storage[1] = (m10 * n00) + (m11 * n10) + (m12 * n20) + (m13 * n30);
-    _storage[5] = (m10 * n01) + (m11 * n11) + (m12 * n21) + (m13 * n31);
-    _storage[9] = (m10 * n02) + (m11 * n12) + (m12 * n22) + (m13 * n32);
-    _storage[13] = (m10 * n03) + (m11 * n13) + (m12 * n23) + (m13 * n33);
-    _storage[2] = (m20 * n00) + (m21 * n10) + (m22 * n20) + (m23 * n30);
-    _storage[6] = (m20 * n01) + (m21 * n11) + (m22 * n21) + (m23 * n31);
-    _storage[10] = (m20 * n02) + (m21 * n12) + (m22 * n22) + (m23 * n32);
-    _storage[14] = (m20 * n03) + (m21 * n13) + (m22 * n23) + (m23 * n33);
-    _storage[3] = (m30 * n00) + (m31 * n10) + (m32 * n20) + (m33 * n30);
-    _storage[7] = (m30 * n01) + (m31 * n11) + (m32 * n21) + (m33 * n31);
-    _storage[11] = (m30 * n02) + (m31 * n12) + (m32 * n22) + (m33 * n32);
-    _storage[15] = (m30 * n03) + (m31 * n13) + (m32 * n23) + (m33 * n33);
+    multiplyMatrices(this, arg);
     return this;
   }
 
@@ -1813,7 +1765,9 @@ class Matrix4 {
   /// Multiply [this] to each set of xyz values in [array] starting at [offset].
   List<double> applyToVector3Array(List<double> array, [int offset = 0]) {
     for (var i = 0, j = offset; i < array.length; i += 3, j += 3) {
-      final v = new Vector3.array(array, j)..applyMatrix4(this);
+      final v = _v
+        ..copyFromArray(array, j)
+        ..applyMatrix4(this);
       array[j] = v.storage[0];
       array[j + 1] = v.storage[1];
       array[j + 2] = v.storage[2];
@@ -1847,11 +1801,13 @@ class Matrix4 {
    * Addition from three.js r70.
    */
 
-
   Matrix4 extractRotation(Matrix4 arg) {
-    var scaleX = 1.0 / new Vector3(arg.storage[0], arg.storage[1], arg.storage[2]).length;
-    var scaleY = 1.0 / new Vector3(arg.storage[4], arg.storage[5], arg.storage[6]).length;
-    var scaleZ = 1.0 / new Vector3(arg.storage[8], arg.storage[9], arg.storage[10]).length;
+    var scaleX = 1.0 /
+        _v.setValues(arg.storage[0], arg.storage[1], arg.storage[2]).length;
+    var scaleY = 1.0 /
+        _v.setValues(arg.storage[4], arg.storage[5], arg.storage[6]).length;
+    var scaleZ = 1.0 /
+        _v.setValues(arg.storage[8], arg.storage[9], arg.storage[10]).length;
 
     storage[0] = arg.storage[0] * scaleX;
     storage[1] = arg.storage[1] * scaleX;
@@ -1868,13 +1824,21 @@ class Matrix4 {
   }
 
   Matrix4 makeRotationFromEuler(Euler euler) {
-    var x = euler.x, y = euler.y, z = euler.z;
-    var a = math.cos(x), b = math.sin(x);
-    var c = math.cos(y), d = math.sin(y);
-    var e = math.cos(z), f = math.sin(z);
+    var x = euler.x,
+        y = euler.y,
+        z = euler.z;
+    var a = math.cos(x),
+        b = math.sin(x);
+    var c = math.cos(y),
+        d = math.sin(y);
+    var e = math.cos(z),
+        f = math.sin(z);
 
     if (euler.order == 'XYZ') {
-      var ae = a * e, af = a * f, be = b * e, bf = b * f;
+      var ae = a * e,
+          af = a * f,
+          be = b * e,
+          bf = b * f;
 
       _storage[0] = c * e;
       _storage[4] = -c * f;
@@ -1888,7 +1852,10 @@ class Matrix4 {
       _storage[6] = be + af * d;
       _storage[10] = a * c;
     } else if (euler.order == 'YXZ') {
-      var ce = c * e, cf = c * f, de = d * e, df = d * f;
+      var ce = c * e,
+          cf = c * f,
+          de = d * e,
+          df = d * f;
 
       _storage[0] = ce + df * b;
       _storage[4] = de * b - cf;
@@ -1902,7 +1869,10 @@ class Matrix4 {
       _storage[6] = df + ce * b;
       _storage[10] = a * c;
     } else if (euler.order == 'ZXY') {
-      var ce = c * e, cf = c * f, de = d * e, df = d * f;
+      var ce = c * e,
+          cf = c * f,
+          de = d * e,
+          df = d * f;
 
       _storage[0] = ce - df * b;
       _storage[4] = -a * f;
@@ -1916,7 +1886,10 @@ class Matrix4 {
       _storage[6] = b;
       _storage[10] = a * c;
     } else if (euler.order == 'ZYX') {
-      var ae = a * e, af = a * f, be = b * e, bf = b * f;
+      var ae = a * e,
+          af = a * f,
+          be = b * e,
+          bf = b * f;
 
       _storage[0] = c * e;
       _storage[4] = be * d - af;
@@ -1930,7 +1903,10 @@ class Matrix4 {
       _storage[6] = b * c;
       _storage[10] = a * c;
     } else if (euler.order == 'YZX') {
-      var ac = a * c, ad = a * d, bc = b * c, bd = b * d;
+      var ac = a * c,
+          ad = a * d,
+          bc = b * c,
+          bd = b * d;
 
       _storage[0] = c * e;
       _storage[4] = bd - ac * f;
@@ -1944,7 +1920,10 @@ class Matrix4 {
       _storage[6] = ad * f + bc;
       _storage[10] = ac - bd * f;
     } else if (euler.order == 'XZY') {
-      var ac = a * c, ad = a * d, bc = b * c, bd = b * d;
+      var ac = a * c,
+          ad = a * d,
+          bc = b * c,
+          bd = b * d;
 
       _storage[0] = c * e;
       _storage[4] = -f;
@@ -1974,11 +1953,22 @@ class Matrix4 {
   }
 
   Matrix4 makeRotationFromQuaternion(Quaternion q) {
-    var x = q._storage[0], y = q._storage[1], z = q._storage[2], w = q._storage[3];
-    var x2 = x + x, y2 = y + y, z2 = z + z;
-    var xx = x * x2, xy = x * y2, xz = x * z2;
-    var yy = y * y2, yz = y * z2, zz = z * z2;
-    var wx = w * x2, wy = w * y2, wz = w * z2;
+    var x = q._storage[0],
+        y = q._storage[1],
+        z = q._storage[2],
+        w = q._storage[3];
+    var x2 = x + x,
+        y2 = y + y,
+        z2 = z + z;
+    var xx = x * x2,
+        xy = x * y2,
+        xz = x * z2;
+    var yy = y * y2,
+        yz = y * z2,
+        zz = z * z2;
+    var wx = w * x2,
+        wy = w * y2,
+        wz = w * z2;
 
     _storage[0] = 1.0 - (yy + zz);
     _storage[4] = xy - wz;
@@ -2008,15 +1998,39 @@ class Matrix4 {
 
   /// Sets this as [arg1] multiplied by [arg2].
   Matrix4 multiplyMatrices(Matrix4 arg1, Matrix4 arg2) {
-    var a11 = arg1._storage[0], a12 = arg1._storage[4], a13 = arg1._storage[8], a14 = arg1._storage[12];
-    var a21 = arg1._storage[1], a22 = arg1._storage[5], a23 = arg1._storage[9], a24 = arg1._storage[13];
-    var a31 = arg1._storage[2], a32 = arg1._storage[6], a33 = arg1._storage[10], a34 = arg1._storage[14];
-    var a41 = arg1._storage[3], a42 = arg1._storage[7], a43 = arg1._storage[11], a44 = arg1._storage[15];
+    var a11 = arg1._storage[0],
+        a12 = arg1._storage[4],
+        a13 = arg1._storage[8],
+        a14 = arg1._storage[12];
+    var a21 = arg1._storage[1],
+        a22 = arg1._storage[5],
+        a23 = arg1._storage[9],
+        a24 = arg1._storage[13];
+    var a31 = arg1._storage[2],
+        a32 = arg1._storage[6],
+        a33 = arg1._storage[10],
+        a34 = arg1._storage[14];
+    var a41 = arg1._storage[3],
+        a42 = arg1._storage[7],
+        a43 = arg1._storage[11],
+        a44 = arg1._storage[15];
 
-    var b11 = arg2._storage[0], b12 = arg2._storage[4], b13 = arg2._storage[8], b14 = arg2._storage[12];
-    var b21 = arg2._storage[1], b22 = arg2._storage[5], b23 = arg2._storage[9], b24 = arg2._storage[13];
-    var b31 = arg2._storage[2], b32 = arg2._storage[6], b33 = arg2._storage[10], b34 = arg2._storage[14];
-    var b41 = arg2._storage[3], b42 = arg2._storage[7], b43 = arg2._storage[11], b44 = arg2._storage[15];
+    var b11 = arg2._storage[0],
+        b12 = arg2._storage[4],
+        b13 = arg2._storage[8],
+        b14 = arg2._storage[12];
+    var b21 = arg2._storage[1],
+        b22 = arg2._storage[5],
+        b23 = arg2._storage[9],
+        b24 = arg2._storage[13];
+    var b31 = arg2._storage[2],
+        b32 = arg2._storage[6],
+        b33 = arg2._storage[10],
+        b34 = arg2._storage[14];
+    var b41 = arg2._storage[3],
+        b42 = arg2._storage[7],
+        b43 = arg2._storage[11],
+        b44 = arg2._storage[15];
 
     _storage[0] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
     _storage[4] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
@@ -2041,4 +2055,36 @@ class Matrix4 {
     return this;
   }
 
+  static final Vector3 _x = new Vector3.zero();
+  static final Vector3 _y = new Vector3.zero();
+  static final Vector3 _z = new Vector3.zero();
+
+  Matrix4 lookAt(Vector3 eye, Vector3 target, Vector3 up) {
+    _z.subVectors(eye, target);
+    _z.normalize();
+    if (_z.length == 0) {
+      _z.z = 1.0;
+    }
+    _x.crossVectors(up, _z);
+    _x.normalize();
+    if (_x.length == 0) {
+      _z.x += 0.0001;
+      _x.crossVectors(up, _z).normalize();
+    }
+    _y..crossVectors(_z, _x);
+
+    final xStorage = _x._storage;
+    final yStorage = _y._storage;
+    final zStorage = _z._storage;
+    _storage[0] = xStorage[0];
+    storage[4] = yStorage[0];
+    storage[8] = zStorage[0];
+    _storage[1] = xStorage[1];
+    storage[5] = yStorage[1];
+    storage[9] = zStorage[1];
+    _storage[2] = xStorage[2];
+    storage[6] = yStorage[2];
+    storage[10] = zStorage[2];
+    return this;
+  }
 }
