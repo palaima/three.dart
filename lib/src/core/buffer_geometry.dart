@@ -403,7 +403,7 @@ class BufferGeometry implements IGeometry {
       ..copyVector3sArray(geometry.normals);
 
     aColor = new BufferAttribute.float32(geometry.colors.length * 3, 3)
-      ..copyVector3sArray(geometry.colors);
+      ..copyColorsArray(geometry.colors);
 
     aUV = new BufferAttribute.float32(geometry.uvs.length * 2, 2)
       ..copyVector2sArray(geometry.uvs);
