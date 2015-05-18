@@ -214,7 +214,7 @@ class BufferGeometry implements IGeometry {
 
       for (var name in attributes.keys) {
         var attribute = attributes[name];
-        if (attribute is! Attribute) continue;
+        if (attribute is num) continue;
 
         var type = attribute.type;
         var array = attribute.value;
@@ -273,7 +273,7 @@ class BufferGeometry implements IGeometry {
       uvs2 = aUV2.array;
     }
 
-    for (var i = 0, i2 = 0, i3 = 0; i < faces.length; i ++, i2 += 6, i3 += 9) {
+    for (var i = 0, i2 = 0, i3 = 0; i < faces.length; i++, i2 += 6, i3 += 9) {
       var face = faces[i];
 
       var a = vertices[face.a];
@@ -358,33 +358,46 @@ class BufferGeometry implements IGeometry {
       }
 
       if (hasFaceVertexUv) {
-        var uva = faceVertexUvs[0][i][0];
-        var uvb = faceVertexUvs[0][i][1];
-        var uvc = faceVertexUvs[0][i][2];
+        // faces.length > faceVertexUvs[0].length in some cases
+        var vertexUvs = i < faceVertexUvs[0].length ? faceVertexUvs[0][i] : null;
 
-        uvs[i2] = uva.x;
-        uvs[i2 + 1] = uva.y;
+        if (vertexUvs != null) {
+          var uva = faceVertexUvs[0][i][0];
+          var uvb = faceVertexUvs[0][i][1];
+          var uvc = faceVertexUvs[0][i][2];
 
-        uvs[i2 + 2] = uvb.x;
-        uvs[i2 + 3] = uvb.y;
+          uvs[i2] = uva.x;
+          uvs[i2 + 1] = uva.y;
 
-        uvs[i2 + 4] = uvc.x;
-        uvs[i2 + 5] = uvc.y;
+          uvs[i2 + 2] = uvb.x;
+          uvs[i2 + 3] = uvb.y;
+
+          uvs[i2 + 4] = uvc.x;
+          uvs[i2 + 5] = uvc.y;
+        } else {
+          warn('BufferGeometry.fromGeometry(): Undefined vertexUv $i');
+        }
       }
 
       if (hasFaceVertexUv2) {
-        var uva = faceVertexUvs[1][i][0];
-        var uvb = faceVertexUvs[1][i][1];
-        var uvc = faceVertexUvs[1][i][2];
+        var vertexUvs = faceVertexUvs[1][i];
 
-        uvs2[i2] = uva.x;
-        uvs2[i2 + 1] = uva.y;
+        if (vertexUvs != null) {
+          var uva = vertexUvs[0];
+          var uvb = vertexUvs[1];
+          var uvc = vertexUvs[2];
 
-        uvs2[i2 + 2] = uvb.x;
-        uvs2[i2 + 3] = uvb.y;
+          uvs2[i2] = uva.x;
+          uvs2[i2 + 1] = uva.y;
 
-        uvs2[i2 + 4] = uvc.x;
-        uvs2[i2 + 5] = uvc.y;
+          uvs2[i2 + 2] = uvb.x;
+          uvs2[i2 + 3] = uvb.y;
+
+          uvs2[i2 + 4] = uvc.x;
+          uvs2[i2 + 5] = uvc.y;
+        } else {
+          warn('BufferGeometry.fromGeometry(): Undefined vertexUv2 $i)');
+        }
       }
     }
 
