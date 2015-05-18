@@ -186,7 +186,7 @@ class WebGLRenderer {
     };
 
     _gl = [context, _canvas.getContext('webgl', attributes),
-      _canvas.getContext('experimental-webgl', attributes)].firstWhere((e) => e != null);
+      _canvas.getContext('experimental-webgl', attributes)].firstWhere((e) => e != null, orElse: () => null);
 
     if (_gl == null) {
      if (_canvas.getContext('webgl') != null) {
