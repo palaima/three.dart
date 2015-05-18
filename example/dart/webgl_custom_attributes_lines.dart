@@ -105,7 +105,6 @@ void init() {
     bevelSegments: bevelSegments,
 
     steps: steps)
-    ..isDynamic = true
     ..center();
 
   object = new Line(geometry, shaderMaterial);
