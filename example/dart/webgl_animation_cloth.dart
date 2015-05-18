@@ -240,8 +240,10 @@ void render() {
     cloth.geometry.vertices[i].setFrom(p[i].position);
   }
 
-  cloth.geometry.normalsNeedUpdate = true;
-  cloth.geometry.verticesNeedUpdate = true;
+  var geo = cloth.geometry as DynamicGeometry;
+
+  geo.normalsNeedUpdate = true;
+  geo.verticesNeedUpdate = true;
 
   sphere.position.setFrom(cloth.ballPosition);
 
