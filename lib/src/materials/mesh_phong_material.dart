@@ -46,7 +46,7 @@ class MeshPhongMaterial extends Material implements Lighting, Mapping, Morphing,
 
   Texture alphaMap;
 
-  CubeTexture envMap;
+  Texture envMap; // CubeTexture
   int combine;
   double reflectivity;
   double refractionRatio;
