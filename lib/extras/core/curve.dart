@@ -8,12 +8,9 @@ class Curve<V> {
 
   Function _getPoint;
 
-  Curve();
+  Curve() : _getPoint = ((_) => print('Curve: Warning, getPoint() not implemented!'));
 
-  Curve.create(Function getPoint) {
-    _getPoint =
-        getPoint != null ? getPoint : ((_) => print('Curve: Warning, getPoint() not implemented!'));
-  }
+  Curve.create(this._getPoint);
 
   /// Virtual base class method to overwrite and implement in subclasses
   ///  - t [0 .. 1]
