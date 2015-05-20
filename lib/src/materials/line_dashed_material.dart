@@ -15,10 +15,6 @@ class LineDashedMaterial extends Material implements LineMaterial {
   double dashSize;
   double gapSize;
 
-  int vertexColors;
-
-  bool fog;
-
   LineDashedMaterial({num color: 0xffffff, this.linewidth: 1.0, this.scale: 1.0, this.dashSize: 3.0,
     this.gapSize: 1.0, int vertexColors: NoColors, bool fog: true,
     // Material
