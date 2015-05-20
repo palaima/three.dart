@@ -383,12 +383,11 @@ class Geometry implements IGeometry {
     var d = 0.0;
 
     for (var i = 0; i < vertices.length; i++) {
-
       if (i > 0) {
         d += vertices[i].distanceTo(vertices[i - 1]);
       }
 
-      lineDistances[i] = d;
+      lineDistances.add(d);
     }
   }
 
