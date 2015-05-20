@@ -49,6 +49,3 @@ class Line extends Object3D implements GeometryMaterialObject {
     return object;
   }
 }
-
-const int LineStrip = 0;
-const int LinePieces = 1;
