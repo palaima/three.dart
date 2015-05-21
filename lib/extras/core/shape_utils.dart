@@ -392,35 +392,35 @@ bool isClockWise(pts) => font_utils.area(pts) < 0;
 
 // Quad Bezier Functions
 
-double b2p0(double t, double p) {
+num b2p0(num t, num p) {
   var k = 1 - t;
   return k * k * p;
 }
 
-double b2p1(double t, double p) => 2 * (1 - t) * t * p;
+num b2p1(num t, num p) => 2 * (1 - t) * t * p;
 
-double b2p2(double t, double p) => t * t * p;
+num b2p2(num t, num p) => t * t * p;
 
-double b2(double t, double p0, double p1, double p2) => b2p0(t, p0) + b2p1(t, p1) + b2p2(t, p2);
+num b2(num t, num p0, num p1, num p2) => b2p0(t, p0) + b2p1(t, p1) + b2p2(t, p2);
 
 // Cubic Bezier Functions
 
-double b3p0(double t, double p) {
+num b3p0(num t, num p) {
   var k = 1 - t;
   return k * k * k * p;
 }
 
-double b3p1(double t, double p) {
+num b3p1(num t, num p) {
   var k = 1 - t;
   return 3 * k * k * t * p;
 }
 
-double b3p2(double t, double p) {
+num b3p2(num t, num p) {
   var k = 1 - t;
   return 3 * k * t * t * p;
 }
 
-double b3p3(double t, double p) => t * t * t * p;
+num b3p3(num t, num p) => t * t * t * p;
 
-double b3(double t, double p0, double p1, double p2, double p3) =>
+num b3(num t, num p0, num p1, num p2, num p3) =>
     b3p0(t, p0) + b3p1(t, p1) + b3p2(t, p2) + b3p3(t, p3);
