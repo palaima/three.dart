@@ -21,14 +21,14 @@ class Mesh extends Object3D implements GeometryMaterialObject {
 
   int morphTargetBase = 0;
   List morphTargetForcedOrder;
-  List morphTargetInfluences;
+  List<double> morphTargetInfluences;
   Map morphTargetDictionary;
 
   Mesh([IGeometry geometry, Material material]) : super() {
     this.geometry = geometry != null ? geometry : new Geometry();
     this.material = material != null
         ? material
-        : new MeshBasicMaterial(color: new math.Random().nextInt(0xffffff));
+        : new MeshBasicMaterial(color: randInt(0, 0xffffff));
 
     updateMorphTargets();
   }
@@ -41,7 +41,7 @@ class Mesh extends Object3D implements GeometryMaterialObject {
       morphTargetDictionary = {};
 
       for (var m = 0; m < geometry.morphTargets.length; m++) {
-        morphTargetInfluences.add(0);
+        morphTargetInfluences.add(0.0);
         morphTargetDictionary[geometry.morphTargets[m].name] = m;
       }
     }
@@ -53,7 +53,8 @@ class Mesh extends Object3D implements GeometryMaterialObject {
       return morphTargetDictionary[name];
     }
 
-    warn("Mesh.getMorphTargetIndexByName: morph target $name does not exist. Returning 0.");
+    warn(
+        "Mesh.getMorphTargetIndexByName: morph target $name does not exist. Returning 0.");
     return 0;
   }
 
@@ -104,7 +105,7 @@ class Mesh extends Object3D implements GeometryMaterialObject {
         var positions = attributes['position'].array;
         var offsets = attributes['offsets'];
 
-        if (offsets.length == 0) {
+        if (offsets.count == 0) {
           offsets = [new DrawCall(start: 0, count: indices.length, index: 0)];
         }
 
@@ -123,8 +124,10 @@ class Mesh extends Object3D implements GeometryMaterialObject {
             _vC.copyFromArray(positions, c * 3);
 
             var intersectionPoint = material.side == BackSide
-                ? _ray.intersectsWithTriangle(_vC, _vB, _vA, backfaceCulling: true)
-                : _ray.intersectsWithTriangle(_vA, _vB, _vC, backfaceCulling: material.side != DoubleSide);
+                ? _ray.intersectsWithTriangle(_vC, _vB, _vA,
+                    backfaceCulling: true)
+                : _ray.intersectsWithTriangle(_vA, _vB, _vC,
+                    backfaceCulling: material.side != DoubleSide);
 
             if (intersectionPoint == null) continue;
 
@@ -132,12 +135,15 @@ class Mesh extends Object3D implements GeometryMaterialObject {
 
             var distance = raycaster.ray.origin.distanceTo(intersectionPoint);
 
-            if (distance < precision || distance < raycaster.near || distance > raycaster.far) continue;
+            if (distance < precision ||
+                distance < raycaster.near ||
+                distance > raycaster.far) continue;
 
             intersects.add(new RayIntersection(
                 distance: distance,
                 point: intersectionPoint,
-                face: new Face3(a, b, c, normal: Triangle.normal(_vA, _vB, _vC)),
+                face: new Face3(a, b, c,
+                    normal: Triangle.normal(_vA, _vB, _vC)),
                 faceIndex: null,
                 object: this));
           }
@@ -155,8 +161,10 @@ class Mesh extends Object3D implements GeometryMaterialObject {
           _vC.copyFromArray(positions, j + 6);
 
           var intersectionPoint = material.side == BackSide
-              ? _ray.intersectsWithTriangle(_vC, _vB, _vA, backfaceCulling: true)
-              : _ray.intersectsWithTriangle(_vA, _vB, _vC, backfaceCulling: material.side != DoubleSide);
+              ? _ray.intersectsWithTriangle(_vC, _vB, _vA,
+                  backfaceCulling: true)
+              : _ray.intersectsWithTriangle(_vA, _vB, _vC,
+                  backfaceCulling: material.side != DoubleSide);
 
           if (intersectionPoint == null) continue;
 
@@ -164,7 +172,9 @@ class Mesh extends Object3D implements GeometryMaterialObject {
 
           var distance = raycaster.ray.origin.distanceTo(intersectionPoint);
 
-          if (distance < precision || distance < raycaster.near || distance > raycaster.far) continue;
+          if (distance < precision ||
+              distance < raycaster.near ||
+              distance > raycaster.far) continue;
 
           intersects.add(new RayIntersection(
               distance: distance,
@@ -229,7 +239,8 @@ class Mesh extends Object3D implements GeometryMaterialObject {
 
         var intersectionPoint = material.side == BackSide
             ? _ray.intersectsWithTriangle(c, b, a, backfaceCulling: true)
-            : _ray.intersectsWithTriangle(a, b, c, backfaceCulling: material.side != DoubleSide);
+            : _ray.intersectsWithTriangle(a, b, c,
+                backfaceCulling: material.side != DoubleSide);
 
         if (intersectionPoint == null) continue;
 
@@ -237,10 +248,16 @@ class Mesh extends Object3D implements GeometryMaterialObject {
 
         var distance = raycaster.ray.origin.distanceTo(intersectionPoint);
 
-        if (distance < precision || distance < raycaster.near || distance > raycaster.far) continue;
+        if (distance < precision ||
+            distance < raycaster.near ||
+            distance > raycaster.far) continue;
 
         intersects.add(new RayIntersection(
-            distance: distance, point: intersectionPoint, face: face, faceIndex: f, object: this));
+            distance: distance,
+            point: intersectionPoint,
+            face: face,
+            faceIndex: f,
+            object: this));
       }
     }
   }
