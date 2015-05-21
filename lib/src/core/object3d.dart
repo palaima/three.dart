@@ -369,6 +369,7 @@ class Object3D {
       ..receiveShadow = receiveShadow
 
       ..frustumCulled = frustumCulled
+      ..renderOrder = renderOrder
 
       ..userData = new Map.from(userData);
 
