@@ -14,7 +14,7 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
 
   Map defines;
   Map<String, Uniform> uniforms;
-  Map<String, Attribute> attributes;
+  List<String> attributes;
 
   String vertexShader;
   String fragmentShader;
@@ -46,7 +46,7 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
   // Not used
   var wireframeLinecap, wireframeLinejoin, scale, dashSize, gapSize;
 
-  ShaderMaterial({Map defines, Map<String, Uniform> uniforms, this.attributes, this.vertexShader: defaultVertexShader,
+  ShaderMaterial({Map defines, Map<String, Uniform> uniforms, List<String> attributes, this.vertexShader: defaultVertexShader,
     this.fragmentShader: defaultFragmentShader, int shading: SmoothShading, this.linewidth: 1.0, this.wireframe: false,
     this.wireframeLinewidth: 1.0, bool fog: true, this.lights: false, int vertexColors: NoColors, this.skinning: false,
     this.morphTargets: false, this.morphNormals: false, this.derivatives: false,
@@ -57,7 +57,8 @@ class ShaderMaterial extends Material implements Morphing, Wireframe, LineMateri
     bool depthTest: true, bool depthWrite: true, bool colorWrite: true, bool polygonOffset: false,
     int polygonOffsetFactor: 0, int polygonOffsetUnits: 0, double alphaTest: 0.0, double overdraw: 0.0,
     bool visible: true})
-      : this.defines = defines != null ? defines : {},
+      : this.attributes =  attributes != null ? attributes : [],
+        this.defines = defines != null ? defines : {},
         this.uniforms = uniforms != null ? uniforms : {},
         super._(name: name, side: side, opacity: opacity, transparent: transparent, blending: blending,
           blendSrc: blendSrc, blendDst: blendDst, blendEquation: blendEquation, blendSrcAlpha: blendSrcAlpha,
