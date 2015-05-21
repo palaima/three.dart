@@ -42,10 +42,10 @@ class CircleBufferGeometry extends BufferGeometry {
       indices.add(0);
     }
 
-    aIndex = new BufferAttribute(new Uint16List.fromList(indices), 1);
-    aPosition = new BufferAttribute(positions, 3);
-    aNormal = new BufferAttribute(normals, 3);
-    aUV = new BufferAttribute(uvs, 2);
+    addAttribute('index', new BufferAttribute(new Uint16List.fromList(indices), 1));
+    addAttribute('position', new BufferAttribute(positions, 3));
+    addAttribute('normal', new BufferAttribute(normals, 3));
+    addAttribute('uv', new BufferAttribute(uvs, 2));
 
     boundingSphere = new Sphere.centerRadius(new Vector3.zero(), radius);
   }

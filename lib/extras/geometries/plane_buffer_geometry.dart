@@ -76,10 +76,10 @@ class PlaneBufferGeometry extends BufferGeometry {
       }
     }
 
-    aIndex = new BufferAttribute(indices, 1);
-    aPosition = new BufferAttribute(vertices, 3);
-    aNormal = new BufferAttribute(normals, 3);
-    aUV = new BufferAttribute(uvs, 2);
+    addAttribute('index', new BufferAttribute(indices, 1));
+    addAttribute('position', new BufferAttribute(vertices, 3));
+    addAttribute('normal', new BufferAttribute(normals, 3));
+    addAttribute('uv', new BufferAttribute(uvs, 2));
   }
 
   noSuchMethod(Invocation invocation) {

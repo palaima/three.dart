@@ -50,7 +50,7 @@ class WireframeGeometry extends BufferGeometry {
         }
       }
 
-      aPosition = new BufferAttribute(coords, 3);
+      addAttribute('position', new BufferAttribute(coords, 3));
     } else if (geometry is BufferGeometry) {
       if (geometry.aPosition != null) { // Indexed BufferGeometry
         var vertices = geometry.aPosition.array;
@@ -100,7 +100,7 @@ class WireframeGeometry extends BufferGeometry {
           }
         }
 
-        aPosition = new BufferAttribute(coords, 3);
+        addAttribute('position', new BufferAttribute(coords, 3));
       } else { // non-indexed BufferGeometry
         var vertices = geometry.aPosition.array;
         var numEdges = vertices.length ~/ 3;
@@ -124,7 +124,7 @@ class WireframeGeometry extends BufferGeometry {
           }
         }
 
-        aPosition = new BufferAttribute(coords, 3);
+        addAttribute('position', new BufferAttribute(coords, 3));
       }
     }
   }

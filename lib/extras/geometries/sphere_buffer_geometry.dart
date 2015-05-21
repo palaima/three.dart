@@ -19,9 +19,9 @@ class SphereBufferGeometry extends BufferGeometry {
     var normals = new BufferAttribute.float32(vertexCount * 3, 3);
     var uvs = new BufferAttribute.float32(vertexCount * 2, 2);
 
-    aPosition = positions;
-    aNormal = normals;
-    aUV = uvs;
+    addAttribute('position', positions);
+    addAttribute('normal', normals);
+    addAttribute('uv', uvs);
 
     var index = 0,
         vertices = [];
@@ -76,7 +76,7 @@ class SphereBufferGeometry extends BufferGeometry {
       indices.addAll([v2, v4, v3]);
     }
 
-    aIndex = new BufferAttribute(new Uint16List.fromList(indices), 1);
+    addAttribute('index', new BufferAttribute(new Uint16List.fromList(indices), 1));
 
     boundingSphere = new Sphere.centerRadius(new Vector3.zero(), radius);
   }

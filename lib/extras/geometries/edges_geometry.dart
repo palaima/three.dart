@@ -64,7 +64,7 @@ class EdgesGeometry extends BufferGeometry {
       }
     }
 
-    aPosition = new BufferAttribute(new Float32List.fromList(coords), 3);
+    addAttribute('position', new BufferAttribute(new Float32List.fromList(coords), 3));
   }
 
   noSuchMethod(Invocation invocation) {
