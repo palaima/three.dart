@@ -9,7 +9,7 @@ part of three.materials;
 class RawShaderMaterial extends ShaderMaterial {
   String type = 'RawShaderMaterial';
 
-  RawShaderMaterial({Map defines, Map<String, Uniform> uniforms, Map<String, Attribute> attributes,
+  RawShaderMaterial({Map defines, Map<String, Uniform> uniforms, List<String> attributes,
     String vertexShader: ShaderMaterial.defaultVertexShader, String fragmentShader: ShaderMaterial.defaultFragmentShader,
     int shading: SmoothShading, double lineWidth: 1.0, bool wireframe: false, double wireframeLinewidth: 1.0,
     bool fog: true, bool lights: false, int vertexColors: NoColors, bool skinning: false, bool morphTargets: false,
