@@ -2,84 +2,89 @@ import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/loaders.dart' show JSONLoader;
-
-Element container;
+import 'package:three/extras/animation.dart' show MorphAnimation;
 
 PerspectiveCamera camera;
+Vector3 cameraTarget;
+
 Scene scene;
 WebGLRenderer renderer;
-Mesh mesh;
-var cameraTarget;
 
-void main() {
-  init();
-  animate(0);
-}
+Mesh mesh;
+MorphAnimation animation;
 
 void init() {
+  var info = new DivElement()
+    ..style.position = 'absolute'
+    ..style.top = '10px'
+    ..style.width = '100%'
+    ..style.textAlign = 'center'
+    ..innerHtml =
+      '<a href="http://threejs.org" target="_blank">three.js</a> webgl - morph targets - horse. model by <a href="http://mirada.com/">mirada</a> from <a href="http://ro.me">rome</a>';
+  document.body.append(info);
 
-  container = new Element.tag('div');
-  document.body.nodes.add(container);
+  //
 
-  camera = new PerspectiveCamera(50.0, window.innerWidth / window.innerHeight, 1.0, 10000.0);
-  camera.position.y = 300.0;
+  camera = new PerspectiveCamera(
+      50.0, window.innerWidth / window.innerHeight, 1.0, 10000.0)
+    ..position.y = 300.0;
+
   cameraTarget = new Vector3(0.0, 150.0, 0.0);
 
   scene = new Scene();
 
-  var light;
+  //
 
-  light = new DirectionalLight(0xefefff, 2.0);
-  light.position.setValues(1.0, 1.0, 1.0).normalize();
+  var light = new DirectionalLight(0xefefff, 2.0);
+  light.position
+    ..splat(1.0)
+    ..normalize();
   scene.add(light);
 
-  light = new DirectionalLight(0xffefef, 2.0);
-  light.position.setValues(-1.0, -1.0, -1.0).normalize();
-  scene.add(light);
+  var light2 = new DirectionalLight(0xffefef, 2.0);
+  light2.position
+    ..splat(-1.0)
+    ..normalize();
+  scene.add(light2);
 
   var loader = new JSONLoader(showStatus: true);
   loader.load("models/animated/horse.js").then((geometry) {
+    var material = new MeshPhongMaterial(
+        color: 0x606060, shading: FlatShading, morphTargets: true);
 
-    mesh = new Mesh(geometry, new MeshLambertMaterial(color: 0x606060, morphTargets: true));
-    mesh.scale.setValues(1.5, 1.5, 1.5);
+    mesh = new Mesh(geometry, material)..scale.splat(1.5);
+
     scene.add(mesh);
 
+    animation = new MorphAnimation(mesh)..play();
   });
 
-  renderer = new WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.sortObjects = false;
+  //
 
-  container.nodes.add(renderer.domElement);
+  renderer = new WebGLRenderer()
+    ..setClearColor(0xf0f0f0)
+    ..setPixelRatio(window.devicePixelRatio)
+    ..setSize(window.innerWidth, window.innerHeight);
+  document.body.append(renderer.domElement);
+
+  //
 
   window.onResize.listen(onWindowResize);
-
 }
 
-onWindowResize(event) {
-
+void onWindowResize(_) {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-animate(num time) {
-  window.requestAnimationFrame(animate);
-  render();
-}
+double radius = 600.0;
+double theta = 0.0;
 
-const radius = 600,
-    duration = 1000,
-    keyframes = 15,
-    interpolation = duration / keyframes;
+int prevTime = new DateTime.now().millisecondsSinceEpoch;
 
-var theta = 0.0,
-    lastKeyframe = 0,
-    currentKeyframe = 0;
-
-render() {
-
+void render() {
   theta += 0.1;
 
   camera.position.x = radius * math.sin(degToRad(theta));
@@ -87,31 +92,22 @@ render() {
 
   camera.lookAt(cameraTarget);
 
-  if (mesh != null) {
+  if (animation != null) {
+    var time = new DateTime.now().millisecondsSinceEpoch;
 
-    // Alternate morph targets
+    animation.update(time - prevTime);
 
-    var time = new DateTime.now().millisecondsSinceEpoch % duration;
-
-    var keyframe = (time / interpolation).floor().toInt();
-
-    if (keyframe != currentKeyframe) {
-
-      mesh.morphTargetInfluences[lastKeyframe] = 0;
-      mesh.morphTargetInfluences[currentKeyframe] = 1;
-      mesh.morphTargetInfluences[keyframe] = 0;
-
-      lastKeyframe = currentKeyframe;
-      currentKeyframe = keyframe;
-
-      // console.log( mesh.morphTargetInfluences );
-
-    }
-
-    mesh.morphTargetInfluences[keyframe] = (time % interpolation) / interpolation;
-    mesh.morphTargetInfluences[lastKeyframe] = 1 - mesh.morphTargetInfluences[keyframe];
-
+    prevTime = time;
   }
 
   renderer.render(scene, camera);
+}
+
+main() async {
+  init();
+
+  while (true) {
+    await window.animationFrame;
+    render();
+  }
 }
