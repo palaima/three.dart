@@ -10,6 +10,8 @@ class WebGLObjects {
   Map<int, WebGLObject> objects = {};
   List<WebGLObject> objectsImmediate = [];
 
+  Float32List morphInfluences = new Float32List(8);
+
   WebGLGeometries geometries;
 
   gl.RenderingContext _gl;
@@ -29,7 +31,8 @@ class WebGLObjects {
   void removeObject(Object3D object) {
     if (object is Mesh || object is PointCloud || object is Line) {
       objects[object.id] = null;
-    } else if (object is ImmediateRenderObject || object.immediateRenderCallback != null) {
+    } else if (object is ImmediateRenderObject ||
+        object.immediateRenderCallback != null) {
       removeInstances(objectsImmediate, object);
     }
 
@@ -42,7 +45,7 @@ class WebGLObjects {
 
   void removeInstances(List<WebGLObject> objlist, Object3D object) {
     for (var o = objlist.length - 1; o >= 0; o--) {
-      if (objlist[o].object == object){
+      if (objlist[o].object == object) {
         objlist.removeAt(o);
       }
     }
@@ -54,7 +57,8 @@ class WebGLObjects {
       object['_modelViewMatrix'] = new Matrix4.identity();
       object['_normalMatrix'] = new Matrix3.identity();
 
-      object['_objectRemovedSubscription'] = object.onObjectRemoved.listen(onObjectRemoved);
+      object['_objectRemovedSubscription'] =
+          object.onObjectRemoved.listen(onObjectRemoved);
     }
 
     if (object['__webglActive'] != true) {
@@ -63,13 +67,15 @@ class WebGLObjects {
       if (object is Mesh || object is Line || object is PointCloud) {
         objects[object.id] =
             new WebGLObject(id: object.id, object: object, z: 0);
-
-      } else if (object is ImmediateRenderObject || object.immediateRenderCallback != null) {
-        objectsImmediate.add(
-            new WebGLObject(id: null, object: object, opaque: null, transparent: null, z: 0));
+      } else if (object is ImmediateRenderObject ||
+          object.immediateRenderCallback != null) {
+        objectsImmediate.add(new WebGLObject(
+            id: null, object: object, opaque: null, transparent: null, z: 0));
       }
     }
   }
+
+  int numericalSort(a, b) => b[0].compareTo(a[0]);
 
   void updateObject(Object3D object) {
     var geometry = geometries.get(object);
@@ -77,22 +83,55 @@ class WebGLObjects {
     var obj = object as GeometryMaterialObject;
 
     if (obj.geometry is DynamicGeometry) {
-        geometry.updateFromObject(object);
-        geometry.updateFromMaterial(obj.material);
-    } else if (obj.geometry is Geometry) {
-      geometry.updateFromMaterial(obj.material);
+      geometry.updateFromObject(object);
+    }
+
+    // morph targets
+
+    if (obj is Mesh && obj.morphTargetInfluences != null) {
+      var activeInfluences = [];
+      var morphTargetInfluences = obj.morphTargetInfluences;
+
+      for (var i = 0; i < morphTargetInfluences.length; i++) {
+        var influence = morphTargetInfluences[i];
+        activeInfluences.add([influence.toDouble(), i]);
+      }
+
+      activeInfluences.sort(numericalSort);
+
+      if (activeInfluences.length > 8) {
+        activeInfluences.length = 8;
+      }
+
+      for (var i = 0; i < activeInfluences.length; i++) {
+        morphInfluences[i] = activeInfluences[i][0];
+
+        var attribute = geometry.morphAttributes[activeInfluences[i][1]];
+        geometry.addAttribute('morphTarget$i', attribute);
+      }
+
+      var material = (object as MaterialObject).material;
+
+      if (material['_program'] != null) {
+        if (material['_program'].uniforms['morphTargetInfluences'] != null) {
+          _gl.uniform1fv(material['_program'].uniforms['morphTargetInfluences'],
+              morphInfluences);
+        }
+      } else {
+        warn('TOFIX: material.program is undefined');
+      }
     }
 
     if (geometry is BufferGeometry) {
       var attributes = geometry.attributes;
-      var attributesKeys = geometry.attributesKeys;
 
-      for (var i = 0; i < attributesKeys.length; i++) {
-        var key = attributesKeys[i];
-        var attribute = attributes[key];
-        var bufferType = (key == 'index') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+      attributes.forEach((name, attribute) {
+        var bufferType =
+            (name == 'index') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
 
-        var data = (attribute is InterleavedBufferAttribute) ? attribute.data : attribute;
+        var data = attribute is InterleavedBufferAttribute
+            ? attribute.data
+            : attribute;
 
         if (data.buffer == null) {
           data.buffer = new Buffer(_gl);
@@ -112,29 +151,34 @@ class WebGLObjects {
         } else if (data.needsUpdate) {
           data.buffer.bind(bufferType);
 
-          if (data.updateRange == null || (data.updateRange != null && data.updateRange['count'] == -1)) { // Not using update ranges
+          if (data.updateRange == null ||
+              (data.updateRange != null && data.updateRange['count'] == -1)) {
+            // Not using update ranges
             _gl.bufferSubDataTyped(bufferType, 0, data.array as TypedData);
           } else if (data.updateRange['count'] == 0) {
             error('WebGLRenderer.updateObject: using updateRange for DynamicBufferAttribute and marked' +
-                  'as needsUpdate but count is 0, ensure you are using set methods or updating manually.');
+                'as needsUpdate but count is 0, ensure you are using set methods or updating manually.');
           } else {
-
-            _gl.bufferSubData(bufferType, data.updateRange['offset'] * data.bytesPerElement,
-                data.array.getRange(data.updateRange['offset'], data.updateRange['offset'] + data.updateRange['count']));
+            _gl.bufferSubData(bufferType,
+                data.updateRange['offset'] * data.bytesPerElement,
+                data.array.getRange(data.updateRange['offset'],
+                    data.updateRange['offset'] + data.updateRange['count']));
 
             data.updateRange['count'] = 0; // reset range
           }
 
           data.needsUpdate = false;
         }
-      }
+      });
     }
   }
 
   void update(List<WebGLObject> renderList) {
     for (var i = 0; i < renderList.length; i++) {
       var object = renderList[i].object;
-      if (object.material.visible) updateObject(object);
+      if (object.material.visible) {
+        updateObject(object);
+      }
     }
   }
 }

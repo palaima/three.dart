@@ -380,11 +380,21 @@ class WebGLRenderer {
 
   bool get supportsBlendMinMax => extensions.get('EXT_blend_minmax') != null;
 
-  int getMaxAnisotropy() =>
-      extensions.get('EXT_texture_filter_anisotropic') != null
-          ? _gl.getParameter(
-              gl.ExtTextureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
-          : 0;
+  static int _maxAnisotropy;
+  int getMaxAnisotropy() {
+    if (_maxAnisotropy != null) return _maxAnisotropy;
+
+    var extension = extensions.get('EXT_texture_filter_anisotropic');
+
+    if (extension != null) {
+      _maxAnisotropy = _gl.getParameter(
+          gl.ExtTextureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+    } else {
+      _maxAnisotropy = 0;
+    }
+
+    return _maxAnisotropy;
+  }
 
   String getPrecision() => _precision;
 
@@ -620,7 +630,7 @@ class WebGLRenderer {
 
       if (material is! MeshPhongMaterial && material.shading == FlatShading) {
         for (var i = 0; i < object.count * 3; i += 9) {
-          var normalArray = object.normalArray as List;
+          var normalArray = object.normalArray;
 
           var nax = normalArray[i + 0];
           var nay = normalArray[i + 1];
@@ -652,17 +662,15 @@ class WebGLRenderer {
         }
       }
 
-      _gl.bufferDataTyped(
-          gl.ARRAY_BUFFER, object.normalArray, gl.DYNAMIC_DRAW);
+      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object.normalArray, gl.DYNAMIC_DRAW);
       state.enableAttribute(program.attributes['normal']);
       _gl.vertexAttribPointer(
           program.attributes['normal'], 3, gl.FLOAT, false, 0, 0);
     }
 
-    var m = material;
+    var mat = material;
 
-    if (object.hasUvs &&
-        m is Mapping && m.map != null) {
+    if (object.hasUvs && mat is Mapping && mat.map != null) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglUVBuffer']);
       _gl.bufferDataTyped(gl.ARRAY_BUFFER, object.uvArray, gl.DYNAMIC_DRAW);
 
@@ -674,8 +682,7 @@ class WebGLRenderer {
 
     if (object.hasColors && material.vertexColors != NoColors) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglColorBuffer']);
-      _gl.bufferDataTyped(
-          gl.ARRAY_BUFFER, object.colorArray, gl.DYNAMIC_DRAW);
+      _gl.bufferDataTyped(gl.ARRAY_BUFFER, object.colorArray, gl.DYNAMIC_DRAW);
 
       state.enableAttribute(program.attributes['color']);
 
@@ -707,14 +714,10 @@ class WebGLRenderer {
     var geometryAttributes = geometry.attributes;
 
     var programAttributes = program.attributes;
-    var programAttributesKeys = program.attributesKeys;
 
-    for (var i = 0; i < programAttributesKeys.length; i++) {
-      var key = programAttributesKeys[i];
-      var programAttribute = programAttributes[key];
-
+    programAttributes.forEach((name, programAttribute) {
       if (programAttribute >= 0) {
-        var geometryAttribute = geometryAttributes[key];
+        var geometryAttribute = geometryAttributes[name];
 
         if (geometryAttribute != null) {
           var size = geometryAttribute.itemSize;
@@ -772,18 +775,18 @@ class WebGLRenderer {
           }
         } else if (mat is ShaderMaterial &&
             mat.defaultAttributeValues != null) {
-          if (mat.defaultAttributeValues[key] != null) {
-            if (mat.defaultAttributeValues[key].length == 2) {
+          if (mat.defaultAttributeValues[name] != null) {
+            if (mat.defaultAttributeValues[name].length == 2) {
               _gl.vertexAttrib2fv(
-                  programAttribute, mat.defaultAttributeValues[key]);
-            } else if (mat.defaultAttributeValues[key].length == 3) {
+                  programAttribute, mat.defaultAttributeValues[name]);
+            } else if (mat.defaultAttributeValues[name].length == 3) {
               _gl.vertexAttrib3fv(
-                  programAttribute, mat.defaultAttributeValues[key]);
+                  programAttribute, mat.defaultAttributeValues[name]);
             }
           }
         }
       }
-    }
+    });
 
     state.disableUnusedAttributes();
   }
@@ -1153,124 +1156,6 @@ class WebGLRenderer {
     }
   }
 
-  void setupMorphTargets(Material material, geometryGroup, object) {
-    // set base
-
-    var attributes = material['_program'].attributes;
-
-    if (object.morphTargetBase != -1 && attributes['position'] >= 0) {
-      _gl.bindBuffer(gl.ARRAY_BUFFER,
-          geometryGroup.__webglMorphTargetsBuffers[object.morphTargetBase]);
-
-      state.enableAttribute(attributes['position']);
-
-      _gl.vertexAttribPointer(attributes['position'], 3, gl.FLOAT, false, 0, 0);
-    } else if (attributes['position'] >= 0) {
-      _gl.bindBuffer(gl.ARRAY_BUFFER, geometryGroup.__webglVertexBuffer);
-
-      state.enableAttribute(attributes['position']);
-
-      _gl.vertexAttribPointer(attributes['position'], 3, gl.FLOAT, false, 0, 0);
-    }
-
-    if (object.morphTargetForcedOrder.length) {
-      // set forced order
-      var m = 0;
-      var order = object.morphTargetForcedOrder;
-      var influences = object.morphTargetInfluences;
-
-      var attribute;
-
-      while (m < material['_numSupportedMorphTargets'] && m < order.length) {
-        attribute = attributes['morphTarget' + m];
-
-        if (attribute >= 0) {
-          _gl.bindBuffer(gl.ARRAY_BUFFER,
-              geometryGroup.__webglMorphTargetsBuffers[order[m]]);
-          state.enableAttribute(attribute);
-          _gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false, 0, 0);
-        }
-
-        attribute = attributes['morphNormal$m'];
-
-        if (attribute >= 0 && (material as Morphing).morphNormals) {
-          _gl.bindBuffer(gl.ARRAY_BUFFER,
-              geometryGroup.__webglMorphNormalsBuffers[order[m]]);
-          state.enableAttribute(attribute);
-          _gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false, 0, 0);
-        }
-
-        object.__webglMorphTargetInfluences[m] = influences[order[m]];
-
-        m++;
-      }
-    } else {
-      // find the most influencing
-      var activeInfluenceIndices = [];
-      var influences = object.morphTargetInfluences;
-      var morphTargets = object.geometry.morphTargets;
-
-      if (influences.length > morphTargets.length) {
-        warn(
-            'WebGLRenderer: Influences array is bigger than morphTargets array.');
-        influences.length = morphTargets.length;
-      }
-
-      for (var i = 0; i < influences.length; i++) {
-        var influence = influences[i];
-        activeInfluenceIndices.add([influence, i]);
-      }
-
-      if (activeInfluenceIndices.length >
-          material['_numSupportedMorphTargets']) {
-        activeInfluenceIndices.sort(numericalSort);
-        activeInfluenceIndices.length = material['_numSupportedMorphTargets'];
-      } else if (activeInfluenceIndices.length >
-          material['_numSupportedMorphNormals']) {
-        activeInfluenceIndices.sort(numericalSort);
-      } else if (activeInfluenceIndices.length == 0) {
-        activeInfluenceIndices.add([0, 0]);
-      }
-
-      var attribute;
-
-      for (var m = 0; m < material['_numSupportedMorphTargets']; m++) {
-        if (activeInfluenceIndices[m]) {
-          var influenceIndex = activeInfluenceIndices[m][1];
-
-          attribute = attributes['morphTarget$m'];
-
-          if (attribute >= 0) {
-            _gl.bindBuffer(gl.ARRAY_BUFFER,
-                geometryGroup.__webglMorphTargetsBuffers[influenceIndex]);
-            state.enableAttribute(attribute);
-            _gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false, 0, 0);
-          }
-
-          attribute = attributes['morphNormal$m'];
-
-          if (attribute >= 0 && (material as Morphing).morphNormals) {
-            _gl.bindBuffer(gl.ARRAY_BUFFER,
-                geometryGroup.__webglMorphNormalsBuffers[influenceIndex]);
-            state.enableAttribute(attribute);
-            _gl.vertexAttribPointer(attribute, 3, gl.FLOAT, false, 0, 0);
-          }
-
-          object.__webglMorphTargetInfluences[m] = influences[influenceIndex];
-        } else {
-          object.__webglMorphTargetInfluences[m] = 0;
-        }
-      }
-    }
-
-    // load updated influences uniform
-
-    if (material['_program'].uniforms['morphTargetInfluences'] != null) {
-      _gl.uniform1fv(material['_program'].uniforms['morphTargetInfluences'],
-          object.__webglMorphTargetInfluences);
-    }
-  }
-
   // Sorting
 
   int painterSortStable(a, b) {
@@ -1539,8 +1424,8 @@ class WebGLRenderer {
     if (object.immediateRenderCallback != null) {
       object.immediateRenderCallback(program, _gl, _frustum);
     } else {
-      (object as ImmediateRenderObject).render((object) =>
-          renderBufferImmediate(object, program, material));
+      (object as ImmediateRenderObject)
+          .render((object) => renderBufferImmediate(object, program, material));
     }
   }
 
@@ -1570,38 +1455,40 @@ class WebGLRenderer {
 
     nn(o) => o != null;
 
-    var m = material;
+    var mat = material;
 
     var parameters = {
       'precision': _precision,
       'supportsVertexTextures': _supportsVertexTextures,
-      'map': m is Mapping && nn(m.map),
-      'envMap': m is Mapping && nn(m.envMap),
-      'envMapMode': m is Mapping && nn(m.envMap) && nn(m.envMap.mapping),
-      'lightMap': m is Mapping && nn(m.lightMap),
-      'aoMap': m is Mapping && nn(m.aoMap),
-      'bumpMap': m is Mapping && nn(m.bumpMap),
-      'normalMap': m is Mapping && nn(m.normalMap),
-      'specularMap': m is Mapping && nn(m.specularMap),
-      'alphaMap': m is Mapping && nn(m.alphaMap),
-      'combine': m is Mapping ? m.combine : null, // TODO this right?
+      'map': mat is Mapping && nn(mat.map),
+      'envMap': mat is Mapping && nn(mat.envMap),
+      'envMapMode': mat is Mapping && nn(mat.envMap) && nn(mat.envMap.mapping),
+      'lightMap': mat is Mapping && nn(mat.lightMap),
+      'aoMap': mat is Mapping && nn(mat.aoMap),
+      'bumpMap': mat is Mapping && nn(mat.bumpMap),
+      'normalMap': mat is Mapping && nn(mat.normalMap),
+      'specularMap': mat is Mapping && nn(mat.specularMap),
+      'alphaMap': mat is Mapping && nn(mat.alphaMap),
+      'combine': mat is Mapping ? mat.combine : null, // TODO this right?
 
       'vertexColors': material.vertexColors,
       'fog': fog != null,
       'useFog': material.fog,
       'fogExp': fog is FogExp2,
       'flatShading': material.shading == FlatShading,
-      'sizeAttenuation': m is PointCloudMaterial && m.sizeAttenuation,
+      'sizeAttenuation': mat is PointCloudMaterial && mat.sizeAttenuation,
       'logarithmicDepthBuffer': _logarithmicDepthBuffer,
-      'skinning': m is Morphing && m.skinning,
+      'skinning': mat is Morphing && mat.skinning,
       'maxBones': maxBones,
       'useVertexTexture': _supportsBoneTextures &&
           nn(object) &&
           object is SkinnedMesh &&
           nn(object.skeleton) &&
           nn(object.skeleton.useVertexTexture),
-      'morphTargets': m is Morphing && nn(m.morphTargets) && m.morphTargets,
-      'morphNormals': m is Morphing && nn(m.morphNormals) && m.morphNormals,
+      'morphTargets':
+          mat is Morphing && nn(mat.morphTargets) && mat.morphTargets,
+      'morphNormals':
+          mat is Morphing && nn(mat.morphNormals) && mat.morphNormals,
       'maxMorphTargets': maxMorphTargets,
       'maxMorphNormals': maxMorphNormals,
       'maxDirLights': maxLightCount['directional'],
@@ -1631,10 +1518,10 @@ class WebGLRenderer {
       chunks.add((material as ShaderMaterial).vertexShader);
     }
 
-    if (material is ShaderMaterial && material.defines != null) {
-      for (var name in material.defines.keys) {
+    if (mat is ShaderMaterial && mat.defines != null) {
+      for (var name in mat.defines.keys) {
         chunks.add(name);
-        chunks.add(material.defines[name]);
+        chunks.add(mat.defines[name]);
       }
     }
 
@@ -1648,12 +1535,16 @@ class WebGLRenderer {
     if (material['_program'] == null) {
       // new material
       material['_onDisposeSubscription'] =
-          material.onDispose.listen(onMaterialDispose);
+          mat.onDispose.listen(onMaterialDispose);
     } else if (material['_program'].code != code) {
       // changed glsl or parameters
-      deallocateMaterial(material);
-    } else {
-      // same glsl and parameters
+      deallocateMaterial(mat);
+    } else if (shaderID != null) {
+      // same glsl
+      return;
+    } else if (mat is ShaderMaterial &&
+        mat.uniforms == material['__webglShader']['uniforms']) {
+      // same uniforms (container object)
       return;
     }
 
@@ -1665,8 +1556,7 @@ class WebGLRenderer {
         'vertexShader': shader['vertexShader'],
         'fragmentShader': shader['fragmentShader']
       };
-    } else {
-      var mat = material as ShaderMaterial;
+    } else if (mat is ShaderMaterial) {
       material['__webglShader'] = {
         'uniforms': mat.uniforms,
         'vertexShader': mat.vertexShader,
@@ -1740,8 +1630,6 @@ class WebGLRenderer {
 
     var attributes = program.attributes;
 
-    var mat = material;
-
     if (mat is Morphing && mat.morphTargets != null && mat.morphTargets) {
       material['_numSupportedMorphTargets'] = 0;
 
@@ -1808,13 +1696,6 @@ class WebGLRenderer {
       initMaterial(material, lights, fog, object);
       material.needsUpdate = false;
     }
-    var mat = material;
-    if (mat is Morphing && mat.morphTargets) {
-      if (object['__webglMorphTargetInfluences'] == null) {
-        object['__webglMorphTargetInfluences'] =
-            new Float32List(maxMorphTargets);
-      }
-    }
 
     var refreshProgram = false;
     var refreshMaterial = false;
@@ -1853,6 +1734,8 @@ class WebGLRenderer {
 
       // load material specific uniforms
       // (shader material also gets them for the sake of genericity)
+
+      var mat = material;
 
       if (mat is ShaderMaterial ||
           mat is MeshPhongMaterial ||
@@ -1918,6 +1801,8 @@ class WebGLRenderer {
       if (fog != null && material.fog) {
         refreshUniformsFog(m_uniforms, fog);
       }
+
+      var mat = material;
 
       if (mat is MeshPhongMaterial ||
           mat is MeshLambertMaterial ||
@@ -2399,8 +2284,9 @@ class WebGLRenderer {
 
           if (texture == null) continue;
 
-          if (texture is CubeTexture ||
-              (texture.image is List && texture.image.length == 6)) {
+          var img = texture.image;
+
+          if (texture is CubeTexture || (img is List && img.length == 6)) {
             // CompressedTexture can have Array in image :/
             setCubeTexture(texture, textureUnit);
           } else if (texture is WebGLRenderTargetCube) {
@@ -2774,14 +2660,14 @@ class WebGLRenderer {
       if (mipmaps.length > 0 && isImagePowerOfTwo) {
         for (var i = 0; i < mipmaps.length; i++) {
           var mipmap = mipmaps[i];
-          _gl.texImage2D(gl.TEXTURE_2D, i, glFormat, mipmap.width,
+          state.texImage2D(gl.TEXTURE_2D, i, glFormat, mipmap.width,
               mipmap.height, 0, glFormat, glType, mipmap.data);
         }
 
         texture.generateMipmaps = false;
       } else {
-        _gl.texImage2D(gl.TEXTURE_2D, 0, glFormat, image.width, image.height, 0,
-            glFormat, glType, image.data);
+        state.texImage2D(gl.TEXTURE_2D, 0, glFormat, image.width, image.height,
+            0, glFormat, glType, image.data);
       }
     } else if (texture is CompressedTexture) {
       for (var i = 0; i < mipmaps.length; i++) {
@@ -2789,14 +2675,14 @@ class WebGLRenderer {
 
         if (texture.format != RGBAFormat && texture.format != RGBFormat) {
           if (getCompressedTextureFormats().indexOf(glFormat) > -1) {
-            _gl.compressedTexImage2D(gl.TEXTURE_2D, i, glFormat, mipmap.width,
+            state.compressedTexImage2D(gl.TEXTURE_2D, i, glFormat, mipmap.width,
                 mipmap.height, 0, mipmap.data);
           } else {
             warn(
                 "WebGLRenderer: Attempt to load unsupported compressed texture format in .uploadTexture()");
           }
         } else {
-          _gl.texImage2D(gl.TEXTURE_2D, i, glFormat, mipmap.width,
+          state.texImage2D(gl.TEXTURE_2D, i, glFormat, mipmap.width,
               mipmap.height, 0, glFormat, glType, mipmap.data);
         }
       }
@@ -2810,12 +2696,13 @@ class WebGLRenderer {
       if (mipmaps.length > 0 && isImagePowerOfTwo) {
         for (var i = 0; i < mipmaps.length; i++) {
           var mipmap = mipmaps[i];
-          _gl.texImage2D(gl.TEXTURE_2D, i, glFormat, glFormat, glType, mipmap);
+          state.texImage2D(
+              gl.TEXTURE_2D, i, glFormat, glFormat, glType, mipmap);
         }
 
         texture.generateMipmaps = false;
       } else {
-        _gl.texImage2D(
+        state.texImage2D(
             gl.TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image);
       }
     }
@@ -2831,6 +2718,12 @@ class WebGLRenderer {
   void setTexture(Texture texture, int slot) {
     if (texture.needsUpdate) {
       var image = texture.image;
+
+      if (image == null) {
+        warn(
+            'WebGLRenderer: Texture marked for update but image is undefined $texture');
+        return;
+      }
 
       if (image is ImageElement && !image.complete) {
         warn(
@@ -2914,11 +2807,11 @@ class WebGLRenderer {
         for (var i = 0; i < 6; i++) {
           if (!isCompressed) {
             if (isDataTexture) {
-              _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat,
+              state.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat,
                   cubeImage[i].width, cubeImage[i].height, 0, glFormat, glType,
                   cubeImage[i].data);
             } else {
-              _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat,
+              state.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat,
                   glFormat, glType, cubeImage[i]);
             }
           } else {
@@ -2929,7 +2822,7 @@ class WebGLRenderer {
 
               if (texture.format != RGBAFormat && texture.format != RGBFormat) {
                 if (getCompressedTextureFormats().indexOf(glFormat) > -1) {
-                  _gl.compressedTexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                  state.compressedTexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i,
                       j, glFormat, mipmap['width'].toInt(),
                       mipmap['height'].toInt(), 0, mipmap['data']);
                 } else {
@@ -2938,9 +2831,9 @@ class WebGLRenderer {
                           'in .setCubeTexture()');
                 }
               } else {
-                _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, j, glFormat,
-                    mipmap['width'].toInt(), mipmap['height'].toInt(), 0,
-                    glFormat, glType, mipmap['data']);
+                state.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, j,
+                    glFormat, mipmap['width'].toInt(), mipmap['height'].toInt(),
+                    0, glFormat, glType, mipmap['data']);
               }
             }
           }
@@ -3028,7 +2921,7 @@ class WebGLRenderer {
           renderTarget.__webglFramebuffer[i] = _gl.createFramebuffer();
           renderTarget.__webglRenderbuffer[i] = _gl.createRenderbuffer();
 
-          _gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat,
+          state.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat,
               renderTarget.width, renderTarget.height, 0, glFormat, glType,
               null);
 
@@ -3053,7 +2946,7 @@ class WebGLRenderer {
         state.bindTexture(gl.TEXTURE_2D, renderTarget['__webglTexture']);
         setTextureParameters(gl.TEXTURE_2D, renderTarget, isTargetPowerOfTwo);
 
-        _gl.texImage2D(gl.TEXTURE_2D, 0, glFormat, renderTarget.width,
+        state.texImage2D(gl.TEXTURE_2D, 0, glFormat, renderTarget.width,
             renderTarget.height, 0, glFormat, glType, null);
 
         setupFrameBuffer(

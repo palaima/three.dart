@@ -68,7 +68,7 @@ class WebGLState {
   }
 
   void setBlending({int blending, int blendEquation, int blendSrc, int blendDst,
-    int blendEquationAlpha, int blendSrcAlpha, int blendDstAlpha}) {
+      int blendEquationAlpha, int blendSrcAlpha, int blendDstAlpha}) {
     if (blending != _currentBlending) {
       if (blending == NoBlending) {
         _gl.disable(gl.BLEND);
@@ -100,8 +100,10 @@ class WebGLState {
       blendSrcAlpha = [blendSrcAlpha, blendSrc].firstWhere((e) => e != null);
       blendDstAlpha = [blendDstAlpha, blendDst].firstWhere((e) => e != null);
 
-      if (blendEquation != _currentBlendEquation || blendEquationAlpha != _currentBlendEquationAlpha) {
-        _gl.blendEquationSeparate(_paramThreeToGL(blendEquation), _paramThreeToGL(blendEquationAlpha));
+      if (blendEquation != _currentBlendEquation ||
+          blendEquationAlpha != _currentBlendEquationAlpha) {
+        _gl.blendEquationSeparate(
+            _paramThreeToGL(blendEquation), _paramThreeToGL(blendEquationAlpha));
 
         _currentBlendEquation = blendEquation;
         _currentBlendEquationAlpha = blendEquationAlpha;
@@ -133,15 +135,32 @@ class WebGLState {
     if (_currentDepthFunc != depthFunc) {
       if (depthFunc != null) {
         switch (depthFunc) {
-          case NeverDepth: _gl.depthFunc(gl.NEVER); break;
-          case AlwaysDepth: _gl.depthFunc(gl.ALWAYS); break;
-          case LessDepth: _gl.depthFunc(gl.LESS); break;
-          case LessEqualDepth: _gl.depthFunc(gl.LEQUAL); break;
-          case EqualDepth: _gl.depthFunc(gl.EQUAL); break;
-          case GreaterEqualDepth: _gl.depthFunc(gl.GEQUAL); break;
-          case GreaterDepth: _gl.depthFunc(gl.GREATER); break;
-          case NotEqualDepth: _gl.depthFunc(gl.NOTEQUAL); break;
-          default: _gl.depthFunc(gl.LEQUAL);
+          case NeverDepth:
+            _gl.depthFunc(gl.NEVER);
+            break;
+          case AlwaysDepth:
+            _gl.depthFunc(gl.ALWAYS);
+            break;
+          case LessDepth:
+            _gl.depthFunc(gl.LESS);
+            break;
+          case LessEqualDepth:
+            _gl.depthFunc(gl.LEQUAL);
+            break;
+          case EqualDepth:
+            _gl.depthFunc(gl.EQUAL);
+            break;
+          case GreaterEqualDepth:
+            _gl.depthFunc(gl.GEQUAL);
+            break;
+          case GreaterDepth:
+            _gl.depthFunc(gl.GREATER);
+            break;
+          case NotEqualDepth:
+            _gl.depthFunc(gl.NOTEQUAL);
+            break;
+          default:
+            _gl.depthFunc(gl.LEQUAL);
         }
       } else {
         _gl.depthFunc(gl.LEQUAL);
@@ -208,7 +227,7 @@ class WebGLState {
     }
   }
 
-  void setPolygonOffset(polygonoffset, factor, units) {
+  void setPolygonOffset(polygonoffset, num factor, num units) {
     if (_currentPolygonOffset != polygonoffset) {
       if (polygonoffset) {
         _gl.enable(gl.POLYGON_OFFSET_FILL);
@@ -219,7 +238,8 @@ class WebGLState {
       _currentPolygonOffset = polygonoffset;
     }
 
-    if (polygonoffset && (_currentPolygonOffsetFactor != factor || _currentPolygonOffsetUnits != units)) {
+    if (polygonoffset &&
+        (_currentPolygonOffsetFactor != factor || _currentPolygonOffsetUnits != units)) {
       _gl.polygonOffset(factor, units);
 
       _currentPolygonOffsetFactor = factor;
@@ -235,7 +255,7 @@ class WebGLState {
     }
   }
 
-  void bindTexture(webglType, webglTexture) {
+  void bindTexture(int webglType, gl.Texture webglTexture) {
     if (_currentTextureSlot == null) {
       activeTexture();
     }
@@ -252,6 +272,26 @@ class WebGLState {
 
       boundTexture['type'] = webglType;
       boundTexture['texture'] = webglTexture;
+    }
+  }
+
+  void compressedTexImage2D(int target, int level, int internalformat, int width, int height,
+      int border, TypedData data) {
+    try {
+      _gl.compressedTexImage2D(target, level, internalformat, width, height, border, data);
+    } catch (err) {
+      error(err);
+    }
+  }
+
+  void texImage2D(int target, int level, int internalformat, int format_OR_width,
+      int height_OR_type, border_OR_canvas_OR_image_OR_pixels_OR_video,
+      [int format, int type, TypedData pixels]) {
+    try {
+      _gl.texImage2D(target, level, internalformat, format_OR_width, height_OR_type,
+          border_OR_canvas_OR_image_OR_pixels_OR_video, format, type, pixels);
+    } catch (err) {
+      error(err);
     }
   }
 

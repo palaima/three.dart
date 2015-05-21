@@ -9,7 +9,6 @@ class WebGLProgram {
 
   Map<String, gl.UniformLocation> uniforms;
   Map<String, int> attributes;
-  List<String> attributesKeys;
 
   int id = WebGLProgram.programIdCount++;
   String code;
@@ -21,12 +20,12 @@ class WebGLProgram {
   String generateDefines(Map defines) {
     var chunks = [];
 
-    for (var d in defines.keys) {
-      var value = defines[d];
+    for (var name in defines.keys) {
+      var value = defines[name];
 
       if (value == null) continue;
 
-      chunks.add('#define $d $value');
+      chunks.add('#define $name $value');
     }
 
     return chunks.join('\n');
@@ -60,20 +59,22 @@ class WebGLProgram {
     bool doubleSided, bool flipSided}) {
     var _gl = renderer._gl;
 
-    var defines = material is ShaderMaterial ? material.defines : {};
+    var mat = material;
+
+    var defines = mat is ShaderMaterial ? mat.defines : {};
     Map<String, Uniform> uniforms = material['__webglShader']['uniforms'];
 
-    Map<String, Attribute> attributes = material is ShaderMaterial && material.attributes != null ? material.attributes : {};
+    var attributes = mat is ShaderMaterial && mat.attributes != null ? mat.attributes : null;
 
-    var vertexShader = material['__webglShader']['vertexShader'];
-    var fragmentShader = material['__webglShader']['fragmentShader'];
+    String vertexShader = material['__webglShader']['vertexShader'];
+    String fragmentShader = material['__webglShader']['fragmentShader'];
 
     var index0AttributeName = material is ShaderMaterial ? material.index0AttributeName : null;
 
-    if (index0AttributeName == null && morphTargets) {
-      // programs with morphTargets displace position out of attribute 0
-      index0AttributeName = 'position';
-    }
+//    if (index0AttributeName == null && morphTargets) {
+//      // programs with morphTargets displace position out of attribute 0
+//      index0AttributeName = 'position';
+//    }
 
     var shadowMapTypeDefine = 'SHADOWMAP_TYPE_BASIC';
 
@@ -87,7 +88,6 @@ class WebGLProgram {
     var envMapModeDefine = 'ENVMAP_MODE_REFLECTION';
     var envMapBlendingDefine = 'ENVMAP_BLENDING_MULTIPLY';
 
-    var mat = material;
     if (envMap && mat is Mapping) {
       switch (mat.envMap.mapping) {
         case CubeReflectionMapping:
@@ -375,32 +375,37 @@ class WebGLProgram {
 
     // cache attributes locations
 
-    identifiers = [
-      'position',
-      'normal',
-      'uv',
-      'uv2',
-      'tangent',
-      'color',
-      'skinIndex',
-      'skinWeight',
-      'lineDistance'
-    ];
+    if (material is RawShaderMaterial) {
+      identifiers = attributes;
+    } else {
+      identifiers = [
+        'position',
+        'normal',
+        'uv',
+        'uv2',
+        'tangent',
+        'color',
+        'skinIndex',
+        'skinWeight',
+        'lineDistance'
+      ];
 
-    for (var i = 0; i < maxMorphTargets; i ++) {
-      identifiers.add('morphTarget$i');
-    }
+      for (var i = 0; i < maxMorphTargets; i ++) {
+        identifiers.add('morphTarget$i');
+      }
 
-    for (var i = 0; i < maxMorphNormals; i ++) {
-      identifiers.add('morphNormal$i');
-    }
+      for (var i = 0; i < maxMorphNormals; i ++) {
+        identifiers.add('morphNormal$i');
+      }
 
-    for (var a in attributes.keys) {
-      identifiers.add(a);
+      if (attributes is List) {
+        identifiers.addAll(attributes);
+      }
     }
 
     this.attributes = cacheAttributeLocations(_gl, program, identifiers);
-    this.attributesKeys = this.attributes.keys.toList();
+
+
 
     //
 

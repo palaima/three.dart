@@ -15,9 +15,7 @@ final Map<String, Map<String, Uniform>> UniformsLib = {
     'envMap': new Uniform.texture(),
     'flipEnvMap': new Uniform.float(-1.0),
     'reflectivity': new Uniform.float(1.0),
-    'refractionRatio': new Uniform.float(0.98),
-
-    'morphTargetInfluences': new Uniform.float(0.0)
+    'refractionRatio': new Uniform.float(0.98)
   },
   'aomap': {
     'aoMap': new Uniform.texture(),
