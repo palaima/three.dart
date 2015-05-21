@@ -44,7 +44,7 @@ class WebGLGeometries {
       var attribute = geo.attributes[name];
 
       if (attribute.buffer != null) {
-        _gl.deleteBuffer(attribute.buffer._glbuffer);
+        _gl.deleteBuffer(attribute.buffer.glbuffer);
 
         attribute.buffer = null;
       }
