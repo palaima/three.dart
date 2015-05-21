@@ -112,7 +112,7 @@ bool init() {
       fragmentShader: fragmentShader,
       depthTest: true,
       depthWrite: true,
-      attributes: {'translateScale': 1, 'color': 2});
+      attributes: ['translateScale', 'color']);
 
   scene.add(new Mesh(geometry, material));
 

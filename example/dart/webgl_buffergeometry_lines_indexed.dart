@@ -129,9 +129,9 @@ void init() {
     loop: false, xOffset: 600);
   // --------------------------------
 
-  geometry.aIndex = new BufferAttribute(new Uint16List.fromList(indicesArray), 1);
-  geometry.aPosition = new BufferAttribute(new Float32List.fromList(positions), 3);
-  geometry.aColor = new BufferAttribute(new Float32List.fromList(colors), 3);
+  geometry.addAttribute('index', new BufferAttribute(new Uint16List.fromList(indicesArray), 1));
+  geometry.addAttribute('position', new BufferAttribute(new Float32List.fromList(positions), 3));
+  geometry.addAttribute('color', new BufferAttribute(new Float32List.fromList(colors), 3));
   geometry.computeBoundingSphere();
 
   mesh = new LineSegments(geometry, material)

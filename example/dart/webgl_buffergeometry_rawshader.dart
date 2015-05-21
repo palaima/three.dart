@@ -66,7 +66,7 @@ void init() {
 
   var vertices = new BufferAttribute(new Float32List(triangles * 3 * 3), 3);
 
-  for (var i = 0; i < vertices.length; i++) {
+  for (var i = 0; i < vertices.count; i++) {
     vertices.setXYZ(i, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5);
   }
 
@@ -74,7 +74,7 @@ void init() {
 
   var colors = new BufferAttribute(new Float32List(triangles * 3 * 4), 4);
 
-  for (var i = 0; i < colors.length; i++) {
+  for (var i = 0; i < colors.count; i++) {
     colors.setXYZW(i, rnd.nextDouble() , rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble());
   }
 
@@ -86,6 +86,7 @@ void init() {
     uniforms: {
       'time': new Uniform.float(1.0)
     },
+    attributes: ['position', 'color'],
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
     side: DoubleSide,

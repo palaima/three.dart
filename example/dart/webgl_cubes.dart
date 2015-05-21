@@ -71,9 +71,9 @@ void init() {
   // use vertex colors to store centers of rotations
 
   geometry = new BufferGeometry()
-      ..aPosition = new BufferAttribute.float32(TRIANGLES * 3 * 3, 3)
-      ..aNormal = new BufferAttribute.float32(TRIANGLES * 3 * 3, 3)
-      ..aColor = new BufferAttribute.float32(TRIANGLES * 3 * 3, 3);
+      ..addAttribute('position', new BufferAttribute.float32(TRIANGLES * 3 * 3, 3))
+      ..addAttribute('normal', new BufferAttribute.float32(TRIANGLES * 3 * 3, 3))
+      ..addAttribute('color', new BufferAttribute.float32(TRIANGLES * 3 * 3, 3));
 
   // break geometry into
   // chunks of 20,000 triangles (3 unique vertices per triangle)

@@ -51,8 +51,8 @@ void init() {
     colors[i * 3 + 2] = (z / r) + 0.5;
   }
 
-  geometry.aPosition = new BufferAttribute(positions, 3);
-  geometry.aColor = new BufferAttribute(colors, 3);
+  geometry.addAttribute('position', new BufferAttribute(positions, 3));
+  geometry.addAttribute('color', new BufferAttribute(colors, 3));
 
   geometry.computeBoundingSphere();
 

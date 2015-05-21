@@ -36,7 +36,7 @@ PerspectiveCamera camera;
 Scene scene;
 WebGLRenderer renderer;
 
-var orientations;
+InstancedBufferAttribute orientations;
 
 math.Random rnd = new math.Random();
 
@@ -90,7 +90,7 @@ void init() {
     -1, -1, -1
   ].map((e) => e.toDouble()).toList());
 
-  geometry.aPosition = new BufferAttribute(vertices, 3);
+  geometry.addAttribute('position', new BufferAttribute(vertices, 3));
 
   var uvs = new Float32List.fromList([
     //x    y    z
@@ -126,7 +126,7 @@ void init() {
     0, 1
   ].map((e) => e.toDouble()).toList());
 
-  geometry.aUV = new BufferAttribute(uvs, 2);
+  geometry.addAttribute('uv', new BufferAttribute(uvs, 2));
 
   var indices = new Uint16List.fromList([
     0, 1, 2,
@@ -143,14 +143,14 @@ void init() {
     22, 21, 23
   ]);
 
-  geometry.aIndex = new BufferAttribute(indices, 1);
+  geometry.addAttribute('index', new BufferAttribute(indices, 1));
 
   // per instance data
   var offsets = new InstancedBufferAttribute(new Float32List(instances * 3), 3);
 
   var vector = new Vector4.zero();
 
-  for (var i = 0; i < offsets.length; i++) {
+  for (var i = 0; i < offsets.count; i++) {
       var x = rnd.nextDouble() * 100 - 50;
       var y = rnd.nextDouble() * 100 - 50;
       var z = rnd.nextDouble() * 100 - 50;
@@ -166,7 +166,7 @@ void init() {
 
   orientations = new InstancedBufferAttribute(new Float32List(instances * 4), 4, dynamic: true);
 
-  for (var i = 0, ul = orientations.length; i < ul; i++) {
+  for (var i = 0, ul = orientations.count; i < ul; i++) {
     vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
     vector.normalize();
     orientations.setXYZW(i, vector.x, vector.y, vector.z, vector.w);
@@ -186,7 +186,7 @@ void init() {
       fragmentShader: fragmentShader,
       side: DoubleSide,
       transparent: false,
-      attributes: {'position': 0, 'offset': 1, 'orientation': 2, 'uv': 3}
+      attributes: ['position', 'offset', 'orientation', 'uv']
  );
 
   var mesh = new Mesh(geometry, material);

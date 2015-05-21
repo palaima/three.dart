@@ -87,7 +87,7 @@ void init() {
 
   var offsets = new InstancedBufferAttribute(new Float32List(instances * 3), 3);
 
-  for (var i = 0; i < offsets.length; i++) {
+  for (var i = 0; i < offsets.count; i++) {
     offsets.setXYZ(i, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5);
   }
 
@@ -95,17 +95,17 @@ void init() {
 
   var colors = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
-  for (var i = 0; i <  colors.length; i++) {
+  for (var i = 0; i < colors.count; i++) {
     colors.setXYZW(i, rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble());
   }
 
-  geometry.aColor = colors;
+  geometry.addAttribute('color', colors);
 
   var vector = new Vector4.zero();
 
   var orientationsStart = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
-  for (var i = 0; i < orientationsStart.length; i++) {
+  for (var i = 0; i < orientationsStart.count; i++) {
     vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1,
         rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
     vector.normalize();
@@ -117,7 +117,7 @@ void init() {
 
   var orientationsEnd = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
-  for (var i = 0; i < orientationsEnd.length; i++) {
+  for (var i = 0; i < orientationsEnd.count; i++) {
     vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
     vector.normalize();
 
@@ -137,7 +137,7 @@ void init() {
       fragmentShader: fragmentShader,
       side: DoubleSide,
       transparent: true,
-      attributes: {'position': 0, 'offset': 1, 'color': 2, 'orientationStart': 3, 'orientationEnd': 4}
+      attributes: ['position', 'offset', 'color', 'orientationStart', 'orientationEnd']
   );
 
   var mesh = new Mesh(geometry, material);

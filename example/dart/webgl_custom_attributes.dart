@@ -46,7 +46,6 @@ Scene scene;
 WebGLRenderer renderer;
 
 Map<String, Uniform> uniforms;
-Map<String, Attribute> attributes;
 
 Mesh sphere;
 
@@ -62,8 +61,6 @@ void init() {
 
   scene = new Scene();
 
-  attributes = {'displacement': 0};
-
   uniforms = {
     'amplitude': new Uniform.float(1.0),
     'color': new Uniform.color(0xff2200),
@@ -73,7 +70,7 @@ void init() {
   uniforms['texture'].value.wrapS = uniforms['texture'].value.wrapT = RepeatWrapping;
 
   var shaderMaterial = new ShaderMaterial(
-      uniforms: uniforms, attributes: attributes, vertexShader: vertexShader, fragmentShader: fragmentShader);
+      uniforms: uniforms, attributes: ['displacement'], vertexShader: vertexShader, fragmentShader: fragmentShader);
 
   var radius = 50.0,
       segments = 128,
@@ -81,8 +78,8 @@ void init() {
 
   var geometry = new SphereBufferGeometry(radius, segments, rings);
 
-  var positions = geometry.attributes['position'];
-  var vertexCount = positions.length;
+  var positions = geometry.aPosition;
+  var vertexCount = positions.count;
 
   displacement = new Float32List(vertexCount);
   noise = new Float32List(vertexCount);

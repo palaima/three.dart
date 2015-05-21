@@ -26,8 +26,8 @@ void init() {
   scene = new Scene();
 
   var geometry = new BufferGeometry()
-      ..aIndex = new BufferAttribute.int16(TRIANGLES * 3 * 3)
-      ..aPosition = new BufferAttribute.float32(TRIANGLES * 3 * 3, 3);
+      ..addAttribute('index', new BufferAttribute.int16(TRIANGLES * 3 * 3))
+      ..addAttribute('position', new BufferAttribute.float32(TRIANGLES * 3 * 3, 3));
 
   var indices = geometry.aIndex.array;
   var i = 0;

@@ -106,11 +106,11 @@ void init() {
 
   // Use vertexBuffer, starting at offset 0, 3 items in position attribute
   var positions = new InterleavedBufferAttribute(vertexBuffer, 3, 0);
-  geometry.aPosition = positions;
+  geometry.addAttribute('position', positions);
 
   // Use vertexBuffer, starting at offset 4, 2 items in uv attribute
   var uvs = new InterleavedBufferAttribute(vertexBuffer, 2, 4);
-  geometry.aUV = uvs;
+  geometry.addAttribute('uv', uvs);
 
   var indices = new Uint16List.fromList([
     0, 1, 2,
@@ -127,14 +127,14 @@ void init() {
     22, 21, 23
   ]);
 
-  geometry.aIndex = new BufferAttribute(indices, 1);
+  geometry.addAttribute('index', new BufferAttribute(indices, 1));
 
   // per instance data
   instanceBuffer = new InstancedInterleavedBuffer(new Float32List(instances * 8), 8, dynamic: true);
   var offsets = new InterleavedBufferAttribute(instanceBuffer, 3, 0);
 
   var vector = new Vector4.zero();
-  for (var i = 0; i < offsets.length; i++) {
+  for (var i = 0; i < offsets.count; i++) {
       var x = rnd.nextDouble() * 100 - 50;
       var y = rnd.nextDouble() * 100 - 50;
       var z = rnd.nextDouble() * 100 - 50;
@@ -142,14 +142,13 @@ void init() {
       vector.normalize();
       // move out at least 5 units from center in current direction
       offsets.setXYZ(i, x + vector.x * 5, y + vector.y * 5, z + vector.z * 5);
-
   }
 
   geometry.addAttribute('offset', offsets); // per mesh translation
 
   orientations = new InterleavedBufferAttribute(instanceBuffer, 4, 4);
 
-  for (var i = 0; i < orientations.length; i++) {
+  for (var i = 0; i < orientations.count; i++) {
     vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
     vector.normalize();
 
@@ -170,8 +169,7 @@ void init() {
       fragmentShader: fragmentShader,
       side: DoubleSide,
       transparent: false,
-      attributes: {'position': 0, 'offset': 1, 'orientation': 2, 'uv': 3}
- );
+      attributes: ['position', 'offset', 'orientation', 'uv']);
 
   var mesh = new Mesh(geometry, material)
     ..frustumCulled = false;
@@ -219,7 +217,7 @@ void render() {
   tmpQ.setValues(moveQ.x * delta, moveQ.y * delta, moveQ.z * delta, 1.0);
   tmpQ.normalize();
 
-  for (var i = 0; i < orientations.length; i++) {
+  for (var i = 0; i < orientations.count; i++) {
     var index = i * instanceBuffer.stride + orientations.offset;
     currentQ.setValues(instanceBuffer.array[index], instanceBuffer.array[index + 1], instanceBuffer.array[index + 2], instanceBuffer.array[index + 3]);
     currentQ.multiply(tmpQ);

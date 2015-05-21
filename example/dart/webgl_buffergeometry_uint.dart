@@ -137,10 +137,10 @@ void init() {
     colors[i + 8] = color.b;
   }
 
-  geometry.aIndex = new BufferAttribute(indices, 1);
-  geometry.aPosition = new BufferAttribute(positions, 3);
-  geometry.aNormal = new BufferAttribute(normals, 3);
-  geometry.aColor = new BufferAttribute(colors, 3);
+  geometry.addAttribute('index', new BufferAttribute(indices, 1));
+  geometry.addAttribute('position', new BufferAttribute(positions, 3));
+  geometry.addAttribute('normal', new BufferAttribute(normals, 3));
+  geometry.addAttribute('color', new BufferAttribute(colors, 3));
 
   geometry.computeBoundingSphere();
 
