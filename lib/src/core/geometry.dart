@@ -25,6 +25,7 @@ abstract class IGeometry {
   Sphere boundingSphere;
 
   List<Vector3> vertices;
+  List<Color> colors;
   List<Face3> faces;
 
   var animations, firstAnimation;
@@ -202,6 +203,26 @@ class Geometry implements IGeometry {
     applyMatrix(new Matrix4.translation(offset));
 
     return offset;
+  }
+
+  // FIXME Probably don't work because THREE.Matrix4.set != Matrix4.setValues
+  void normalize() {
+    computeBoundingSphere();
+
+    var center = boundingSphere.center;
+    var radius = boundingSphere.radius;
+
+    var s = radius == 0 ? 1.0 : 1.0 / radius;
+
+    var matrix = new Matrix4.identity();
+    matrix.setValues(
+      s, 0.0, 0.0, -s * center.x,
+      0.0, s, 0.0, -s * center.y,
+      0.0, 0.0, s, -s * center.z,
+      0.0, 0.0, 0.0, 1.0
+    );
+
+    applyMatrix(matrix);
   }
 
   /// Computes face normals.
