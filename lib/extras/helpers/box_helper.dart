@@ -13,7 +13,8 @@ class BoxHelper extends LineSegments {
   }
 
   factory BoxHelper([object]) {
-    var geometry = new BufferGeometry()..aPosition = new BufferAttribute.float32(72, 3);
+    var geometry = new BufferGeometry()
+      ..addAttribute('position', new BufferAttribute.float32(72, 3));
     return new BoxHelper._(object, geometry, new LineBasicMaterial(color: 0xffff00));
   }
 
