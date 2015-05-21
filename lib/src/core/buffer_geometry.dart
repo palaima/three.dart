@@ -18,13 +18,9 @@ class BufferGeometry implements IGeometry {
   String type = 'BufferGeometry';
 
   Map<String, BufferAttribute> attributes = {};
-  List<String> attributesKeys = [];
 
   List<DrawCall> drawcalls = [];
   List<DrawCall> offsets;
-
-  // attributes typed arrays are kept only if dynamic flag is set
-  bool _dynamic = false;
 
   // boundings
   Aabb3 boundingBox;
@@ -38,31 +34,16 @@ class BufferGeometry implements IGeometry {
 
   int maxInstancedCount;
 
-  // dynamic is a reserved word in Dart
-  bool get isDynamic => _dynamic;
-  set isDynamic(bool value) => _dynamic = value;
+  List morphAttributes = [];
 
   // default attributes
   BufferAttribute get aPosition => attributes['position'];
-  set aPosition(BufferAttribute a) => addAttribute('position', a);
-
   BufferAttribute get aNormal => attributes['normal'];
-  set aNormal(BufferAttribute a) => addAttribute('normal', a);
-
   BufferAttribute get aIndex => attributes['index'];
-  set aIndex(BufferAttribute a) => addAttribute('index', a);
-
   BufferAttribute get aUV => attributes['uv'];
-  set aUV(BufferAttribute a) => addAttribute('uv', a);
-
   BufferAttribute get aUV2 => attributes['uv2'];
-  set aUV2(BufferAttribute a) => addAttribute('uv2', a);
-
   BufferAttribute get aTangent => attributes['tangent'];
-  set aTangent(BufferAttribute a) => addAttribute('tangent', a);
-
   BufferAttribute get aColor => attributes['color'];
-  set aColor(BufferAttribute a) => addAttribute('color', a);
 
   BufferGeometry() {
     offsets = drawcalls; // backwards compatibility.
@@ -74,7 +55,6 @@ class BufferGeometry implements IGeometry {
 
   void addAttribute(String name, BufferAttribute attribute) {
     attributes[name] = attribute;
-    attributesKeys = attributes.keys.toList();
   }
 
   BufferAttribute getAttribute(String name) => attributes[name];
@@ -116,10 +96,7 @@ class BufferGeometry implements IGeometry {
     for (var i = 0; i < offsets.length; i++) {
       var offset = offsets[i];
 
-      offsets.add(new DrawCall(
-        start: offset.start,
-        index: offset.index,
-        count: offset.count));
+      offsets.add(new DrawCall(start: offset.start, index: offset.index, count: offset.count));
     }
 
     return this;
@@ -139,54 +116,62 @@ class BufferGeometry implements IGeometry {
     var material = (object as MaterialObject).material;
 
     if (object is PointCloud || object is Line) {
-      aPosition = new BufferAttribute.float32(geometry.vertices.length * 3, 3)
-        ..copyVector3sArray(geometry.vertices);
+      var positions = new BufferAttribute.float32(geometry.vertices.length * 3, 3);
+      var colors = new BufferAttribute.float32(geometry.colors.length * 3, 3);
 
-      aColor = new BufferAttribute.float32(geometry.colors.length * 3, 3)
-        ..copyColorsArray(geometry.colors);
-
+      addAttribute('position', positions..copyVector3sArray(geometry.vertices));
+      addAttribute('color', colors..copyColorsArray(geometry.colors));
       computeBoundingSphere();
     } else if (object is Mesh) {
+
+      // skinning
+
+      if (object is SkinnedMesh) {
+        if (geometry is Geometry) {
+          log('BufferGeometry.setFromObject(): Converted Geometry to DynamicGeometry as required for SkinnedMesh. $geometry');
+          geometry = new DynamicGeometry.fromGeometry(geometry);
+        }
+
+        var skinIndices = new BufferAttribute.float32(geometry.skinIndices.length * 4, 4);
+        var skinWeights = new BufferAttribute.float32(geometry.skinWeights.length * 4, 4);
+
+        addAttribute('skinIndex', skinIndices..copyVector4sArray(geometry.skinIndices));
+        addAttribute('skinWeight', skinWeights..copyVector4sArray(geometry.skinWeights));
+      }
+
+      // morphs
+
+      if (object.morphTargetInfluences != null) {
+        if (geometry is Geometry) {
+          log('BufferGeometry.setFromObject(): Converted Geometry to DynamicGeometry as required for MorphTargets. $geometry');
+          geometry = new DynamicGeometry.fromGeometry(geometry);
+        }
+
+        // positions
+
+        var morphTargets = geometry.morphTargets;
+
+        if (morphTargets.length > 0) {
+          for (var i = 0; i < morphTargets.length; i++) {
+            var morphTarget = morphTargets[i];
+
+            var attribute = new BufferAttribute.float32(morphTarget.vertices.length * 3, 3);
+
+            morphAttributes.add(attribute..copyVector3sArray(morphTarget.vertices));
+          }
+        }
+      }
+
       if (geometry is DynamicGeometry) {
         fromDynamicGeometry(geometry);
       } else if (geometry is Geometry) {
         setFromGeometry(geometry, material);
       }
     }
-
-    var mat = material;
-    if (mat is ShaderMaterial && mat.attributes != null) {
-      var attributes = material.attributes;
-
-      for (var name in attributes.keys) {
-        var attribute = attributes[name];
-
-        var type = attribute.type;
-        var array = attribute.value;
-
-        switch (type) {
-          case "f":
-            addAttribute(name, new BufferAttribute.float32(array.length, 1)..copyArray(array));
-            break;
-
-          case "c":
-            addAttribute(name, new BufferAttribute.float32(array.length * 3, 3)..copyColorsArray(array));
-            break;
-
-          case "v3":
-            addAttribute(name, new BufferAttribute.float32(array.length * 3, 3)..copyVector3sArray(array));
-            break;
-
-          default:
-            warn('BufferGeometry.setFromObject(). TODO: attribute unsupported $type');
-            break;
-        }
-      }
-    }
   }
 
   void updateFromObject(Object3D object) {
-    var geometry = (object as GeometryObject).geometry;
+    var geometry = (object as GeometryObject).geometry as DynamicGeometry;
 
     if (geometry.verticesNeedUpdate) {
       if (aPosition != null) {
@@ -207,39 +192,6 @@ class BufferGeometry implements IGeometry {
     }
   }
 
-  void updateFromMaterial(Material material) {
-    var mat = material;
-    if (mat is ShaderMaterial && mat.attributes != null) {
-      var attributes = mat.attributes;
-
-      for (var name in attributes.keys) {
-        var attribute = attributes[name];
-        if (attribute is num) continue;
-
-        var type = attribute.type;
-        var array = attribute.value;
-
-        switch (type) {
-          case "f":
-            this.attributes[name]
-              ..copyArray(array)
-              ..needsUpdate = true;
-            break;
-          case "c":
-            this.attributes[name]
-              ..copyColorsArray(array)
-              ..needsUpdate = true;
-            break;
-          case "v3":
-            this.attributes[name]
-              ..copyVector3sArray(array)
-              ..needsUpdate = true;
-            break;
-        }
-      }
-    }
-  }
-
   BufferGeometry setFromGeometry(Geometry geometry, [Material material]) {
     var vertices = geometry.vertices;
     var faces = geometry.faces;
@@ -249,28 +201,27 @@ class BufferGeometry implements IGeometry {
     var hasFaceVertexUv = faceVertexUvs.length > 0 && faceVertexUvs[0].length > 0;
     var hasFaceVertexUv2 = faceVertexUvs.length > 1 && faceVertexUvs[1].length > 0;
 
-    var hasFaceVertexNormals = faces.length > 0 && faces[0].vertexNormals.length == 3;
     var colors, uvs, uvs2;
 
-    aPosition = new BufferAttribute.float32(faces.length * 3 * 3, 3);
-    var positions = aPosition.array;
+    var positions = new Float32List(faces.length * 3 * 3);
+    addAttribute('position', new BufferAttribute(positions, 3));
 
-    aNormal = new BufferAttribute.float32(faces.length * 3 * 3, 3);
-    var normals = aNormal.array;
+    var normals = new Float32List(faces.length * 3 * 3);
+    addAttribute('normal', new BufferAttribute(normals, 3));
 
     if (vertexColors != NoColors) {
-      aColor = new BufferAttribute.float32(faces.length * 3 * 3, 3);
-      colors = aColor.array;
+      colors = new Float32List(faces.length * 3 * 3);
+      addAttribute('color', new BufferAttribute(colors, 3));
     }
 
     if (hasFaceVertexUv) {
-      aUV = new BufferAttribute.float32(faces.length * 3 * 2, 2);
-      uvs = aUV.array;
+      uvs = new Float32List(faces.length * 3 * 2);
+      addAttribute('uv', new BufferAttribute(uvs, 2));
     }
 
     if (hasFaceVertexUv2) {
-      aUV2 = new BufferAttribute.float32(faces.length * 3 * 2, 2);
-      uvs2 = aUV2.array;
+      uvs2 = new Float32List(faces.length * 3 * 2);
+      addAttribute('uv2', new BufferAttribute(uvs2, 2));
     }
 
     for (var i = 0, i2 = 0, i3 = 0; i < faces.length; i++, i2 += 6, i3 += 9) {
@@ -292,7 +243,9 @@ class BufferGeometry implements IGeometry {
       positions[i3 + 7] = c.y;
       positions[i3 + 8] = c.z;
 
-      if (hasFaceVertexNormals) {
+      var vertexNormals = face.vertexNormals;
+
+      if (vertexNormals.length == 3) {
         var na = face.vertexNormals[0];
         var nb = face.vertexNormals[1];
         var nc = face.vertexNormals[2];
@@ -308,7 +261,6 @@ class BufferGeometry implements IGeometry {
         normals[i3 + 6] = nc.x;
         normals[i3 + 7] = nc.y;
         normals[i3 + 8] = nc.z;
-
       } else {
         var n = face.normal;
 
@@ -362,9 +314,9 @@ class BufferGeometry implements IGeometry {
         var vertexUvs = i < faceVertexUvs[0].length ? faceVertexUvs[0][i] : null;
 
         if (vertexUvs != null) {
-          var uva = faceVertexUvs[0][i][0];
-          var uvb = faceVertexUvs[0][i][1];
-          var uvc = faceVertexUvs[0][i][2];
+          var uva = vertexUvs[0];
+          var uvb = vertexUvs[1];
+          var uvc = vertexUvs[2];
 
           uvs[i2] = uva.x;
           uvs[i2 + 1] = uva.y;
@@ -406,20 +358,26 @@ class BufferGeometry implements IGeometry {
   }
 
   void fromDynamicGeometry(DynamicGeometry geometry) {
-    aIndex = new BufferAttribute.uint16(geometry.faces.length * 3, 1)
-      ..copyFacesArray(geometry.faces);
+    addAttribute('index', new BufferAttribute.uint16(geometry.faces.length * 3, 1)
+      ..copyFacesArray(geometry.faces));
 
-    aPosition = new BufferAttribute.float32(geometry.vertices.length * 3, 3)
-      ..copyVector3sArray(geometry.vertices);
+    addAttribute('position', new BufferAttribute.float32(geometry.vertices.length * 3, 3)
+      ..copyVector3sArray(geometry.vertices));
 
-    aNormal = new BufferAttribute.float32(geometry.normals.length * 3, 3)
-      ..copyVector3sArray(geometry.normals);
+    if (geometry.normals.length > 0) {
+      addAttribute('normal', new BufferAttribute.float32(geometry.normals.length * 3, 3)
+        ..copyVector3sArray(geometry.normals));
+    }
 
-    aColor = new BufferAttribute.float32(geometry.colors.length * 3, 3)
-      ..copyColorsArray(geometry.colors);
+    if (geometry.colors.length > 0) {
+      addAttribute('color', new BufferAttribute.float32(geometry.colors.length * 3, 3)
+        ..copyColorsArray(geometry.colors));
+    }
 
-    aUV = new BufferAttribute.float32(geometry.uvs.length * 2, 2)
-      ..copyVector2sArray(geometry.uvs);
+    if (geometry.uvs.length > 0) {
+      addAttribute('uv', new BufferAttribute.float32(geometry.uvs.length * 2, 2)
+        ..copyVector2sArray(geometry.uvs));
+    }
 
     computeBoundingSphere();
   }
@@ -449,10 +407,10 @@ class BufferGeometry implements IGeometry {
     }
 
     if (boundingBox.min.x.isNaN || boundingBox.min.y.isNaN || boundingBox.min.z.isNaN) {
-      error('BufferGeometry.computeBoundingBox: Computed min/max have NaN values. The "position" attribute is likely to have NaN values.');
+      error(
+          'BufferGeometry.computeBoundingBox: Computed min/max have NaN values. The "position" attribute is likely to have NaN values.');
     }
   }
-
 
   void computeBoundingSphere() {
     if (boundingSphere == null) {
@@ -484,7 +442,8 @@ class BufferGeometry implements IGeometry {
       boundingSphere.radius = math.sqrt(maxRadiusSq);
 
       if (boundingSphere.radius.isNaN) {
-        error('BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values.');
+        error(
+            'BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values.');
       }
     }
   }
@@ -498,7 +457,7 @@ class BufferGeometry implements IGeometry {
       var positions = aPosition.array;
 
       if (aNormal == null) {
-        aNormal = new BufferAttribute.float32(positions.length, 3);
+        addAttribute('normal', new BufferAttribute.float32(positions.length, 3));
       } else {
         // reset existing normals to zero
         aNormal.array.map((_) => 0.0);
@@ -506,11 +465,19 @@ class BufferGeometry implements IGeometry {
 
       var normals = aNormal.array;
 
+      var pA = new Vector3.zero(),
+          pB = new Vector3.zero(),
+          pC = new Vector3.zero(),
+          cb = new Vector3.zero(),
+          ab = new Vector3.zero();
+
       // indexed elements
       if (aIndex != null) {
         var indices = aIndex.array;
 
-        var offsets = this.offsets.length > 0 ? this.offsets : new DrawCall(start: 0, count: indices.length, index: 0);
+        var offsets = this.offsets.length > 0
+            ? this.offsets
+            : new DrawCall(start: 0, count: indices.length, index: 0);
 
         for (var j = 0; j < offsets.length; ++j) {
           var start = offsets[j].start;
@@ -518,15 +485,17 @@ class BufferGeometry implements IGeometry {
           var index = offsets[j].index;
 
           for (var i = start; i < start + count; i += 3) {
-            var vA = (index + indices[i ]) * 3;
+            var vA = (index + indices[i]) * 3;
             var vB = (index + indices[i + 1]) * 3;
             var vC = (index + indices[i + 2]) * 3;
 
-            var pA = new Vector3.array(positions, vA);
-            var pB = new Vector3.array(positions, vB);
-            var pC = new Vector3.array(positions, vC);
+            pA.copyFromArray(positions, vA);
+            pB.copyFromArray(positions, vB);
+            pC.copyFromArray(positions, vC);
 
-            var cb = (pC - pB).cross(pA - pB);
+            cb.subVectors(pC, pB);
+            ab.subVectors(pA, pB);
+            cb.crossVectors(cb, ab);
 
             normals[vA] += cb.x;
             normals[vA + 1] += cb.y;
@@ -544,11 +513,13 @@ class BufferGeometry implements IGeometry {
       } else {
         // non-indexed elements (unconnected triangle soup)
         for (var i = 0; i < positions.length; i += 9) {
-          var pA = new Vector3.array(positions, i);
-          var pB = new Vector3.array(positions, i + 3);
-          var pC = new Vector3.array(positions, i + 6);
+          pA.copyFromArray(positions, i);
+          pB.copyFromArray(positions, i + 3);
+          pC.copyFromArray(positions, i + 6);
 
-          var cb = (pC - pB).cross(pA - pB);
+          cb.subVectors(pC, pB);
+          ab.subVectors(pA, pB);
+          cb.crossVectors(cb, ab);
 
           normals[i] = cb.x;
           normals[i + 1] = cb.y;
@@ -569,12 +540,14 @@ class BufferGeometry implements IGeometry {
     }
   }
 
+  // TODO optimize
   void computeTangents() {
     // based on http://www.terathon.com/code/tangent.html
     // (per vertex tangents)
 
     if (aIndex == null || aPosition == null || aNormal == null || aUV == null) {
-      warn('BufferGeometry: Missing required attributes (index, position, normal or uv) in BufferGeometry.computeTangents()');
+      warn(
+          'BufferGeometry: Missing required attributes (index, position, normal or uv) in BufferGeometry.computeTangents()');
       return;
     }
 
@@ -586,14 +559,15 @@ class BufferGeometry implements IGeometry {
     var nVertices = positions.length ~/ 3;
 
     if (aTangent == null) {
-      aTangent = new BufferAttribute.float32(4 * nVertices, 4);
+      addAttribute('tangent', new BufferAttribute.float32(4 * nVertices, 4));
     }
 
     var tangents = aTangent.array;
 
-    var tan1 = [], tan2 = [];
+    var tan1 = [],
+        tan2 = [];
 
-    for (var k = 0; k < nVertices; k ++) {
+    for (var k = 0; k < nVertices; k++) {
       tan1[k] = new Vector3.zero();
       tan2[k] = new Vector3.zero();
     }
@@ -624,15 +598,11 @@ class BufferGeometry implements IGeometry {
 
       var r = 1.0 / (s1 * t2 - s2 * t1);
 
-      var sdir = new Vector3(
-          (t2 * x1 - t1 * x2) * r,
-          (t2 * y1 - t1 * y2) * r,
-          (t2 * z1 - t1 * z2) * r);
+      var sdir =
+          new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
 
-      var tdir = new Vector3(
-          (s1 * x2 - s2 * x1) * r,
-          (s1 * y2 - s2 * y1) * r,
-          (s1 * z2 - s2 * z1) * r);
+      var tdir =
+          new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
 
       tan1[a].add(sdir);
       tan1[b].add(sdir);
@@ -673,7 +643,7 @@ class BufferGeometry implements IGeometry {
       // Calculate handedness
       var tmp2 = n.cross(t);
       var test = tmp2.dot(tan2[v]);
-      var w = (test < 0.0) ? - 1.0 : 1.0;
+      var w = (test < 0.0) ? -1.0 : 1.0;
 
       tangents[v * 4] = tmp.x;
       tangents[v * 4 + 1] = tmp.y;
@@ -710,7 +680,7 @@ class BufferGeometry implements IGeometry {
     var indexPtr = 0;
     var vertexPtr = 0;
 
-    var offsets = [new DrawCall(start:0, count:0, index:0)];
+    var offsets = [new DrawCall(start: 0, count: 0, index: 0)];
     var offset = offsets[0];
 
     var newVerticeMaps = 0;
@@ -722,21 +692,21 @@ class BufferGeometry implements IGeometry {
       Traverse every face and reorder vertices in the proper offsets of 65k.
       We can have more than 65k entries in the index buffer per offset, but only reference 65k values.
     */
-    for (var findex = 0; findex < facesCount; findex ++) {
+    for (var findex = 0; findex < facesCount; findex++) {
       newVerticeMaps = 0;
 
-      for (var vo = 0; vo < 3; vo ++) {
+      for (var vo = 0; vo < 3; vo++) {
         var vid = indices[findex * 3 + vo];
 
-        if (vertexMap[vid] == - 1) {
+        if (vertexMap[vid] == -1) {
           //Unmapped vertice
           faceVertices[vo * 2] = vid;
-          faceVertices[vo * 2 + 1] = - 1;
+          faceVertices[vo * 2 + 1] = -1;
           newVerticeMaps++;
         } else if (vertexMap[vid] < offset.index) {
           //Reused vertices from previous block (duplicate)
           faceVertices[vo * 2] = vid;
-          faceVertices[vo * 2 + 1] = - 1;
+          faceVertices[vo * 2 + 1] = -1;
         } else {
           //Reused vertice in the current block
           faceVertices[vo * 2] = vid;
@@ -747,15 +717,14 @@ class BufferGeometry implements IGeometry {
       var faceMax = vertexPtr + newVerticeMaps;
 
       if (faceMax > (offset.index + size)) {
-        var new_offset = new DrawCall(start:indexPtr, count:0, index:vertexPtr);
+        var new_offset = new DrawCall(start: indexPtr, count: 0, index: vertexPtr);
         offsets.add(new_offset);
         offset = new_offset;
 
         //Re-evaluate reused vertices in light of new offset.
         for (var v = 0; v < 6; v += 2) {
           var new_vid = faceVertices[v + 1];
-          if (new_vid > - 1 && new_vid < offset.index)
-            faceVertices[v + 1] = - 1;
+          if (new_vid > -1 && new_vid < offset.index) faceVertices[v + 1] = -1;
         }
       }
 
@@ -764,7 +733,7 @@ class BufferGeometry implements IGeometry {
         var vid = faceVertices[v];
         var new_vid = faceVertices[v + 1];
 
-        if (new_vid == - 1) new_vid = vertexPtr ++;
+        if (new_vid == -1) new_vid = vertexPtr++;
 
         vertexMap[vid] = new_vid;
         revVertexMap[new_vid] = vid;
@@ -842,11 +811,10 @@ class BufferGeometry implements IGeometry {
     }
 
     /* Move attribute positions based on the new index map */
-    for (var new_vid = 0; new_vid < vertexCount; new_vid ++) {
+    for (var new_vid = 0; new_vid < vertexCount; new_vid++) {
       var vid = indexMap[new_vid];
       for (var attr in this.attributes) {
-        if (attr == 'index')
-          continue;
+        if (attr == 'index') continue;
         var attrArray = attributes[attr].array;
         var attrSize = attributes[attr].itemSize;
         var sortedAttr = sortedAttributes[attr];
@@ -875,9 +843,8 @@ class BufferGeometry implements IGeometry {
       geometry.attributes[attr] = sourceAttr.clone();
     }
 
-    offsets.forEach((offset) =>
-      geometry.offsets.add(
-          new DrawCall(start: offset.start, index: offset.index, count: offset.count)));
+    offsets.forEach((offset) => geometry.offsets
+        .add(new DrawCall(start: offset.start, index: offset.index, count: offset.count)));
 
     return geometry;
   }
@@ -906,4 +873,3 @@ class DrawCall {
   int start, count, index, instances;
   DrawCall({this.start, this.count, this.index, this.instances});
 }
-
