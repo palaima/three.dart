@@ -69,7 +69,12 @@ class BufferAttribute {
   factory BufferAttribute.float64(int length, [int itemSize = 1]) =>
       new BufferAttribute(new Float64List(length), itemSize)..numItems = length;
 
-  int get length => array.length ~/ itemSize;
+  @Deprecated('.length has been renamed to .count.')
+  int get length {
+    return count;
+  }
+
+  int get count => array.length ~/ itemSize;
 
   void copyAt(int index1, BufferAttribute attribute, int index2) {
     index1 *= itemSize;
@@ -78,7 +83,6 @@ class BufferAttribute {
     for (var i = 0; i < itemSize; i++) {
       array[index1 + i] = attribute.array[index2 + i];
     }
-
   }
 
   void copyArray(List array) {
@@ -135,7 +139,7 @@ class BufferAttribute {
   void copyVector3sArray(List<Vector3> vectors) {
     var offset = 0;
 
-    for (var i = 0; i < vectors.length; i ++) {
+    for (var i = 0; i < vectors.length; i++) {
       var vector = vectors[i];
 
       if (vector == null) {
@@ -149,39 +153,69 @@ class BufferAttribute {
     }
   }
 
+  void copyVector4sArray(List<Vector4> vectors) {
+    var offset = 0;
+
+    for (var i = 0; i < vectors.length; i++) {
+      var vector = vectors[i];
+
+      if (vector == null) {
+        warn('BufferAttribute.copyVector4sArray(): vector is undefined $i');
+        vector = new Vector4.identity();
+      }
+
+      array[offset++] = vector.x;
+      array[offset++] = vector.y;
+      array[offset++] = vector.z;
+      array[offset++] = vector.w;
+    }
+  }
+
   void set(num value, int offset) {
     if (offset == null) offset = 0;
     array[offset] = value;
   }
 
-  void setX(int index, x) {
+  num getX(int index) => array[index * itemSize];
+
+  void setX(int index, num x) {
     array[index * itemSize] = x;
   }
 
-  void setY(int index, y) {
+  num getY(int index) => array[index * itemSize + 1];
+
+  void setY(int index, num y) {
     array[index * itemSize + 1] = y;
   }
 
-  void setZ(int index, z) {
+  num getZ(int index) => array[index * itemSize + 2];
+
+  void setZ(int index, num z) {
     array[index * itemSize + 2] = z;
   }
 
-  void setXY(int index, x, y) {
+  num getW(int index) => array[index * itemSize + 3];
+
+  void setW(int index, num w) {
+    array[index * itemSize + 3] = w;
+  }
+
+  void setXY(int index, num x, num y) {
     index *= itemSize;
-    array[index    ] = x;
+    array[index] = x;
     array[index + 1] = y;
   }
 
-  void setXYZ(int index, x, y, z) {
+  void setXYZ(int index, num x, num y, num z) {
     index *= itemSize;
-    array[index    ] = x;
+    array[index] = x;
     array[index + 1] = y;
     array[index + 2] = z;
   }
 
-  void setXYZW(int index, x, y, z, w) {
+  void setXYZW(int index, num x, num y, num z, num w) {
     index *= itemSize;
-    array[index    ] = x;
+    array[index] = x;
     array[index + 1] = y;
     array[index + 2] = z;
     array[index + 3] = w;
