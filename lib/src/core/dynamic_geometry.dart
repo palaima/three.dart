@@ -18,15 +18,6 @@ class DynamicGeometry implements IGeometry {
   List<Vector2> uvs = [];
   List<Face3> faces = [];
 
-  /*
-  List morphTargets = [];
-  List morphColors = [];
-  List morphNormals = [];
-  List skinWeights = [];
-  List skinIndices = [];
-  List lineDistances = [];
-  */
-
   Aabb3 boundingBox;
   Sphere boundingSphere;
 
@@ -115,6 +106,7 @@ class DynamicGeometry implements IGeometry {
       if (faceVertexUvs.length > i) {
         vertexUvs = faceVertexUvs[i];
       } else {
+        warn('DynamicGeometry.fromGeometry(): Missing vertexUVs $i');
         vertexUvs = [new Vector2.zero(), new Vector2.zero(), new Vector2.zero()];
       }
 
@@ -124,6 +116,15 @@ class DynamicGeometry implements IGeometry {
     }
 
     if (colors.any((e) => e == null)) colors.length = 0;
+    if (normals.any((e) => e == null)) normals.length = 0;
+    if (uvs.any((e) => e == null)) uvs.length = 0;
+
+    if (geometry.morphTargets != null) morphTargets = geometry.morphTargets.toList();
+    if (geometry.morphColors != null) morphColors = geometry.morphColors.toList();
+    if (geometry.morphNormals != null) morphNormals = geometry.morphNormals.toList();
+
+    if (geometry.skinIndices != null) skinIndices = geometry.skinIndices.toList();
+    if (geometry.skinWeights != null) skinWeights = geometry.skinWeights.toList();
   }
 
   StreamController _onDisposeController = new StreamController.broadcast();
