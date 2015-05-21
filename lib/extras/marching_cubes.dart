@@ -298,7 +298,9 @@ class MarchingCubes extends ImmediateRenderObject implements MaterialObject{
     return numtris;
   }
 
+  /////////////////////////////////////
   // Immediate render mode simulator
+  /////////////////////////////////////
 
   void posnormtriv(Float32List pos, Float32List norm, int o1, int o2, int o3,
                    void renderCallback(ImmediateRenderObject object)) {
