@@ -48,16 +48,9 @@ void main() {
 }
 ''';
 
-var container, stats;
-
-var camera, scene, renderer;
-
-math.Random rnd = new math.Random();
-
-void main() {
-  init();
-  animate(0);
-}
+PerspectiveCamera camera;
+Scene scene;
+WebGLRenderer renderer;
 
 void init() {
   camera = new PerspectiveCamera(50.0, window.innerWidth / window.innerHeight, 1.0, 10.0)
@@ -87,8 +80,10 @@ void init() {
 
   var offsets = new InstancedBufferAttribute(new Float32List(instances * 3), 3);
 
+  var random = new math.Random().nextDouble;
+
   for (var i = 0; i < offsets.count; i++) {
-    offsets.setXYZ(i, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5);
+    offsets.setXYZ(i, random() - 0.5, random() - 0.5, random() - 0.5);
   }
 
   geometry.addAttribute('offset', offsets);
@@ -96,7 +91,7 @@ void init() {
   var colors = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
   for (var i = 0; i < colors.count; i++) {
-    colors.setXYZW(i, rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble());
+    colors.setXYZW(i, random(), random(), random(), random());
   }
 
   geometry.addAttribute('color', colors);
@@ -106,8 +101,8 @@ void init() {
   var orientationsStart = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
   for (var i = 0; i < orientationsStart.count; i++) {
-    vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1,
-        rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
+    vector.setValues(random() * 2 - 1, random() * 2 - 1,
+        random() * 2 - 1, random() * 2 - 1);
     vector.normalize();
 
     orientationsStart.setXYZW(i, vector.x, vector.y, vector.z, vector.w);
@@ -118,7 +113,7 @@ void init() {
   var orientationsEnd = new InstancedBufferAttribute(new Float32List(instances * 4), 4);
 
   for (var i = 0; i < orientationsEnd.count; i++) {
-    vector.setValues(rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1, rnd.nextDouble() * 2 - 1);
+    vector.setValues(random() * 2 - 1, random() * 2 - 1, random() * 2 - 1, random() * 2 - 1);
     vector.normalize();
 
     orientationsEnd.setXYZW(i, vector.x, vector.y, vector.z, vector.w);
@@ -165,14 +160,7 @@ void onWindowResize(Event event) {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-//
-
-void animate(num time) {
-  window.requestAnimationFrame(animate);
-  render();
-}
-
-var lastTime = 0;
+double lastTime = 0.0;
 
 void render() {
   var time = window.performance.now();
@@ -186,4 +174,13 @@ void render() {
   renderer.render(scene, camera);
 
   lastTime = time;
+}
+
+main() async {
+  init();
+
+  while (true) {
+    await window.animationFrame;
+    render();
+  }
 }
