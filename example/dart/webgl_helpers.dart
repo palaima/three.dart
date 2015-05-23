@@ -31,13 +31,13 @@ void init() {
     ..position.y = -150.0);
 
   var loader = new JSONLoader();
-  loader.load('obj/leeperrysmith/LeePerrySmith.js').then((geometry) {
+  loader.load('obj/leeperrysmith/LeePerrySmith.js').then((result) {
     var material = new MeshLambertMaterial();
 
     var group = new Group()..scale.scale(50.0);
     scene.add(group);
 
-    var mesh = new Mesh(geometry, material);
+    var mesh = new Mesh(result.geometry, material);
     group.add(mesh);
 
     group.add(new FaceNormalsHelper(mesh, size: 0.1));
@@ -45,14 +45,14 @@ void init() {
 
     group.add(new BoxHelper(mesh));
 
-    var wireframe = new WireframeGeometry(geometry);
+    var wireframe = new WireframeGeometry(result.geometry);
     group.add(new LineSegments(wireframe)
       ..material.depthTest = false
       ..material.opacity = 0.25
       ..material.transparent = true
       ..position.x = 4.0);
 
-    var edges = new EdgesGeometry(geometry);
+    var edges = new EdgesGeometry(result.geometry);
     group.add(new LineSegments(edges)
       ..material.depthTest = false
       ..material.opacity = 0.25

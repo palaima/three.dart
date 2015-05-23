@@ -48,11 +48,11 @@ void init() {
   scene.add(light2);
 
   var loader = new JSONLoader(showStatus: true);
-  loader.load("models/animated/horse.js").then((geometry) {
+  loader.load("models/animated/horse.js").then((result) {
     var material = new MeshPhongMaterial(
         color: 0x606060, shading: FlatShading, morphTargets: true);
 
-    mesh = new Mesh(geometry, material)..scale.splat(1.5);
+    mesh = new Mesh(result.geometry, material)..scale.splat(1.5);
 
     scene.add(mesh);
 

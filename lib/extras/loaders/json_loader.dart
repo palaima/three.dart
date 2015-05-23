@@ -15,7 +15,7 @@ class JSONLoader extends Loader {
 
   JSONLoader({bool showStatus: false}) : super(showStatus: showStatus);
 
-  Future load(String url, {texturePath}) {
+  Future<LoaderResult> load(String url, {texturePath}) {
     texturePath = texturePath != null && (texturePath is String) ? texturePath : _extractUrlBase(url);
 
     _onLoadStartController.add(null);
@@ -23,7 +23,7 @@ class JSONLoader extends Loader {
     return _loadAjaxJSON(url, texturePath);
   }
 
-  Future _loadAjaxJSON(String url, String texturePath) {
+  Future<LoaderResult> _loadAjaxJSON(String url, String texturePath) {
     var completer = new Completer();
 
     var xhr = new HttpRequest();
@@ -50,7 +50,7 @@ class JSONLoader extends Loader {
             }
 
             var result = _parse(json, texturePath);
-            completer.complete(result['geometry']); // , result['materials']);
+            completer.complete(new LoaderResult(result['geometry'], result['materials']));
           } else {
             error('JSONLoader: $url seems to be unreachable or the file is empty.');
           }
@@ -182,8 +182,8 @@ class JSONLoader extends Loader {
             for (var j = 0; j < 4; j++) {
               var uvIndex = faces[offset++];
 
-              var u = uvLayer[uvIndex * 2];
-              var v = uvLayer[uvIndex * 2 + 1];
+              var u = uvLayer[uvIndex * 2].toDouble();
+              var v = uvLayer[uvIndex * 2 + 1].toDouble();
 
               var uv = new Vector2(u, v);
 
@@ -205,7 +205,8 @@ class JSONLoader extends Loader {
           for (var i = 0; i < 4; i++) {
             var normalIndex = faces[offset++] * 3;
 
-            var normal = new Vector3(normals[normalIndex++], normals[normalIndex++], normals[normalIndex]);
+            var normal = new Vector3(normals[normalIndex++].toDouble(),
+                normals[normalIndex++].toDouble(), normals[normalIndex].toDouble());
 
             if (i != 2) faceA.vertexNormals.add(normal);
             if (i != 0) faceB.vertexNormals.add(normal);
@@ -254,8 +255,8 @@ class JSONLoader extends Loader {
             for (var j = 0; j < 3; j++) {
               var uvIndex = faces[offset++];
 
-              var u = uvLayer[uvIndex * 2];
-              var v = uvLayer[uvIndex * 2 + 1];
+              var u = uvLayer[uvIndex * 2].toDouble();
+              var v = uvLayer[uvIndex * 2 + 1].toDouble();
 
               var uv = new Vector2(u, v);
 
@@ -274,7 +275,8 @@ class JSONLoader extends Loader {
           for (var i = 0; i < 3; i++) {
             var normalIndex = faces[offset++] * 3;
 
-            var normal = new Vector3(normals[normalIndex++], normals[normalIndex++], normals[normalIndex]);
+            var normal = new Vector3(normals[normalIndex++].toDouble(),
+                normals[normalIndex++].toDouble(), normals[normalIndex].toDouble());
 
             face.vertexNormals.add(normal);
           }
@@ -303,22 +305,22 @@ class JSONLoader extends Loader {
     if (json['skinWeights'] != null) {
       for (var i = 0; i < json['skinWeights'].length; i += influencesPerVertex) {
         var x = json['skinWeights'][i];
-        var y = (influencesPerVertex > 1) ? json['skinWeights'][i + 1] : 0;
-        var z = (influencesPerVertex > 2) ? json['skinWeights'][i + 2] : 0;
-        var w = (influencesPerVertex > 3) ? json['skinWeights'][i + 3] : 0;
+        var y = (influencesPerVertex > 1) ? json['skinWeights'][i + 1] : 0.0;
+        var z = (influencesPerVertex > 2) ? json['skinWeights'][i + 2] : 0.0;
+        var w = (influencesPerVertex > 3) ? json['skinWeights'][i + 3] : 0.0;
 
-        geometry.skinWeights.add(new Vector4(x, y, z, w));
+        geometry.skinWeights.add(new Vector4(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble()));
       }
     }
 
     if (json['skinIndices'] != null) {
       for (var i = 0; i < json['skinIndices'].length; i += influencesPerVertex) {
         var a = json['skinIndices'][i];
-        var b = (influencesPerVertex > 1) ? json['skinIndices'][i + 1] : 0;
-        var c = (influencesPerVertex > 2) ? json['skinIndices'][i + 2] : 0;
-        var d = (influencesPerVertex > 3) ? json['skinIndices'][i + 3] : 0;
+        var b = (influencesPerVertex > 1) ? json['skinIndices'][i + 1] : 0.0;
+        var c = (influencesPerVertex > 2) ? json['skinIndices'][i + 2] : 0.0;
+        var d = (influencesPerVertex > 3) ? json['skinIndices'][i + 3] : 0.0;
 
-        geometry.skinIndices.add(new Vector4(a, b, c, d));
+        geometry.skinIndices.add(new Vector4(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble()));
       }
     }
 

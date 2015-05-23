@@ -62,23 +62,23 @@ void init() {
 
   var start = new DateTime.now();
 
-  loader.load('obj/lucy/Lucy100k_bin.js').then((geometry) {
-    addMesh(geometry, new MeshPhongMaterial(color: 0x030303, specular: 0x990000, shininess: 30.0),
+  loader.load('obj/lucy/Lucy100k_bin.js').then((result) {
+    addMesh(result.geometry, new MeshPhongMaterial(color: 0x030303, specular: 0x990000, shininess: 30.0),
         scale: 0.75, x: 900.0);
 
-    addMesh(geometry, new MeshPhongMaterial(color: 0x005555, specular: 0xffaa00, shininess: 10.0),
+    addMesh(result.geometry, new MeshPhongMaterial(color: 0x005555, specular: 0xffaa00, shininess: 10.0),
         scale: 0.75, x: 300.0);
 
-    addMesh(geometry, new MeshPhongMaterial(color: 0x111111, specular: 0xffaa00, shininess: 10.0),
+    addMesh(result.geometry, new MeshPhongMaterial(color: 0x111111, specular: 0xffaa00, shininess: 10.0),
         scale: 0.75, x: -300.0);
 
-    addMesh(geometry, new MeshPhongMaterial(color: 0x555555, specular: 0x666666, shininess: 10.0),
+    addMesh(result.geometry, new MeshPhongMaterial(color: 0x555555, specular: 0x666666, shininess: 10.0),
         scale: 0.75, x: -900.0);
 
     loader.statusDomElement.style.display = 'none';
 
-    log('geometry.vertices: ${geometry.vertices.length}');
-    log('geometry.faces: ${geometry.faces.length}');
+    log('geometry.vertices: ${result.geometry.vertices.length}');
+    log('geometry.faces: ${result.geometry.faces.length}');
 
     log('model loaded and created in ${new DateTime.now().difference(start).inMilliseconds} ms');
   });

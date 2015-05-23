@@ -11,7 +11,7 @@ class BinaryLoader extends Loader {
 
   BinaryLoader({bool showStatus: true}) : super(showStatus: showStatus);
 
-  Future load(String url, {texturePath, binaryPath}) {
+  Future<LoaderResult> load(String url, {texturePath, binaryPath}) {
     if (texturePath == null) texturePath = _extractUrlBase(url);
     if (binaryPath == null) binaryPath = _extractUrlBase(url);
 
@@ -24,7 +24,7 @@ class BinaryLoader extends Loader {
     return _loadAjaxJSON(url, texturePath, binaryPath);
   }
 
-  Future _loadAjaxJSON(String url, texturePath, binaryPath) {
+  Future<LoaderResult> _loadAjaxJSON(String url, texturePath, binaryPath) {
     var completer = new Completer();
     var xhr = new HttpRequest();
 
@@ -94,7 +94,7 @@ class BinaryLoader extends Loader {
 
     if (_needsTangents(materials)) geometry.computeTangents();
 
-    completer.complete(geometry); //, materials);
+    completer.complete(new LoaderResult(geometry, materials));
   }
 }
 

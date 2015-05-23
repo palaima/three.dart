@@ -87,8 +87,8 @@ void init() {
   loader = new BinaryLoader(showStatus: true);
   document.body.append(loader.statusDomElement);
 
-  loader.load('obj/walt/WaltHead_bin.js').then((geometry) =>
-      createScene(geometry, cubeMaterial1, cubeMaterial2, cubeMaterial3));
+  loader.load('obj/walt/WaltHead_bin.js').then((result) =>
+      createScene(result.geometry, cubeMaterial1, cubeMaterial2, cubeMaterial3));
 
   // createScene(await loader.load('obj/walt/WaltHead_bin.js'),
   //     cubeMaterial1, cubeMaterial2, cubeMaterial3));

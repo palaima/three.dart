@@ -113,7 +113,7 @@ void init() {
   loader = new JSONLoader(showStatus: true);
   document.body.append(loader.statusDomElement);
 
-  loader.load('obj/leeperrysmith/LeePerrySmith.js').then((geometry) => createScene(geometry, 100.0, material));
+  loader.load('obj/leeperrysmith/LeePerrySmith.js').then((result) => createScene(result.geometry, 100.0, material));
 
   //
 

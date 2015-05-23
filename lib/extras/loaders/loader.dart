@@ -295,7 +295,7 @@ class Loader {
     }
 
     if (m['specularCoef'] != null) {
-      shininess = m['specularCoef'];
+      shininess = m['specularCoef'].toDouble();
     }
 
     // textures
@@ -408,4 +408,11 @@ class Loader {
 
     return material;
   }
+}
+
+
+class LoaderResult {
+  IGeometry geometry;
+  List<Material> materials;
+  LoaderResult(this.geometry, this.materials);
 }

@@ -111,8 +111,8 @@ void init() {
 
   loader = new JSONLoader();
 
-  loader.load('obj/leeperrysmith/LeePerrySmith.js').then((geometry) {
-    createScene(geometry, 100.0);
+  loader.load('obj/leeperrysmith/LeePerrySmith.js').then((result) {
+    createScene(result.geometry, 100.0);
   });
 
   //
