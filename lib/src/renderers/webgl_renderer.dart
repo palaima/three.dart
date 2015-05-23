@@ -728,8 +728,7 @@ class WebGLRenderer {
             var stride = data.stride;
             var offset = geometryAttribute.offset;
 
-            _gl.bindBuffer(
-                gl.ARRAY_BUFFER, geometryAttribute.data.buffer.glbuffer);
+            geometryAttribute.data.buffer.bind(gl.ARRAY_BUFFER);
             _gl.vertexAttribPointer(programAttribute, size, gl.FLOAT, false,
                 stride * data.bytesPerElement,
                 (startIndex * stride + offset) * data.bytesPerElement);
@@ -888,7 +887,7 @@ class WebGLRenderer {
 
           if (updateBuffers) {
             setupVertexAttributes(material, program, geometry, startIndex);
-            _gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index.buffer.glbuffer);
+            index.buffer.bind(gl.ELEMENT_ARRAY_BUFFER);
           }
 
           // render indexed triangles
@@ -973,8 +972,7 @@ class WebGLRenderer {
           setupVertexAttributes(material, program, geometry, 0);
         }
 
-        for (var i = 0, il = offsets.length; i < il; i++) {
-
+        for (var i = 0; i < offsets.length; i++) {
           // render non-indexed triangles
 
           if (geometry is InstancedBufferGeometry) {
@@ -1762,38 +1760,49 @@ class WebGLRenderer {
     // skinning uniforms must be set even if material didn't change
     // auto-setting of texture unit for bone texture must go before other textures
     // not sure why, but otherwise weird things happen
-// TODO
-//    if (mat is Skinning && mat.skinning) {
-//      if (object.bindMatrix && p_uniforms['bindMatrix'] != null) {
-//        _gl.uniformMatrix4fv(p_uniforms['bindMatrix'], false, object.bindMatrix.storage);
-//      }
-//
-//      if (object.bindMatrixInverse && p_uniforms.bindMatrixInverse != null) {
-//        _gl.uniformMatrix4fv(p_uniforms.bindMatrixInverse, false, object.bindMatrixInverse.elements);
-//      }
-//
-//      if (_supportsBoneTextures && object.skeleton && object.skeleton.useVertexTexture) {
-//        if (p_uniforms.boneTexture != null) {
-//          var textureUnit = getTextureUnit();
-//
-//          _gl.uniform1i(p_uniforms.boneTexture, textureUnit);
-//          setTexture(object.skeleton.boneTexture, textureUnit);
-//        }
-//
-//        if (p_uniforms.boneTextureWidth != null) {
-//          _gl.uniform1i(p_uniforms.boneTextureWidth, object.skeleton.boneTextureWidth);
-//        }
-//
-//        if (p_uniforms.boneTextureHeight != null) {
-//          _gl.uniform1i(p_uniforms.boneTextureHeight, object.skeleton.boneTextureHeight);
-//        }
-//
-//      } else if (object.skeleton && object.skeleton.boneMatrices) {
-//        if (p_uniforms.boneGlobalMatrices != null) {
-//          _gl.uniformMatrix4fv(p_uniforms.boneGlobalMatrices, false, object.skeleton.boneMatrices);
-//        }
-//      }
-//    }
+
+    var mat = material;
+
+    if (mat is Morphing && mat.skinning) {
+      var obj = object as SkinnedMesh;
+
+      if (obj.bindMatrix != null && p_uniforms['bindMatrix'] != null) {
+        _gl.uniformMatrix4fv(
+            p_uniforms['bindMatrix'], false, obj.bindMatrix.storage);
+      }
+
+      if (obj.bindMatrixInverse != null &&
+          p_uniforms['bindMatrixInverse'] != null) {
+        _gl.uniformMatrix4fv(p_uniforms['bindMatrixInverse'], false,
+            obj.bindMatrixInverse.storage);
+      }
+
+      if (_supportsBoneTextures &&
+          obj.skeleton != null &&
+          obj.skeleton.useVertexTexture) {
+        if (p_uniforms['boneTexture'] != null) {
+          var textureUnit = getTextureUnit();
+
+          _gl.uniform1i(p_uniforms['boneTexture'], textureUnit);
+          setTexture(obj.skeleton.boneTexture, textureUnit);
+        }
+
+        if (p_uniforms['boneTextureWidth'] != null) {
+          _gl.uniform1i(
+              p_uniforms['boneTextureWidth'], obj.skeleton.boneTextureWidth);
+        }
+
+        if (p_uniforms['boneTextureHeight'] != null) {
+          _gl.uniform1i(
+              p_uniforms['boneTextureHeight'], obj.skeleton.boneTextureHeight);
+        }
+      } else if (obj.skeleton != null && obj.skeleton.boneMatrices) {
+        if (p_uniforms['boneGlobalMatrices'] != null) {
+          _gl.uniformMatrix4fv(p_uniforms['boneGlobalMatrices'], false,
+              obj.skeleton.boneMatrices);
+        }
+      }
+    }
 
     if (refreshMaterial) {
       // refresh uniforms common to several materials
@@ -2498,9 +2507,6 @@ class WebGLRenderer {
     // null eventual remains from removed lights
     // (this is to avoid if in shader)
 
-    // TODO check if this works
-    //dirColors.skip(dirLength * 3).take(Math.max(dirColors.length, dirCount * 3)).map((_) => 0.0);
-
     for (var l = dirLength * 3;
         l < math.max(dirColors.length, dirCount * 3);
         l++) {
@@ -3175,8 +3181,7 @@ class WebGLRenderer {
 
   // Allocations
 
-  int allocateBones(object) {
-    // TODO
+  int allocateBones(Object3D object) {
     if (_supportsBoneTextures &&
         object != null &&
         object is SkinnedMesh &&
@@ -3263,6 +3268,8 @@ class WebGLRendererMemoryInfo {
   int programs = 0;
   int geometries = 0;
   int textures = 0;
+  String toString() =>
+      '{programs: $programs, geometries: $geometries, textures: $textures}';
 }
 
 class WebGLRendererRenderInfo {
@@ -3270,6 +3277,8 @@ class WebGLRendererRenderInfo {
   int vertices = 0;
   int faces = 0;
   int points = 0;
+  String toString() =>
+      '{calls: $calls, vertices: $vertices, faces: $faces, points: $points}';
 }
 
 //
