@@ -2712,7 +2712,7 @@ class WebGLRenderer {
 
     texture.needsUpdate = false;
 
-    if (texture.onUpdate != null) texture.onUpdate(texture);
+    texture.update();
   }
 
   void setTexture(Texture texture, int slot) {
@@ -2844,8 +2844,7 @@ class WebGLRenderer {
         }
 
         texture.needsUpdate = false;
-
-        if (texture.onUpdate != null) texture.onUpdate(texture);
+        texture.update();
       } else {
         state.activeTexture(gl.TEXTURE0 + slot);
         state.bindTexture(
@@ -3151,24 +3150,24 @@ class WebGLRenderer {
 
     if (extension != null) {
       if (p == RGB_PVRTC_4BPPV1_Format) {
-        return extension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+        return gl.CompressedTexturePvrtc.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
       }
       if (p == RGB_PVRTC_2BPPV1_Format) {
-        return extension.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+        return gl.CompressedTexturePvrtc.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
       }
       if (p == RGBA_PVRTC_4BPPV1_Format) {
-        return extension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+        return gl.CompressedTexturePvrtc.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
       }
       if (p == RGBA_PVRTC_2BPPV1_Format) {
-        return extension.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+        return gl.CompressedTexturePvrtc.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
       }
     }
 
     extension = extensions.get('EXT_blend_minmax');
 
     if (extension != null) {
-      if (p == MinEquation) return extension.MIN_EXT;
-      if (p == MaxEquation) return extension.MAX_EXT;
+      if (p == MinEquation) return gl.ExtBlendMinMax.MIN_EXT;
+      if (p == MaxEquation) return gl.ExtBlendMinMax.MAX_EXT;
     }
 
     return 0;
