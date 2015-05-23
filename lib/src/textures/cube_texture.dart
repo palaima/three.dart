@@ -9,17 +9,17 @@ part of three.textures;
 class CubeTexture extends Texture {
   List images;
 
-  CubeTexture._(List images, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy)
+  CubeTexture(List images, {int mapping: CubeReflectionMapping,
+      int wrapS: ClampToEdgeWrapping, int wrapT: ClampToEdgeWrapping,
+      int magFilter: LinearFilter, int minFilter: LinearMipMapLinearFilter,
+      int format: RGBAFormat, int type: UnsignedByteType, int anisotropy: 1})
       : this.images = images,
-        super(images, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
+        super(images, mapping, wrapS, wrapT, magFilter, minFilter, format, type,
+            anisotropy);
 
-  factory CubeTexture(List images, [mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy]) {
-    if (mapping == null) mapping  = CubeReflectionMapping;
-
-    return new CubeTexture._(images, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
-  }
-
-  clone() {
-    throw new UnimplementedError();
+  CubeTexture clone([CubeTexture texture]) {
+    if (texture == null) texture = new CubeTexture(images);
+    super.clone(texture);
+    return texture;
   }
 }
