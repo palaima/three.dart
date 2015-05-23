@@ -8,15 +8,15 @@ part of three.core;
 
 class Buffer {
   gl.RenderingContext context;
-  gl.Buffer glbuffer;
+  gl.Buffer _glbuffer;
   String belongsToAttribute;
 
   Buffer(this.context) {
-    glbuffer = context.createBuffer();
+    _glbuffer = context.createBuffer();
   }
 
   void bind(int target) {
-    context.bindBuffer(target, glbuffer);
+    context.bindBuffer(target, _glbuffer);
   }
 }
 
