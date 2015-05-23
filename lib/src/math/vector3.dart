@@ -136,6 +136,8 @@ class Vector3 implements Vector {
     return sum;
   }
 
+  double get lengthManhattan => _storage[0].abs() + _storage[1].abs() + _storage[2].abs();
+
   /// Normalizes [this].
   Vector3 normalize() {
     double l = length;
