@@ -9,7 +9,7 @@ import 'core.dart';
 import 'math.dart';
 import 'constants.dart';
 import 'materials.dart';
-import 'textures.dart';
+import 'textures.dart' show DataTexture;
 
 part 'objects/bone.dart';
 part 'objects/group.dart';
@@ -20,6 +20,7 @@ part 'objects/mesh.dart';
 part 'objects/morph_anim_mesh.dart';
 part 'objects/particle.dart';
 part 'objects/point_cloud.dart';
+part 'objects/skeleton.dart';
 part 'objects/skinned_mesh.dart';
 part 'objects/sprite.dart';
 part 'objects/immediate_render_object.dart';
