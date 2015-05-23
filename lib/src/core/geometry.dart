@@ -28,9 +28,12 @@ abstract class IGeometry {
   List<Color> colors;
   List<Face3> faces;
 
-  var animations, firstAnimation;
+  Map animations;
+  String firstAnimation;
+  List<Map> bones;
 
-  List skinWeights, skinIndices;
+  List<Vector4> skinWeights;
+  List<Vector4> skinIndices;
 
   void applyMatrix(Matrix4 matrix);
 
@@ -114,7 +117,10 @@ class Geometry implements IGeometry {
   var normals = [];
 
   // Used in JSONLoader
-  var bones, animation, animations, firstAnimation;
+  List<Map> bones;
+  Map animation;
+  Map animations;
+  String firstAnimation;
 
   /// Bakes matrix transform directly into vertex coordinates.
   void applyMatrix(Matrix4 matrix) {
