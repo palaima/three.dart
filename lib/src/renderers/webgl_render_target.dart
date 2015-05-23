@@ -42,8 +42,8 @@ class WebGLRenderTarget extends Texture {
     }
   }
 
-  WebGLRenderTarget clone() {
-    var tmp = new WebGLRenderTarget(width, height)
+  WebGLRenderTarget clone([WebGLRenderTarget renderTarget]) {
+    renderTarget = new WebGLRenderTarget(width, height)
       ..wrapS = wrapS
       ..wrapT = wrapT
 
@@ -64,7 +64,7 @@ class WebGLRenderTarget extends Texture {
       ..generateMipmaps = generateMipmaps
 
       ..shareDepthFrom = shareDepthFrom;
-    return tmp;
+    return renderTarget;
   }
 
   void dispose() {
