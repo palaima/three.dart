@@ -115,9 +115,10 @@ class DynamicGeometry implements IGeometry {
       }
     }
 
-    if (colors.any((e) => e == null)) colors.length = 0;
-    if (normals.any((e) => e == null)) normals.length = 0;
-    if (uvs.any((e) => e == null)) uvs.length = 0;
+    // Empty unused lists.
+    if (colors.every((e) => e == null)) colors.length = 0;
+    if (normals.every((e) => e == null)) normals.length = 0;
+    if (uvs.every((e) => e == null)) uvs.length = 0;
 
     if (geometry.morphTargets != null) morphTargets = geometry.morphTargets.toList();
     if (geometry.morphColors != null) morphColors = geometry.morphColors.toList();
