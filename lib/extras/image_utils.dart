@@ -380,7 +380,7 @@ DataTexture generateDataTexture(num width, num height, Color color) {
 
   }
 
-  var texture = new DataTexture(data, width, height, RGBFormat);
+  var texture = new DataTexture(data, width, height, format: RGBFormat);
   texture.needsUpdate = true;
 
   return texture;

@@ -50,7 +50,7 @@ void init() {
   var reflectionCube = image_utils.loadTextureCube(urls)
     ..format = RGBFormat;
 
-  var refractionCube = new CubeTexture(reflectionCube.image, CubeRefractionMapping)
+  var refractionCube = new CubeTexture(reflectionCube.image, mapping: CubeRefractionMapping)
     ..format = RGBFormat;
 
   var cubeMaterial3 = new MeshLambertMaterial(
