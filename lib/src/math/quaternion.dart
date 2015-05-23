@@ -47,6 +47,10 @@ class Quaternion {
   factory Quaternion(double x, double y, double z, double w) =>
       new Quaternion._()..setValues(x, y, z, w);
 
+  /// Initialized with values from [array] starting at [offset].
+  factory Quaternion.array(List<double> array, [int offset = 0]) =>
+      new Quaternion._()..copyFromArray(array, offset);
+
   /// Constructs a quaternion from a rotation matrix [rotationMatrix].
   factory Quaternion.fromRotation(Matrix3 rotationMatrix) =>
       new Quaternion._()..setFromRotation(rotationMatrix);
@@ -446,6 +450,14 @@ class Quaternion {
     return norm_diff;
   }
 
+  /// Copies elements from [array] into [this] starting at [offset].
+  void copyFromArray(List<double> array, [int offset = 0]) {
+    _storage[3] = array[offset + 3];
+    _storage[2] = array[offset + 2];
+    _storage[1] = array[offset + 1];
+    _storage[0] = array[offset + 0];
+  }
+
   /*
    * Additions from three.js r68.
    */
@@ -516,8 +528,14 @@ class Quaternion {
     var arg1Storage = arg1._storage;
     var arg2Storage = arg2._storage;
 
-    var qax = arg1Storage[0], qay = arg1Storage[1], qaz = arg1Storage[2], qaw = arg1Storage[3];
-    var qbx = arg2Storage[0], qby = arg2Storage[1], qbz = arg2Storage[2], qbw = arg2Storage[3];
+    var qax = arg1Storage[0],
+        qay = arg1Storage[1],
+        qaz = arg1Storage[2],
+        qaw = arg1Storage[3];
+    var qbx = arg2Storage[0],
+        qby = arg2Storage[1],
+        qbz = arg2Storage[2],
+        qbw = arg2Storage[3];
 
     storage[0] = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
     storage[1] = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
@@ -532,9 +550,15 @@ class Quaternion {
   /// rotation matrix (i.e., unscaled).
   Quaternion setFromRotation4(Matrix4 arg) {
     var argStorage = arg._storage;
-    var m11 = argStorage[0], m12 = argStorage[4], m13 = argStorage[8],
-        m21 = argStorage[1], m22 = argStorage[5], m23 = argStorage[9],
-        m31 = argStorage[2], m32 = argStorage[6], m33 = argStorage[10];
+    var m11 = argStorage[0],
+        m12 = argStorage[4],
+        m13 = argStorage[8],
+        m21 = argStorage[1],
+        m22 = argStorage[5],
+        m23 = argStorage[9],
+        m31 = argStorage[2],
+        m32 = argStorage[6],
+        m33 = argStorage[10];
     var trace = m11 + m22 + m33;
     var s;
     if (trace > 0) {
@@ -558,11 +582,68 @@ class Quaternion {
     } else {
       s = 2.0 * math.sqrt(1.0 + m33 - m11 - m22);
       _storage[3] = (m21 - m12) / s;
-      _storage[0]= (m13 + m31) / s;
+      _storage[0] = (m13 + m31) / s;
       _storage[1] = (m23 + m32) / s;
       _storage[2] = 0.25 * s;
     }
     _onChangeController.add(null);
     return this;
+  }
+
+  static void slerp(Quaternion qa, Quaternion qb, Quaternion result, double t) {
+    if (t == 0) result.setFrom(qa);
+    if (t == 1) result.setFrom(qb);
+
+    var x = qa._storage[0],
+        y = qa._storage[1],
+        z = qa._storage[2],
+        w = qa._storage[3];
+
+    // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
+
+    var cosHalfTheta = w * qb._storage[3] +
+        x * qb._storage[0] +
+        y * qb._storage[1] +
+        z * qb._storage[2];
+
+    if (cosHalfTheta < 0) {
+      result._storage[3] = -qb._storage[3];
+      result._storage[0] = -qb._storage[0];
+      result._storage[1] = -qb._storage[1];
+      result._storage[2] = -qb._storage[2];
+
+      cosHalfTheta = -cosHalfTheta;
+    } else {
+      result.setFrom(qb);
+    }
+
+    if (cosHalfTheta >= 1.0) {
+      result._storage[3] = w;
+      result._storage[0] = x;
+      result._storage[1] = y;
+      result._storage[2] = z;
+      return;
+    }
+
+    var halfTheta = math.acos(cosHalfTheta);
+    var sinHalfTheta = math.sqrt(1.0 - cosHalfTheta * cosHalfTheta);
+
+    if (sinHalfTheta.abs() < 0.001) {
+      result._storage[3] = 0.5 * (w + result._storage[3]);
+      result._storage[0] = 0.5 * (x + result._storage[0]);
+      result._storage[1] = 0.5 * (y + result._storage[1]);
+      result._storage[2] = 0.5 * (z + result._storage[2]);
+      return;
+    }
+
+    var ratioA = math.sin((1 - t) * halfTheta) / sinHalfTheta,
+        ratioB = math.sin(t * halfTheta) / sinHalfTheta;
+
+    result._storage[3] = (w * ratioA + result._storage[3] * ratioB);
+    result._storage[0] = (x * ratioA + result._storage[0] * ratioB);
+    result._storage[1] = (y * ratioA + result._storage[1] * ratioB);
+    result._storage[2] = (z * ratioA + result._storage[2] * ratioB);
+
+    result._onChangeController.add(null);
   }
 }
