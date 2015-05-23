@@ -95,7 +95,7 @@ class GlitchPass implements Pass {
       dataArr[i * 3 + 2] = val;
     }
 
-    var texture = new DataTexture(dataArr, dtSize, dtSize, RGBFormat, type: FloatType)
+    var texture = new DataTexture(dataArr, dtSize, dtSize, format: RGBFormat, type: FloatType)
       ..minFilter = NearestFilter
       ..magFilter = NearestFilter
       ..needsUpdate = true
