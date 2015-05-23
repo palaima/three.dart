@@ -7,9 +7,18 @@ class CompressedTexture extends Texture {
 
   bool generateMipmaps = false;
 
-  CompressedTexture({this.mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy: 1})
-      : super(null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy) {
-    image = new CompressedImage(width: width, height: height);
+  CompressedTexture({this.mipmaps, int width, int height,
+      int format: RGBAFormat, int type: UnsignedByteType,
+      int mapping: Texture.defaultMapping, int wrapS: ClampToEdgeWrapping,
+      int wrapT: ClampToEdgeWrapping, int magFilter: LinearFilter,
+      int minFilter: LinearMipMapLinearFilter, int anisotropy: 1})
+      : super(new CompressedImage(width: width, height: height), mapping, wrapS,
+          wrapT, magFilter, minFilter, format, type, anisotropy);
+
+  CompressedTexture clone([CompressedTexture texture]) {
+    texture = new CompressedTexture();
+    super.clone(texture);
+    return texture;
   }
 }
 
