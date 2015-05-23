@@ -95,9 +95,6 @@ class Object3D {
 
   ShaderMaterial customDepthMaterial;
 
-  // TODO
-  var skeleton;
-
   // Streams
 
   StreamController _onObjectAddedController = new StreamController.broadcast();
