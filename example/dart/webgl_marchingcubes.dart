@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:three/three.dart';
 
-import 'package:three/extras/marching_cubes.dart';
+import 'package:three/extras/objects/marching_cubes.dart';
 
 import 'package:three/extras/postprocessing.dart';
 import 'package:three/extras/controls.dart';

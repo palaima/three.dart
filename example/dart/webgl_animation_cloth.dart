@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:math' as math;
 import 'package:three/three.dart';
 import 'package:three/extras/image_utils.dart' as image_utils;
-import 'package:three/extras/cloth.dart';
+import 'package:three/extras/objects/cloth.dart';
 
 final String fragmentShaderDepth = '''
 uniform sampler2D texture;
