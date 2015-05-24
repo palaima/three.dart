@@ -4,7 +4,7 @@
 
 part of three.core;
 
-class DynamicGeometry implements IGeometry {
+class DirectGeometry implements IGeometry {
   int id = GeometryIdCount++;
 
   String uuid = generateUUID();
@@ -43,9 +43,9 @@ class DynamicGeometry implements IGeometry {
   /// List of skinning indices, matching number and order of vertices.
   List<Vector4> skinIndices;
 
-  DynamicGeometry();
+  DirectGeometry();
 
-  DynamicGeometry.fromGeometry(Geometry geometry) {
+  DirectGeometry.fromGeometry(Geometry geometry) {
     setFromGeometry(geometry);
   }
 

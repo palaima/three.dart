@@ -82,7 +82,7 @@ class WebGLObjects {
 
     var obj = object as GeometryMaterialObject;
 
-    if (obj.geometry is DynamicGeometry) {
+    if (obj.geometry is DirectGeometry) {
       geometry.updateFromObject(object);
     }
 

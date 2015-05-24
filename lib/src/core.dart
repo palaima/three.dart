@@ -19,7 +19,7 @@ part 'core/buffer_attribute.dart';
 part 'core/buffer_geometry.dart';
 part 'core/clock.dart';
 part 'core/dynamic_buffer_attribute.dart';
-part 'core/dynamic_geometry.dart';
+part 'core/direct_geometry.dart';
 part 'core/face3.dart';
 part 'core/geometry.dart';
 part 'core/instanced_buffer_attribute.dart';

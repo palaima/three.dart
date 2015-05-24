@@ -14,7 +14,7 @@ Scene scene;
 WebGLRenderer renderer;
 
 Texture texture;
-DynamicGeometry geometry;
+DirectGeometry geometry;
 Material material;
 
 int worldWidth = 128, worldDepth = 128;
@@ -44,7 +44,7 @@ void init() {
     planeGeo.vertices[i].y = 35 * math.sin(i / 2);
   }
 
-  geometry = new DynamicGeometry.fromGeometry(planeGeo);
+  geometry = new DirectGeometry.fromGeometry(planeGeo);
 
   var texture = image_utils.loadTexture('textures/water.jpg');
   texture.wrapS = texture.wrapT = RepeatWrapping;

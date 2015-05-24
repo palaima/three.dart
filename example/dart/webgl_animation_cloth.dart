@@ -240,7 +240,7 @@ void render() {
     cloth.geometry.vertices[i].setFrom(p[i].position);
   }
 
-  var geo = cloth.geometry as DynamicGeometry;
+  var geo = cloth.geometry as DirectGeometry;
 
   geo.normalsNeedUpdate = true;
   geo.verticesNeedUpdate = true;

@@ -129,7 +129,7 @@ class BufferGeometry implements IGeometry {
       if (object is SkinnedMesh) {
         if (geometry is Geometry) {
           log('BufferGeometry.setFromObject(): Converted Geometry to DynamicGeometry as required for SkinnedMesh. $geometry');
-          geometry = new DynamicGeometry.fromGeometry(geometry);
+          geometry = new DirectGeometry.fromGeometry(geometry);
         }
 
         var skinIndices = new BufferAttribute.float32(geometry.skinIndices.length * 4, 4);
@@ -144,7 +144,7 @@ class BufferGeometry implements IGeometry {
       if (object.morphTargetInfluences != null) {
         if (geometry is Geometry) {
           log('BufferGeometry.setFromObject(): Converted Geometry to DynamicGeometry as required for MorphTargets. $geometry');
-          geometry = new DynamicGeometry.fromGeometry(geometry);
+          geometry = new DirectGeometry.fromGeometry(geometry);
         }
 
         // positions
@@ -162,7 +162,7 @@ class BufferGeometry implements IGeometry {
         }
       }
 
-      if (geometry is DynamicGeometry) {
+      if (geometry is DirectGeometry) {
         fromDynamicGeometry(geometry);
       } else if (geometry is Geometry) {
         setFromGeometry(geometry, material);
@@ -171,7 +171,7 @@ class BufferGeometry implements IGeometry {
   }
 
   void updateFromObject(Object3D object) {
-    var geometry = (object as GeometryObject).geometry as DynamicGeometry;
+    var geometry = (object as GeometryObject).geometry as DirectGeometry;
 
     if (geometry.verticesNeedUpdate) {
       if (aPosition != null) {
@@ -357,7 +357,7 @@ class BufferGeometry implements IGeometry {
     return this;
   }
 
-  void fromDynamicGeometry(DynamicGeometry geometry) {
+  void fromDynamicGeometry(DirectGeometry geometry) {
     addAttribute('index', new BufferAttribute.uint16(geometry.faces.length * 3, 1)
       ..copyFacesArray(geometry.faces));
 
