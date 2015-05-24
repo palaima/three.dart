@@ -88,17 +88,6 @@ class Color {
     storage[2] = list[offset + 2];
   }
 
-  /// Random color. If [useNamed] is set, a random color from [values] is picked.
-  Color.random({bool useNamed: false}) {
-    if (useNamed) {
-      setHex(values[randInt(0, values.length)]);
-    } else {
-      storage[0] = randFloat(0.0, 1.0);
-      storage[1] = randFloat(0.0, 1.0);
-      storage[2] = randFloat(0.0, 1.0);
-    }
-  }
-
   /// Sets [this] from [other].
   Color setFrom(Color other) {
     setRGB(other.storage[0], other.storage[1], other.storage[2]);
