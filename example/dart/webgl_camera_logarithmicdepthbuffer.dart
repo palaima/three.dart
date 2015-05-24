@@ -117,10 +117,10 @@ Map initScene(String name, bool logDepthBuf) {
     ..position.splat(100.0));
 
   var coloroffset = 0;
-  var colorskip = new Set.from([Colors.black, Colors.antiqueWhite, Colors.bisque, Colors.beige, Colors.blanchedAlmond, Colors.darkBlue, Colors.darkCyan]);
+  var colorskip = new Set.from([Color.black_, Color.antiqueWhite, Color.bisque, Color.beige, Color.blanchedAlmond, Color.darkBlue, Color.darkCyan]);
 
   // Exclude dark colors, because it looks bad.
-  var colors = Colors.toList().toSet().difference(colorskip).toList();
+  var colors = Color.values.toSet().difference(colorskip).toList();
 
   for (var i = 0; i < labeldata.length; i++) {
     var scale = labeldata[i]['scale'];

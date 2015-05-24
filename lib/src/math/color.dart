@@ -88,11 +88,10 @@ class Color {
     storage[2] = list[offset + 2];
   }
 
-  /// Random color. If [useNamed] is set, it picks a random color from [Colors].
+  /// Random color. If [useNamed] is set, a random color from [values] is picked.
   Color.random({bool useNamed: false}) {
     if (useNamed) {
-      var colors = Colors.toList();
-      setHex(colors[randInt(0, colors.length)]);
+      setHex(values[randInt(0, values.length)]);
     } else {
       storage[0] = randFloat(0.0, 1.0);
       storage[1] = randFloat(0.0, 1.0);
@@ -144,7 +143,8 @@ class Color {
     var color;
 
     // rgb(255,0,0)
-    color = new RegExp(r'^rgb\((\d+), ?(\d+), ?(\d+)\)$', caseSensitive: true).firstMatch(style);
+    color = new RegExp(r'^rgb\((\d+), ?(\d+), ?(\d+)\)$', caseSensitive: true)
+        .firstMatch(style);
     if (color != null) {
       storage[0] = math.min(255, int.parse(color[1])) / 255;
       storage[1] = math.min(255, int.parse(color[2])) / 255;
@@ -153,7 +153,8 @@ class Color {
     }
 
     // rgb(100%,0%,0%)
-    color = new RegExp(r'^rgb\((\d+)\%, ?(\d+)\%, ?(\d+)\%\)$', caseSensitive: true).firstMatch(style);
+    color = new RegExp(r'^rgb\((\d+)\%, ?(\d+)\%, ?(\d+)\%\)$',
+        caseSensitive: true).firstMatch(style);
     if (color != null) {
       storage[0] = math.min(100, int.parse(color[1])) / 100;
       storage[1] = math.min(100, int.parse(color[2])) / 100;
@@ -162,16 +163,19 @@ class Color {
     }
 
     // #ff0000
-    color = new RegExp(r'^\#([0-9a-f]{6})$', caseSensitive: true).firstMatch(style);
+    color =
+        new RegExp(r'^\#([0-9a-f]{6})$', caseSensitive: true).firstMatch(style);
     if (color != null) {
       setHex(int.parse(color[1]));
       return this;
     }
 
     // #f00
-    color = new RegExp(r'^\#([0-9a-f])([0-9a-f])([0-9a-f])$', caseSensitive: true).firstMatch(style);
+    color = new RegExp(r'^\#([0-9a-f])([0-9a-f])([0-9a-f])$',
+        caseSensitive: true).firstMatch(style);
     if (color != null) {
-      setHex(int.parse('${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}'));
+      setHex(int.parse(
+          '${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}'));
       return this;
     }
 
@@ -288,7 +292,9 @@ class Color {
   Color clone() => new Color.fromRGB(storage[0], storage[1], storage[2]);
 
   /// Compares [this] and [other] and returns true if they are the same, false otherwise.
-  bool operator ==(Color other) => (other.storage[0] == storage[0]) && (other.storage[1] == storage[1]) && (other.storage[2] == storage[2]);
+  bool operator ==(Color other) => (other.storage[0] == storage[0]) &&
+      (other.storage[1] == storage[1]) &&
+      (other.storage[2] == storage[2]);
 
   Color operator +(v) {
     if (v is Color) return add(v);
@@ -301,49 +307,7 @@ class Color {
     if (v is double) return multiplyScalar(v);
     throw new ArgumentError(v);
   }
-}
 
-class HSL {
-  /// Hue.
-  double get h => _h;
-  double _h;
-
-  /// Saturation.
-  double get s => _s;
-  double _s;
-
-  /// Lightness
-  double get l => _l;
-  double _l;
-
-  HSL.fromRGB(double r, double g, double b) {
-    // h,s,l ranges are in 0.0 - 1.0
-    var max = math.max(math.max(r, g), b);
-    var min = math.min(math.min(r, g), b);
-
-    _l = (min + max) / 2.0;
-
-    if (min == max) {
-      _h = _s = 0.0;
-    } else {
-      var delta = max - min;
-
-      _s = _l <= 0.5 ? delta / (max + min) : delta / (2 - max - min);
-
-      if (max == r) {
-        _h = (g - b) / delta + (g < b ? 6 : 0);
-      } else if (max == g) {
-        _h = (b - r) / delta + 2;
-      } else if (max == b) {
-        _h = (r - g) / delta + 4;
-      }
-
-      _h /= 6;
-    }
-  }
-}
-
-abstract class Colors {
   static const int aliceBlue = 0xf0f8ff;
   static const int antiqueWhite = 0xfaebd7;
   static const int aqua = 0xffff;
@@ -351,7 +315,7 @@ abstract class Colors {
   static const int azure = 0xf0ffff;
   static const int beige = 0xf5f5dc;
   static const int bisque = 0xffe4c4;
-  static const int black = 0x0;
+  static const int black_ = 0x0;
   static const int blanchedAlmond = 0xffebcd;
   static const int blue = 0xff;
   static const int blueViolet = 0x8a2be2;
@@ -481,26 +445,192 @@ abstract class Colors {
   static const int turquoise = 0x40e0d0;
   static const int violet = 0xee82ee;
   static const int wheat = 0xf5deb3;
-  static const int white = 0xffffff;
+  static const int white_ = 0xffffff;
   static const int whiteSmoke = 0xf5f5f5;
   static const int yellow = 0xffff00;
   static const int yellowGreen = 0x9acd32;
 
-  // TODO Use set instead?
-  static final UnmodifiableListView<int> _colors = new UnmodifiableListView([
-    aliceBlue, antiqueWhite, aqua, aquamarine, azure, beige, bisque, black, blanchedAlmond, blue, blueViolet,
-    brown, burlywood, cadetBlue, chartreuse, chocolate, coral, cornflowerBlue, cornsilk, crimson, cyan, darkBlue, darkCyan,
-    darkGoldenRod, darkGray, darkGreen, darkGrey, darkKhaki, darkMagenta, darkOliveGreen, darkOrange, darkOrchid, darkRed,
-    darkSalmon, darkSeaGreen, darkSlateBlue, darkSlateGray, darkTurquoise, darkViolet, deepPink, deepSkyBlue, dimGray,
-    dodgerBlue, firebrick, floralWhite, forestGreen, fuchsia, gainsboro, ghostWhite, gold, goldenRod, gray, green, greenYellow,
-    honeyDew, hotPink, indianRed, indigo, ivory, khaki, lavender, lavenderBlush, lawnGreen, lemonChiffon, lightBlue, lightCoral,
-    lightCyan, lightGoldenRodYellow, lightGray, lightGreen, lightPink, lightSalmon, lightSeaGreen, lightSkyBlue,
-    lightSlateGray, lightSteelBlue, lightYellow, lime, limeGreen, linen, magenta, maroon, mediumAquamarine,
-    mediumBlue, mediumOrchid, mediumPurple, mediumSeaGreen, mediumSlateBlue, mediumSpringGreen, mediumTurquoise, mediumVioletRed,
-    midnightBlue, mintCream, mistyRose, moccasin, navajoWhite, navy, oldLace, olive, oliveDrab, orange, orangeRed, orchid,
-    paleGoldenRod, paleGreen, paleTurquoise, paleVioletRed, papayaWhip, peachPuff, peru, pink, plum, powderBlue, purple, red,
-    rosyBrown, royalBlue, saddleBrown, salmon, sandyBrown, seaGreen, seaShell, sienna, silver, skyBlue, slateBlue, slateGray,
-    snow, springGreen, steelBlue, tan, teal, thistle, tomato, turquoise, violet, wheat, white, whiteSmoke, yellow, yellowGreen]);
+  static final UnmodifiableListView<int> values = new UnmodifiableListView([
+    aliceBlue,
+    antiqueWhite,
+    aqua,
+    aquamarine,
+    azure,
+    beige,
+    bisque,
+    black_,
+    blanchedAlmond,
+    blue,
+    blueViolet,
+    brown,
+    burlywood,
+    cadetBlue,
+    chartreuse,
+    chocolate,
+    coral,
+    cornflowerBlue,
+    cornsilk,
+    crimson,
+    cyan,
+    darkBlue,
+    darkCyan,
+    darkGoldenRod,
+    darkGray,
+    darkGreen,
+    darkGrey,
+    darkKhaki,
+    darkMagenta,
+    darkOliveGreen,
+    darkOrange,
+    darkOrchid,
+    darkRed,
+    darkSalmon,
+    darkSeaGreen,
+    darkSlateBlue,
+    darkSlateGray,
+    darkTurquoise,
+    darkViolet,
+    deepPink,
+    deepSkyBlue,
+    dimGray,
+    dodgerBlue,
+    firebrick,
+    floralWhite,
+    forestGreen,
+    fuchsia,
+    gainsboro,
+    ghostWhite,
+    gold,
+    goldenRod,
+    gray,
+    green,
+    greenYellow,
+    honeyDew,
+    hotPink,
+    indianRed,
+    indigo,
+    ivory,
+    khaki,
+    lavender,
+    lavenderBlush,
+    lawnGreen,
+    lemonChiffon,
+    lightBlue,
+    lightCoral,
+    lightCyan,
+    lightGoldenRodYellow,
+    lightGray,
+    lightGreen,
+    lightPink,
+    lightSalmon,
+    lightSeaGreen,
+    lightSkyBlue,
+    lightSlateGray,
+    lightSteelBlue,
+    lightYellow,
+    lime,
+    limeGreen,
+    linen,
+    magenta,
+    maroon,
+    mediumAquamarine,
+    mediumBlue,
+    mediumOrchid,
+    mediumPurple,
+    mediumSeaGreen,
+    mediumSlateBlue,
+    mediumSpringGreen,
+    mediumTurquoise,
+    mediumVioletRed,
+    midnightBlue,
+    mintCream,
+    mistyRose,
+    moccasin,
+    navajoWhite,
+    navy,
+    oldLace,
+    olive,
+    oliveDrab,
+    orange,
+    orangeRed,
+    orchid,
+    paleGoldenRod,
+    paleGreen,
+    paleTurquoise,
+    paleVioletRed,
+    papayaWhip,
+    peachPuff,
+    peru,
+    pink,
+    plum,
+    powderBlue,
+    purple,
+    red,
+    rosyBrown,
+    royalBlue,
+    saddleBrown,
+    salmon,
+    sandyBrown,
+    seaGreen,
+    seaShell,
+    sienna,
+    silver,
+    skyBlue,
+    slateBlue,
+    slateGray,
+    snow,
+    springGreen,
+    steelBlue,
+    tan,
+    teal,
+    thistle,
+    tomato,
+    turquoise,
+    violet,
+    wheat,
+    white_,
+    whiteSmoke,
+    yellow,
+    yellowGreen
+  ]);
+}
 
-  static UnmodifiableListView<int> toList() => _colors;
+class HSL {
+  /// Hue.
+  double get h => _h;
+  double _h;
+
+  /// Saturation.
+  double get s => _s;
+  double _s;
+
+  /// Lightness
+  double get l => _l;
+  double _l;
+
+  HSL.fromRGB(double r, double g, double b) {
+    // h,s,l ranges are in 0.0 - 1.0
+    var max = math.max(math.max(r, g), b);
+    var min = math.min(math.min(r, g), b);
+
+    _l = (min + max) / 2.0;
+
+    if (min == max) {
+      _h = _s = 0.0;
+    } else {
+      var delta = max - min;
+
+      _s = _l <= 0.5 ? delta / (max + min) : delta / (2 - max - min);
+
+      if (max == r) {
+        _h = (g - b) / delta + (g < b ? 6 : 0);
+      } else if (max == g) {
+        _h = (b - r) / delta + 2;
+      } else if (max == b) {
+        _h = (r - g) / delta + 4;
+      }
+
+      _h /= 6;
+    }
+  }
 }
