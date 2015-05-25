@@ -66,11 +66,11 @@ class WebGLObjects {
 
       if (object is Mesh || object is Line || object is PointCloud) {
         objects[object.id] =
-            new WebGLObject(id: object.id, object: object, z: 0);
+            new WebGLObject(id: object.id, object: object, z: 0.0);
       } else if (object is ImmediateRenderObject ||
           object.immediateRenderCallback != null) {
         objectsImmediate.add(new WebGLObject(
-            id: null, object: object, opaque: null, transparent: null, z: 0));
+            id: null, object: object, opaque: null, transparent: null, z: 0.0));
       }
     }
   }

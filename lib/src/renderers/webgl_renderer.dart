@@ -1156,30 +1156,31 @@ class WebGLRenderer {
 
   // Sorting
 
-  int painterSortStable(a, b) {
+  int painterSortStable(WebGLObject a, WebGLObject b) {
+    var aMat = (a.object as MaterialObject).material;
+    var bMat = (b.object as MaterialObject).material;
+
     if (a.object.renderOrder != b.object.renderOrder) {
-      return a.object.renderOrder - b.object.renderOrder;
-    } else if (a.object.material.id != b.object.material.id) {
-      return a.object.material.id - b.object.material.id;
+      return a.object.renderOrder.compareTo(b.object.renderOrder);
+    } else if (aMat.id != bMat.id) {
+      return aMat.id.compareTo(bMat.id);
     } else if (a.z != b.z) {
-      return (a.z - b.z).toInt();
+      return a.z.compareTo(b.z);
     } else {
-      return a.id - b.id;
+      return a.id.compareTo(b.id);
     }
   }
 
-  int reversePainterSortStable(a, b) {
+  int reversePainterSortStable(WebGLObject a, WebGLObject b) {
     if (a.object.renderOrder != b.object.renderOrder) {
-      return a.object.renderOrder - b.object.renderOrder;
+      return a.object.renderOrder.compareTo(b.object.renderOrder);
     }
     if (a.z != b.z) {
-      return (b.z - a.z).toInt();
+      return b.z.compareTo(a.z);
     } else {
-      return a.id - b.id;
+      return a.id.compareTo(b.id);
     }
   }
-
-  int numericalSort(List a, List b) => (b[0] - a[0]).toInt();
 
   // Rendering
 
@@ -3290,11 +3291,11 @@ class WebGLObject {
   Object3D object;
   Material opaque, transparent;
   bool render;
-  var z;
+  double z;
   Material material;
 
   WebGLObject({this.id, this.material, this.object, this.opaque,
-      this.transparent, this.render: true, this.z: 0});
+      this.transparent, this.render: true, this.z: 0.0});
 }
 
 class GeometryProgram {
