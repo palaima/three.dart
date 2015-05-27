@@ -4,8 +4,6 @@
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
  * @author mikael emtinger / http://gomo.se/
- *
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
 part of three.renderers;

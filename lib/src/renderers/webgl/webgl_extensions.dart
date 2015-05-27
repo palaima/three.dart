@@ -1,7 +1,5 @@
 /*
  * @author mrdoob / http://mrdoob.com/
- *
- * based on https://github.com/mrdoob/three.js/blob/c9f111c3109b98b2449cf8849787096594e3282e/src/renderers/webgl/WebGLExtensions.js
  */
 
 part of three.renderers;

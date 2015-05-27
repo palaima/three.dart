@@ -1,7 +1,3 @@
-/*
- * based on https://github.com/mrdoob/three.js/blob/59aebeda0837e7ef1e2ad874c4d2dc486b8d3a45/src/renderers/webgl/WebGLProgram.js
- */
-
 part of three.renderers;
 
 class WebGLProgram {

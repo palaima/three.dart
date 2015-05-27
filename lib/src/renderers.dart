@@ -1,3 +1,7 @@
+/*
+ * Based on https://github.com/mrdoob/three.js/tree/9c2a88d21713eaddd73bfc5b9b00847cf8059225/src/renderers
+ */
+
 library three.renderers;
 
 import 'dart:collection';

@@ -3,8 +3,6 @@
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  * @author szimek / https://github.com/szimek/
- *
- * based on https://github.com/mrdoob/three.js/blob/ba36e1d75f470f63812a260994a564bca2e4c574/src/renderers/WebGLRenderer.js
  */
 
 part of three.renderers;
