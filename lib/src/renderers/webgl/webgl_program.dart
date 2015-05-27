@@ -260,7 +260,7 @@ class WebGLProgram {
 
         '#define MAX_SHADOWS $maxShadows',
 
-        nn(alphaTest) ? '#define ALPHATEST $alphaTest' : '',
+        nn(alphaTest) ? '#define ALPHATEST ${alphaTest.toStringAsPrecision(2)}' : '',
 
         renderer.gammaInput ? '#define GAMMA_INPUT' : '',
         renderer.gammaOutput ? '#define GAMMA_OUTPUT' : '',
