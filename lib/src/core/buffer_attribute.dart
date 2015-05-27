@@ -108,15 +108,15 @@ class BufferAttribute {
     }
   }
 
-  void copyFacesArray(List<Face3> faces) {
+  void copyIndicesArray(List<Face3> indices) {
     var offset = 0;
 
-    for (var i = 0; i < faces.length; i++) {
-      var face = faces[i];
+    for (var i = 0; i < indices.length; i++) {
+      var index = indices[i];
 
-      array[offset++] = face.a;
-      array[offset++] = face.b;
-      array[offset++] = face.c;
+      array[offset++] = index.a;
+      array[offset++] = index.b;
+      array[offset++] = index.c;
     }
   }
 
