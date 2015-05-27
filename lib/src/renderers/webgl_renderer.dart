@@ -3,8 +3,6 @@
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
  * @author szimek / https://github.com/szimek/
- *
- * based on https://github.com/mrdoob/three.js/blob/ba36e1d75f470f63812a260994a564bca2e4c574/src/renderers/WebGLRenderer.js
  */
 
 part of three.renderers;
@@ -1156,30 +1154,31 @@ class WebGLRenderer {
 
   // Sorting
 
-  int painterSortStable(a, b) {
+  int painterSortStable(WebGLObject a, WebGLObject b) {
+    var aMat = (a.object as MaterialObject).material;
+    var bMat = (b.object as MaterialObject).material;
+
     if (a.object.renderOrder != b.object.renderOrder) {
-      return a.object.renderOrder - b.object.renderOrder;
-    } else if (a.object.material.id != b.object.material.id) {
-      return a.object.material.id - b.object.material.id;
+      return a.object.renderOrder.compareTo(b.object.renderOrder);
+    } else if (aMat.id != bMat.id) {
+      return aMat.id.compareTo(bMat.id);
     } else if (a.z != b.z) {
-      return (a.z - b.z).toInt();
+      return a.z.compareTo(b.z);
     } else {
-      return a.id - b.id;
+      return a.id.compareTo(b.id);
     }
   }
 
-  int reversePainterSortStable(a, b) {
+  int reversePainterSortStable(WebGLObject a, WebGLObject b) {
     if (a.object.renderOrder != b.object.renderOrder) {
-      return a.object.renderOrder - b.object.renderOrder;
+      return a.object.renderOrder.compareTo(b.object.renderOrder);
     }
     if (a.z != b.z) {
-      return (b.z - a.z).toInt();
+      return b.z.compareTo(a.z);
     } else {
-      return a.id - b.id;
+      return a.id.compareTo(b.id);
     }
   }
-
-  int numericalSort(List a, List b) => (b[0] - a[0]).toInt();
 
   // Rendering
 
@@ -1849,6 +1848,8 @@ class WebGLRenderer {
         refreshUniformsPhong(m_uniforms, material);
       } else if (material is MeshLambertMaterial) {
         refreshUniformsLambert(m_uniforms, material);
+      } else if (material is MeshBasicMaterial) {
+        refreshUniformsBasic(m_uniforms, material);
       } else if (material is MeshDepthMaterial) {
         m_uniforms['mNear'].value = camera.near;
         m_uniforms['mFar'].value = camera.far;
@@ -1877,7 +1878,7 @@ class WebGLRenderer {
 
   // Uniforms (refresh uniforms objects)
 
-  void refreshUniformsCommon(Map uniforms, Material material) {
+  void refreshUniformsCommon(Map<String, Uniform> uniforms, Material material) {
     uniforms['opacity'].value = material.opacity;
 
     uniforms['diffuse'].value = material.color;
@@ -1993,6 +1994,12 @@ class WebGLRenderer {
   void refreshUniformsLambert(
       Map<String, Uniform> uniforms, MeshLambertMaterial material) {
     uniforms['emissive'].value = material.emissive;
+  }
+
+  void refreshUniformsBasic(
+      Map<String, Uniform> uniforms, MeshBasicMaterial material) {
+    uniforms['aoMap'].value = material.aoMap;
+    uniforms['aoMapIntensity'].value = material.aoMapIntensity;
   }
 
   void refreshUniformsLights(Map<String, Uniform> uniforms, Map lights) {
@@ -3290,11 +3297,11 @@ class WebGLObject {
   Object3D object;
   Material opaque, transparent;
   bool render;
-  var z;
+  double z;
   Material material;
 
   WebGLObject({this.id, this.material, this.object, this.opaque,
-      this.transparent, this.render: true, this.z: 0});
+      this.transparent, this.render: true, this.z: 0.0});
 }
 
 class GeometryProgram {

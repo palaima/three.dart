@@ -1,7 +1,5 @@
 /*
  * @author alteredq / http://alteredqualia.com/
- *
- * based on https://github.com/mrdoob/three.js/commit/2034b611f1c97148c1bd795d45307d035a5334c1
  */
 
 part of three.renderers;
@@ -15,7 +13,10 @@ class WebGLShadowMap {
   Vector3 _min = new Vector3.zero();
   Vector3 _max = new Vector3.zero();
 
-  ShaderMaterial _depthMaterial, _depthMaterialMorph, _depthMaterialSkin, _depthMaterialMorphSkin;
+  ShaderMaterial _depthMaterial,
+      _depthMaterialMorph,
+      _depthMaterialSkin,
+      _depthMaterialMorphSkin;
 
   Vector3 _matrixPosition = new Vector3.zero();
 
@@ -107,7 +108,8 @@ class WebGLShadowMap {
             virtualLight = createVirtualLight(light, n);
             virtualLight.originalCamera = camera;
 
-            var gyro = new Gyroscope()..position.setFrom(light.shadowCascadeOffset);
+            var gyro = new Gyroscope()
+              ..position.setFrom(light.shadowCascadeOffset);
 
             gyro.add(virtualLight);
             gyro.add(virtualLight.target);
@@ -140,11 +142,14 @@ class WebGLShadowMap {
           shadowFilter = NearestFilter;
         }
 
-        light.shadowMap = new WebGLRenderTarget(light.shadowMapWidth, light.shadowMapHeight,
-            minFilter: shadowFilter, magFilter: shadowFilter, format: RGBAFormat);
+        light.shadowMap = new WebGLRenderTarget(
+            light.shadowMapWidth, light.shadowMapHeight,
+            minFilter: shadowFilter,
+            magFilter: shadowFilter,
+            format: RGBAFormat);
 
-        light.shadowMapSize =
-            new Vector2(light.shadowMapWidth.toDouble(), light.shadowMapHeight.toDouble());
+        light.shadowMapSize = new Vector2(
+            light.shadowMapWidth.toDouble(), light.shadowMapHeight.toDouble());
 
         light.shadowMatrix = new Matrix4.identity();
       }
@@ -152,12 +157,13 @@ class WebGLShadowMap {
       if (light.shadowCamera == null) {
         if (light is SpotLight) {
           light.shadowCamera = new PerspectiveCamera(light.shadowCameraFov,
-              light.shadowMapWidth / light.shadowMapHeight, light.shadowCameraNear,
-              light.shadowCameraFar);
+              light.shadowMapWidth / light.shadowMapHeight,
+              light.shadowCameraNear, light.shadowCameraFar);
         } else if (light is DirectionalLight) {
           light.shadowCamera = new OrthographicCamera(light.shadowCameraLeft,
-              light.shadowCameraRight, light.shadowCameraTop, light.shadowCameraBottom,
-              light.shadowCameraNear, light.shadowCameraFar);
+              light.shadowCameraRight, light.shadowCameraTop,
+              light.shadowCameraBottom, light.shadowCameraNear,
+              light.shadowCameraFar);
         } else {
           error('ShadowMapPlugin: Unsupported light type for shadow $light');
           continue;
@@ -192,13 +198,14 @@ class WebGLShadowMap {
 
       //
 
-      if (light.cameraHelper != null) light.cameraHelper.visible = light.shadowCameraVisible;
+      if (light.cameraHelper != null) light.cameraHelper.visible =
+          light.shadowCameraVisible;
       if (light.shadowCameraVisible) light.cameraHelper.update();
 
       // compute shadow matrix
 
-      shadowMatrix.setValues(
-          0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
+      shadowMatrix.setValues(0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0,
+          0.5, 0.0, 0.5, 0.5, 0.5, 1.0);
 
       shadowMatrix.multiply(shadowCamera.projectionMatrix);
       shadowMatrix.multiply(shadowCamera.matrixWorldInverse);
@@ -258,7 +265,8 @@ class WebGLShadowMap {
         }
 
         _renderer.setMaterialFaces(objectMaterial);
-        _renderer.renderBufferDirect(shadowCamera, _lights, null, material, object);
+        _renderer.renderBufferDirect(
+            shadowCamera, _lights, null, material, object);
       }
 
       // set matrices and render immediate objects
@@ -271,7 +279,8 @@ class WebGLShadowMap {
           object['_modelViewMatrix'].multiplyMatrices(
               shadowCamera.matrixWorldInverse, object.matrixWorld);
 
-          _renderer.renderImmediateObject(shadowCamera, _lights, null, _depthMaterial, object);
+          _renderer.renderImmediateObject(
+              shadowCamera, _lights, null, _depthMaterial, object);
         }
       }
     }

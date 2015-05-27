@@ -32,7 +32,7 @@ class Cloth extends Mesh {
   List<ClothParticle> particles = [];
   List<List> constrains = [];
 
-  Cloth._(DirectGeometry geometry, Material material, int w, int h, Function clothFunction)
+  Cloth._(Geometry geometry, Material material, int w, int h, Function clothFunction)
       : super(geometry, material) {
     // Create particles
     for (var v = 0; v <= h; v++) {
@@ -68,8 +68,8 @@ class Cloth extends Mesh {
       return new Vector3(x, y, 0.0);
     };
 
-    var clothGeometry = new DirectGeometry.fromGeometry(
-        new ParametricGeometry(clothFunction, widthSegments, heightSegments));
+    var clothGeometry = new ParametricGeometry(clothFunction, widthSegments, heightSegments)
+      ..dynamic = true;
 
     return new Cloth._(clothGeometry, clothMaterial, widthSegments, heightSegments, clothFunction);
   }

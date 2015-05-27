@@ -4,8 +4,6 @@
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
  * @author mikael emtinger / http://gomo.se/
- *
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
  */
 
 part of three.renderers;
@@ -14,6 +12,7 @@ final Map<String, Map> ShaderLib = {
   'basic': {
     'uniforms': uniforms_utils.merge([
       UniformsLib["common"],
+      UniformsLib["aomap"],
       UniformsLib["fog"],
       UniformsLib["shadowmap"]
     ]),
@@ -55,21 +54,24 @@ final Map<String, Map> ShaderLib = {
       ShaderChunk["uv2_pars_fragment"],
       ShaderChunk["map_pars_fragment"],
       ShaderChunk["alphamap_pars_fragment"],
+      ShaderChunk["aomap_pars_fragment"],
       ShaderChunk["envmap_pars_fragment"],
       ShaderChunk["fog_pars_fragment"],
       ShaderChunk["shadowmap_pars_fragment"],
       ShaderChunk["specularmap_pars_fragment"],
       ShaderChunk["logdepthbuf_pars_fragment"],
       "void main() {",
-      " vec3 outgoingLight = vec3(0.0);", // outgoing light does not have an alpha, the surface does
+      " vec3 outgoingLight = vec3(0.0);",
       " vec4 diffuseColor = vec4(diffuse, opacity);",
+      " vec3 totalAmbientLight = vec3(1.0);", // hardwired
         ShaderChunk["logdepthbuf_fragment"],
         ShaderChunk["map_fragment"],
         ShaderChunk["color_fragment"],
         ShaderChunk["alphamap_fragment"],
         ShaderChunk["alphatest_fragment"],
         ShaderChunk["specularmap_fragment"],
-      " outgoingLight = diffuseColor.rgb;", // simple shader
+        ShaderChunk["aomap_fragment"],
+      " outgoingLight = diffuseColor.rgb * totalAmbientLight;", // simple shader
         ShaderChunk["envmap_fragment"],
         ShaderChunk["shadowmap_fragment"],    // TODO: Shadows on an otherwise unlit surface doesn't make sense.
         ShaderChunk["linear_to_gamma_fragment"],

@@ -1,7 +1,5 @@
 /*
  * @author mrdoob / http://mrdoob.com/
- *
- * based on https://github.com/mrdoob/three.js/blob/f36b11a4b0c64d0775b4fb75db3935939eec6812/src/renderers/webgl/WebGLObjects.js
  */
 
 part of three.renderers;
@@ -66,11 +64,11 @@ class WebGLObjects {
 
       if (object is Mesh || object is Line || object is PointCloud) {
         objects[object.id] =
-            new WebGLObject(id: object.id, object: object, z: 0);
+            new WebGLObject(id: object.id, object: object, z: 0.0);
       } else if (object is ImmediateRenderObject ||
           object.immediateRenderCallback != null) {
         objectsImmediate.add(new WebGLObject(
-            id: null, object: object, opaque: null, transparent: null, z: 0));
+            id: null, object: object, opaque: null, transparent: null, z: 0.0));
       }
     }
   }
@@ -82,7 +80,9 @@ class WebGLObjects {
 
     var obj = object as GeometryMaterialObject;
 
-    if (obj.geometry is DirectGeometry) {
+    var geo = obj.geometry;
+
+    if (geo is Geometry && geo.dynamic) {
       geometry.updateFromObject(object);
     }
 
@@ -122,55 +122,54 @@ class WebGLObjects {
       }
     }
 
-    if (geometry is BufferGeometry) {
-      var attributes = geometry.attributes;
+    //
 
-      attributes.forEach((name, attribute) {
-        var bufferType =
-            (name == 'index') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+    var attributes = geometry.attributes;
 
-        var data = attribute is InterleavedBufferAttribute
-            ? attribute.data
-            : attribute;
+    attributes.forEach((name, attribute) {
+      var bufferType =
+          (name == 'index') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
 
-        if (data.buffer == null) {
-          data.buffer = new Buffer(_gl);
-          data.buffer.bind(bufferType);
+      var data =
+          attribute is InterleavedBufferAttribute ? attribute.data : attribute;
 
-          var usage = gl.STATIC_DRAW;
+      if (data.buffer == null) {
+        data.buffer = new Buffer(_gl);
+        data.buffer.bind(bufferType);
 
-          if (data is DynamicBufferAttribute ||
-              (data is InstancedBufferAttribute && data.dynamic) ||
-              (data is InterleavedBuffer && data.dynamic)) {
-            usage = gl.DYNAMIC_DRAW;
-          }
+        var usage = gl.STATIC_DRAW;
 
-          _gl.bufferDataTyped(bufferType, data.array as TypedData, usage);
-
-          data.needsUpdate = false;
-        } else if (data.needsUpdate) {
-          data.buffer.bind(bufferType);
-
-          if (data.updateRange == null ||
-              (data.updateRange != null && data.updateRange['count'] == -1)) {
-            // Not using update ranges
-            _gl.bufferSubDataTyped(bufferType, 0, data.array as TypedData);
-          } else if (data.updateRange['count'] == 0) {
-            error('WebGLRenderer.updateObject: using updateRange for DynamicBufferAttribute and marked' +
-                'as needsUpdate but count is 0, ensure you are using set methods or updating manually.');
-          } else {
-            _gl.bufferSubData(bufferType,
-                data.updateRange['offset'] * data.bytesPerElement,
-                data.array.getRange(data.updateRange['offset'],
-                    data.updateRange['offset'] + data.updateRange['count']));
-
-            data.updateRange['count'] = 0; // reset range
-          }
-
-          data.needsUpdate = false;
+        if (data is DynamicBufferAttribute ||
+            (data is InstancedBufferAttribute && data.dynamic) ||
+            (data is InterleavedBuffer && data.dynamic)) {
+          usage = gl.DYNAMIC_DRAW;
         }
-      });
-    }
+
+        _gl.bufferDataTyped(bufferType, data.array as TypedData, usage);
+
+        data.needsUpdate = false;
+      } else if (data.needsUpdate) {
+        data.buffer.bind(bufferType);
+
+        if (data.updateRange == null ||
+            (data.updateRange != null && data.updateRange['count'] == -1)) {
+          // Not using update ranges
+          _gl.bufferSubDataTyped(bufferType, 0, data.array as TypedData);
+        } else if (data.updateRange['count'] == 0) {
+          error('WebGLRenderer.updateObject: using updateRange for DynamicBufferAttribute and marked' +
+              'as needsUpdate but count is 0, ensure you are using set methods or updating manually.');
+        } else {
+          _gl.bufferSubData(bufferType,
+              data.updateRange['offset'] * data.bytesPerElement, data.array
+                  .getRange(data.updateRange['offset'],
+                      data.updateRange['offset'] + data.updateRange['count']));
+
+          data.updateRange['count'] = 0; // reset range
+        }
+
+        data.needsUpdate = false;
+      }
+    });
   }
 
   void update(List<WebGLObject> renderList) {

@@ -1,7 +1,7 @@
 /*
  * @author mrdoob / http://mrdoob.com/
  *
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ * based on https://github.com/mrdoob/three.js/blob/9c2a88d21713eaddd73bfc5b9b00847cf8059225/src/core/BufferAttribute.js
  */
 
 part of three.core;
@@ -108,15 +108,15 @@ class BufferAttribute {
     }
   }
 
-  void copyFacesArray(List<Face3> faces) {
+  void copyIndicesArray(List<Face3> indices) {
     var offset = 0;
 
-    for (var i = 0; i < faces.length; i++) {
-      var face = faces[i];
+    for (var i = 0; i < indices.length; i++) {
+      var index = indices[i];
 
-      array[offset++] = face.a;
-      array[offset++] = face.b;
-      array[offset++] = face.c;
+      array[offset++] = index.a;
+      array[offset++] = index.b;
+      array[offset++] = index.c;
     }
   }
 

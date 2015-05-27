@@ -15,7 +15,7 @@ class CameraHelper extends LineSegments {
   Map<String, List> pointMap = {};
 
   CameraHelper(this.camera)
-      : super(new DirectGeometry(), new LineBasicMaterial(color: 0xffffff, vertexColors: FaceColors)) {
+      : super(new Geometry()..dynamic = true, new LineBasicMaterial(color: 0xffffff, vertexColors: FaceColors)) {
     matrix = camera.matrixWorld;
     matrixAutoUpdate = false;
 
@@ -83,7 +83,7 @@ class CameraHelper extends LineSegments {
   }
 
   void _addPoint(String id, int hex) {
-    var geo = geometry as DirectGeometry;
+    var geo = geometry as Geometry;
     geo.vertices.add(new Vector3.zero());
     geo.colors.add(new Color(hex));
 
@@ -104,7 +104,7 @@ class CameraHelper extends LineSegments {
 
     if (points != null) {
       for (var i = 0; i < points.length; i++) {
-        (geometry as DirectGeometry).vertices[points[i]].setFrom(_vector);
+        (geometry as Geometry).vertices[points[i]].setFrom(_vector);
       }
     }
   }
@@ -155,6 +155,6 @@ class CameraHelper extends LineSegments {
     _setPoint('cn3', 0.0, -h, -1.0);
     _setPoint('cn4', 0.0, h, -1.0);
 
-    (geometry as DirectGeometry).verticesNeedUpdate = true;
+    (geometry as Geometry).verticesNeedUpdate = true;
   }
 }
