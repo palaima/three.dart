@@ -1850,6 +1850,8 @@ class WebGLRenderer {
         refreshUniformsPhong(m_uniforms, material);
       } else if (material is MeshLambertMaterial) {
         refreshUniformsLambert(m_uniforms, material);
+      } else if (material is MeshBasicMaterial) {
+        refreshUniformsBasic(m_uniforms, material);
       } else if (material is MeshDepthMaterial) {
         m_uniforms['mNear'].value = camera.near;
         m_uniforms['mFar'].value = camera.far;
@@ -1878,7 +1880,7 @@ class WebGLRenderer {
 
   // Uniforms (refresh uniforms objects)
 
-  void refreshUniformsCommon(Map uniforms, Material material) {
+  void refreshUniformsCommon(Map<String, Uniform> uniforms, Material material) {
     uniforms['opacity'].value = material.opacity;
 
     uniforms['diffuse'].value = material.color;
@@ -1994,6 +1996,12 @@ class WebGLRenderer {
   void refreshUniformsLambert(
       Map<String, Uniform> uniforms, MeshLambertMaterial material) {
     uniforms['emissive'].value = material.emissive;
+  }
+
+  void refreshUniformsBasic(
+      Map<String, Uniform> uniforms, MeshBasicMaterial material) {
+    uniforms['aoMap'].value = material.aoMap;
+    uniforms['aoMapIntensity'].value = material.aoMapIntensity;
   }
 
   void refreshUniformsLights(Map<String, Uniform> uniforms, Map lights) {
