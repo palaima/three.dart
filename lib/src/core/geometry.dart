@@ -111,6 +111,22 @@ class Geometry implements IGeometry {
   /// True if geometry has tangents. Set in Geometry.computeTangents.
   bool hasTangents = false;
 
+  /// Set to true if attribute buffers will need to change in runtime (using "dirty" flags).
+  /// Unless set to true internal typed arrays corresponding to buffers will be deleted once sent to GPU.
+  bool dynamic = false;
+
+  /// Set to true if the vertices array has been updated.
+  bool verticesNeedUpdate = false;
+
+  /// Set to true if the normals array has been updated.
+  bool normalsNeedUpdate = false;
+
+  /// Set to true if the colors array has been updated.
+  bool colorsNeedUpdate = false;
+
+  /// Set to true if the uvs array has been updated.
+  bool uvsNeedUpdate = false;
+
   // Backwards compatibility
   var materials = [];
   var faceUvs = [];
@@ -122,6 +138,8 @@ class Geometry implements IGeometry {
   Map animations;
   String firstAnimation;
 
+  DirectGeometry __directGeometry;
+
   /// Bakes matrix transform directly into vertex coordinates.
   void applyMatrix(Matrix4 matrix) {
     var normalMatrix = matrix.getNormalMatrix();
@@ -129,11 +147,14 @@ class Geometry implements IGeometry {
     vertices.forEach((vertex) => vertex.applyMatrix4(matrix));
 
     faces.forEach((face) {
-      face.normal..applyMatrix3(normalMatrix)..normalize();
+      face.normal
+        ..applyMatrix3(normalMatrix)
+        ..normalize();
 
       if (!face.vertexNormals.any((e) => e == null)) {
-        face.vertexNormals.forEach((vertexNormal) =>
-            vertexNormal..applyMatrix3(normalMatrix)..normalize());
+        face.vertexNormals.forEach((vertexNormal) => vertexNormal
+          ..applyMatrix3(normalMatrix)
+          ..normalize());
       }
     });
 
@@ -152,10 +173,12 @@ class Geometry implements IGeometry {
     var tempUVs = [];
 
     for (var i = 0, j = 0; i < vertices.length; i += 3, j += 2) {
-      this.vertices.add(new Vector3(vertices[i], vertices[i + 1], vertices[i + 2]));
+      this.vertices
+          .add(new Vector3(vertices[i], vertices[i + 1], vertices[i + 2]));
 
       if (normals != null) {
-        tempNormals.add(new Vector3(normals[i], normals[i + 1], normals[i + 2]));
+        tempNormals
+            .add(new Vector3(normals[i], normals[i + 1], normals[i + 2]));
       }
 
       if (colors != null) {
@@ -168,13 +191,27 @@ class Geometry implements IGeometry {
     }
 
     var addFace = (a, b, c) {
-      var vertexNormals = normals != null ? [tempNormals[a].clone(), tempNormals[b].clone(), tempNormals[c].clone()] : [];
-      var vertexColors = colors != null ? [this.colors[a].clone(), this.colors[b].clone(), this.colors[c].clone()] : [];
+      var vertexNormals = normals != null
+          ? [
+        tempNormals[a].clone(),
+        tempNormals[b].clone(),
+        tempNormals[c].clone()
+      ]
+          : [];
+      var vertexColors = colors != null
+          ? [
+        this.colors[a].clone(),
+        this.colors[b].clone(),
+        this.colors[c].clone()
+      ]
+          : [];
 
-      this.faces.add(new Face3(a, b, c, normal: vertexNormals, color: vertexColors));
+      this.faces
+          .add(new Face3(a, b, c, normal: vertexNormals, color: vertexColors));
 
       if (uvs != null) {
-        this.faceVertexUvs[0].add([tempUVs[a].clone(), tempUVs[b].clone(), tempUVs[c].clone()]);
+        this.faceVertexUvs[0]
+            .add([tempUVs[a].clone(), tempUVs[b].clone(), tempUVs[c].clone()]);
       }
     };
 
@@ -221,12 +258,8 @@ class Geometry implements IGeometry {
     var s = radius == 0 ? 1.0 : 1.0 / radius;
 
     var matrix = new Matrix4.identity();
-    matrix.setValues(
-      s, 0.0, 0.0, -s * center.x,
-      0.0, s, 0.0, -s * center.y,
-      0.0, 0.0, s, -s * center.z,
-      0.0, 0.0, 0.0, 1.0
-    );
+    matrix.setValues(s, 0.0, 0.0, -s * center.x, 0.0, s, 0.0, -s * center.y,
+        0.0, 0.0, s, -s * center.z, 0.0, 0.0, 0.0, 1.0);
 
     applyMatrix(matrix);
   }
@@ -257,14 +290,16 @@ class Geometry implements IGeometry {
   ///
   /// Face normals must be existing / computed beforehand.
   void computeVertexNormals({bool areaWeighted: false}) {
-    var vertices = new List.generate(this.vertices.length, (_) => new Vector3.zero());
+    var vertices =
+        new List.generate(this.vertices.length, (_) => new Vector3.zero());
 
     if (areaWeighted) {
 
       // vertex normals weighted by triangle areas
       // http://www.iquilezles.org/www/articles/normals/normals.htm
 
-      var cb = new Vector3.zero(), ab = new Vector3.zero();
+      var cb = new Vector3.zero(),
+          ab = new Vector3.zero();
 
       for (var f = 0; f < faces.length; f++) {
         var face = faces[f];
@@ -280,9 +315,7 @@ class Geometry implements IGeometry {
         vertices[face.a].add(cb);
         vertices[face.b].add(cb);
         vertices[face.c].add(cb);
-
       }
-
     } else {
       for (var f = 0; f < faces.length; f++) {
         var face = faces[f];
@@ -300,9 +333,17 @@ class Geometry implements IGeometry {
     for (var f = 0; f < faces.length; f++) {
       var face = faces[f];
 
-      face.vertexNormals.add(vertices[face.a].clone());
-      face.vertexNormals.add(vertices[face.b].clone());
-      face.vertexNormals.add(vertices[face.c].clone());
+      var vertexNormals = face.vertexNormals;
+
+      if (vertexNormals.length == 3) {
+        vertexNormals[0].setFrom(vertices[face.a]);
+        vertexNormals[1].setFrom(vertices[face.b]);
+        vertexNormals[2].setFrom(vertices[face.c]);
+      } else {
+        vertexNormals.add(vertices[face.a].clone());
+        vertexNormals.add(vertices[face.b].clone());
+        vertexNormals.add(vertices[face.c].clone());
+      }
     }
   }
 
@@ -357,8 +398,10 @@ class Geometry implements IGeometry {
       var t2 = uvC.y - uvA.y;
 
       var r = 1.0 / (s1 * t2 - s2 * t1);
-      sdir.setValues((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-      tdir.setValues((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+      sdir.setValues((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+          (t2 * z1 - t1 * z2) * r);
+      tdir.setValues((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+          (s1 * z2 - s2 * z1) * r);
 
       tan1[a].add(sdir);
       tan1[b].add(sdir);
@@ -395,12 +438,11 @@ class Geometry implements IGeometry {
 
         tmp2.crossVectors(face.vertexNormals[i], t);
         var test = tmp2.dot(tan2[vertexIndex]);
-        var w = (test < 0.0) ? - 1.0 : 1.0;
+        var w = (test < 0.0) ? -1.0 : 1.0;
 
         face.vertexTangents[i] = new Vector4(tmp.x, tmp.y, tmp.z, w);
       }
     }
-
 
     hasTangents = true;
   }
@@ -432,7 +474,7 @@ class Geometry implements IGeometry {
   /// Neither bounding boxes or bounding spheres are computed by default.
   /// They need to be explicitly computed, otherwise they are null.
   void computeBoundingSphere() {
-    if (boundingSphere == null ) {
+    if (boundingSphere == null) {
       boundingSphere = new Sphere();
     }
 
@@ -468,23 +510,28 @@ class Geometry implements IGeometry {
 
     // faces
 
-    for (var i = 0; i < faces2.length; i ++) {
+    for (var i = 0; i < faces2.length; i++) {
       var face = faces2[i],
           faceVertexNormals = face.vertexNormals,
           faceVertexColors = face.vertexColors;
 
-      var faceCopy = new Face3(face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset)
+      var faceCopy = new Face3(
+          face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset)
         ..normal.setFrom(face.normal);
 
       if (normalMatrix != null) {
-        faceCopy.normal..applyMatrix3(normalMatrix)..normalize();
+        faceCopy.normal
+          ..applyMatrix3(normalMatrix)
+          ..normalize();
       }
 
       for (var j = 0; j < faceVertexNormals.length; j++) {
         var normal = faceVertexNormals[j].clone();
 
         if (normalMatrix != null) {
-          normal..applyMatrix3(normalMatrix)..normalize();
+          normal
+            ..applyMatrix3(normalMatrix)
+            ..normalize();
         }
 
         faceCopy.vertexNormals.add(normal);
@@ -502,8 +549,9 @@ class Geometry implements IGeometry {
 
     // uvs
 
-    for (var i = 0; i < uvs2.length; i ++) {
-      var uv = uvs2[i], uvCopy = [];
+    for (var i = 0; i < uvs2.length; i++) {
+      var uv = uvs2[i],
+          uvCopy = [];
 
       if (uv == null) continue;
 
@@ -523,15 +571,19 @@ class Geometry implements IGeometry {
   /// Checks for duplicate vertices with hashmap.
   /// Duplicated vertices are removed and faces' vertices are updated.
   int mergeVertices() {
-    var verticesMap = {}; // Hashmap for looking up vertice by position coordinates (and making sure they are unique)
-    var unique = [], changes = new List(vertices.length);
+    var verticesMap = {
+    }; // Hashmap for looking up vertice by position coordinates (and making sure they are unique)
+    var unique = [],
+        changes = new List(vertices.length);
 
-    var precisionPoints = 4; // number of decimal points, eg. 4 for epsilon of 0.0001
+    var precisionPoints =
+        4; // number of decimal points, eg. 4 for epsilon of 0.0001
     var precision = math.pow(10, precisionPoints);
 
     for (var i = 0; i < vertices.length; i++) {
       var v = this.vertices[i];
-      var key = '${(v.x * precision).round()}_${(v.y * precision).round()}_${(v.z * precision).round()}';
+      var key =
+          '${(v.x * precision).round()}_${(v.y * precision).round()}_${(v.z * precision).round()}';
 
       if (verticesMap[key] == null) {
         verticesMap[key] = i;
@@ -540,7 +592,8 @@ class Geometry implements IGeometry {
       } else {
         changes[i] = changes[verticesMap[key]];
       }
-    };
+    }
+    ;
 
     // if faces are completely degenerate after merging vertices, we
     // have to remove them from the geometry.
@@ -557,7 +610,7 @@ class Geometry implements IGeometry {
 
       // if any duplicate vertices are found in a Face3
       // we have to remove the face as nothing can be saved
-      for (var n = 0; n < 3; n ++) {
+      for (var n = 0; n < 3; n++) {
         if (indices[n] == indices[(n + 1) % 3]) {
           faceIndicesToRemove.add(i);
           break;
@@ -588,7 +641,7 @@ class Geometry implements IGeometry {
   Geometry clone() {
     var geometry = new Geometry();
 
-    for (var i = 0; i < vertices.length; i ++) {
+    for (var i = 0; i < vertices.length; i++) {
       geometry.vertices.add(vertices[i].clone());
     }
 
@@ -596,17 +649,18 @@ class Geometry implements IGeometry {
       geometry.faces.add(faces[i].clone());
     }
 
-    for (var i = 0; i < this.faceVertexUvs.length; i ++) {
+    for (var i = 0; i < this.faceVertexUvs.length; i++) {
       var faceVertexUvs = this.faceVertexUvs[i];
 
       if (geometry.faceVertexUvs[i] == null) {
         geometry.faceVertexUvs[i] = [];
       }
 
-      for (var j = 0; j < faceVertexUvs.length; j ++) {
-        var uvs = faceVertexUvs[j], uvsCopy = [];
+      for (var j = 0; j < faceVertexUvs.length; j++) {
+        var uvs = faceVertexUvs[j],
+            uvsCopy = [];
 
-        for (var k = 0; k < uvs.length; k ++) {
+        for (var k = 0; k < uvs.length; k++) {
           var uv = uvs[k];
 
           uvsCopy.add(uv.clone());
@@ -636,7 +690,6 @@ class Geometry implements IGeometry {
   @Deprecated('')
   void computeCentroids() {
     faces.forEach((face) {
-
       face.centroid.setValues(0.0, 0.0, 0.0);
 
       face.indices.forEach((idx) {
@@ -644,7 +697,6 @@ class Geometry implements IGeometry {
       });
 
       face.centroid /= face.indices.length.toDouble();
-
     });
   }
 
