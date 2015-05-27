@@ -1,5 +1,7 @@
 /*
  * @author mrdoob / http://mrdoob.com/
+ *
+ * based on https://github.com/mrdoob/three.js/blob/9c2a88d21713eaddd73bfc5b9b00847cf8059225/src/core/DirectGeometry.js
  */
 
 part of three.core;

@@ -1,7 +1,7 @@
 /*
  * @author mrdoob / http://mrdoob.com/
  *
- * based on a5cc2899aafab2461c52e4b63498fb284d0c167b
+ * based on https://github.com/mrdoob/three.js/blob/9c2a88d21713eaddd73bfc5b9b00847cf8059225/src/core/BufferAttribute.js
  */
 
 part of three.core;

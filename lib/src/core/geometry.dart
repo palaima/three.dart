@@ -10,7 +10,7 @@ part of three.core;
  * Ported to Dart from JS by:
  * @author rob silverton / http://www.unwrong.com/
  *
- * based on r70
+ * based on https://github.com/mrdoob/three.js/blob/9c2a88d21713eaddd73bfc5b9b00847cf8059225/src/core/Geometry.js
  */
 
 abstract class IGeometry {
