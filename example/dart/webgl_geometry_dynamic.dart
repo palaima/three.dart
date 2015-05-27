@@ -14,7 +14,7 @@ Scene scene;
 WebGLRenderer renderer;
 
 Texture texture;
-DirectGeometry geometry;
+Geometry geometry;
 Material material;
 
 int worldWidth = 128, worldDepth = 128;
@@ -37,14 +37,14 @@ void init() {
   scene = new Scene()
     ..fog = new FogExp2(0xaaccff, 0.0007);
 
-  var planeGeo = new PlaneGeometry(20000.0, 20000.0, worldWidth - 1, worldDepth - 1)
+  geometry = new PlaneGeometry(20000.0, 20000.0, worldWidth - 1, worldDepth - 1)
     ..applyMatrix(new Matrix4.rotationX(-math.PI / 2));
 
-  for (var i = 0; i < planeGeo.vertices.length; i++) {
-    planeGeo.vertices[i].y = 35 * math.sin(i / 2);
+  for (var i = 0; i < geometry.vertices.length; i++) {
+    geometry.vertices[i].y = 35 * math.sin(i / 2);
   }
 
-  geometry = new DirectGeometry.fromGeometry(planeGeo);
+  geometry.dynamic = true;
 
   var texture = image_utils.loadTexture('textures/water.jpg');
   texture.wrapS = texture.wrapT = RepeatWrapping;
