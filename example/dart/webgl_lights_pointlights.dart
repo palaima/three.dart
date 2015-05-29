@@ -38,19 +38,19 @@ void init() {
 
   var sphere = new SphereGeometry(0.5, 16, 8);
 
-  light1 = new PointLight(0xff0040, intensity: 2.0, distance: 50.0);
+  light1 = new PointLight(0xff0040, 2.0, 50.0);
   light1.add(new Mesh(sphere, new MeshBasicMaterial(color: 0xff0040)));
   scene.add(light1);
 
-  light2 = new PointLight(0x0040ff, intensity: 2.0, distance: 50.0);
+  light2 = new PointLight(0x0040ff, 2.0, 50.0);
   light2.add(new Mesh(sphere, new MeshBasicMaterial(color: 0x0040ff)));
   scene.add(light2);
 
-  light3 = new PointLight(0x80ff80, intensity: 2.0, distance: 50.0);
+  light3 = new PointLight(0x80ff80, 2.0, 50.0);
   light3.add(new Mesh(sphere, new MeshBasicMaterial(color: 0x80ff80)));
   scene.add(light3);
 
-  light4 = new PointLight(0xffaa00, intensity: 2.0, distance: 50.0);
+  light4 = new PointLight(0xffaa00, 2.0, 50.0);
   light4.add(new Mesh(sphere, new MeshBasicMaterial(color: 0xffaa00)));
   scene.add(light4);
 

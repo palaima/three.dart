@@ -90,7 +90,7 @@ void init() {
     ..normalize();
   scene.add(dirLight);
 
-  var pointLight = new PointLight(0xffffff, intensity: 1.5);
+  var pointLight = new PointLight(0xffffff, 1.5);
   pointLight.position.setValues(0.0, 100.0, 90.0);
   scene.add(pointLight);
 

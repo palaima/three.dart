@@ -88,7 +88,7 @@ void init() {
     ..position.setValues(1.0, 1.0, 1.0).normalize();
   scene.add(directionalLight);
 
-  var pointLight = new PointLight(0xffffff, intensity: 2.0, distance: 800.0);
+  var pointLight = new PointLight(0xffffff, 2.0, 800.0);
   particleLight.add(pointLight);
 
   //

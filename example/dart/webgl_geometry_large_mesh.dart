@@ -41,7 +41,7 @@ void init() {
     ..normalize();
   scene.add(directionalLight);
 
-  pointLight = new PointLight(0xffffff, intensity: 3.0, distance: 1000.0);
+  pointLight = new PointLight(0xffffff, 3.0, 1000.0);
   scene.add(pointLight);
 
   // light representation

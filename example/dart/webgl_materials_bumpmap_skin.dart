@@ -47,7 +47,7 @@ void init() {
 
   //
 
-  pointLight = new PointLight(0xffffff, intensity: 1.5, distance: 1000.0);
+  pointLight = new PointLight(0xffffff, 1.5, 1000.0);
   pointLight.position.setValues(0.0, 0.0, 600.0);
 
   scene.add(pointLight);

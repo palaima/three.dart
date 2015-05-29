@@ -40,7 +40,7 @@ void init() {
 
   //
 
-  var pointLight = new PointLight(0xffffff, intensity: 1.5, distance: 1000.0)
+  var pointLight = new PointLight(0xffffff, 1.5, 1000.0)
     ..color.setHSL(0.05, 1.0, 0.95)
     ..position.setValues(0.0, 0.0, 600.0);
   scene.add(pointLight);

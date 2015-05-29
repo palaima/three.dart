@@ -39,7 +39,7 @@ void init() {
 
   scene.add(camera);
 
-  camera.add(new PointLight(0xffffff, intensity: 0.8));
+  camera.add(new PointLight(0xffffff, 0.8));
 
   group = new Group()
     ..position.y = 50.0;

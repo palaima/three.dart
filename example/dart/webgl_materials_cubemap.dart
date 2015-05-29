@@ -34,7 +34,7 @@ void init() {
 
   scene.add(new AmbientLight(0xffffff));
 
-  pointLight = new PointLight(0xffffff, intensity: 2.0);
+  pointLight = new PointLight(0xffffff, 2.0);
   scene.add(pointLight);
 
   // light representation
