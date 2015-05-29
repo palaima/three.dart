@@ -2261,7 +2261,7 @@ class WebGLRenderer {
           break;
         // single Matrix3
         case 'm3':
-          _gl.uniformMatrix3fv(location, false, value.elements);
+          _gl.uniformMatrix3fv(location, false, value.storage);
           break;
         // array of Matrix3
         case 'm3v':
@@ -2277,7 +2277,7 @@ class WebGLRenderer {
           break;
         // single Matrix4
         case 'm4':
-          _gl.uniformMatrix4fv(location, false, value.elements);
+          _gl.uniformMatrix4fv(location, false, value.storage);
           break;
         // array of Matrix4
         case 'm4v':
