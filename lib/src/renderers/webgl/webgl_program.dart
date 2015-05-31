@@ -37,14 +37,6 @@ class WebGLProgram {
           key: (id) => id,
           value: (id) => _gl.getAttribLocation(program, id));
 
-  String programArrayToString(String previousValue, String currentValue) {
-    if (currentValue != '' && currentValue != null) {
-      return '$previousValue$currentValue\n';
-    }
-
-    return previousValue;
-  }
-
   WebGLProgram._(WebGLRenderer renderer, this.code, Material material, {
     String precision, bool supportsVertexTextures, bool map, bool envMap, bool envMapMode, bool lightMap,
     bool aoMap, bool bumpMap, bool normalMap, bool specularMap, bool alphaMap, int combine, int vertexColors,
@@ -241,8 +233,8 @@ class WebGLProgram {
 
         '#endif',
 
-        ''
-     ].fold('', programArrayToString);
+        '\n'
+     ].where((s) => s != '').join('\n');
 
       prefix_fragment = [
         (bumpMap || normalMap || flatShading || (material is ShaderMaterial) && material.derivatives)
@@ -300,8 +292,8 @@ class WebGLProgram {
         'uniform mat4 viewMatrix;',
         'uniform vec3 cameraPosition;',
 
-        ''
-      ].fold('', programArrayToString);
+        '\n'
+      ].where((s) => s != '').join('\n');
     }
 
     var glVertexShader = new WebGLShader(_gl, gl.VERTEX_SHADER, prefix_vertex + vertexShader)();
