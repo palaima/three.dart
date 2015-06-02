@@ -21,7 +21,7 @@ class PointLight extends Light {
   /// Creates a light at a specific position in the scene.
   ///
   /// The light shines in all directions (roughly similar to a light bulb.)
-  PointLight(num color, {this.intensity: 1.0, this.distance: 0.0, this.decay: 1.0})
+  PointLight(num color, [this.intensity = 1.0, this.distance = 0.0, this.decay = 1.0])
       : super(color) {
   }
 

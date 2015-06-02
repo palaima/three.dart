@@ -62,13 +62,42 @@ class Plane {
     _constant = w;
   }
 
+  void setFromNormalAndCoplanarPoint(Vector3 normal, Vector3 point) {
+    this.normal.setFrom(normal);
+    this.constant = -point.dot(this.normal);
+  }
+
   void normalize() {
     var inverseLength = 1.0 / normal.length;
     _normal.scale(inverseLength);
     _constant *= inverseLength;
   }
 
+  static final Vector3 _v1 = new Vector3.zero();
+  static final Vector3 _v2 = new Vector3.zero();
+  static final Matrix3 _m1 = new Matrix3.zero();
+
+  void applyMatrix4(Matrix4 matrix, [Matrix3 optionalNormalMatrix]) {
+    // compute new normal based on theory here:
+    // http://www.songho.ca/opengl/gl_normaltransform.html
+    final normalMatrix = optionalNormalMatrix != null
+        ? optionalNormalMatrix
+        : _m1..copyNormalMatrix(matrix);
+    final newNormal = _v1
+      ..setFrom(normal)
+      ..applyMatrix3(normalMatrix);
+    final newCoplanarPoint = coplanarPoint(_v2)..applyMatrix4(matrix);
+    setFromNormalAndCoplanarPoint(newNormal, newCoplanarPoint);
+  }
+
   double distanceToVector3(Vector3 point) {
     return _normal.dot(point) + _constant;
+  }
+
+  Vector3 coplanarPoint([Vector3 optionalTarget]) {
+    var result = optionalTarget != null ? optionalTarget : new Vector3.zero();
+    return result
+      ..setFrom(normal)
+      ..scale(-constant);
   }
 }
