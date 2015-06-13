@@ -24,15 +24,13 @@ void init() {
   loader = new BinaryLoader(showStatus: true);
   document.body.append(loader.statusDomElement);
 
-  var callback = (geometry) {
-    object = new Mesh(geometry, new MeshPhongMaterial(color: 0x555555, specular: 0xffffff, shininess: 50.0));
+  loader.load('obj/walt/WaltHead_bin.js').then((result) {
+    object = new Mesh(result.geometry, new MeshPhongMaterial(color: 0x555555, specular: 0xffffff, shininess: 50.0));
     object.scale.splat(0.80);
     scene.add(object);
 
     loader.statusDomElement.style.display = 'none';
-  };
-
-  loader.load('obj/walt/WaltHead_bin.js').then(callback);
+  });
 
   scene.add(new AmbientLight(0x000000));
 
