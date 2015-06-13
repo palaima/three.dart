@@ -5,15 +5,15 @@ typedef void ImmediateRenderCallback(ImmediateRenderObject object);
 abstract class ImmediateRenderObject extends Object3D {
   void render(ImmediateRenderCallback renderCallback);
 
-  bool hasPositions;
-  bool hasNormals;
-  bool hasUvs;
-  bool hasColors;
+  bool hasPositions = false;
+  bool hasNormals = false;
+  bool hasUvs = false;
+  bool hasColors = false;
 
   Float32List positionArray;
   Float32List normalArray;
   Float32List colorArray;
   Float32List uvArray;
 
-  int count;
+  int count = 0;
 }
