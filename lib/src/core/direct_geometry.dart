@@ -1,7 +1,7 @@
 /*
  * @author mrdoob / http://mrdoob.com/
  *
- * based on https://github.com/mrdoob/three.js/blob/9c2a88d21713eaddd73bfc5b9b00847cf8059225/src/core/DirectGeometry.js
+ * Based on https://github.com/mrdoob/three.js/tree/da8ef6db17c718e5b15eb86a88ba13338c3d61ee/src/core/DirectGeometry.js
  */
 
 part of three.core;
@@ -48,8 +48,8 @@ class DirectGeometry implements IGeometry {
 
   DirectGeometry();
 
-  DirectGeometry.fromGeometry(Geometry geometry, Material material) {
-    setFromGeometry(geometry, material);
+  DirectGeometry.fromGeometry(Geometry geometry) {
+    setFromGeometry(geometry);
   }
 
   /// Computes bounding box of the geometry, updating Geometry.boundingBox.
@@ -83,15 +83,15 @@ class DirectGeometry implements IGeometry {
         'DynamicGeometry: computeVertexNormals() is not a method of this type of geometry.');
   }
 
-  void setFromGeometry(Geometry geometry, [Material material]) {
+  void setFromGeometry(Geometry geometry) {
     var faces = geometry.faces;
     var vertices = geometry.vertices;
     var faceVertexUvs = geometry.faceVertexUvs;
-    var materialVertexColors =
-        material != null ? material.vertexColors : NoColors;
 
-    var hasFaceVertexUv = faceVertexUvs.length > 0 && faceVertexUvs[0].length > 0;
-    var hasFaceVertexUv2 = faceVertexUvs.length > 1 && faceVertexUvs[1].length > 0;
+    var hasFaceVertexUv =
+        faceVertexUvs.length > 0 && faceVertexUvs[0].length > 0;
+    var hasFaceVertexUv2 =
+        faceVertexUvs.length > 1 && faceVertexUvs[1].length > 0;
 
     // morphs
 
@@ -129,40 +129,51 @@ class DirectGeometry implements IGeometry {
     for (var i = 0; i < faces.length; i++) {
       var face = faces[i];
 
-      this.vertices
-          .addAll([vertices[face.a], vertices[face.b], vertices[face.c]]);
+      this.vertices.add(vertices[face.a]);
+      this.vertices.add(vertices[face.b]);
+      this.vertices.add(vertices[face.c]);
 
       var vertexNormals = face.vertexNormals;
 
       if (vertexNormals.length == 3) {
-        this.normals
-            .addAll([vertexNormals[0], vertexNormals[1], vertexNormals[2]]);
+        this.normals.add(vertexNormals[0]);
+        this.normals.add(vertexNormals[1]);
+        this.normals.add(vertexNormals[2]);
       } else {
         var normal = face.normal;
 
-        this.normals.addAll([normal, normal, normal]);
+        this.normals.add(normal);
+        this.normals.add(normal);
+        this.normals.add(normal);
       }
 
       var vertexColors = face.vertexColors;
 
-      if (materialVertexColors == VertexColors) {
-        this.colors.addAll([vertexColors[0], vertexColors[1], vertexColors[2]]);
-      } else if (materialVertexColors == FaceColors) {
+      if (vertexColors.length == 3) {
+        colors.add(vertexColors[0]);
+        colors.add(vertexColors[1]);
+        colors.add(vertexColors[2]);
+      } else {
         var color = face.color;
 
-        this.colors.addAll([color, color, color]);
+        colors.add(color);
+        colors.add(color);
+        colors.add(color);
       }
 
       if (hasFaceVertexUv) {
         var vertexUvs = faceVertexUvs[0][i];
 
         if (vertexUvs != null) {
-          this.uvs.addAll([vertexUvs[0], vertexUvs[1], vertexUvs[2]]);
+          this.uvs.add(vertexUvs[0]);
+          this.uvs.add(vertexUvs[1]);
+          this.uvs.add(vertexUvs[2]);
         } else {
           warn('BufferGeometry.fromGeometry(): Undefined vertexUv $i');
 
-          this.uvs.addAll(
-              [new Vector2.zero(), new Vector2.zero(), new Vector2.zero()]);
+          this.uvs.add(new Vector2.zero());
+          this.uvs.add(new Vector2.zero());
+          this.uvs.add(new Vector2.zero());
         }
       }
 
@@ -170,12 +181,15 @@ class DirectGeometry implements IGeometry {
         var vertexUvs = faceVertexUvs[1][i];
 
         if (vertexUvs != null) {
-          this.uvs2.addAll([vertexUvs[0], vertexUvs[1], vertexUvs[2]]);
+          this.uvs2.add(vertexUvs[0]);
+          this.uvs2.add(vertexUvs[1]);
+          this.uvs2.add(vertexUvs[2]);
         } else {
           warn('BufferGeometry.fromGeometry(): Undefined vertexUv2 $i');
 
-          this.uvs2.addAll(
-              [new Vector2.zero(), new Vector2.zero(), new Vector2.zero()]);
+          this.uvs2.add(new Vector2.zero());
+          this.uvs2.add(new Vector2.zero());
+          this.uvs2.add(new Vector2.zero());
         }
       }
 
@@ -184,8 +198,9 @@ class DirectGeometry implements IGeometry {
       for (var j = 0; j < morphTargetsLength; j++) {
         var morphTarget = morphTargets[j].vertices;
 
-        this.morphTargets[j].addAll(
-            [morphTarget[face.a], morphTarget[face.b], morphTarget[face.c]]);
+        this.morphTargets[j].add(morphTarget[face.a]);
+        this.morphTargets[j].add(morphTarget[face.b]);
+        this.morphTargets[j].add(morphTarget[face.c]);
       }
       /*
       for ( var j = 0; j < morphNormalsLength; j ++ ) {
@@ -208,13 +223,15 @@ class DirectGeometry implements IGeometry {
       // skins
 
       if (hasSkinIndices) {
-        this.skinIndices.addAll(
-            [skinIndices[face.a], skinIndices[face.b], skinIndices[face.c]]);
+        this.skinIndices.add(skinIndices[face.a]);
+        this.skinIndices.add(skinIndices[face.b]);
+        this.skinIndices.add(skinIndices[face.c]);
       }
 
       if (hasSkinWeights) {
-        this.skinWeights.addAll([
-            skinWeights[face.a], skinWeights[face.b], skinWeights[face.c]]);
+        this.skinWeights.add(skinWeights[face.a]);
+        this.skinWeights.add(skinWeights[face.b]);
+        this.skinWeights.add(skinWeights[face.c]);
       }
     }
 
