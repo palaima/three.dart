@@ -2,8 +2,6 @@
  * @author mikael emtinger / http://gomo.se/
  */
 
-// FIXME
-
 library three.extras.animation_handler;
 
 import 'animation.dart';
