@@ -70,8 +70,9 @@ void init() {
       vertexShader: shader['vertexShader'],
       uniforms: shader['uniforms'],
       depthWrite: false,
-      side: BackSide),
-      mesh = new Mesh(new BoxGeometry(100.0, 100.0, 100.0), material);
+      side: BackSide);
+
+  var mesh = new Mesh(new BoxGeometry(100.0, 100.0, 100.0), material);
   sceneCube.add(mesh);
 
   //
