@@ -87,21 +87,23 @@ class WebGLState {
       } else {
         _gl.enable(gl.BLEND);
         _gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
-        _gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        _gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE,
+            gl.ONE_MINUS_SRC_ALPHA);
       }
 
       _currentBlending = blending;
     }
 
     if (blending == CustomBlending) {
-      blendEquationAlpha = [blendEquationAlpha, blendEquation].firstWhere((e) => e != null);
+      blendEquationAlpha =
+          [blendEquationAlpha, blendEquation].firstWhere((e) => e != null);
       blendSrcAlpha = [blendSrcAlpha, blendSrc].firstWhere((e) => e != null);
       blendDstAlpha = [blendDstAlpha, blendDst].firstWhere((e) => e != null);
 
       if (blendEquation != _currentBlendEquation ||
           blendEquationAlpha != _currentBlendEquationAlpha) {
-        _gl.blendEquationSeparate(
-            _paramThreeToGL(blendEquation), _paramThreeToGL(blendEquationAlpha));
+        _gl.blendEquationSeparate(_paramThreeToGL(blendEquation),
+            _paramThreeToGL(blendEquationAlpha));
 
         _currentBlendEquation = blendEquation;
         _currentBlendEquationAlpha = blendEquationAlpha;
@@ -111,8 +113,9 @@ class WebGLState {
           blendDst != _currentBlendDst ||
           blendSrcAlpha != _currentBlendSrcAlpha ||
           blendDstAlpha != _currentBlendDstAlpha) {
-        _gl.blendFuncSeparate(_paramThreeToGL(blendSrc), _paramThreeToGL(blendDst),
-            _paramThreeToGL(blendSrcAlpha), _paramThreeToGL(blendDstAlpha));
+        _gl.blendFuncSeparate(_paramThreeToGL(blendSrc),
+            _paramThreeToGL(blendDst), _paramThreeToGL(blendSrcAlpha),
+            _paramThreeToGL(blendDstAlpha));
 
         _currentBlendSrc = blendSrc;
         _currentBlendDst = blendDst;
@@ -237,7 +240,8 @@ class WebGLState {
     }
 
     if (polygonoffset &&
-        (_currentPolygonOffsetFactor != factor || _currentPolygonOffsetUnits != units)) {
+        (_currentPolygonOffsetFactor != factor ||
+            _currentPolygonOffsetUnits != units)) {
       _gl.polygonOffset(factor, units);
 
       _currentPolygonOffsetFactor = factor;
@@ -265,7 +269,8 @@ class WebGLState {
       _currentBoundTextures[_currentTextureSlot] = boundTexture;
     }
 
-    if (boundTexture['type'] != webglType || boundTexture['texture'] != webglTexture) {
+    if (boundTexture['type'] != webglType ||
+        boundTexture['texture'] != webglTexture) {
       _gl.bindTexture(webglType, webglTexture);
 
       boundTexture['type'] = webglType;
@@ -273,29 +278,36 @@ class WebGLState {
     }
   }
 
-  void compressedTexImage2D(int target, int level, int internalformat, int width, int height,
-      int border, TypedData data) {
+  void compressedTexImage2D(int target, int level, int internalformat,
+      int width, int height, int border, TypedData data) {
     try {
-      _gl.compressedTexImage2D(target, level, internalformat, width, height, border, data);
+      _gl.compressedTexImage2D(
+          target, level, internalformat, width, height, border, data);
     } catch (err) {
       error(err);
     }
   }
 
-  void texImage2D(int target, int level, int internalformat, int format_OR_width,
-      int height_OR_type, border_OR_canvas_OR_image_OR_pixels_OR_video,
+  void texImage2D(int target, int level, int internalformat,
+      int format_OR_width, int height_OR_type,
+      border_OR_canvas_OR_image_OR_pixels_OR_video,
       [int format, int type, TypedData pixels]) {
     try {
-      _gl.texImage2D(target, level, internalformat, format_OR_width, height_OR_type,
-          border_OR_canvas_OR_image_OR_pixels_OR_video, format, type, pixels);
+      _gl.texImage2D(target, level, internalformat, format_OR_width,
+          height_OR_type, border_OR_canvas_OR_image_OR_pixels_OR_video, format,
+          type, pixels);
     } catch (err) {
       error(err);
     }
   }
 
   void reset() {
-    _enabledAttributes.map((_) => 0);
-
+    for (var i = 0; i < _enabledAttributes.length; i++) {
+      if (_enabledAttributes[i] == 1) {
+        _gl.disableVertexAttribArray(i);
+        _enabledAttributes[i] = 0;
+      }
+    }
     _currentBlending = null;
     _currentDepthTest = null;
     _currentDepthWrite = null;

@@ -113,9 +113,10 @@ class WebGLObjects {
       var material = (object as MaterialObject).material;
 
       if (material['_program'] != null) {
-        if (material['_program'].uniforms['morphTargetInfluences'] != null) {
-          _gl.uniform1fv(material['_program'].uniforms['morphTargetInfluences'],
-              morphInfluences);
+        var uniforms = material['_program'].getUniforms();
+
+        if (uniforms['morphTargetInfluences'] != null) {
+          _gl.uniform1fv(uniforms['morphTargetInfluences'], morphInfluences);
         }
       } else {
         warn('TOFIX: material.program is undefined');

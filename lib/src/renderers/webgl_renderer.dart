@@ -399,7 +399,7 @@ class WebGLRenderer {
   double getPixelRatio() => _pixelRatio;
 
   void setPixelRatio(double value) {
-    _pixelRatio = value;
+    if (value != null) _pixelRatio = value;
   }
 
   Map<String, int> getSize() => {'width': _width, 'height': _height};
@@ -612,15 +612,16 @@ class WebGLRenderer {
       object['__webglColorBuffer'] = _gl.createBuffer();
     }
 
+    var attributes = program.getAttributes();
+
     if (object.hasPositions) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglVertexBuffer']);
       _gl.bufferDataTyped(
           gl.ARRAY_BUFFER, object.positionArray, gl.DYNAMIC_DRAW);
 
-      state.enableAttribute(program.attributes['position']);
+      state.enableAttribute(attributes['position']);
 
-      _gl.vertexAttribPointer(
-          program.attributes['position'], 3, gl.FLOAT, false, 0, 0);
+      _gl.vertexAttribPointer(attributes['position'], 3, gl.FLOAT, false, 0, 0);
     }
 
     if (object.hasNormals) {
@@ -661,9 +662,8 @@ class WebGLRenderer {
       }
 
       _gl.bufferDataTyped(gl.ARRAY_BUFFER, object.normalArray, gl.DYNAMIC_DRAW);
-      state.enableAttribute(program.attributes['normal']);
-      _gl.vertexAttribPointer(
-          program.attributes['normal'], 3, gl.FLOAT, false, 0, 0);
+      state.enableAttribute(attributes['normal']);
+      _gl.vertexAttribPointer(attributes['normal'], 3, gl.FLOAT, false, 0, 0);
     }
 
     var mat = material;
@@ -672,20 +672,18 @@ class WebGLRenderer {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglUVBuffer']);
       _gl.bufferDataTyped(gl.ARRAY_BUFFER, object.uvArray, gl.DYNAMIC_DRAW);
 
-      state.enableAttribute(program.attributes['uv']);
+      state.enableAttribute(attributes['uv']);
 
-      _gl.vertexAttribPointer(
-          program.attributes['uv'], 2, gl.FLOAT, false, 0, 0);
+      _gl.vertexAttribPointer(attributes['uv'], 2, gl.FLOAT, false, 0, 0);
     }
 
     if (object.hasColors && material.vertexColors != NoColors) {
       _gl.bindBuffer(gl.ARRAY_BUFFER, object['__webglColorBuffer']);
       _gl.bufferDataTyped(gl.ARRAY_BUFFER, object.colorArray, gl.DYNAMIC_DRAW);
 
-      state.enableAttribute(program.attributes['color']);
+      state.enableAttribute(attributes['color']);
 
-      _gl.vertexAttribPointer(
-          program.attributes['color'], 3, gl.FLOAT, false, 0, 0);
+      _gl.vertexAttribPointer(attributes['color'], 3, gl.FLOAT, false, 0, 0);
     }
 
     state.disableUnusedAttributes();
@@ -711,7 +709,10 @@ class WebGLRenderer {
 
     var geometryAttributes = geometry.attributes;
 
-    var programAttributes = program.attributes;
+    var programAttributes = program.getAttributes();
+
+    var materialDefaultAttributeValues =
+        material is ShaderMaterial ? material.defaultAttributeValues : null;
 
     programAttributes.forEach((name, programAttribute) {
       if (programAttribute >= 0) {
@@ -770,15 +771,22 @@ class WebGLRenderer {
               }
             }
           }
-        } else if (mat is ShaderMaterial &&
-            mat.defaultAttributeValues != null) {
-          if (mat.defaultAttributeValues[name] != null) {
-            if (mat.defaultAttributeValues[name].length == 2) {
-              _gl.vertexAttrib2fv(
-                  programAttribute, mat.defaultAttributeValues[name]);
-            } else if (mat.defaultAttributeValues[name].length == 3) {
-              _gl.vertexAttrib3fv(
-                  programAttribute, mat.defaultAttributeValues[name]);
+        } else if (materialDefaultAttributeValues != null) {
+          var value = materialDefaultAttributeValues[name];
+
+          if (value != null) {
+            switch (value.length) {
+              case 2:
+                _gl.vertexAttrib2fv(programAttribute, value);
+                break;
+              case 3:
+                _gl.vertexAttrib3fv(programAttribute, value);
+                break;
+              case 4:
+                _gl.vertexAttrib4fv(programAttribute, value);
+                break;
+              default:
+                _gl.vertexAttrib1fv(programAttribute, value);
             }
           }
         }
@@ -1625,7 +1633,7 @@ class WebGLRenderer {
 
     material['_program'] = program;
 
-    var attributes = program.attributes;
+    var attributes = program.getAttributes();
 
     if (mat is Morphing && mat.morphTargets != null && mat.morphTargets) {
       material['_numSupportedMorphTargets'] = 0;
@@ -1653,8 +1661,10 @@ class WebGLRenderer {
 
     material['_uniformsList'] = [];
 
+    var uniformLocations = material['_program'].getUniforms();
+
     for (var u in material['__webglShader']['uniforms'].keys) {
-      var location = material['_program'].uniforms[u];
+      var location = uniformLocations[u];
 
       if (location != null) {
         material['_uniformsList']
@@ -1699,7 +1709,7 @@ class WebGLRenderer {
     var refreshLights = false;
 
     var program = material['_program'],
-        p_uniforms = program.uniforms,
+        p_uniforms = program.getUniforms(),
         m_uniforms = material['__webglShader']['uniforms'];
 
     if (program.id != _currentProgram) {

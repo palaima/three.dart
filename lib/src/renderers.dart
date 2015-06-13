@@ -1,5 +1,5 @@
 /*
- * Based on https://github.com/mrdoob/three.js/tree/9c2a88d21713eaddd73bfc5b9b00847cf8059225/src/renderers
+ * Based on https://github.com/mrdoob/three.js/tree/da8ef6db17c718e5b15eb86a88ba13338c3d61ee/src/renderers
  */
 
 library three.renderers;
